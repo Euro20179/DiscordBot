@@ -58,10 +58,10 @@ async def spam(ctx, messages, *message, delete="false"):
 	"""
 	(amount) (count (y/n)) (message) add delete=t to delete the message you sent
 	"""
-	if ctx.message.author.id == 399664068434198558:
-		await ctx.send("i am banning you from using this command")
-		return
+
 	count = 0
+	if messages > random.randint(30000, 100000):
+		await ctx.send("pls consult a psychiatrist that's too many messages")
 	message = ' '.join(message)
 	if "delete=" in message:
 		message = message.split("delete=")
@@ -412,7 +412,7 @@ async def coin(ctx, delete="false"):
 	logCMD(f'coin, {res} {ctx.message.author}')
 
 @client.command()
-async def rand(ctx, low, high, delete="false"):
+async def rand(ctx, low=1, high=10, delete="false"):
 	"""
 	low number, high number
 	ex: [rand 1 100 <delete t/f>
