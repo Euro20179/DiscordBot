@@ -3157,3 +3157,5 @@ magicball, ChrisCPI#7273, 19:06:11.218350
 family, Troyella#5505, 21:40:45.180565
 echo, 3 ChrisCPI#7273, 16:41:12.671922
 magicball, ChrisCPI#7273, 16:41:25.798489
+echo, hi Gyro_Euro#0061, 13:59:51.358386
+STOPPED, Gyro_Euro#0061, 14:00:04.954034

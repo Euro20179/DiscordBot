@@ -60,7 +60,7 @@ async def spam(ctx, messages, *message, delete="false"):
 	"""
 
 	count = 0
-	if messages > random.randint(30000, 100000):
+	if int(messages) > random.randint(30000, 100000):
 		await ctx.send("pls consult a psychiatrist that's too many messages")
 	message = ' '.join(message)
 	if "delete=" in message:
