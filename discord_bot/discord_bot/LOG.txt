@@ -3159,3 +3159,14 @@ echo, 3 ChrisCPI#7273, 16:41:12.671922
 magicball, ChrisCPI#7273, 16:41:25.798489
 echo, hi Gyro_Euro#0061, 13:59:51.358386
 STOPPED, Gyro_Euro#0061, 14:00:04.954034
+Ping, Gyro_Euro#0061, 20:49:41.505962
+magicball, Toolbox#3311, 13:56:20.393093
+magicball, Bunny Hopeflyte#4165, 13:57:34.258876
+echo, <@469703194751008768> ChrisCPI#7273, 13:57:42.517545
+magicball, Toolbox#3311, 13:57:57.472736
+mballreply, test2, Gyro_Euro#0061, 13:58:04.781750
+echo, ok yippold ChrisCPI#7273, 13:58:08.010509
+mballreply, , Gyro_Euro#0061, 14:02:00.433301
+magicball, ~Wave8~#2474, 14:02:30.689241
+magicball, ~Wave8~#2474, 14:02:50.199239
+mballreply, stop asking the same question over and over again, Bunny Hopeflyte#4165, 14:03:14.050542

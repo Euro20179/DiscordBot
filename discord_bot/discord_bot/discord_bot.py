@@ -62,6 +62,7 @@ async def spam(ctx, messages, *message, delete="false"):
 	count = 0
 	if int(messages) > random.randint(30000, 100000):
 		await ctx.send("pls consult a psychiatrist that's too many messages")
+		return
 	message = ' '.join(message)
 	if "delete=" in message:
 		message = message.split("delete=")
@@ -90,7 +91,7 @@ async def spam(ctx, messages, *message, delete="false"):
 		await ctx.send(random.choice(["done", "Done"]))
 	
 
-@client.command()
+@client.command(aliases=["randface"])
 async def randomface(ctx, delete="false"):
 	"""
 	<delete t/f>
@@ -102,7 +103,7 @@ async def randomface(ctx, delete="false"):
 	await ctx.send(f'{random.choice(eyes)}{random.choice(mouths)}')
 	logCMD(f"random face, {ctx.message.author}")
 
-@client.command()
+@client.command(aliases=["ttc"])
 async def thetroycommand(ctx, delete="false"):
 	"""
 	the troy command :)
@@ -153,7 +154,7 @@ async def alphabet(ctx, delete="false"):
 	else: await ctx.send("abcdefghijklmnopqrstuvwxyz")
 	
 
-@client.command()
+@client.command(aliases=["uchar"])
 async def unicodechar(ctx, amount=1, delete="t"):
 	"""
 	[amount] <delete t/f>
@@ -174,7 +175,7 @@ async def unicodechar(ctx, amount=1, delete="t"):
 		await ctx.send(f'{chr(char)} value: ({char})')
 		time.sleep(random.uniform(.2, .9))
 
-@client.command()
+@client.command(aliases=["semote"])
 async def serveremote(ctx, amount=1, delete="t"):
 	"""
 	[amount] <delete t/f>
@@ -243,15 +244,6 @@ async def spacer(ctx, spaces, *word):
 	word = add.join(word)
 	await ctx.send(word)
 
-@client.command()
-async def thelevicommand(ctx, delete="false"):
-	"""
-	the levi command :) <delete t/f>
-	"""
-	if delTrue(delete): ctx.message.delete()
-
-	logCMD(f"thelevicommand, {ctx.message.author}")
-	await ctx.send(random.choice(["", "catssssss", "pokemonnnnn", "i'm bored", "i'm gonna go bye", "i have bored", "i need infinite money"]))
 
 @client.command()
 async def currentversion(ctx, delete="false"):
@@ -294,16 +286,6 @@ async def longmessage(ctx, delete="false"):
 	if delTrue(delete): await ctx.message.delete()
 	await ctx.send("```````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````hI```````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````")
 	logCMD(f"longmessage, {ctx.message.author}")
-
-@client.command()
-async def clear(ctx, amount=10):
-	try: int(amount)
-	except:
-		await ctx.send("Not a vlid number")
-		return
-	await ctx.channel.purge(limit=amount)
-	logCMD(f"clear, {amount} {ctx.message.author}")
-
 
 @client.command()
 async def flush(ctx, *user):
@@ -374,6 +356,7 @@ async def message(ctx, send, filename, *message):
 	if dm:
 		with open(f'.\\message\\{filename}.txt', 'rb') as f:
 			await ctx.author.send(file=discord.File(f, f'{filename}.txt'))
+
 @client.command()
 async def echo(ctx, *msg):
 	await ctx.message.delete()
@@ -452,6 +435,17 @@ async def rolecount(ctx, user : discord.Member, delete="false"):
 	logCMD(f'rolecount, {user}: {roleCount} {ctx.message.author}')
 
 @client.command()
+async def compareroles(ctx, user1 : discord.Member, user2 : discord.Member):
+	user1Roles = set()
+	user2Roles = set()
+	for x in user1.roles:
+		user1Roles.add(x.name)
+	for x in user2.roles:
+		user2Roles.add(x.name)
+	await ctx.send(f'both members have: {user1Roles & user2Roles}\n\n\n{user1} has: {user1Roles - user2Roles}\n\n\n{user2} has: {user2Roles - user1Roles}')
+
+
+@client.command()
 async def mrolecount(ctx):
 	"""
 	your role count
@@ -472,9 +466,25 @@ async def family(ctx):
 async def mballreply(ctx, *msg):
 	msg = " ".join(msg)
 	logCMD(f"mballreply, {msg}, {ctx.message.author}")
-	with open("mballresonse.txt", "a") as f:
-		f.write(msg + "\n")
-	await ctx.send("message added")
+	for role in ctx.author.roles:
+		if role.name == "mballresponseadder":
+			with open("mballresonse.txt", "a") as f:
+				f.write(msg + "\n")
+			await ctx.send("message added")
+			return
+	await ctx.send("you don't have perms")
+
+@client.command()
+async def count(ctx):
+	await ctx.message.delete()
+	for channel in ctx.guild.channels:
+		if channel.name == "counting":
+			highest = 0
+			async for m in channel.history(limit=5):
+				if int(m.content.strip(".")) > highest:
+					highest = int(m.content.strip("."))
+			await channel.send("." + str(highest + 1) + ".")
+			return
 
 @client.event
 async def on_voice_state_update(member, before, after):
