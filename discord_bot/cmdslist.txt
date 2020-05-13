@@ -1,0 +1,42 @@
+key: () optional option, <> required parameter, [] optional parameter, *: as many as you want
+
+help (--indepth)
+ping (--delete)
+echo <message> (--e/--embed) (--delete)
+8ball [question]
+spam <amount> <message> (--delete) [-random <op1>, <op2>]
+randomface/rface (--delete)
+thetroycommand/ttc (--delete)
+mymoney/mmoney (--delete)
+alphabet/alpha (--delete)
+unicodechar/ucodechar (--delete)
+serveremtoe [amount]
+doesnothing <filename> (--delete)
+spacer <spaces> <message>
+version (--delete)
+upperlower <message>
+longmessage (--delete)
+flush <message> (--delete)
+stop (--delete)
+complexmessage <send> <filename.ext> <contents>
+message <send> <filename>.txt <contents>
+sanity <message> (--delete) (-round)
+coin (-bet h/t) (--delete)
+rand <low> <high> [round] (--even) (--odd) (--delete)
+rolecount [server member] (--delete)
+comproles <server member 1> <server member 2>
+family (--delete)
+mballreply <reply> (only availble to certain people)
+count (--delete)
+choose *<picks> (seperated by commas) (-picks <amount>)
+mballreplylist/8ballreplylist/8breplylist (--delete)
+reverse (--delete)
+piglatin <essagemay> (--kc)
+mostroles (-top <top>)
+imscared
+color [role] [color <r, g, b>] (--delete)
+cc [channel]
+servericon (--delete)
+spamdms <messages> <message> (--delete)
+guessinggame [low] [high] [lives]
+clear <messages> (only available to staff)
