@@ -8,7 +8,7 @@ import wikipedia
 import asyncio
 
 DELETE = "--delete"
-VERSION = "2.0.0"
+VERSION = "2.0.1"
 Stop = False
 
 playingGuessingGame = {}
@@ -120,8 +120,8 @@ async def on_message(msg):
 		elif cmd == "echo":
 			if not TICDelete(content): await msg.delete()
 			else: content = content.replace(DELETE, "")
-			if (E := testInContent(content, "--embed")):
-				c = content.replace(" " + E, "")
+			if testInContent(content, "--embed"):
+				c = content.replace(" --embed", "")
 				embed = discord.Embed(title=splitContent(c, cmd)[1])
 				await msg.channel.send(embed=embed)			
 				return ""
@@ -131,7 +131,7 @@ async def on_message(msg):
 
 		elif cmd in ["magicball", "8ball", "7ball"]:
 			if TICDelete(content): await msg.delete()
-			with open("mballresonse.txt", "r") as f:
+			with open("mballresponse.txt", "r") as f:
 				responses = f.read().split("\n")
 
 			if testInContent(content, "--embed", "--e"):
@@ -155,14 +155,17 @@ async def on_message(msg):
 			if not isInt(messages):
 				await msg.channel.send("not a valid number of messages")			
 				return ""
-			if (lim := int(messages) > random.randint(30000, 100000)):
+			lim = random.randint(30000, 100000)
+			if int(messages) > lim:
 				await msg.channel.send(f"pls consult a psychiatrist that's too many messages\nthe limit is: {lim}")		
 				return ""
 
 			message = c.replace(messages, "")
 
 			if testInContent(c, "-random"):
-				c = c.replace("-random", "").replace(messages, "")
+				c = c.replace("-random", "")
+				c = c[c.find(messages) + len(messages):]
+				print(c)
 				options = c.split(", ")
 				await spam(msg, int(messages), options)
 				await msg.channel.send(random.choice(["done", "Done"]))
@@ -374,7 +377,8 @@ async def on_message(msg):
 			if TICDelete(c): 
 				c = c.replace(" " + DELETE, "")
 				await msg.delete()
-			if (RType := testInContent(c, "-round ", "-r ")):
+			RType = testInContent(c, "-round ", "-r ")
+			if RType:
 				r = int(content.split(RType)[1].split(" ")[0])
 				c = c.split(RType)[0]
 			else: r = 3
@@ -529,7 +533,7 @@ async def on_message(msg):
 		elif cmd == "mballreply":
 			mssg = content.split(f'{cmd} ')[1]
 			if userHasRole(msg, "mballresponseadder"):
-				with open("mballresonse.txt", "a") as f:
+				with open("mballresponse.txt", "a") as f:
 					f.write(mssg + "\n")
 				await msg.channel.send("message added")				
 				return ""
@@ -538,7 +542,7 @@ async def on_message(msg):
 		elif cmd == "8brdel":
 			reply = content.split(f"{cmd} ")[1]
 			if userHasRole(msg, "mballresponseadder"):
-				with open("mballresonse.txt", "r+") as f:
+				with open("mballresponse.txt", "r+") as f:
 					replies = f.read().split("\n")
 					if reply in replies:
 						replies.remove(reply)
@@ -572,7 +576,7 @@ async def on_message(msg):
 		elif cmd in ["mballreplylist", "8ballreplylist", "8breplylist"]:
 			if TICDelete(content): await msg.delete()
 			embed = discord.Embed(title="8ball replies")
-			with open("mballresonse.txt", "r") as f:
+			with open("mballresponse.txt", "r") as f:
 				embed.add_field(name="list", value=f.read())
 			await msg.channel.send(embed=embed)
 
@@ -722,7 +726,8 @@ async def on_message(msg):
 		if c == "giveup":
 			await msg.channel.send(embed=discord.Embed(title=f'{msg.author.display_name} YOU LOSE\nTHE ANSWER WAS {ans}', color=discord.Color.from_rgb(100, 0, 0)))
 			return ""
-		if (L := testInContent(c, "--lives+", "--lives-")): 
+		L = testInContent(c, "--lives+", "--lives-")
+		if L: 
 			lives += 1 if L == "--lives+" else -1
 			c = c.replace(L, "")
 		if c:
