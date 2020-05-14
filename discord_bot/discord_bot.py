@@ -8,7 +8,7 @@ import wikipedia
 import asyncio
 
 DELETE = "--delete"
-VERSION = "2.0.1"
+VERSION = "2.0.3"
 Stop = False
 
 playingGuessingGame = {}
@@ -83,6 +83,10 @@ async def on_message(msg):
 	global Stop, playingGuessingGame
 	content = msg.content
 
+	if msg.author.id == 311621977339068418 and msg.channel.id not in (658815060646297659, 476977066839900165):
+		await msg.delete()
+		print("message deleted")
+
 	if not content:
 		return
 
@@ -118,8 +122,9 @@ async def on_message(msg):
 			await msg.channel.send(f':ping_pong: {round(client.latency * 1000)}ms')	
 
 		elif cmd == "echo":
-			if not TICDelete(content): await msg.delete()
-			else: content = content.replace(DELETE, "")
+			if not TICDelete(content): 
+				await msg.delete()
+				content = content.replace(DELETE, "")
 			if testInContent(content, "--embed"):
 				c = content.replace(" --embed", "")
 				embed = discord.Embed(title=splitContent(c, cmd)[1])
@@ -160,7 +165,7 @@ async def on_message(msg):
 				await msg.channel.send(f"pls consult a psychiatrist that's too many messages\nthe limit is: {lim}")		
 				return ""
 
-			message = c.replace(messages, "")
+			message = c[c.find(messages) + len(messages):]
 
 			if testInContent(c, "-random"):
 				c = c.replace("-random", "")
@@ -702,16 +707,14 @@ async def on_message(msg):
 		#games
 		elif cmd == "guessinggame":
 			c = splitContent(content, cmd)[1]
+			print(c)
+			low, high, lives = 1, 100, 5
 			if len(c) > 0:
 				c = c.split(" ")
 				c.pop(0)
 				low = int(c[0])
 				high = int(c[1])
 				if len(c) >= 3: lives = int(c[2])
-			else:
-				low = 1
-				high = 100
-				lives = 5
 			ans = random.randint(low, high)
 			await msg.channel.send("guess")
 			playingGuessingGame[msg.author] = {"ans": ans, "lives": lives}
@@ -723,8 +726,9 @@ async def on_message(msg):
 		c = msg.content
 		ans = playingGuessingGame[msg.author]["ans"]
 		lives = playingGuessingGame[msg.author]["lives"]
-		if c == "giveup":
+		if c in ["stop", "giveup", "cancel"]:
 			await msg.channel.send(embed=discord.Embed(title=f'{msg.author.display_name} YOU LOSE\nTHE ANSWER WAS {ans}', color=discord.Color.from_rgb(100, 0, 0)))
+			playingGuessingGame.pop(msg.author)
 			return ""
 		L = testInContent(c, "--lives+", "--lives-")
 		if L: 
@@ -749,11 +753,6 @@ async def on_message(msg):
 			await msg.channel.send(send)
 		playingGuessingGame[msg.author]["lives"] = lives
 		await msg.channel.send(f"guess\nyou have {lives} lives left")
-
-
-	if msg.author.id == 311621977339068418 and msg.channel.id not in (658815060646297659, 476977066839900165):
-		await msg.delete()
-		print("message deleted")
 
 @client.event
 async def on_voice_state_update(member, before, after):
