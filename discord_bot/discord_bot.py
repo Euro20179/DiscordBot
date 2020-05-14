@@ -8,7 +8,7 @@ import wikipedia
 import asyncio
 
 DELETE = "--delete"
-VERSION = "2.0.3"
+VERSION = "2.0.4"
 Stop = False
 
 playingGuessingGame = {}
@@ -64,9 +64,12 @@ def isInt(testee):
 		return True
 	except:	return False
 
+def findMember(c, msg):
+	return discord.utils.find(lambda m: str(m.id) == c or str(m.display_name.split("#")[0].lower()) == c.lower(), msg.guild.members)
+
 async def spam(msg, messages, message):
 	global Stop
-	for x in range(int(messages)):
+	for _ in range(int(messages)):
 		if Stop:
 			await msg.channel.send(stop("stopped spam", "Stopped spam"))						
 			return ""
@@ -90,9 +93,8 @@ async def on_message(msg):
 	if not content:
 		return
 
-	if random.random() >= .997:
-		if isBot(msg, client):
-			return
+	if random.random() >= .997: 
+		if isBot(msg, client): return
 		await msg.channel.send(random.choice(["mhm", "interesting"]))
 		
 	if content == f'is <@!{client.user.id}> a bot' or content == f'are you a bot <@!{client.user.id}>':
@@ -146,8 +148,7 @@ async def on_message(msg):
 
 		elif cmd == "spam":
 			if Stop: Stop = False
-			if isBot(msg, client):				
-				return ""
+			if isBot(msg, client): return ""
 
 			c = splitContent(content, f"{cmd} ")[1]
 
@@ -170,7 +171,6 @@ async def on_message(msg):
 			if testInContent(c, "-random"):
 				c = c.replace("-random", "")
 				c = c[c.find(messages) + len(messages):]
-				print(c)
 				options = c.split(", ")
 				await spam(msg, int(messages), options)
 				await msg.channel.send(random.choice(["done", "Done"]))
@@ -226,7 +226,7 @@ async def on_message(msg):
 
 			await msg.channel.send("\n".join(chars))
 	
-		elif cmd == "serveremote":			
+		elif cmd == "serveremote":
 			try:
 				amount = int(content.lower().split(" ")[1])
 			except:
@@ -274,7 +274,6 @@ async def on_message(msg):
 
 		elif cmd == "spacer":
 			c = splitContent(content.lower(), f'{cmd} ')[1]
-			print(c)
 			spaces = c[:c.find(" ")]
 			c = c[c.find(" "):]
 			if not isInt(spaces):
@@ -320,8 +319,7 @@ async def on_message(msg):
 			await msg.channel.send(flushee + " has been flushed down the toilet :toilet::toilet::toilet::toilet::toilet::toilet::toilet::toilet:")
 
 		elif cmd == "stop":
-			if TICDelete(content):
-				msg.message.delete()
+			if TICDelete(content): msg.message.delete()
 			Stop = True
 
 		elif cmd == "complexmessage":
@@ -331,8 +329,7 @@ async def on_message(msg):
 				send = c[0].strip().lower()
 				filename = c[1]
 				mssg = c[2]
-			except:
-				await msg.channel.send("make sure you give and seperate each paremeter with a ','")
+			except: await msg.channel.send("make sure you give and seperate each paremeter with a ','")
 
 			if send == "dm":
 				dm = True
@@ -356,8 +353,7 @@ async def on_message(msg):
 				send = c[0].strip().lower()
 				filename = c[1]
 				mssg = c[2]
-			except:
-				await msg.channel.send("make sure you give and seperate each paremeter with a ','")
+			except: await msg.channel.send("make sure you give and seperate each paremeter with a ','")
 
 			if send == "dm":
 				dm = True
@@ -380,7 +376,7 @@ async def on_message(msg):
 		elif cmd == "sanity":
 			c = content.split(cmd)[1]
 			if TICDelete(c): 
-				c = c.replace(" " + DELETE, "")
+				c = c.replace(f' {DELETE}', "")
 				await msg.delete()
 			RType = testInContent(c, "-round ", "-r ")
 			if RType:
@@ -476,35 +472,27 @@ async def on_message(msg):
 
 		elif cmd == "rolecount":
 			c = str(content.split(cmd)[1].strip())
+			Showroles = False
 			if TICDelete(content):
 				await msg.delete()
-				c = c.replace(" " + DELETE, "")
+				c = c.replace(f' {DELETE}', "")
 			if "--showroles" in c:
 				Showroles = True
 				c = c.replace(" --showroles", "") if c != "--showroles" else ""
-			else:
-				Showroles = False
 			c = c[3:-1] if "<@!" in c else c
-			if not c:
-				c = str(msg.author.id)
-			for m in msg.guild.members:
-				if str(m.id) == c or str(m.display_name.split("#")[0].lower()) == c.lower():
-					if Showroles:
-						roles = []
-					roleCount = -1
-					for x in m.roles:
-						roleCount += 1
-						if Showroles:
-							roles.append(x.mention)
-					if Showroles:
-						embed = discord.Embed(title=f"{m.name}'s Roles")
-						embed.add_field(name="Count", value=roleCount)
-						embed.add_field(name="Roles", value="".join(roles))
-						await msg.channel.send(embed=embed)
-					else:
-						await msg.channel.send(roleCount)
-					
-					return
+			if not c: c = str(msg.author.id)
+			m = findMember(c, msg)
+			if m:
+				roles = [x.mention for x in m.roles]
+				roleCount = len(roles) - 1
+				if Showroles:
+					embed = discord.Embed(title=f"{m.name}'s Roles")
+					embed.add_field(name="Count", value=roleCount)
+					embed.add_field(name="Roles", value="".join(roles))
+					await msg.channel.send(embed=embed)
+				else: await msg.channel.send(roleCount)			
+				return
+			else: await msg.channel.send("User not found")
 
 		elif cmd in ["comproles", "compareroles"]:
 			embed = discord.Embed(name="Role Comparison")
@@ -515,20 +503,16 @@ async def on_message(msg):
 				user1 = str(user1)[3:-1]
 			if "<@!" in user2:
 				user2 = str(user2)[3:-1]
-			for m in msg.guild.members:
-				if str(m.id) == user1 or str(m.display_name.split("#")[0].lower()) == user1.lower():
-					u1name = m
-				if str(m.id) == user2 or str(m.display_name.split("#")[0].lower()) == user2.lower():
-					u2name = m
-			try:
+			u1name = findMember(user1, msg)
+			u2name = findMember(user2, msg)
+			if u1name and u2name:
 				roles1 = {role.mention for role in u1name.roles}
 				roles2 = {role.mention for role in u2name.roles}
 				embed.add_field(name="both members", value="".join(roles1 & roles2))
 				embed.add_field(name=u1name, value="".join(roles1 - roles2), inline=False)
 				embed.add_field(name=u2name, value="".join(roles2 - roles1), inline=False)
 				await msg.channel.send(embed=embed)
-			except:
-				await msg.channel.send("invalid name(s)")
+			else: await msg.channel.send("invalid name(s)")
 
 		elif cmd == "family":
 			if TICDelete(content): await msg.delete()
@@ -578,12 +562,10 @@ async def on_message(msg):
 			choices = [random.choice(options) for _ in range(int(picks))]
 			await msg.channel.send("\n".join(choices))
 
-		elif cmd in ["mballreplylist", "8ballreplylist", "8breplylist"]:
+		elif cmd in ["mballreplylist", "8ballreplylist", "8breplylist", "8brlist"]:
 			if TICDelete(content): await msg.delete()
-			embed = discord.Embed(title="8ball replies")
-			with open("mballresponse.txt", "r") as f:
-				embed.add_field(name="list", value=f.read())
-			await msg.channel.send(embed=embed)
+			with open("mballresponse.txt", "rb") as f:
+				await msg.channel.send(file=discord.File(f, "responses.txt"))
 
 		elif cmd == "reverse":
 			c = content
@@ -680,15 +662,12 @@ async def on_message(msg):
 				color = [x for x in c.split(", ")]
 				await msg.channel.send(embed=discord.Embed(title=", ".join(color), color=discord.Color.from_rgb(int(color[0]), int(color[1]), int(color[2]))))			
 				return ""
-			if not c:
-				c = str(msg.author.top_role)
-
+			if not c: c = str(msg.author.top_role)
 			m = discord.utils.find(lambda r: r.name.lower() == c.lower(), msg.guild.roles)
 			if m:
 				embed = discord.Embed(title=str(m.color), color=m.color)
 				await msg.channel.send(embed=embed)					
-				return	""		
-			await msg.channel.send("not a valid role")
+			else: await msg.channel.send("not a valid role")
 
 		elif cmd == "servericon":
 			if TICDelete(content):	await msg.delete()
@@ -707,7 +686,6 @@ async def on_message(msg):
 		#games
 		elif cmd == "guessinggame":
 			c = splitContent(content, cmd)[1]
-			print(c)
 			low, high, lives = 1, 100, 5
 			if len(c) > 0:
 				c = c.split(" ")
@@ -720,7 +698,7 @@ async def on_message(msg):
 			playingGuessingGame[msg.author] = {"ans": ans, "lives": lives}
 			return ""
 
-		else: await msg.channel.send(f"{content[1:]} is not a {random.choice(['function', 'thing'])}")
+		else: await msg.channel.send(f"that is not a {random.choice(['function', 'thing'])}")
 
 	if playingGuessingGame.get(msg.author):
 		c = msg.content
@@ -745,7 +723,7 @@ async def on_message(msg):
 				playingGuessingGame.pop(msg.author)
 				return ""
 			elif int(content) == ans:
-				await msg.channel.send(embed=discord.Embed(title=f"{msg.author.display_name} YOU WIN", color=discord.Color.from_rgb(0, 255, 0)))
+				await msg.channel.send(embed=discord.Embed(title=f"{msg.author.display_name} YOU WIN\nWITH {lives} LIVES LEFT", color=discord.Color.from_rgb(0, 255, 0)))
 				playingGuessingGame.pop(msg.author)
 				return ""
 
