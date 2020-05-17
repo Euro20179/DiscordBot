@@ -27,7 +27,7 @@ rolecount [server member] (--delete)
 comproles <server member 1> <server member 2>
 family (--delete)
 mballreply <reply> (only availble to certain people)
-count (--delete)
+count (--i) (--b) (--ib)
 choose *<picks> (seperated by commas) (-picks <amount>)
 mballreplylist/8ballreplylist/8breplylist (--delete)
 reverse (--delete)
@@ -39,4 +39,5 @@ cc [channel]
 servericon (--delete)
 spamdms <messages> <message> (--delete)
 guessinggame [low] [high] [lives]
+rps/rockpaperscissors
 clear <messages> (only available to staff)

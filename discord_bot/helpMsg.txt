@@ -104,8 +104,11 @@ a family tree
 mballreply <message>
 adds a reply to 8ball if you have the mballresponseadder role
 
-count (--delete)
+count (--i) (--b) (--ib)
 counts in #counting
+--i makes it italisized
+--b makes it bold
+--ib makes it both
 
 choose <options> (-picks <picks>)
 chooses <picks> amount between <options>
@@ -139,6 +142,9 @@ gives the server's icon
 
 spamdms <messages> <message> (--delete)
 spam's your dms with <messages> amount of <message>
+
+rps/rockpaperscissors
+it's rock paper scissors idk what you want from me
 
 guessinggame [low] [high] [lives]
 it's a guessing game!

@@ -7,8 +7,10 @@ import pyautogui
 import wikipedia
 import asyncio
 
+#make helpmsg a json file with categories and stuff
+
 DELETE = "--delete"
-VERSION = "2.0.4"
+VERSION = "2.1.0"
 Stop = False
 
 playingGuessingGame = {}
@@ -74,7 +76,7 @@ async def spam(msg, messages, message):
 			await msg.channel.send(stop("stopped spam", "Stopped spam"))						
 			return ""
 		await msg.channel.send(random.choice(message))
-		await asyncio.sleep(random.uniform(.2, 1.3))
+		await asyncio.sleep(random.uniform(.7, 1.3))
 
 @client.event
 async def on_ready():
@@ -311,6 +313,18 @@ async def on_message(msg):
 			if TICDelete(content): await msg.delete()
 			await msg.channel.send("```````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````hI```````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````")
 
+		elif cmd in ["rps", "rockpaperscissors"]:
+			ans = random.random()
+			if ans <= .1:
+				ans = "rock"
+			elif ans > .1 <= .5:
+				ans = "scissors"
+			elif ans > .5 <= .99:
+				ans = "paper"
+			else:
+				ans = "YOU LOST LOL"
+			await msg.channel.send(ans)
+
 		elif cmd == "flush":
 			flushee = splitContent(content.lower(), f'{cmd} ')[1]
 			if TICDelete(flushee): 
@@ -545,10 +559,17 @@ async def on_message(msg):
 				await msg.channel.send("you don't have perms")
 
 		elif cmd == "count":
-			if not TICDelete(content): await msg.delete()
+			await msg.delete()
 			channel = discord.utils.get(msg.guild.channels, name="counting")
 			highest = max([x.content.strip(".") async for x in channel.history(limit=5)])
-			await channel.send("." + str(highest + 1) + ".")
+			print(highest)
+			if testInContent(content, "--i"):
+				await channel.send(f'*.{int(highest) + 1}.*')
+			elif testInContent(content, "--b"):
+				await channel.send(f'**.{int(highest) + 1}.**')
+			elif testInContent(content, "--ib"):
+				await channel.send(f'***.{int(highest) + 1}.***')
+			await channel.send(f'.{int(highest) + 1}.')
 
 		elif cmd == "choose":
 			options = splitContent(content, f'{cmd} ')[1].split(", ")
@@ -641,7 +662,7 @@ async def on_message(msg):
 					await msg.author.send("stopped")
 					return ""
 				await msg.author.send(message)
-				await asyncio.sleep(random.uniform(.2, 1.3))		
+				await asyncio.sleep(random.uniform(.7, 1.3))		
 
 		elif cmd == "clear":
 			amnt = int(content.split(PREFIX + cmd)[1].strip())
@@ -651,7 +672,7 @@ async def on_message(msg):
 				await msg.channel.send(f"{msg.author.mention} you can't do that")
 				for x in range(random.randint(10, 15)):
 					await msg.author.send("you cannot do that, don't do it again")
-					await asyncio.sleep(random.uniform(.1, 1.3))
+					await asyncio.sleep(random.uniform(.7, 1.3))
 
 		elif cmd == "color":
 			c = splitContent(content, f'{cmd}')[1].strip()
