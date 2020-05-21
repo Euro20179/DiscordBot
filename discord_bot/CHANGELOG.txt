@@ -1,0 +1,9 @@
+2.1.1
+
+ADDITIONS:
+Update log
+Update log command
+
+CHANGES:
+you can now delete rockpaperscissors command with --
+easter egg changes

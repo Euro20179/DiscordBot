@@ -143,8 +143,11 @@ gives the server's icon
 spamdms <messages> <message> (--delete)
 spam's your dms with <messages> amount of <message>
 
-rps/rockpaperscissors
+rps/rockpaperscissors (--delete)
 it's rock paper scissors idk what you want from me
+
+changes (--delete)
+gives a txt file of the changes
 
 guessinggame [low] [high] [lives]
 it's a guessing game!

@@ -39,5 +39,6 @@ cc [channel]
 servericon (--delete)
 spamdms <messages> <message> (--delete)
 guessinggame [low] [high] [lives]
-rps/rockpaperscissors
+rps/rockpaperscissors (--delete)
+changes (--delete)
 clear <messages> (only available to staff)
