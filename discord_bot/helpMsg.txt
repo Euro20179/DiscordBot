@@ -43,7 +43,7 @@ sends your <message> but with <spaces> imbetween each letter
 version (--delete)
 sends the bot's current version
 
-upperlower <message>
+upperlower/ul <message> (--delete)
 sends <message> but alternating caps
 LiKe ThIs
 

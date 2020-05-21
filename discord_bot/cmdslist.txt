@@ -14,7 +14,7 @@ serveremtoe [amount]
 doesnothing <filename> (--delete)
 spacer <spaces> <message>
 version (--delete)
-upperlower <message>
+upperlower/ul <message> (--delete)
 longmessage (--delete)
 flush <message> (--delete)
 stop (--delete)

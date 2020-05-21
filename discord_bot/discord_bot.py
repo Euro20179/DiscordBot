@@ -10,7 +10,7 @@ import asyncio
 #make helpmsg a json file with categories and stuff
 
 DELETE = "--delete"
-VERSION = "2.1.1.0"
+VERSION = "2.1.2"
 Stop = False
 
 playingGuessingGame = {}
@@ -296,9 +296,12 @@ async def on_message(msg):
 			if TICDelete(content): await msg.delete()
 			await msg.channel.send(VERSION)
 
-		elif cmd == "upperlower":
+		elif cmd in ["upperlower", "ul"]:
 			mssg = " ".join(content.lower().split(PREFIX + f"{cmd} ")[1::])
-			await msg.delete()
+			if not TICDelete(mssg):
+				await msg.delete()
+			else:
+				mssg = mssg.replace(DELETE, "")
 
 			newPhrase = []
 
@@ -630,7 +633,6 @@ async def on_message(msg):
 							break
 					m[n] = word[len(moveToEnd):] + "".join(moveToEnd) + "ay"
 			await msg.channel.send(" ".join(m))
-
 		elif cmd == "mostroles":
 			if Stop: Stop = False
 			c = content.split(PREFIX + cmd)[1]

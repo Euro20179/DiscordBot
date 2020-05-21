@@ -1,6 +1,8 @@
-2.1.1.2
+2.1.2
 
 CHANGES:
+upperlower can now be called with ul
+    --delete as an option for upperlower
 easter egg changes
 
 REMOVED:
