@@ -10,7 +10,7 @@ import asyncio
 #make helpmsg a json file with categories and stuff
 
 DELETE = "--delete"
-VERSION = "2.1.1.1"
+VERSION = "2.1.1.0"
 Stop = False
 
 playingGuessingGame = {}
@@ -36,7 +36,7 @@ def TICDelete(content):
 	return testInContent(content, DELETE)
 
 def getCmd(content):
-	return content.split(" ")[0][1:].lower()
+	return content.split(" ")[0][1:]
 
 def splitContent(content, *split):
 	for x in split:
@@ -95,7 +95,7 @@ async def on_message(msg):
 	if not content:
 		return
 
-	if random.random() >= .997: 
+	if random.random() >= .998: 
 		if isBot(msg, client): return
 		await msg.channel.send(random.choice(["mhm", "interesting", "fascinating"]))
 		

@@ -1,3 +1,12 @@
+2.1.1.2
+
+CHANGES:
+easter egg changes
+
+REMOVED:
+command names being not caps-sensitive
+
+====================================================================
 2.1.1.1
 
 CHANGES:
