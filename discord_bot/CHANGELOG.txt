@@ -1,3 +1,10 @@
+2.2.1 (5/20/2020)
+
+CHANGES:
+*rps now has -time it specifies how much time each player has to respond
+*the default time for rps is now 15
+
+====================================================================
 2.2 (5/20/2020)
 
 ADDITIONS:
