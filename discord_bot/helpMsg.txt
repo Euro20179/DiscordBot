@@ -1,8 +1,12 @@
 prefix: [
 
 when specifying whether to delete
-type "delete=t" or "delete=f" at the
-end of the message
+type --delete at the end of the message
+
+help [command] (--indepth)
+sends a help message
+if command is specified it will show the help for that command only
+if --indepth, it sends this file
 
 ping (--delete)
 
@@ -18,7 +22,7 @@ seperate options for random with a comma and space
 randface (--delete)
 says a random face ex: :)
 
-ttc/thetroycommand (--delete)
+ttc / thetroycommand (--delete)
 says something troy would say
 
 mymoney (--delete)
@@ -43,7 +47,7 @@ sends your <message> but with <spaces> imbetween each letter
 version (--delete)
 sends the bot's current version
 
-upperlower/ul <message> (--delete)
+upperlower / ul <message> (--delete)
 sends <message> but alternating caps
 LiKe ThIs
 
@@ -93,7 +97,7 @@ gives the rolecount of [user]
 (--showroes) shows the roles [user] has
 if left blank it gives your role count
 
-compareroles/comproles <user1> <user2>
+compareroles / comproles <user1> <user2>
 gives roles that both users have
 roles that <user1> has
 and roles that <user2> has
@@ -143,11 +147,12 @@ gives the server's icon
 spamdms <messages> <message> (--delete)
 spam's your dms with <messages> amount of <message>
 
-rps/rockpaperscissors @<member> (-time)
+rps / rockpaperscissors @<member> (-time)
 ping <member> to force them to join a game of rps with you
 dm the bot what your move is, you have 15 seconds by default or (-time) seconds if specified
+your move can be --rand, which will make your answer randomly either rock, paper, or scissors
 
-changes (-chat) (--delete)
+changes (--dms) (--delete)
 dms a txt file of the changes
 if (-chat) it sends the message to chat instead of dms
 
@@ -173,5 +178,8 @@ and you have to say a message and it'll tell you your "reaction time" idk how ac
 
 response <message> (-lim)
 sesarches for <message> in the current channel with a limit of (-lim) (by default 1000) messages if it finds it it says the message after <message>
+
+wiki / wikipedia <query> (--delete)
+searches wikipedia for <query> deletes your message if (--delete)
 
 clear <messages> (only available to staff)

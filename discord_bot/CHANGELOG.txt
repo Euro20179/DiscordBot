@@ -1,3 +1,15 @@
+2.3 (5/21/2020)
+
+ADDITIONS:
+*wiki/wikipedia command, searches wikipedia for a given <search>
+*added help to the indepth help
+*you can now do --rand as an answer for rps, it will generate either rock, paper, or scissors randomly as your answer
+
+CHANGES:
+*you can now specify which command you want help with in the help command
+*changes command now by default sends to chat do --dms to send to dms
+
+====================================================================
 2.2.2 (5/21/2020)
 
 CHANGES:

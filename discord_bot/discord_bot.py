@@ -7,10 +7,8 @@ import pyautogui
 import wikipedia
 import asyncio
 
-#make helpmsg a json file with categories and stuff
-
 DELETE = "--delete"
-VERSION = "2.2.2"
+VERSION = "2.3"
 Stop = False
 
 playingGuessingGame = {}
@@ -76,6 +74,7 @@ async def spam(msg, messages, message):
 	for _ in range(int(messages)):
 		if Stop:
 			await msg.channel.send(stop("stopped spam", "Stopped spam"))						
+
 			return ""
 		await msg.channel.send(random.choice(message))
 		await asyncio.sleep(random.uniform(.6, 1.3))
@@ -99,7 +98,7 @@ async def on_message(msg):
 
 	if random.random() >= .998: 
 		if isBot(msg, client): return
-		await msg.channel.send(random.choice(["mhm", "interesting", "fascinating"]))
+		await msg.channel.send(random.choice(["mhm", "interesting", "fascinating", "very cool"]))
 		
 	if content == f'is <@!{client.user.id}> a bot' or content == f'are you a bot <@!{client.user.id}>':
 		await msg.channel.send("no <:Watching1:697677860336304178>")
@@ -115,7 +114,31 @@ async def on_message(msg):
 			await client.logout()
 
 		if cmd == "help":
-			if TICDelete(content): await msg.delete()
+			command = splitContent(content, " ")[1]
+			if command:
+				with open("helpMsg.txt") as f:
+					c = f.read().split("\n")
+					startLN = 0
+					endLN = 0
+					for n, line in enumerate(c):
+						if startLN:
+							if line == "":
+								endLN = n
+								break
+						if command == line.split(" ")[0]:
+							startLN = n
+					else:
+						await msg.channel.send("command not found")
+						return ""
+					text = ""
+					for n, lineText in enumerate(c):
+						if n + 1 >= startLN and n + 1 <= endLN:
+							text += lineText + "\n"
+						if n+1 >= endLN:
+							break
+					await msg.channel.send(embed=discord.Embed(title=text, color=discord.Colour(0x00ffe2)))
+					return ""
+
 			if testInContent(content, "--indepth"):
 				with open("helpMsg.txt", "rb") as f:
 					await msg.channel.send(file=discord.File(f, "helpMsg.txt"))
@@ -324,6 +347,8 @@ async def on_message(msg):
 			await msg.channel.send("```````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````hI```````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````")
 
 		elif cmd in ["rps", "rockpaperscissors"]:
+			opps = {"rock": "scissors", "paper": "rock", "scissors": "paper"}
+
 			t = 15
 			if testInContent(content, "-time"):
 				t = int(splitContent(content, "-time ")[1].strip())
@@ -332,22 +357,24 @@ async def on_message(msg):
 					return ""
 			user1 = await client.fetch_user(msg.author.id)
 			user2 = await client.fetch_user(splitContent(content, " ")[1][3:-1])
-			if user2 == client.user.id:
+			if user2 == client.user.id or user1 == client.user.id:
 				await msg.channel.send(f"sorry {user1.mention} you have to face a real player")
 			await user1.send(f"say your move here, you have {t} seconds (typos will mess up results)")
 			await user2.send(f"say your move here, you have {t} seconds (typos will mess up results)")
 			await asyncio.sleep(t)
 			async for rep in user1.dm_channel.history(limit=1):
 				resp1 = rep.content.lower()
+				if resp1 == "--rand":
+					resp1 = random.choice(list(opps.keys()))
 			async for rep in user2.dm_channel.history(limit=1):
 				resp2 = rep.content.lower()
+				if resp2 == "--rand":
+					resp2 = random.choice(list(opps.keys()))
 			if resp1 == f"say your move here, you have {t} seconds (typos will mess up results)": 
 				await msg.channel.send(f"{user1.name} didn't respond")
 			if resp2 == f"say your move here, you have {t} seconds (typos will mess up results)":
 				await msg.channel.send(f"{user2.name} didn't respond")
 			await msg.channel.send(f'{user1.mention} said {resp1}\n{user2.mention} said {resp2}')
-
-			opps = {"rock": "scissors", "paper": "rock", "scissors": "paper"}
 
 			if resp1 in opps.keys() and resp2 in opps.keys():
 				if resp1 == resp2:
@@ -751,15 +778,35 @@ async def on_message(msg):
 
 		elif cmd == "changes":
 			if TICDelete(content): await msg.delete()
-			if testInContent("--chat"):
-				with open("CHANGELOG.txt", "rb") as f:
-					await msg.channel.send(file=discord.File(f, "changes.txt"))
-				return
-			else:
+			Latest = False
+			if testInContent(content, "--latest"):
+				Latest = True
+			if Latest:
+				with open("CHANGELOG.txt", "r") as f:
+					c = f.read().split("\n")
+					c = c[:c.index("====================================================================")]
+					if testInContent(content, "--dms"):
+						await msg.author.send("\n".join(c))
+					else:
+						await msg.channel.send("\n".join(c))
+					return " "
+			if testInContent(content, "--dms"):
 				with open("CHANGELOG.txt", "rb") as f:
 					await msg.author.send(file=discord.File(f, "changes.txt"))
 				return
+			else:
+				with open("CHANGELOG.txt", "rb") as f:
+					await msg.channel.send(file=discord.File(f, "changes.txt"))
+				return
 				
+		elif cmd in ["wiki", "wikipedia"]:
+			if TICDelete(content):
+				await msg.delete()
+				content = content.replace(" " + DELETE, "")
+			search = splitContent(content, cmd + " ")[1]
+			search = search.replace(" ", "_")
+			await msg.channel.send(f'https://en.wikipedia.org/wiki/Special:Search?search={search}')
+
 		elif cmd == "commandcount":
 			if TICDelete(content): await msg.delete()
 			with open("cmdslist.txt", "r") as f:

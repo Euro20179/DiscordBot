@@ -1,6 +1,6 @@
 key: () optional option, <> required parameter, [] optional parameter, *: as many as you want
 
-help (--indepth)
+help [command] (--indepth)
 ping (--delete)
 echo <message> (--e/--embed) (--delete)
 8ball [question]
@@ -40,10 +40,11 @@ servericon (--delete)
 spamdms <messages> <message> (--delete)
 guessinggame [low] [high] [lives]
 rps/rockpaperscissors @<member> (-time)
-changes (-chat) (--delete)
+changes (--dms) (--delete)
 timer (--delete)
 commandcount (--delete)
 pincount [channel] (--delete)
 reactiontime
 response <message> (-lim)
+wiki/wikipedia <query> (--delete)
 clear <messages> (only available to staff)
