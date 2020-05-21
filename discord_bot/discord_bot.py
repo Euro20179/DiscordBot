@@ -123,7 +123,10 @@ async def on_message(msg):
 
 		elif cmd == "ping":
 			if TICDelete(content): await msg.delete()
-			await msg.channel.send(f':ping_pong: {round(client.latency * 1000)}ms')	
+			if random.random() >= .97:
+				await msg.channel.send("LOL GET PRANKD THIS DOES NOTHING ROFL XD XD XD XD XD")
+			else:
+				await msg.channel.send(f':ping_pong: {round(client.latency * 1000)}ms')	
 
 		elif cmd == "echo":
 			if not TICDelete(content): 
