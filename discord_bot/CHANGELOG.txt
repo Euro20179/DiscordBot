@@ -1,3 +1,9 @@
+2.1.1.1
+
+CHANGES:
+command names are now not caps-sensitive
+
+====================================================================
 2.1.1
 
 ADDITIONS:
