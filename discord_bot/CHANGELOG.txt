@@ -1,26 +1,42 @@
-2.1.2
-
-CHANGES:
-upperlower can now be called with ul
-    --delete as an option for upperlower
-easter egg changes
-
-REMOVED:
-command names being not caps-sensitive
-
-====================================================================
-2.1.1.1
-
-CHANGES:
-command names are now not caps-sensitive
-
-====================================================================
-2.1.1
+2.2 (5/20/2020)
 
 ADDITIONS:
-Update log
-Update log command
+*timer, starts a timer, say [timer again to end it, (it's always in seconds)
+*commandcount, says the amount of commands
+*pincount, gives the number of pins in the current channel
+*reactiontime, tests your reaction time
+*response, (suggested by wave/penguin)
+*hidden secrets :smirk:
 
 CHANGES:
-you can now delete rockpaperscissors command with --
-easter egg changes
+*changes command can now send to chat instead of dms by adding -chat to the end
+*spam is now up to .1 seconds faster!1!!1!1!1!!!1!!!1
+*rockpaperscissors now is multiplayer, instead of against the bot
+
+====================================================================
+2.1.2 (5/20/2020)
+
+CHANGES:
+*upperlower can now be called with ul
+    --delete as an option for upperlower
+*easter egg changes
+
+REMOVED:
+*command names being not caps-sensitive
+
+====================================================================
+2.1.1.1 (5/20/2020)
+
+CHANGES:
+*command names are now not caps-sensitive
+
+====================================================================
+2.1.1 (5/20/2020)
+
+ADDITIONS:
+*Update log
+*Update log command
+
+CHANGES:
+*you can now delete rockpaperscissors command with --
+*easter egg changes

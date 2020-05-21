@@ -93,7 +93,7 @@ gives the rolecount of [user]
 (--showroes) shows the roles [user] has
 if left blank it gives your role count
 
-compareroles <user1> <user2>
+compareroles/comproles <user1> <user2>
 gives roles that both users have
 roles that <user1> has
 and roles that <user2> has
@@ -143,11 +143,13 @@ gives the server's icon
 spamdms <messages> <message> (--delete)
 spam's your dms with <messages> amount of <message>
 
-rps/rockpaperscissors (--delete)
-it's rock paper scissors idk what you want from me
+rps/rockpaperscissors @<member>
+ping <member> to force them to join a game of rps with you
+dm the bot what your move is, you have 10 seconds
 
-changes (--delete)
-gives a txt file of the changes
+changes (-chat) (--delete)
+dms a txt file of the changes
+if (-chat) it sends the message to chat instead of dms
 
 guessinggame [low] [high] [lives]
 it's a guessing game!
@@ -155,5 +157,21 @@ the computer picks a number from [low] to [high] by default 1-100
 you get [lives] attemps to guess it, by default 5
 you can do --lives+ to add 1 life
 and --lives- to subtract 1 life durring a game
+
+timer (--delete)
+starts a timer that always tells the seconds passed until you do [timer again
+
+commandcount (--delete)
+says the amount of commands
+
+pincount [channel] (--delete)
+gives the number of pins in [channel]
+
+reactiontime
+it'll say GO
+and you have to say a message and it'll tell you your "reaction time" idk how accurate it is
+
+response <message> (-lim)
+sesarches for <message> in the current channel with a limit of (-lim) (by default 1000) messages if it finds it it says the message after <message>
 
 clear <messages> (only available to staff)

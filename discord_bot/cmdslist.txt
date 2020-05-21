@@ -24,7 +24,7 @@ sanity <message> (--delete) (-round)
 coin (-bet h/t) (--delete)
 rand <low> <high> [round] (--even) (--odd) (--delete)
 rolecount [server member] (--delete)
-comproles <server member 1> <server member 2>
+compareroles/comproles <server member 1> <server member 2>
 family (--delete)
 mballreply <reply> (only availble to certain people)
 count (--i) (--b) (--ib)
@@ -39,6 +39,11 @@ cc [channel]
 servericon (--delete)
 spamdms <messages> <message> (--delete)
 guessinggame [low] [high] [lives]
-rps/rockpaperscissors (--delete)
-changes (--delete)
+rps/rockpaperscissors @<member>
+changes (-chat) (--delete)
+timer (--delete)
+commandcount (--delete)
+pincount [channel] (--delete)
+reactiontime
+response <message> (-lim)
 clear <messages> (only available to staff)

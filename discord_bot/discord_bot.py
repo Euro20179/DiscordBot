@@ -10,10 +10,12 @@ import asyncio
 #make helpmsg a json file with categories and stuff
 
 DELETE = "--delete"
-VERSION = "2.1.2"
+VERSION = "2.2"
 Stop = False
 
 playingGuessingGame = {}
+runningTimer = {}
+reacting = {}
 
 PREFIX = "["
 
@@ -76,7 +78,7 @@ async def spam(msg, messages, message):
 			await msg.channel.send(stop("stopped spam", "Stopped spam"))						
 			return ""
 		await msg.channel.send(random.choice(message))
-		await asyncio.sleep(random.uniform(.7, 1.3))
+		await asyncio.sleep(random.uniform(.6, 1.3))
 
 @client.event
 async def on_ready():
@@ -108,7 +110,7 @@ async def on_message(msg):
 
 		cmd = getCmd(content)
 
-		if cmd == "ENDSTOPBREAK" and msg.author.id == 334538784043696130:
+		if cmd == "ENDPLS" and msg.author.id == 334538784043696130:
 			await msg.channel.send("Logging out")
 			await client.logout()
 
@@ -122,8 +124,13 @@ async def on_message(msg):
 					await msg.channel.send(embed=discord.Embed(title="help", description=f.read(), color=discord.Color(0x00ffe2)))
 
 		elif cmd == "ping":
+			if splitContent(content, "ping")[1]:
+				await msg.channel.send("are you trying to ping someone..... don't do that. :/")
+				return ""
 			if TICDelete(content): await msg.delete()
-			if random.random() >= .97:
+			if random.random() >= .99:
+				await msg.channel.send("uh yeah tbh i don't really know what this does, like i have an idea but like idk")
+			elif random.random() >= .97:
 				await msg.channel.send("LOL GET PRANKD THIS DOES NOTHING ROFL XD XD XD XD XD")
 			else:
 				await msg.channel.send(f':ping_pong: {round(client.latency * 1000)}ms')	
@@ -137,7 +144,6 @@ async def on_message(msg):
 				embed = discord.Embed(title=splitContent(c, cmd)[1])
 				await msg.channel.send(embed=embed)			
 				return ""
-			print(content)
 			if random.random() > .99: await msg.author.send("the secret message dm euro for a doubley secret role, if you tell anyone how you got this the role will be taken away\nif you already have the role, you may choose to dm a screenshot of this message to someone, and they have the chance to get the role")
 			await msg.channel.send(splitContent(content, cmd)[1])
 
@@ -286,9 +292,7 @@ async def on_message(msg):
 				return
 			await msg.delete()
 			spaces = int(spaces)
-			add = ""
-			for x in range(spaces):
-				add += " "
+			add = " " * spaces
 			word = add.join(c)
 			await msg.channel.send(word)
 
@@ -320,17 +324,28 @@ async def on_message(msg):
 			await msg.channel.send("```````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````hI```````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````")
 
 		elif cmd in ["rps", "rockpaperscissors"]:
-			if TICDelete(content): await msg.delete()
-			ans = random.random()
-			if ans <= .1:
-				ans = "rock"
-			elif ans > .1 <= .5:
-				ans = "scissors"
-			elif ans > .5 <= .99:
-				ans = "paper"
+			user1 = await client.fetch_user(msg.author.id)
+			user2 = await client.fetch_user(splitContent(content, " ")[1][3:-1])
+			await user1.send("say your move here, you have 10 seconds (typos will mess up results)")
+			await user2.send("say your move here, you have 10 seconds (typos will mess up results)")
+			await asyncio.sleep(10)
+			async for rep in user1.dm_channel.history(limit=1):
+				resp1 = rep.content.lower()
+			async for rep in user2.dm_channel.history(limit=1):
+				resp2 = rep.content.lower()
+			await msg.channel.send(f'{user1.mention} said {resp1}\n{user2.mention} said {resp2}')
+
+			opps = {"rock": "scissors", "paper": "rock", "scissors": "paper"}
+
+			if resp1 in opps.keys() and resp2 in opps.keys():
+				if resp1 == resp2:
+					await msg.channel.send("ITS A DRAW")
+				elif opps[resp1] == resp2:
+					await msg.channel.send(f'{user1.mention} WINS')
+				else:
+					await msg.channel.send(f'{user2.mention} WINS')
 			else:
-				ans = "YOU LOST LOL"
-			await msg.channel.send(ans)
+				await msg.channel.send("either someone spelled something wrong, or someone isn't playing by the rules")
 
 		elif cmd == "flush":
 			flushee = splitContent(content.lower(), f'{cmd} ')[1]
@@ -424,7 +439,6 @@ async def on_message(msg):
 			res = "heads" if random.random() >= .5 else "tails"
 			if testInContent(content, "-bet"):
 				bet = splitContent(content, "-bet")[1].strip()
-				print(res, bet)
 				if bet == "t": bet = "tails"
 				if bet == "h": bet = "heads"
 				if res == bet:
@@ -547,7 +561,8 @@ async def on_message(msg):
 					f.write(mssg + "\n")
 				await msg.channel.send("message added")				
 				return ""
-			await msg.send("you don't have perms")
+			else:
+				await msg.send("you don't have perms")
 
 		elif cmd == "8brdel":
 			reply = content.split(f"{cmd} ")[1]
@@ -569,7 +584,6 @@ async def on_message(msg):
 			await msg.delete()
 			channel = discord.utils.get(msg.guild.channels, name="counting")
 			highest = max([x.content.strip(".") async for x in channel.history(limit=5)])
-			print(highest)
 			if testInContent(content, "--i"):
 				await channel.send(f'*.{int(highest) + 1}.*')
 				return ""
@@ -596,7 +610,7 @@ async def on_message(msg):
 		elif cmd in ["mballreplylist", "8ballreplylist", "8breplylist", "8brlist"]:
 			if TICDelete(content): await msg.delete()
 			with open("mballresponse.txt", "rb") as f:
-				await msg.channel.send(file=discord.File(f, "responses.txt"))
+				await msg.channel.send(file=discord.File(f, "mballresponse.txt"))
 
 		elif cmd == "reverse":
 			c = content
@@ -671,7 +685,7 @@ async def on_message(msg):
 					await msg.author.send("stopped")
 					return ""
 				await msg.author.send(message)
-				await asyncio.sleep(random.uniform(.7, 1.3))		
+				await asyncio.sleep(random.uniform(.6, 1.3))		
 
 		elif cmd == "clear":
 			amnt = int(content.split(PREFIX + cmd)[1].strip())
@@ -681,7 +695,7 @@ async def on_message(msg):
 				await msg.channel.send(f"{msg.author.mention} you can't do that")
 				for x in range(random.randint(10, 15)):
 					await msg.author.send("you cannot do that, don't do it again")
-					await asyncio.sleep(random.uniform(.7, 1.3))
+					await asyncio.sleep(random.uniform(.6, 1.3))
 
 		elif cmd == "color":
 			c = splitContent(content, f'{cmd}')[1].strip()
@@ -713,12 +727,65 @@ async def on_message(msg):
 				return ""
 			await msg.channel.send(msg.channel.created_at)
 
+		elif cmd == "pincount":
+			if TICDelete(content): await msg.delete()
+			channel = msg.channel
+			if splitContent(content, cmd)[1]:
+				c = content.split(cmd)[1].strip()[2:-1]
+				channel = discord.utils.get(msg.guild.channels, id=int(c))
+			pins = await channel.pins()
+			await msg.channel.send(len(pins))
+			return ""
+
 		elif cmd == "changes":
 			if TICDelete(content): await msg.delete()
-			with open("CHANGELOG.txt", "rb") as f:
-				await msg.author.send(file=discord.File(f, "changes.txt"))
+			if testInContent("--chat"):
+				with open("CHANGELOG.txt", "rb") as f:
+					await msg.channel.send(file=discord.File(f, "changes.txt"))
+				return
+			else:
+				with open("CHANGELOG.txt", "rb") as f:
+					await msg.author.send(file=discord.File(f, "changes.txt"))
+				return
+				
+		elif cmd == "commandcount":
+			if TICDelete(content): await msg.delete()
+			with open("cmdslist.txt", "r") as f:
+				cmds = len(f.read().split("\n")) - 2
+			await msg.channel.send(cmds)
 
-		#games
+		elif cmd == "response":
+			if isBot(msg, client):
+				return ""
+			limit = 1000
+			mssg = splitContent(content, "response ")[1]
+			if testInContent(mssg, "-lim"):
+				limit = int(splitContent(mssg, "-lim ")[1].strip())
+				if limit > 100000:
+					await msg.channel.send("you cannot go above 100k")
+				mssg = splitContent(mssg, " -lim")[0]
+			async with msg.channel.typing():
+				hist = [m.content async for m in msg.channel.history(limit=limit)]
+				for n, message in enumerate(hist):
+					if message == mssg:
+						await msg.channel.send(f'{msg.author.mention} I HAVE FOUND A RESPONSE\n{hist[n - 1]}')
+						break
+				else:
+					await msg.channel.send(f'did not find {mssg} in the past {limit} messages in this channel')
+
+
+		#ongoing events
+		elif cmd == "timer":
+			if TICDelete(content):
+				await msg.delete()
+			if not runningTimer.get(msg.author):
+				runningTimer[msg.author] = time.time()
+				await msg.channel.send(f'{msg.author.mention} timer started')
+				return
+			if runningTimer.get(msg.author):
+				await msg.channel.send(embed=discord.Embed(title=str(round(time.time() - runningTimer[msg.author], 2)) + "seconds"))
+				return
+
 		elif cmd == "guessinggame":
 			c = splitContent(content, cmd)[1]
 			low, high, lives = 1, 100, 5
@@ -733,7 +800,21 @@ async def on_message(msg):
 			playingGuessingGame[msg.author] = {"ans": ans, "lives": lives}
 			return ""
 
+		elif cmd == "reactiontime":
+			await msg.channel.send("i will say GO and you have to send something as fast as possible (probably prepare the message before hand)")
+			reacting[msg.author] = 0
+			await asyncio.sleep(random.uniform(1, 6))
+			reacting[msg.author] = time.time()
+			await msg.channel.send("GO")
+			return
+
+
 		else: await msg.channel.send(f"that is not a {random.choice(['function', 'thing'])}")
+
+	if reacting.get(msg.author):
+		await msg.channel.send(f'{msg.author.mention} your reacion time is {time.time() - reacting[msg.author] - client.latency} milliseconds')
+		del reacting[msg.author]
+
 
 	if playingGuessingGame.get(msg.author):
 		c = msg.content
