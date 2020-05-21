@@ -10,7 +10,7 @@ import asyncio
 #make helpmsg a json file with categories and stuff
 
 DELETE = "--delete"
-VERSION = "2.2.1"
+VERSION = "2.2.2"
 Stop = False
 
 playingGuessingGame = {}
@@ -124,7 +124,7 @@ async def on_message(msg):
 					await msg.channel.send(embed=discord.Embed(title="help", description=f.read(), color=discord.Color(0x00ffe2)))
 
 		elif cmd == "ping":
-			if splitContent(content, "ping")[1]:
+			if "<@" in content:
 				await msg.channel.send("are you trying to ping someone..... don't do that. :/")
 				return ""
 			if TICDelete(content): await msg.delete()
@@ -172,7 +172,7 @@ async def on_message(msg):
 			if not isInt(messages):
 				await msg.channel.send("not a valid number of messages")			
 				return ""
-			lim = random.randint(30000, 100000)
+			lim = random.randint(40000, 110000)
 			if int(messages) > lim:
 				await msg.channel.send(f"pls consult a psychiatrist that's too many messages\nthe limit is: {lim}")		
 				return ""
@@ -228,7 +228,7 @@ async def on_message(msg):
 			if TICDelete(content): await msg.delete()
 
 			chars = []
-			for x in range(amount):
+			for _ in range(amount):
 				char = random.randint(0, 185000)
 				if "--value" in content:
 					chars.append(f'{chr(char)} value: ({char})')
@@ -324,20 +324,27 @@ async def on_message(msg):
 			await msg.channel.send("```````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````hI```````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````")
 
 		elif cmd in ["rps", "rockpaperscissors"]:
-			time = 15
+			t = 15
 			if testInContent(content, "-time"):
-				time = int(splitContent(content, "-time ")[1].strip())
+				t = int(splitContent(content, "-time ")[1].strip())
+				if t >= 120:
+					await msg.channel.send("sorry must be shorter than 2 minutes or 120 seconds")
+					return ""
 			user1 = await client.fetch_user(msg.author.id)
 			user2 = await client.fetch_user(splitContent(content, " ")[1][3:-1])
 			if user2 == client.user.id:
 				await msg.channel.send(f"sorry {user1.mention} you have to face a real player")
-			await user1.send(f"say your move here, you have {time} seconds (typos will mess up results)")
-			await user2.send(f"say your move here, you have {time} seconds (typos will mess up results)")
-			await asyncio.sleep(time)
+			await user1.send(f"say your move here, you have {t} seconds (typos will mess up results)")
+			await user2.send(f"say your move here, you have {t} seconds (typos will mess up results)")
+			await asyncio.sleep(t)
 			async for rep in user1.dm_channel.history(limit=1):
 				resp1 = rep.content.lower()
 			async for rep in user2.dm_channel.history(limit=1):
 				resp2 = rep.content.lower()
+			if resp1 == f"say your move here, you have {t} seconds (typos will mess up results)": 
+				await msg.channel.send(f"{user1.name} didn't respond")
+			if resp2 == f"say your move here, you have {t} seconds (typos will mess up results)":
+				await msg.channel.send(f"{user2.name} didn't respond")
 			await msg.channel.send(f'{user1.mention} said {resp1}\n{user2.mention} said {resp2}')
 
 			opps = {"rock": "scissors", "paper": "rock", "scissors": "paper"}
@@ -724,7 +731,7 @@ async def on_message(msg):
 			embed.set_image(url=msg.guild.icon_url)
 			await msg.channel.send(embed=embed)
 
-		elif cmd in ["cc"]:
+		elif cmd == "cc":
 			if splitContent(content, cmd)[1]:
 				c = content.split(cmd)[1].strip()[2:-1]
 				channel = discord.utils.get(msg.guild.channels, id=int(c))
@@ -808,7 +815,7 @@ async def on_message(msg):
 		elif cmd == "reactiontime":
 			await msg.channel.send("i will say GO and you have to send something as fast as possible (probably prepare the message before hand)")
 			reacting[msg.author] = 0
-			await asyncio.sleep(random.uniform(1, 6))
+			await asyncio.sleep(random.uniform(1.5, 6))
 			reacting[msg.author] = time.time()
 			await msg.channel.send("GO")
 			return

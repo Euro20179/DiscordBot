@@ -143,9 +143,9 @@ gives the server's icon
 spamdms <messages> <message> (--delete)
 spam's your dms with <messages> amount of <message>
 
-rps/rockpaperscissors @<member>
+rps/rockpaperscissors @<member> (-time)
 ping <member> to force them to join a game of rps with you
-dm the bot what your move is, you have 10 seconds
+dm the bot what your move is, you have 15 seconds by default or (-time) seconds if specified
 
 changes (-chat) (--delete)
 dms a txt file of the changes

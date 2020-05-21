@@ -39,7 +39,7 @@ cc [channel]
 servericon (--delete)
 spamdms <messages> <message> (--delete)
 guessinggame [low] [high] [lives]
-rps/rockpaperscissors @<member>
+rps/rockpaperscissors @<member> (-time)
 changes (-chat) (--delete)
 timer (--delete)
 commandcount (--delete)
