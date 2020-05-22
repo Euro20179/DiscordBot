@@ -8,7 +8,7 @@ import wikipedia
 import asyncio
 
 DELETE = "--delete"
-VERSION = "2.4.1.1"
+VERSION = "2.4.2"
 Stop = False
 
 playingGuessingGame = {}
@@ -815,6 +815,9 @@ async def on_message(msg):
 		elif cmd == "changes":
 			if TICDelete(content): await msg.delete()
 			Latest = False
+			ver = None
+			if testInContent(content, "-v"):
+				ver = splitContent(content, "-v ")[1].strip()
 			if testInContent(content, "--latest"):
 				Latest = True
 			if Latest:
@@ -827,10 +830,29 @@ async def on_message(msg):
 						await msg.channel.send("\n".join(c))
 					return ""
 
+			if ver:
+				with open("CHANGELOG.txt", "r") as f:
+					c = f.read().split("\n")
+					for lineN, line in enumerate(c):
+						if ver == line.split(" ")[0]:
+							c = c[lineN:c.index("====================================================================", lineN)]
+							break
+					else:
+						await msg.channel.send("did not find version")
+						return ""
+			else: c = None
+
 			with open("CHANGELOG.txt", "rb") as f:
 				if testInContent(content, "--dms"):
-					await msg.author.send(file=discord.File(f, "changes.txt"))
+					if c:
+						await msg.author.send("\n".join(c))
+						return ""
+					else:
+						await msg.author.send(file=discord.File(f, "changes.txt"))
 				else:
+					if c:
+						await msg.channel.send("\n".join(c))
+						return ""
 					await msg.channel.send(file=discord.File(f, "changes.txt"))
 			return
 				

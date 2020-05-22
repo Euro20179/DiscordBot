@@ -40,7 +40,7 @@ servericon (--delete)
 spamdms <messages> <message> (--delete)
 guessinggame [low] [high] [lives]
 rps/rockpaperscissors @<member> (-time)
-changes (--dms) (--delete)
+changes (--dms) (--delete) (-v)
 timer (--delete)
 commandcount (--delete)
 pincount [channel] (--delete)

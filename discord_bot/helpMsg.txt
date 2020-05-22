@@ -154,9 +154,11 @@ ping <member> to force them to join a game of rps with you
 dm the bot what your move is, you have 15 seconds by default or (-time) seconds if specified
 your move can be --rand, which will make your answer randomly either rock, paper, or scissors
 
-changes (--dms) (--delete)
-dms a txt file of the changes
-if (-chat) it sends the message to chat instead of dms
+changes (--dms) (--delete) (-v <version>)
+sends a txt file of the changes
+if (--dms) it'll send to dms instead of chat
+if -v it'll say the changes for that version
+
 
 guessinggame [low] [high] [lives]
 it's a guessing game!

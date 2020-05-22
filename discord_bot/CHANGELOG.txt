@@ -1,3 +1,9 @@
+2.4.2 (5/22/2020)
+
+ADDITIONS:
+*you can now specify which version you want to see changes with by doing -v (version number) in the changes command
+
+====================================================================
 2.4.1.1 (5/22/2020)
 
 FIXES:
@@ -14,9 +20,9 @@ including secretcommand(s) ;)
 
 ADDITIONS:
 *hex converts a number(s) into it's hexidecimal form
-    **if more than 1 number seperate with , and space
+    *if more than 1 number seperate with , and space
 *bin converts a number(s) into it's binary form
-    **same as hex
+    *same as hex
 *if the response command finds more than one response, it'll pick randomly
 *you can now specify what you want to seperate each character with in spacer by doing -sep (char)
 *you can say r, p, or s in addition to rock, paper, or scissors in rockpaperscissors
