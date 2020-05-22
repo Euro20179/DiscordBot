@@ -8,7 +8,7 @@ import wikipedia
 import asyncio
 
 DELETE = "--delete"
-VERSION = "2.4"
+VERSION = "2.4.1.1"
 Stop = False
 
 playingGuessingGame = {}
@@ -117,13 +117,13 @@ async def on_message(msg):
 		elif cmd == "ENDPLS":
 			await msg.channel.send("smh you can't shut me down i have p o w e r over you")
 
-		if cmd == "secretcommand":
+		elif cmd == "secretcommand":
 			await msg.channel.send("you have found a SECRET COMMAND do secretcommand + 10 for another command (10 doesn't equal 10 ;) )")
 
-		if cmd == "secretcommand2":
+		elif cmd == "secretcommand2":
 			await msg.channel.send("the final clue... save - e + 3")
 		
-		if cmd == "sav3":
+		elif cmd == "sav3":
 			await msg.channel.send("i have been lost for 15 years")
 			await asyncio.sleep(1.2)
 			await msg.channel.send("and now finally...")
@@ -133,10 +133,10 @@ async def on_message(msg):
 			await msg.channel.send("congratulations to anyone whitnessing this event, you earn a secret role a very epic secret role :) as my gift for saving me")
 			await msg.channel.send("<!@334538784043696130> give them the role smh")
 
-		if cmd == "upupdowndownleftrightleftright":
+		elif cmd == "upupdowndownleftrightleftright":
 			await msg.channel.send("what do you think this is some arcade machine with secret codes, HA your wrong")
 
-		if cmd == "help":
+		elif cmd == "help":
 			command = None
 			if splitContent(content, " ")[1] and "--indepth" not in content:
 				command = splitContent(content, " ")[1]
