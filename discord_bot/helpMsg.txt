@@ -24,6 +24,7 @@ says a random face ex: :)
 
 ttc / thetroycommand (--delete)
 says something troy would say
+PS: Troy says hi
 
 mymoney (--delete)
 tells you your money
@@ -41,8 +42,9 @@ doesnothing <filename> (--delete)
 produces a filename called <filename> with
 every user and their roles in it
 
-spacer <spaces> <message>
+spacer <spaces> <message> (-sep)
 sends your <message> but with <spaces> imbetween each letter
+if -sep is specified it will seperate with the value instead of a space
 
 version (--delete)
 sends the bot's current version
@@ -114,7 +116,7 @@ counts in #counting
 --b makes it bold
 --ib makes it both
 
-choose <options> (-picks <picks>)
+choose *<options> (-picks <picks>)
 chooses <picks> amount between <options>
 seperate each option with a comma
 
@@ -181,5 +183,13 @@ sesarches for <message> in the current channel with a limit of (-lim) (by defaul
 
 wiki / wikipedia <query> (--delete)
 searches wikipedia for <query> deletes your message if (--delete)
+
+hex *<num>
+gives the hexidecimal form of a number
+make sure to seperate each number with a comma and space
+
+bin *<num>
+gives the binary form of a number
+make sure to seperate each number with a comma and space
 
 clear <messages> (only available to staff)

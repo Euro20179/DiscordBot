@@ -8,7 +8,7 @@ import wikipedia
 import asyncio
 
 DELETE = "--delete"
-VERSION = "2.3"
+VERSION = "2.4"
 Stop = False
 
 playingGuessingGame = {}
@@ -55,9 +55,8 @@ def stop(*args, **kwargs):
 	if args: return random.choice(args)
 
 def userHasRole(msg, *role):
-	for x in role:
-		if discord.utils.get(msg.author.roles, name=x):
-			return True
+	if discord.utils.find(lambda r: r in role, msg.author.roles):
+		return True
 	return False
 
 def isInt(testee):
@@ -114,17 +113,18 @@ async def on_message(msg):
 			await client.logout()
 
 		if cmd == "help":
-			command = splitContent(content, " ")[1]
+			command = None
+			if splitContent(content, " ")[1] and "--indepth" not in content:
+				command = splitContent(content, " ")[1]
 			if command:
 				with open("helpMsg.txt") as f:
 					c = f.read().split("\n")
 					startLN = 0
 					endLN = 0
 					for n, line in enumerate(c):
-						if startLN:
-							if line == "":
-								endLN = n
-								break
+						if startLN and line == "":
+							endLN = n
+							break
 						if command == line.split(" ")[0]:
 							startLN = n
 					else:
@@ -307,15 +307,19 @@ async def on_message(msg):
 				await msg.channel.send(file=discord.File(f, f'{filename}.txt'))
 
 		elif cmd == "spacer":
+			sep = " "
 			c = splitContent(content.lower(), f'{cmd} ')[1]
 			spaces = c[:c.find(" ")]
 			c = c[c.find(" "):]
+			if "-sep" in c:
+				sep = splitContent(c, "-sep ")[1]
+				c = splitContent(c, " -sep")[0]
 			if not isInt(spaces):
 				await msg.channel.send(f"{spaces} is not a valid number of spaces")
 				return
 			await msg.delete()
 			spaces = int(spaces)
-			add = " " * spaces
+			add = sep * spaces
 			word = add.join(c)
 			await msg.channel.send(word)
 
@@ -347,7 +351,7 @@ async def on_message(msg):
 			await msg.channel.send("```````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````hI```````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````")
 
 		elif cmd in ["rps", "rockpaperscissors"]:
-			opps = {"rock": "scissors", "paper": "rock", "scissors": "paper"}
+			opps = {"rock": "scissors", "paper": "rock", "scissors": "paper", "r": "scissors", "p": "rock", "s": "paper"}
 
 			t = 15
 			if testInContent(content, "-time"):
@@ -601,7 +605,7 @@ async def on_message(msg):
 				await msg.channel.send("message added")				
 				return ""
 			else:
-				await msg.send("you don't have perms")
+				await msg.channel.send("you don't have perms")
 
 		elif cmd == "8brdel":
 			reply = content.split(f"{cmd} ")[1]
@@ -789,15 +793,14 @@ async def on_message(msg):
 						await msg.author.send("\n".join(c))
 					else:
 						await msg.channel.send("\n".join(c))
-					return " "
-			if testInContent(content, "--dms"):
-				with open("CHANGELOG.txt", "rb") as f:
+					return ""
+
+			with open("CHANGELOG.txt", "rb") as f:
+				if testInContent(content, "--dms"):
 					await msg.author.send(file=discord.File(f, "changes.txt"))
-				return
-			else:
-				with open("CHANGELOG.txt", "rb") as f:
+				else:
 					await msg.channel.send(file=discord.File(f, "changes.txt"))
-				return
+			return
 				
 		elif cmd in ["wiki", "wikipedia"]:
 			if TICDelete(content):
@@ -813,6 +816,26 @@ async def on_message(msg):
 				cmds = len(f.read().split("\n")) - 2
 			await msg.channel.send(cmds)
 
+		elif cmd == "hex":
+			content = splitContent(content, cmd + " ")[1]
+			if ", " in content:
+				num = content.split(", ")
+				num = list(map(lambda n: int(n), num))
+			else:
+				num = [int(content)]
+			hexes = [str(hex(n)).replace("0x", "") for n in num]
+			await msg.channel.send(", ".join(hexes))
+
+		elif cmd == "bin":
+			content = splitContent(content, cmd + " ")[1]
+			if ", " in content:
+				num = content.split(", ")
+				num = list(map(lambda n: int(n), num))
+			else:
+				num = [int(content)]
+			hexes = [str(bin(n)).replace("0b", "") for n in num]
+			await msg.channel.send(", ".join(hexes))
+
 		elif cmd == "response":
 			if isBot(msg, client):
 				return ""
@@ -825,10 +848,13 @@ async def on_message(msg):
 				mssg = splitContent(mssg, " -lim")[0]
 			async with msg.channel.typing():
 				hist = [m.content async for m in msg.channel.history(limit=limit)]
+				responses = []
 				for n, message in enumerate(hist):
 					if message == mssg:
-						await msg.channel.send(f'{msg.author.mention} I HAVE FOUND A RESPONSE\n{hist[n - 1]}')
-						break
+						responses.append(hist[n - 1])
+				if responses:
+					await msg.channel.send(f'{msg.author.mention} I HAVE FOUND A RESPONSE\n{random.choice(responses)}')
+					return
 				else:
 					await msg.channel.send(f'did not find {mssg} in the past {limit} messages in this channel')
 
