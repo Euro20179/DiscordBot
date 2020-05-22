@@ -88,6 +88,9 @@ async def on_message(msg):
 	global Stop, playingGuessingGame
 	content = msg.content
 
+	if msg.author.id == 469703194751008768 and content in ["people know me as weird gif girl", "im known as weird gif girl", "ppl call me weird gif girl", "ppl know me as weird gif girl"]:
+		msg.channel.send("yes :)")
+
 	if msg.author.id == 311621977339068418 and msg.channel.id not in (658815060646297659, 476977066839900165):
 		await msg.delete()
 		print("message deleted")
@@ -111,6 +114,27 @@ async def on_message(msg):
 		if cmd == "ENDPLS" and msg.author.id == 334538784043696130:
 			await msg.channel.send("Logging out")
 			await client.logout()
+		elif cmd == "ENDPLS":
+			await msg.channel.send("smh you can't shut me down i have p o w e r over you")
+
+		if cmd == "secretcommand":
+			await msg.channel.send("you have found a SECRET COMMAND do secretcommand + 10 for another command (10 doesn't equal 10 ;) )")
+
+		if cmd == "secretcommand2":
+			await msg.channel.send("the final clue... save - e + 3")
+		
+		if cmd == "sav3":
+			await msg.channel.send("i have been lost for 15 years")
+			await asyncio.sleep(1.2)
+			await msg.channel.send("and now finally...")
+			await asyncio.sleep(.6)
+			await msg.channel.send("you have followed the secret clues and awoken me")
+			await asyncio.sleep(1.5)
+			await msg.channel.send("congratulations to anyone whitnessing this event, you earn a secret role a very epic secret role :) as my gift for saving me")
+			await msg.channel.send("<!@334538784043696130> give them the role smh")
+
+		if cmd == "upupdowndownleftrightleftright":
+			await msg.channel.send("what do you think this is some arcade machine with secret codes, HA your wrong")
 
 		if cmd == "help":
 			command = None
@@ -151,6 +175,14 @@ async def on_message(msg):
 				await msg.channel.send("are you trying to ping someone..... don't do that. :/")
 				return ""
 			if TICDelete(content): await msg.delete()
+
+			if random.random() >= .95:
+				await msg.author.send("upupdowndownleftrightleftright")
+				await asyncio.sleep(5)
+				await msg.author.send("OH SHOOT I WASNT SUPPOSED TO SAY TH-")
+				await asyncio.sleep(1)
+				await msg.author.send("goodbye")
+
 			if random.random() >= .99:
 				await msg.channel.send("uh yeah tbh i don't really know what this does, like i have an idea but like idk")
 			elif random.random() >= .97:
