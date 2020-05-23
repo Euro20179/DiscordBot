@@ -29,10 +29,7 @@ client = commands.Bot(command_prefix=PREFIX)
 
 BASICINFO = {"level": 1, "xp": 0, "required": 100, "lastTalked": 0}
 
-levelLow = 20
-levelHigh = 60
-
-equation = "level ** 2 * 100"
+equation = "level * 1000"
 
 def isBot(msg, client):
 	if msg.author == client.user: return True
@@ -48,14 +45,15 @@ async def giveXP(msg):
 		if data.get(str(msg.author.id)):
 			userInfo = data[str(msg.author.id)]
 			lastTalked = int(userInfo["lastTalked"])
-			if time.time() - lastTalked >= 1:
+			if time.time() - lastTalked >= 60:
 				level = userInfo["level"]
 				xp = userInfo["xp"]
-				xp += random.randint(levelLow, levelHigh)
+				xp += random.randint(1, 100)
 				lastTalked = time.time()
 				required = userInfo["required"]
 				if xp >= required:
 					level += 1
+					xp //= 2
 					await msg.channel.send(f'{msg.author.mention} you have leveled up to level {level}, very cool')
 				required = eval(equation)
 				userInfo = {"level": level, "xp": xp, "required": required, "lastTalked": lastTalked}
@@ -73,8 +71,10 @@ async def reduceXP(msg):
 		data = json.load(f)
 		for user in data.keys():
 			if time.time() - data[user]["lastTalked"] >= 2629800:
-				data[user]["level"] -= 1
-				data[user]["lastTalked"] = time.time()
+				if data[user]["level"] >= 0:
+					data[user]["level"] -= 1
+					data[user]["xp"] -= 1000
+					data[user]["lastTalked"] = time.time()
 		f.seek(0)
 		f.truncate(0)
 		json.dump(data, f)
@@ -271,7 +271,7 @@ async def on_message(msg):
 				for n, user in enumerate(users):
 					if n > 9:
 						break
-					embed.add_field(name=str(n + 1) + user[0], value=user[1], inline=False)
+					embed.add_field(name=str(n + 1) + " " + user[0], value=user[1], inline=False)
 
 				await msg.channel.send(embed=embed)
 

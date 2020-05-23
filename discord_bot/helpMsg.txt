@@ -11,8 +11,11 @@ if --indepth, it sends this file
 level [user]
 sends your level, xp, and required until the next level
 if [user] is provided it'll send that user's stats
-you get 30-60 xp every minute if you talk
+you get 1-100 xp every minute if you talk
 if you're innactive for a month, you'll lose a level, once, per, month
+
+top
+gives the top 10 on the leveling leaderboard
 
 ping (--delete)
 
@@ -203,11 +206,12 @@ make sure to seperate each number with a comma and space
 clear <messages> (only available to staff)
 
 randominfo
-lines of code: 1088 (version: 2.5.1)
+lines of code: 1096 (version: 2.5.1)
 creation date: November 6, 2019
 
 levelupequation
-(currentlevel ^ 1.5) * 100
+level * 1000
+when leveled up you lose half your xp
 
 lol
 XD
