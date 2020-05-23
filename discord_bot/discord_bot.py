@@ -9,9 +9,10 @@ import asyncio
 import json
 
 #TODO: convert every command into a funcion, and try to make it so that if you do [spam [piglatin hi it would do the piglatin first then spam the result of piglatin
+#^ maybe eventually
 
 DELETE = "--delete"
-VERSION = "2.5"
+VERSION = "2.5.0.1"
 Stop = False
 
 playingGuessingGame = {}
@@ -40,7 +41,7 @@ def giveXP(msg):
 				lastTalked = time.time()
 				if xp >= required:
 					level += 1
-					msg.channel.send(f'{msg.author.mention} you have leveled up, very cool')
+					await msg.channel.send(f'{msg.author.mention} you have leveled up, very cool')
 				userInfo = {"level": level, "xp": xp, "required": required, "lastTalked": lastTalked}
 			data[str(msg.author.id)] = userInfo
 		else:
