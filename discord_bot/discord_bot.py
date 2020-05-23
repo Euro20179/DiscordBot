@@ -14,7 +14,7 @@ import json
 #TODO add a leaderboard for levels
 
 DELETE = "--delete"
-VERSION = "2.5.0.6"
+VERSION = "2.5.0.7"
 Stop = False
 
 playingGuessingGame = {}
@@ -44,17 +44,30 @@ async def giveXP(msg):
 			if time.time() - lastTalked >= 60:
 				level = userInfo["level"]
 				xp = userInfo["xp"]
-				xp += random.randint(15, 50)
+				xp += random.randint(30, 90)
 				lastTalked = time.time()
 				required = userInfo["required"]
 				if xp >= required:
 					level += 1
-					await msg.channel.send(f'{msg.author.mention} you have leveled up, very cool')
-				required = round(level ** 1.3 * 70 + xp / 3, 2)
+					await msg.channel.send(f'{msg.author.mention} you have leveled up to level {level}, very cool')
+				required = round(level ** 2 * 100, 2)
 				userInfo = {"level": level, "xp": xp, "required": required, "lastTalked": lastTalked}
 			data[str(msg.author.id)] = userInfo
 		else:
 			data[str(msg.author.id)] = BASICINFO
+		f.seek(0)
+		f.truncate(0)
+		json.dump(data, f)
+
+async def reduceXP(msg):
+	if isBot(msg, client): return
+	with open("levelingData.json", "r+") as f:
+		data = json.load(f)
+		for user in data.keys():
+			if time.time() - data[user]["lastTalked"] >= 86400:
+				data[user]["xp"] -= random.randint(30, 90)
+			if time.time() - data[user]["lastTalked"] >= 2629800:
+				data[user]["level"] -= 1
 		f.seek(0)
 		f.truncate(0)
 		json.dump(data, f)
@@ -140,6 +153,7 @@ async def on_message(msg):
 		await msg.channel.send("<:Watching1:697677860336304178>")
 
 	await giveXP(msg)
+	await reduceXP(msg)
 
 	if content[0] == PREFIX:
 
@@ -148,6 +162,7 @@ async def on_message(msg):
 		if cmd == "ENDPLS" and msg.author.id == 334538784043696130:
 			await msg.channel.send("Logging out")
 			await client.logout()
+
 		elif cmd == "ENDPLS":
 			await msg.channel.send("smh you can't shut me down i have p o w e r over you")
 

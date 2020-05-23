@@ -1,3 +1,12 @@
+2.5.0.7 (hopefuly the last leveling equation update) (5/22/2020)
+
+CHANGES:
+*HOPEFULLY I DONT HAVE TO CHANGE LEVELING AGAIN
+*leveling up now says what level you went to
+*you will now lose xp for being inactive for more than a day
+    *you will lose a level for being inactive for more than a month
+
+====================================================================
 2.5.0.6 (5/22/2020)
 
 CHANGES:
