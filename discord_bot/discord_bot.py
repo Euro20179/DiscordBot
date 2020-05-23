@@ -55,6 +55,7 @@ async def giveXP(msg):
 			data[str(msg.author.id)] = userInfo
 		else:
 			data[str(msg.author.id)] = BASICINFO
+			data[str(msg.author.id)]["lastTalked"] = time.time()
 		f.seek(0)
 		f.truncate(0)
 		json.dump(data, f)

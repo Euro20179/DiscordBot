@@ -1,3 +1,12 @@
+2.5.0.8 (nope) (5/22/2020)
+
+*PARTIAL LEVELING RESET
+
+FIXES:
+talking once then leaving would cause you to gain negative levels very quickly, this should be fixed
+
+====================================================================
+
 2.5.0.7 (hopefuly the last leveling equation update) (5/22/2020)
 
 CHANGES:
