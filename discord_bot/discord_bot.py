@@ -6,9 +6,12 @@ import string
 import pyautogui
 import wikipedia
 import asyncio
+import json
+
+#TODO: convert every command into a funcion, and try to make it so that if you do [spam [piglatin hi it would do the piglatin first then spam the result of piglatin
 
 DELETE = "--delete"
-VERSION = "2.4.2"
+VERSION = "2.5"
 Stop = False
 
 playingGuessingGame = {}
@@ -20,6 +23,31 @@ PREFIX = "["
 token = "NjQxNzk1NjU2Mzc3MTcyMDAw.XcNk8g.HEvnaXjuXFQhN1iilaaffbiPcoo"
 
 client = commands.Bot(command_prefix=PREFIX)
+
+BASICINFO = {"level": 0, "xp": 0, "required": 0, "lastTalked": 0}
+
+def giveXP(msg):
+	with open("levelingData.json", "r+") as f:
+		data = json.load(f)
+		if data.get(str(msg.author.id)):
+			userInfo = data[str(msg.author.id)]
+			lastTalked = int(userInfo["lastTalked"])
+			if time.time() - lastTalked >= 60:
+				level = userInfo["level"]
+				required = (round(level ** 1.5 * 100 + (level * 20)))
+				xp = userInfo["xp"]
+				xp += random.randint(20, 100)
+				lastTalked = time.time()
+				if xp >= required:
+					level += 1
+					msg.channel.send(f'{msg.author.mention} you have leveled up, very cool')
+				userInfo = {"level": level, "xp": xp, "required": required, "lastTalked": lastTalked}
+			data[str(msg.author.id)] = userInfo
+		else:
+			data[str(msg.author.id)] = BASICINFO
+		f.seek(0)
+		f.truncate(0)
+		json.dump(data, f)
 
 def isBot(msg, client):
 	if msg.author == client.user: return True
@@ -36,7 +64,7 @@ def TICDelete(content):
 	return testInContent(content, DELETE)
 
 def getCmd(content):
-	return content.split(" ")[0][1:]
+	return content.split(" ")[0][1:]				
 
 def splitContent(content, *split):
 	for x in split:
@@ -72,8 +100,7 @@ async def spam(msg, messages, message):
 	global Stop
 	for _ in range(int(messages)):
 		if Stop:
-			await msg.channel.send(stop("stopped spam", "Stopped spam"))						
-
+			await msg.channel.send(stop("stopped spam", "Stopped spam"))
 			return ""
 		await msg.channel.send(random.choice(message))
 		await asyncio.sleep(random.uniform(.6, 1.3))
@@ -86,17 +113,17 @@ async def on_ready():
 @client.event
 async def on_message(msg):
 	global Stop, playingGuessingGame
+
 	content = msg.content
 
 	if msg.author.id == 469703194751008768 and content in ["people know me as weird gif girl", "im known as weird gif girl", "ppl call me weird gif girl", "ppl know me as weird gif girl"]:
-		msg.channel.send("yes :)")
+		msg.channel.send("nice to meet you ghostly")
 
 	if msg.author.id == 311621977339068418 and msg.channel.id not in (658815060646297659, 476977066839900165):
 		await msg.delete()
 		print("message deleted")
 
-	if not content:
-		return
+	if not content: return
 
 	if random.random() >= .998: 
 		if isBot(msg, client): return
@@ -106,6 +133,8 @@ async def on_message(msg):
 		await msg.channel.send("no <:Watching1:697677860336304178>")
 	if f"<@!{client.user.id}>" in content:
 		await msg.channel.send("<:Watching1:697677860336304178>")
+
+	giveXP(msg)
 
 	if content[0] == PREFIX:
 
@@ -134,13 +163,11 @@ async def on_message(msg):
 			await msg.channel.send("<!@334538784043696130> give them the role smh")
 
 		elif cmd == "upupdowndownleftrightleftright":
-			await msg.channel.send("what do you think this is some arcade machine with secret codes, HA your wrong")
+			await msg.channel.send("what do you think this is some arcade machine with secret codes, lol")
 
 		elif cmd == "help":
-			command = None
-			if splitContent(content, " ")[1] and "--indepth" not in content:
+			if len(splitContent(content, " ")) > 1 and "--all" not in content:
 				command = splitContent(content, " ")[1]
-			if command:
 				with open("helpMsg.txt") as f:
 					c = f.read().split("\n")
 					startLN = 0
@@ -163,12 +190,29 @@ async def on_message(msg):
 					await msg.channel.send(embed=discord.Embed(title=text, color=discord.Colour(0x00ffe2)))
 					return ""
 
-			if testInContent(content, "--indepth"):
+			if testInContent(content, "--all"):
 				with open("helpMsg.txt", "rb") as f:
 					await msg.channel.send(file=discord.File(f, "helpMsg.txt"))
 			else:
 				with open("cmdslist.txt", "r") as f:
 					await msg.channel.send(embed=discord.Embed(title="help", description=f.read(), color=discord.Color(0x00ffe2)))
+
+		elif cmd == "level":
+			user = msg.author
+			if len(splitContent(content, " ")) > 1:
+				getLevelOf = int(splitContent(content, " ")[1][3:-1])
+				user = discord.utils.get(msg.guild.members, id=getLevelOf)
+			with open("levelingData.json", "r") as f:
+				data = json.load(f)
+				userData = data[str(user.id)]
+				level = userData["level"]
+				xp = userData["xp"]
+				required = userData["required"]
+				embed = discord.Embed(title=user.display_name)
+				embed.add_field(name="level", value=level, inline=False)
+				embed.add_field(name="xp", value=xp, inline=False)
+				embed.add_field(name="required", value=required, inline=False)
+				await msg.channel.send(embed=embed)
 
 		elif cmd == "ping":
 			if "<@" in content:
@@ -659,6 +703,8 @@ async def on_message(msg):
 			await msg.delete()
 			channel = discord.utils.get(msg.guild.channels, name="counting")
 			highest = max([x.content.strip(".") async for x in channel.history(limit=5)])
+			async for x in channel.history(limit=1):
+				if isBot(x, client): return ""
 			if testInContent(content, "--i"):
 				await channel.send(f'*.{int(highest) + 1}.*')
 				return ""
@@ -820,18 +866,12 @@ async def on_message(msg):
 				ver = splitContent(content, "-v ")[1].strip()
 			if testInContent(content, "--latest"):
 				Latest = True
-			if Latest:
-				with open("CHANGELOG.txt", "r") as f:
+
+			with open("CHANGELOG.txt", "r") as f:
+				if Latest:
 					c = f.read().split("\n")
 					c = c[:c.index("====================================================================")]
-					if testInContent(content, "--dms"):
-						await msg.author.send("\n".join(c))
-					else:
-						await msg.channel.send("\n".join(c))
-					return ""
-
-			if ver:
-				with open("CHANGELOG.txt", "r") as f:
+				elif ver:
 					c = f.read().split("\n")
 					for lineN, line in enumerate(c):
 						if ver == line.split(" ")[0]:
@@ -840,7 +880,8 @@ async def on_message(msg):
 					else:
 						await msg.channel.send("did not find version")
 						return ""
-			else: c = None
+				
+				else: c = None
 
 			with open("CHANGELOG.txt", "rb") as f:
 				if testInContent(content, "--dms"):
@@ -873,26 +914,24 @@ async def on_message(msg):
 		elif cmd == "hex":
 			content = splitContent(content, cmd + " ")[1]
 			if ", " in content:
-				num = content.split(", ")
-				num = list(map(lambda n: int(n), num))
+				num = list(map(lambda n: int(n), content.split(", ")))
 			else:
 				num = [int(content)]
-			hexes = [str(hex(n)).replace("0x", "") for n in num]
+			hexes = list(map(lambda n: str(hex(n)).replace("0x", ""), num))
 			await msg.channel.send(", ".join(hexes))
 
 		elif cmd == "bin":
 			content = splitContent(content, cmd + " ")[1]
-			if ", " in content:
-				num = content.split(", ")
-				num = list(map(lambda n: int(n), num))
+			if ", " in content:				
+				num = list(map(lambda n: int(n), content.split(", ")))
 			else:
 				num = [int(content)]
-			hexes = [str(bin(n)).replace("0b", "") for n in num]
-			await msg.channel.send(", ".join(hexes))
+			bins = list(map(lambda n: str(bin(n)).replace("0b", ""), num))
+			await msg.channel.send(", ".join(bins))
 
 		elif cmd == "response":
-			if isBot(msg, client):
-				return ""
+			if Stop: Stop = False
+			if isBot(msg, client): return ""
 			limit = 1000
 			mssg = splitContent(content, "response ")[1]
 			if testInContent(mssg, "-lim"):
@@ -904,6 +943,7 @@ async def on_message(msg):
 				hist = [m.content async for m in msg.channel.history(limit=limit)]
 				responses = []
 				for n, message in enumerate(hist):
+					if Stop: await msg.channel.send("stopped searching")
 					if message == mssg:
 						responses.append(hist[n - 1])
 				if responses:
@@ -947,13 +987,11 @@ async def on_message(msg):
 			await msg.channel.send("GO")
 			return
 
-
 		else: await msg.channel.send(f"that is not a {random.choice(['function', 'thing'])}")
 
 	if reacting.get(msg.author):
 		await msg.channel.send(f'{msg.author.mention} your reacion time is {time.time() - reacting[msg.author] - client.latency} milliseconds')
 		del reacting[msg.author]
-
 
 	if playingGuessingGame.get(msg.author):
 		c = msg.content

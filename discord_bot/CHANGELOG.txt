@@ -1,3 +1,19 @@
+2.5 (5/22/2020)
+
+ADDITIONS:
+*leveling system
+    *you gain 20-100 xp every minute if you talk
+    *the required xp is wonky don't question it
+*do [help randominfo to get some random info
+
+CHANGES:
+*--indepth in the help command has been replaced with --all, so use that instead
+
+FIXES:
+*help command
+*counting won't count if the last message was the blue circle
+
+====================================================================
 2.4.2 (5/22/2020)
 
 ADDITIONS:
@@ -12,8 +28,8 @@ FIXES:
 ====================================================================
 2.4.1 (the seeeeecret update) (5/22/2020)
 
-very cool e a s t e r  e g g s
-including secretcommand(s) ;)
+*very cool e a s t e r  e g g s
+*including secretcommand(s) ;)
 
 ====================================================================
 2.4 (5/21/2020)

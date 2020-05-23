@@ -3,10 +3,14 @@ prefix: [
 when specifying whether to delete
 type --delete at the end of the message
 
-help [command] (--indepth)
+help [command] (--all)
 sends a help message
 if command is specified it will show the help for that command only
 if --indepth, it sends this file
+
+level [user]
+sends your level, xp, and required until the next level
+if [user] is provided it'll send that user's stats
 
 ping (--delete)
 
@@ -195,3 +199,16 @@ gives the binary form of a number
 make sure to seperate each number with a comma and space
 
 clear <messages> (only available to staff)
+
+randominfo
+lines of code: 1038 (version: 2.5)
+creation date: November 6, 2019
+
+lol
+XD
+
+XD
+lol
+
+helpMsg.txt
+a very epic text file
