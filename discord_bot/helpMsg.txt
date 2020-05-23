@@ -201,7 +201,7 @@ make sure to seperate each number with a comma and space
 clear <messages> (only available to staff)
 
 randominfo
-lines of code: 1038 (version: 2.5)
+lines of code: 1043 (version: 2.5)
 creation date: November 6, 2019
 
 lol

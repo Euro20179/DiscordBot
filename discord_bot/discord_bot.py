@@ -12,7 +12,7 @@ import json
 #^ maybe eventually
 
 DELETE = "--delete"
-VERSION = "2.5.0.1"
+VERSION = "2.5.0.2"
 Stop = False
 
 playingGuessingGame = {}
@@ -27,7 +27,13 @@ client = commands.Bot(command_prefix=PREFIX)
 
 BASICINFO = {"level": 0, "xp": 0, "required": 0, "lastTalked": 0}
 
+def isBot(msg, client):
+	if msg.author == client.user: return True
+	if msg.author.bot: return True
+	return False
+
 async def giveXP(msg):
+	if isBot(msg, client)
 	with open("levelingData.json", "r+") as f:
 		data = json.load(f)
 		if data.get(str(msg.author.id)):
@@ -35,7 +41,7 @@ async def giveXP(msg):
 			lastTalked = int(userInfo["lastTalked"])
 			if time.time() - lastTalked >= 60:
 				level = userInfo["level"]
-				required = (round(level ** 1.5 * 100 + (level * 20)))
+				required = (round(level ** 1.7 * 100, 2))
 				xp = userInfo["xp"]
 				xp += random.randint(20, 100)
 				lastTalked = time.time()
@@ -49,11 +55,6 @@ async def giveXP(msg):
 		f.seek(0)
 		f.truncate(0)
 		json.dump(data, f)
-
-def isBot(msg, client):
-	if msg.author == client.user: return True
-	if msg.author.bot: return True
-	return False
 
 def testInContent(content, *testfor):
 	for x in testfor:
@@ -165,6 +166,10 @@ async def on_message(msg):
 
 		elif cmd == "upupdowndownleftrightleftright":
 			await msg.channel.send("what do you think this is some arcade machine with secret codes, lol")
+
+		elif cmd == "rawlevels":
+			with open("levelingData.json") as f:
+				await msg.channel.send(file=discord.File("levelingData.json", f))
 
 		elif cmd == "help":
 			if len(splitContent(content, " ")) > 1 and "--all" not in content:
