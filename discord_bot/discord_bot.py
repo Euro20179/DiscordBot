@@ -11,8 +11,10 @@ import json
 #TODO: convert every command into a funcion, and try to make it so that if you do [spam [piglatin hi it would do the piglatin first then spam the result of piglatin
 #^ maybe eventually
 
+#TODO add a leaderboard for levels
+
 DELETE = "--delete"
-VERSION = "2.5.0.5"
+VERSION = "2.5.0.6"
 Stop = False
 
 playingGuessingGame = {}
@@ -48,7 +50,7 @@ async def giveXP(msg):
 				if xp >= required:
 					level += 1
 					await msg.channel.send(f'{msg.author.mention} you have leveled up, very cool')
-				required = round(level ** 1.6 * 70, 2)
+				required = round(level ** 1.3 * 70 + xp / 3, 2)
 				userInfo = {"level": level, "xp": xp, "required": required, "lastTalked": lastTalked}
 			data[str(msg.author.id)] = userInfo
 		else:
