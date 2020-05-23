@@ -12,7 +12,7 @@ import json
 #^ maybe eventually
 
 DELETE = "--delete"
-VERSION = "2.5.0.4"
+VERSION = "2.5.0.5"
 Stop = False
 
 playingGuessingGame = {}
@@ -25,7 +25,7 @@ token = "NjQxNzk1NjU2Mzc3MTcyMDAw.XcNk8g.HEvnaXjuXFQhN1iilaaffbiPcoo"
 
 client = commands.Bot(command_prefix=PREFIX)
 
-BASICINFO = {"level": 0, "xp": 0, "required": 0, "lastTalked": 0}
+BASICINFO = {"level": 1, "xp": 0, "required": 0, "lastTalked": 0}
 
 def isBot(msg, client):
 	if msg.author == client.user: return True
@@ -48,7 +48,7 @@ async def giveXP(msg):
 				if xp >= required:
 					level += 1
 					await msg.channel.send(f'{msg.author.mention} you have leveled up, very cool')
-				required = round(level ** 1.5 * 70, 2)
+				required = round(level ** 1.6 * 70, 2)
 				userInfo = {"level": level, "xp": xp, "required": required, "lastTalked": lastTalked}
 			data[str(msg.author.id)] = userInfo
 		else:

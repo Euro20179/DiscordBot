@@ -11,6 +11,7 @@ if --indepth, it sends this file
 level [user]
 sends your level, xp, and required until the next level
 if [user] is provided it'll send that user's stats
+you get 15-20 xp every minute if you talk
 
 ping (--delete)
 
@@ -201,8 +202,11 @@ make sure to seperate each number with a comma and space
 clear <messages> (only available to staff)
 
 randominfo
-lines of code: 1044 (version: 2.5.1)
+lines of code: 1044 (version: 2.5.0.5)
 creation date: November 6, 2019
+
+levelupequation
+(currentlevel ^ 1.5) * 100
 
 lol
 XD

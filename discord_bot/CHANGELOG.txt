@@ -1,7 +1,14 @@
+2.5.0.5 (5/22/2020)
+
+CHANGES:
+*leveling up is a bit slower
+*you now start at level 1 instead of 0
+
+====================================================================
 2.5.0.4 (5/22/2020)
 
 CHANGES:
-leveling up is slower
+*leveling up is slower
 
 ====================================================================
 2.5.0.3 (5/22/2020)
