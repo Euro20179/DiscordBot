@@ -33,7 +33,7 @@ def isBot(msg, client):
 	return False
 
 async def giveXP(msg):
-	if isBot(msg, client)
+	if isBot(msg, client): return
 	with open("levelingData.json", "r+") as f:
 		data = json.load(f)
 		if data.get(str(msg.author.id)):
@@ -168,7 +168,7 @@ async def on_message(msg):
 			await msg.channel.send("what do you think this is some arcade machine with secret codes, lol")
 
 		elif cmd == "rawlevels":
-			with open("levelingData.json") as f:
+			with open("levelingData.json", "rb") as f:
 				await msg.channel.send(file=discord.File("levelingData.json", f))
 
 		elif cmd == "help":
