@@ -14,7 +14,7 @@ import json
 #TODO add a leaderboard for levels
 
 DELETE = "--delete"
-VERSION = "2.5.0.7"
+VERSION = "2.5.1"
 Stop = False
 
 playingGuessingGame = {}
@@ -27,7 +27,12 @@ token = "NjQxNzk1NjU2Mzc3MTcyMDAw.XcNk8g.HEvnaXjuXFQhN1iilaaffbiPcoo"
 
 client = commands.Bot(command_prefix=PREFIX)
 
-BASICINFO = {"level": 1, "xp": 0, "required": 0, "lastTalked": 0}
+BASICINFO = {"level": 1, "xp": 0, "required": 100, "lastTalked": 0}
+
+levelLow = 20
+levelHigh = 60
+
+equation = "level ** 2 * 100"
 
 def isBot(msg, client):
 	if msg.author == client.user: return True
@@ -35,22 +40,24 @@ def isBot(msg, client):
 	return False
 
 async def giveXP(msg):
+	global levelLow, levelHigh, equation
+
 	if isBot(msg, client): return
 	with open("levelingData.json", "r+") as f:
 		data = json.load(f)
 		if data.get(str(msg.author.id)):
 			userInfo = data[str(msg.author.id)]
 			lastTalked = int(userInfo["lastTalked"])
-			if time.time() - lastTalked >= 60:
+			if time.time() - lastTalked >= 1:
 				level = userInfo["level"]
 				xp = userInfo["xp"]
-				xp += random.randint(30, 90)
+				xp += random.randint(levelLow, levelHigh)
 				lastTalked = time.time()
 				required = userInfo["required"]
 				if xp >= required:
 					level += 1
 					await msg.channel.send(f'{msg.author.mention} you have leveled up to level {level}, very cool')
-				required = round(level ** 2 * 100, 2)
+				required = eval(equation)
 				userInfo = {"level": level, "xp": xp, "required": required, "lastTalked": lastTalked}
 			data[str(msg.author.id)] = userInfo
 		else:
@@ -65,10 +72,9 @@ async def reduceXP(msg):
 	with open("levelingData.json", "r+") as f:
 		data = json.load(f)
 		for user in data.keys():
-			if time.time() - data[user]["lastTalked"] >= 86400:
-				data[user]["xp"] -= random.randint(30, 90)
 			if time.time() - data[user]["lastTalked"] >= 2629800:
 				data[user]["level"] -= 1
+				data[user]["lastTalked"] = time.time()
 		f.seek(0)
 		f.truncate(0)
 		json.dump(data, f)
@@ -132,6 +138,7 @@ async def on_ready():
 @client.event
 async def on_message(msg):
 	global Stop, playingGuessingGame
+	global levelLow, levelHigh, equation
 
 	content = msg.content
 
@@ -222,6 +229,18 @@ async def on_message(msg):
 				with open("cmdslist.txt", "r") as f:
 					await msg.channel.send(embed=discord.Embed(title="help", description=f.read(), color=discord.Color(0x00ffe2)))
 
+		elif cmd in ["findans", "equation", "result", "eval"]:
+			eq = splitContent(content, cmd + " ")[1]
+			await msg.channel.send(eval(eq))
+
+		elif cmd == "shrug":
+			if TICDelete(content): await msg.delete()
+			msg = await msg.channel.send(content="¯\_(ツ)_/¯")
+			await asyncio.sleep(.3)
+			await msg.edit(content="¯\\\-(ツ)-/¯")
+			await asyncio.sleep(.3)
+			await msg.edit(content="¯\_(ツ)_/¯")
+
 		elif cmd == "level":
 			user = msg.author
 			if len(splitContent(content, " ")) > 1:
@@ -233,10 +252,27 @@ async def on_message(msg):
 				level = userData["level"]
 				xp = userData["xp"]
 				required = userData["required"]
+				users = [(discord.utils.get(msg.guild.members, id=int(user)).display_name, int(data[user]["level"])) for user in data.keys()]
+				users.sort(key=lambda x: x[1], reverse=True)
+				pos = users.index((msg.author.display_name, level))
 				embed = discord.Embed(title=user.display_name)
 				embed.add_field(name="level", value=level, inline=False)
 				embed.add_field(name="xp", value=xp, inline=False)
 				embed.add_field(name="required", value=required, inline=False)
+				embed.add_field(name="position", value=pos + 1, inline=False)
+				await msg.channel.send(embed=embed)
+
+		elif cmd == "top":
+			with open("levelingData.json", "r") as f:
+				data = json.load(f)
+				users = [(discord.utils.get(msg.guild.members, id=int(user)).display_name, int(data[user]["level"])) for user in data.keys()]
+				users.sort(key=lambda x: x[1], reverse=True)
+				embed = discord.Embed(title="Top 10")
+				for n, user in enumerate(users):
+					if n > 9:
+						break
+					embed.add_field(name=str(n + 1) + user[0], value=user[1], inline=False)
+
 				await msg.channel.send(embed=embed)
 
 		elif cmd == "ping":
@@ -977,7 +1013,6 @@ async def on_message(msg):
 				else:
 					await msg.channel.send(f'did not find {mssg} in the past {limit} messages in this channel')
 
-
 		#ongoing events
 		elif cmd == "timer":
 			if TICDelete(content):
@@ -1030,14 +1065,13 @@ async def on_message(msg):
 		if L: 
 			lives += 1 if L == "--lives+" else -1
 			c = c.replace(L, "")
-		if c:
+		if isInt(c):
 			lives -= 1
 			if lives <= 0 and int(content) == ans:
-				await msg.channel.send(embed=discord.Embed(title=f'{msg.author.display_name} ITS A DRAW', color=discord.Color.from_rgb(155, 155, 155)))
-				playingGuessingGame.pop(msg.author)
-				return ""
-			elif lives <= 0:
-				await msg.channel.send(embed=discord.Embed(title=f'{msg.author.display_name} YOU LOSE\nTHE ANSWER WAS {ans}', color=discord.Color.from_rgb(255, 0, 0)))
+				if int(content) == ans:
+					await msg.channel.send(embed=discord.Embed(title=f'{msg.author.display_name} ITS A DRAW', color=discord.Color.from_rgb(155, 155, 155)))
+				else:
+					await msg.channel.send(embed=discord.Embed(title=f'{msg.author.display_name} YOU LOSE\nTHE ANSWER WAS {ans}', color=discord.Color.from_rgb(255, 0, 0)))
 				playingGuessingGame.pop(msg.author)
 				return ""
 			elif int(content) == ans:

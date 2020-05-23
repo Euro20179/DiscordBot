@@ -1,12 +1,22 @@
+2.5.1 (5/23/2020)
+
+ADDITIONS:
+*leaderboard!
+*equation command
+*shrug command
+
+FIXES:
+*fixed a bug where every message would recduce people's xp after a point, now it'll only reduce you're level once per month, if you're innactive
+====================================================================
 2.5.0.8 (nope) (5/22/2020)
 
+OTHER:
 *PARTIAL LEVELING RESET
 
 FIXES:
 talking once then leaving would cause you to gain negative levels very quickly, this should be fixed
 
 ====================================================================
-
 2.5.0.7 (hopefuly the last leveling equation update) (5/22/2020)
 
 CHANGES:
