@@ -27,7 +27,7 @@ client = commands.Bot(command_prefix=PREFIX)
 
 BASICINFO = {"level": 0, "xp": 0, "required": 0, "lastTalked": 0}
 
-def giveXP(msg):
+async def giveXP(msg):
 	with open("levelingData.json", "r+") as f:
 		data = json.load(f)
 		if data.get(str(msg.author.id)):
@@ -135,7 +135,7 @@ async def on_message(msg):
 	if f"<@!{client.user.id}>" in content:
 		await msg.channel.send("<:Watching1:697677860336304178>")
 
-	giveXP(msg)
+	await giveXP(msg)
 
 	if content[0] == PREFIX:
 
