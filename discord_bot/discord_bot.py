@@ -12,7 +12,7 @@ import json
 #^ maybe eventually
 
 DELETE = "--delete"
-VERSION = "2.5.0.3"
+VERSION = "2.5.0.4"
 Stop = False
 
 playingGuessingGame = {}
@@ -42,12 +42,13 @@ async def giveXP(msg):
 			if time.time() - lastTalked >= 60:
 				level = userInfo["level"]
 				xp = userInfo["xp"]
-				xp += random.randint(20, 100)
+				xp += random.randint(15, 50)
 				lastTalked = time.time()
+				required = userInfo["required"]
 				if xp >= required:
 					level += 1
 					await msg.channel.send(f'{msg.author.mention} you have leveled up, very cool')
-				required = (round(level ** 1.7 * 100, 2))
+				required = round(level ** 1.5 * 70, 2)
 				userInfo = {"level": level, "xp": xp, "required": required, "lastTalked": lastTalked}
 			data[str(msg.author.id)] = userInfo
 		else:
@@ -169,7 +170,7 @@ async def on_message(msg):
 
 		elif cmd == "rawlevels":
 			with open("levelingData.json", "rb") as f:
-				await msg.channel.send(file=discord.File("levelingData.json", f))
+				await msg.channel.send(file=discord.File(f, "levelingData.json"))
 
 		elif cmd == "help":
 			if len(splitContent(content, " ")) > 1 and "--all" not in content:
