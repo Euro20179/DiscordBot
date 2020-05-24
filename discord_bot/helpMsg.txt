@@ -203,10 +203,14 @@ bin *<num>
 gives the binary form of a number
 make sure to seperate each number with a comma and space
 
+commandusage [command] (--delete)
+gives the top 10 most used commands
+if command is specified it gives the uses of that command
+
 clear <messages> (only available to staff)
 
 randominfo
-lines of code: 1096 (version: 2.5.1)
+lines of code: 1083 (version: 2.5.1.2)
 creation date: November 6, 2019
 
 levelupequation

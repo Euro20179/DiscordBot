@@ -3,6 +3,7 @@ key: () optional option, <> required parameter, [] optional parameter, *: as man
 help [command] (--all)
 level [user]
 top
+commandusage [command] (--delete)
 ping (--delete)
 echo <message> (--e/--embed) (--delete)
 8ball [question]
