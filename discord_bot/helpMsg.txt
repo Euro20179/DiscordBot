@@ -8,7 +8,7 @@ sends a help message
 if command is specified it will show the help for that command only
 if --indepth, it sends this file
 
-level [user]
+level / rank [user]
 sends your level, xp, and required until the next level
 if [user] is provided it'll send that user's stats
 you get 1-100 xp every minute if you talk
@@ -90,7 +90,7 @@ if (--e/--embed) it embeds your message
 is equivelent to:
 spam 1 <message> --delete except it doesn't say done
 
-sanity <message> (--delete) (-round)
+sanity <message> (--delete) (-r)
 says the sanity of <message> rounded to (-round) if specified
 
 coin (-bet h/t) (--delete)
@@ -163,7 +163,7 @@ ping <member> to force them to join a game of rps with you
 dm the bot what your move is, you have 15 seconds by default or (-time) seconds if specified
 your move can be --rand, which will make your answer randomly either rock, paper, or scissors
 
-changes (--dms) (--delete) (-v <version>)
+changes (--nlatest) (--dms) (--delete) (-v <version>)
 sends a txt file of the changes
 if (--dms) it'll send to dms instead of chat
 if -v it'll say the changes for that version
@@ -207,10 +207,23 @@ commandusage [command] (--delete)
 gives the top 10 most used commands
 if command is specified it gives the uses of that command
 
+roleinfo <role> (--delete)
+gives roleinfo about <role>
+info = time + date creation and role color
+
+ship <name1>, <name2> (sep with commas)
+takes the first half of name 1 and combinds it with the 2nd half of name 2
+
+toc <fahrenheit temp>
+converts to fahrenheit from celcius
+
+tof <celcius temp>
+converts from celcius to fahrenheit
+
 clear <messages> (only available to staff)
 
 randominfo
-lines of code: 1083 (version: 2.5.1.2)
+lines of code: 1102 (version: 2.6)
 creation date: November 6, 2019
 
 levelupequation

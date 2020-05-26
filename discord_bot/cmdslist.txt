@@ -1,9 +1,13 @@
 key: () optional option, <> required parameter, [] optional parameter, *: as many as you want
 
 help [command] (--all)
-level [user]
+level/rank [user]
 top
 commandusage [command] (--delete)
+roleinfo <role> (--delete)
+ship <name1>, <name2> (sep with commas)
+toc <fahrenheit temp>
+tof <celcius temp>
 ping (--delete)
 echo <message> (--e/--embed) (--delete)
 8ball [question]
@@ -23,7 +27,7 @@ flush <message> (--delete)
 stop (--delete)
 complexmessage <send> <filename.ext> <contents>
 message <send> <filename>.txt <contents>
-sanity <message> (--delete) (-round)
+sanity <message> (--delete) (-r)
 coin (-bet h/t) (--delete)
 rand <low> <high> [round] (--even) (--odd) (--delete)
 rolecount [server member] (--delete)
@@ -43,7 +47,7 @@ servericon (--delete)
 spamdms <messages> <message> (--delete)
 guessinggame [low] [high] [lives]
 rps/rockpaperscissors @<member> (-time)
-changes (--dms) (--delete) (-v)
+changes (--nlatest) (--dms) (--delete) (-v)
 timer (--delete)
 commandcount (--delete)
 pincount [channel] (--delete)

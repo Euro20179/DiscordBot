@@ -1,3 +1,28 @@
+2.6 (5/26/2020)
+
+ADDITIONS:
+*roleinfo, gives some info about a role
+*ship, ships people lol, (it's really bad)
+*toc and tof, converts from fahrenheit to celcius and from celcius to Fahrenheit respectively
+*--e in the count command sends as embed
+    *-c specifies the color ex:
+        [count --e -c 00ffe2
+
+CHANGES:
+*leveling is slightly faster
+*changes now defaults to show the latest update, do --nlatest to get the full file
+*mostroles now sends in 1 message instead of 5
+*giving 3 colors for [color will now title as the hex value instead of the 3 numbers
+*when doing [level/rank the color will be your top role color
+*use -r instead of -round to round for the sanity command
+*color of the embed of the top command is now the color of the first place person
+
+FIXES:
+*hopefuly clear actually works for staff now
+*once out of first place the role will be removed
+*top 10 commands used, now actually only shows the top 10 commands
+
+====================================================================
 2.5.2 (5/23/2020)
 
 ADDITIONS:
