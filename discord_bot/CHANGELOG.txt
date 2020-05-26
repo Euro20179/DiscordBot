@@ -1,3 +1,12 @@
+2.6.1 (5/26/2020)
+
+CHANGES:
+*help overhaul
+    *help command is now split into categories
+        *you can do help [category] or help [command]
+*if you don't talk for 12 hours you will lose 0-1 xp every message
+
+====================================================================
 2.6 (5/26/2020)
 
 ADDITIONS:

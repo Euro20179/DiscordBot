@@ -12,7 +12,7 @@ import json
 #^ maybe eventually
 
 DELETE = "--delete"
-VERSION = "2.6"
+VERSION = "2.6.1"
 Stop = False
 
 playingGuessingGame = {}
@@ -65,6 +65,12 @@ async def reduceXP(msg):
 	with open("levelingData.json", "r+") as f:
 		data = json.load(f)
 		for user in data.keys():
+			if time.time() - data[user]["lastTalked"] >= 43200:
+				if data[user]["xp"] > 0:
+					data[user]["xp"] -= random.randint(0, 1)
+				if data[user]["xp"] <= (data[user]["level"] * 1000) // 2:
+					data[user]["level"] -= 1
+					data[user]["xp"] = (data[user]["level"] * 1000) // 2 + 1500
 			if time.time() - data[user]["lastTalked"] >= 172800 and data[user]["level"] >= 0:
 				data[user]["level"] -= 1
 				data[user]["xp"] -= 1000
@@ -84,9 +90,11 @@ def TICDelete(content):
 def getCmd(content):
 	return content.split(" ")[0][1:]				
 
-def splitContent(content, *split):
+def splitContent(content, *split, index=None):
 	for x in split:
 		if x in content:
+			if index:
+				return content.split(x)[index]
 			return content.split(x)
 	return ""
 
@@ -199,6 +207,12 @@ async def on_message(msg):
 			with open("levelingData.json", "rb") as f:
 				await msg.channel.send(file=discord.File(f, "levelingData.json"))
 
+		elif cmd == "timers":
+			embed = discord.Embed(title="timers")
+			for user, t in runningTimer.items():
+				embed.add_field(name=user, value=round(time.time() - t, 2))
+			await msg.channel.send(embed=embed)
+
 		elif cmd in ["commandusage", "cmduse", "cmdusage", "commanduse"]:
 			if TICDelete(content): 
 				await msg.delete()
@@ -225,8 +239,42 @@ async def on_message(msg):
 						n += 1
 					await msg.channel.send(embed=embed)
 
+		elif cmd == "end": await msg.channel.send("end")
+
 		elif cmd == "help":
-			if len(splitContent(content, " ")) > 1 and "--all" not in content:
+			categories = ["HELP", "FUN", "GAMES", "RANDOM", "MATHY", "INFO", "MISC", "INTERESTING", ""]
+			print(splitContent(content, cmd + " ", index=1).upper())
+			if splitContent(content, cmd + " ", index=1).upper() in categories:
+				with open("cmdslist.txt", "r") as f:
+					embed = discord.Embed(title="Help", color=discord.Color(0x00ffe2))
+					cat = splitContent(content, cmd + " ")
+					read = f.read().split("\n")
+					val = {}
+					if not cat:
+						for n, line in enumerate(read):
+							if line.isupper():
+								val[line] = []
+								cat = line
+								continue
+							val[cat].append(line)
+						for k in val.keys():
+							embed.add_field(name=k, value="\n".join(val[k]), inline=False)
+					else:
+						cat = cat[1].upper().strip()
+						LN = 1000
+						for n, line in enumerate(read):
+							if line.isupper() and line == cat:
+								val[cat] = []
+								LN = n
+							if line.isupper() and n > LN:
+								print(val)
+								embed.add_field(name=cat, value="\n".join(val[cat]))
+								break
+							if val and LN != n:
+								val[cat].append(line)
+					await msg.channel.send(embed=embed)
+
+			elif len(splitContent(content, " ")) > 1 and "--all" not in content:
 				command = splitContent(content, " ")[1]
 				with open("helpMsg.txt") as f:
 					c = f.read().split("\n")
@@ -251,9 +299,6 @@ async def on_message(msg):
 			elif testInContent(content, "--all"):
 				with open("helpMsg.txt", "rb") as f:
 					await msg.channel.send(file=discord.File(f, "helpMsg.txt"))
-			else:
-				with open("cmdslist.txt", "r") as f:
-					await msg.channel.send(embed=discord.Embed(title="help", description=f.read(), color=discord.Color(0x00ffe2)))
 
 		elif cmd in ["findans", "equation", "result", "eval"]:
 			eq = splitContent(content, cmd + " ")[1]
@@ -941,10 +986,7 @@ async def on_message(msg):
 		elif cmd == "changes":
 			if TICDelete(content): await msg.delete()
 			Latest = False if testInContent(content, "--nlatest") else True
-			ver = None
-			if testInContent(content, "-v"):
-				ver = splitContent(content, "-v ")[1].strip()
-
+			ver = splitContent(content, "-v ")[1].strip() if testInContent(content, "-v ") else None
 			with open("CHANGELOG.txt", "r") as f:
 				if Latest:
 					c = f.read().split("\n")
@@ -1009,6 +1051,7 @@ async def on_message(msg):
 				limit = int(splitContent(mssg, "-lim ")[1].strip())
 				if limit > 100000:
 					await msg.channel.send("you cannot go above 100k")
+					return
 				mssg = splitContent(mssg, " -lim")[0]
 			async with msg.channel.typing():
 				hist = [m.content async for m in msg.channel.history(limit=limit)]
@@ -1025,11 +1068,14 @@ async def on_message(msg):
 			if TICDelete(content):
 				await msg.delete()
 			if not runningTimer.get(msg.author):
-				runningTimer[msg.author] = time.time()
+				runningTimer[msg.author.id] = time.time()
 				await msg.channel.send(f'{msg.author.mention} timer started')
 				return
-			if runningTimer.get(msg.author):
-				await msg.channel.send(embed=discord.Embed(title=str(round(time.time() - runningTimer[msg.author], 2)) + "seconds"))
+			if runningTimer.get(msg.author) and testInContent(content, "--get"):
+				await msg.channel.send(embed=discord.Embed(title=str(round(time.time() - runningTimer[msg.author.id], 2)) + " seconds"))
+			elif runningTimer.get(msg.author):
+				await msg.channel.send(embed=discord.Embed(title=str(round(time.time() - runningTimer[msg.author.id], 2)) + " seconds"))
+				del runningTimer[msg.author.id]
 				return
 
 		elif cmd == "guessinggame":
@@ -1048,17 +1094,17 @@ async def on_message(msg):
 
 		elif cmd == "reactiontime":
 			await msg.channel.send("i will say GO and you have to send something as fast as possible (probably prepare the message before hand)")
-			reacting[msg.author] = 0
+			reacting[msg.author.id] = 0
 			await asyncio.sleep(random.uniform(1.5, 6))
-			reacting[msg.author] = time.time()
+			reacting[msg.author.id] = time.time()
 			await msg.channel.send("GO")
 			return
 
 		else: await msg.channel.send(f"that is not a {random.choice(['function', 'thing'])}")
 
-	if reacting.get(msg.author):
-		await msg.channel.send(f'{msg.author.mention} your reacion time is {time.time() - reacting[msg.author] - client.latency} seconds')
-		del reacting[msg.author]
+	if reacting.get(msg.author.id):
+		await msg.channel.send(f'{msg.author.mention} your reacion time is {time.time() - reacting[msg.author.id] - client.latency} seconds')
+		del reacting[msg.author.id]
 
 	if playingGuessingGame.get(msg.author):
 		c = msg.content
@@ -1077,8 +1123,7 @@ async def on_message(msg):
 			if lives <= 0:
 				if int(content) == ans:
 					await msg.channel.send(embed=discord.Embed(title=f'{msg.author.display_name} ITS A DRAW', color=discord.Color.from_rgb(155, 155, 155)))
-				else:
-					await msg.channel.send(embed=discord.Embed(title=f'{msg.author.display_name} YOU LOSE\nTHE ANSWER WAS {ans}', color=discord.Color.from_rgb(255, 0, 0)))
+				else: await msg.channel.send(embed=discord.Embed(title=f'{msg.author.display_name} YOU LOSE\nTHE ANSWER WAS {ans}', color=discord.Color.from_rgb(255, 0, 0)))
 				playingGuessingGame.pop(msg.author)
 				return ""
 			elif int(content) == ans:
