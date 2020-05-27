@@ -38,7 +38,7 @@ PS: Troy says hi
 mymoney (--delete)
 tells you your money
 
-alphabet (--delete)
+alphabet (--delete) (--vowels) (--consonants)
 says the alphabet
 
 unicodechar [amount] (--delete)
@@ -150,7 +150,7 @@ specify either [role] or [color] not both
 if left blank, your color
 
 cc [channel]
-says the date and time of the channels'
+gives info on channel defaults to current channel
 
 servericon (--delete)
 gives the server's icon
@@ -168,7 +168,6 @@ sends a txt file of the changes
 if (--dms) it'll send to dms instead of chat
 if -v it'll say the changes for that version
 
-
 guessinggame [low] [high] [lives]
 it's a guessing game!
 the computer picks a number from [low] to [high] by default 1-100
@@ -181,9 +180,6 @@ starts a timer that always tells the seconds passed until you do [timer again
 
 commandcount (--delete)
 says the amount of commands
-
-pincount [channel] (--delete)
-gives the number of pins in [channel]
 
 reactiontime
 it'll say GO
@@ -221,14 +217,6 @@ tof <celcius temp>
 converts from celcius to fahrenheit
 
 clear <messages> (only available to staff)
-
-randominfo
-lines of code: 1143 (version: 2.6.1.1)
-creation date: November 6, 2019
-
-levelupequation
-level * 1000
-when leveled up you lose half your xp
 
 lol
 XD

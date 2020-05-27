@@ -12,7 +12,7 @@ import json
 #^ maybe eventually
 
 DELETE = "--delete"
-VERSION = "2.6.1.1"
+VERSION = "2.6.2"
 Stop = False
 
 playingGuessingGame = {}
@@ -145,9 +145,13 @@ async def on_message(msg):
 	if msg.author.id == 469703194751008768 and content in ["people know me as weird gif girl", "im known as weird gif girl", "ppl call me weird gif girl", "ppl know me as weird gif girl"]:
 		msg.channel.send("nice to meet you ghostly")
 
-	if msg.author.id == 311621977339068418 and msg.channel.id not in (658815060646297659, 476977066839900165):
+	if msg.author.id == 311621977339068418 and msg.channel.id not in (658815060646297659, 715043261110288415):
 		await msg.delete()
 		print("message deleted")
+
+	if msg.channel.id == 427973752647712768:
+		await msg.add_reaction(discord.utils.get(client.emojis, name="Blue_check"))
+		await msg.add_reaction("❌")
 
 	if not content: return
 
@@ -327,9 +331,9 @@ async def on_message(msg):
 				pos = users.index((user.display_name, level))
 				embed = discord.Embed(title=user.display_name, color=user.color)
 				embed.add_field(name="level", value=level, inline=False)
+				embed.add_field(name="rank", value=pos + 1, inline=False)
 				embed.add_field(name="xp", value=xp, inline=False)
 				embed.add_field(name="required", value=required, inline=False)
-				embed.add_field(name="position", value=pos + 1, inline=False)
 				await msg.channel.send(embed=embed)
 
 		elif cmd == "top":
@@ -450,6 +454,10 @@ async def on_message(msg):
 
 		elif cmd in ["alphabet", "alpha"]:
 			if TICDelete(content): await msg.delete()
+			if testInContent(content, "--vowels"):
+				await msg.channel.send("aeiou(y)")
+			if testInContent(content, "--consonants"):
+				await msg.channel.send("".join([x for x in string.ascii_lowercase if x not in "aeiou"]))
 			if random.random() > .98: await msg.channel.send("zyxwvutsrqponmlkjihgfedcba")
 			else: await msg.channel.send("abcdefghijklmnopqrstuvwxyz")
 
@@ -583,8 +591,7 @@ async def on_message(msg):
 					await msg.channel.send("ITS A DRAW")
 				elif opps[resp1] == resp2:
 					await msg.channel.send(f'{user1.mention} WINS')
-				else:
-					await msg.channel.send(f'{user2.mention} WINS')
+				else: await msg.channel.send(f'{user2.mention} WINS')
 			else:
 				await msg.channel.send("either someone spelled something wrong, or someone isn't playing by the rules")
 
@@ -946,6 +953,7 @@ async def on_message(msg):
 			if ", " in c:
 				color = [int(x) for x in c.split(", ")]
 				hexColor = [str(hex(x))[2:] for x in color]
+				hexColor = list(map(lambda x: f'0{x}' if len(x) == 1 else x, hexColor))
 				await msg.channel.send(embed=discord.Embed(title=f'#{"".join(hexColor)}', color=discord.Color.from_rgb(color[0], color[1], color[2])))			
 				return ""
 			if not c: c = str(msg.author.top_role)
@@ -961,23 +969,18 @@ async def on_message(msg):
 			embed.set_image(url=msg.guild.icon_url)
 			await msg.channel.send(embed=embed)
 
-		elif cmd in ["cc", "channelcreated"]:
-			if splitContent(content, cmd)[1]:
-				c = content.split(cmd)[1].strip()[2:-1]
-				channel = discord.utils.get(msg.guild.channels, id=int(c))
-				await msg.channel.send(channel.created_at)
-				return ""
-			await msg.channel.send(msg.channel.created_at)
-
-		elif cmd == "pincount":
-			if TICDelete(content): await msg.delete()
+		elif cmd in ["cc", "channelcreated", "channelinfo", "ci"]:
+			embed = discord.Embed(title="channel info")
 			channel = msg.channel
+			if TICDelete(content):
+				await msg.delete()
+				content = content.repalce(DELETE, "")
 			if splitContent(content, cmd)[1]:
 				c = content.split(cmd)[1].strip()[2:-1]
 				channel = discord.utils.get(msg.guild.channels, id=int(c))
-			pins = await channel.pins()
-			await msg.channel.send(len(pins))
-			return ""
+			embed.add_field(name="Created at", value=channel.created_at, inline=False)
+			embed.add_field(name="Pins", value=len(await channel.pins()), inline=False)
+			await msg.channel.send(embed=embed)
 
 		elif cmd == "changes":
 			if TICDelete(content): await msg.delete()
@@ -1085,7 +1088,7 @@ async def on_message(msg):
 				if len(c) >= 3: lives = int(c[2])
 			ans = random.randint(low, high)
 			await msg.channel.send("guess")
-			playingGuessingGame[msg.author] = {"ans": ans, "lives": lives}
+			playingGuessingGame[msg.author.id] = {"ans": ans, "lives": lives}
 			return ""
 
 		elif cmd == "reactiontime":
@@ -1096,20 +1099,26 @@ async def on_message(msg):
 			await msg.channel.send("GO")
 			return
 
-		else: await msg.channel.send(f"that is not a {random.choice(['function', 'thing'])}")
+		else: 
+			await msg.channel.send(f"that is not a {random.choice(['function', 'thing'])}")
+			with open("commandusage.json", "r+") as j:
+				data = json.load(j)
+				del data[cmd]
+				clearFile(j)
+				json.dump(data, j)
 
 	if reacting.get(msg.author.id):
 		await msg.channel.send(f'{msg.author.mention} your reacion time is {time.time() - reacting[msg.author.id] - client.latency} seconds')
 		del reacting[msg.author.id]
 
-	if playingGuessingGame.get(msg.author):
+	if playingGuessingGame.get(msg.author.id):
 		c = msg.content
-		ans = playingGuessingGame[msg.author]["ans"]
-		lives = playingGuessingGame[msg.author]["lives"]
+		ans = playingGuessingGame[msg.author.id]["ans"]
+		lives = playingGuessingGame[msg.author.id]["lives"]
 		if c in ["stop", "giveup", "cancel"]:
 			await msg.channel.send(embed=discord.Embed(title=f'{msg.author.display_name} YOU LOSE\nTHE ANSWER WAS {ans}', color=discord.Color.from_rgb(100, 0, 0)))
-			playingGuessingGame.pop(msg.author)
-			return ""
+			del playingGuessingGame[msg.author.id]
+			return
 		L = testInContent(c, "--lives+", "--lives-")
 		if L: 
 			lives += 1 if L == "--lives+" else -1
@@ -1120,15 +1129,15 @@ async def on_message(msg):
 				if int(content) == ans:
 					await msg.channel.send(embed=discord.Embed(title=f'{msg.author.display_name} ITS A DRAW', color=discord.Color.from_rgb(155, 155, 155)))
 				else: await msg.channel.send(embed=discord.Embed(title=f'{msg.author.display_name} YOU LOSE\nTHE ANSWER WAS {ans}', color=discord.Color.from_rgb(255, 0, 0)))
-				playingGuessingGame.pop(msg.author)
+				del playingGuessingGame[msg.author.id]
 				return ""
 			elif int(content) == ans:
 				await msg.channel.send(embed=discord.Embed(title=f"{msg.author.display_name} YOU WIN\nWITH {lives} LIVES LEFT", color=discord.Color.from_rgb(0, 255, 0)))
-				playingGuessingGame.pop(msg.author)
+				del playingGuessingGame[msg.author.id]
 				return ""
 			await msg.channel.send("too high" if int(c) > ans else "too low")
 		else: await msg.channel.send("NaN")
-		playingGuessingGame[msg.author]["lives"] = lives
+		playingGuessingGame[msg.author.id]["lives"] = lives
 		await msg.channel.send(f"guess\nyou have {lives} lives left")
 
 @client.event

@@ -1,6 +1,20 @@
-2.6.1.1 (5/26/2020)
+2.6.2 (5/26/2020)
+
+ADDITIONS:
+*you can now do --vowels and --consonants in the alphabet command
+*reacts with blue_check and x in suggestions
 
 REMOVED:
+*pincount, use channelinfo/ci/cc/channelcreated instead
+
+FIXED:
+*non-commands no longer count as commands in [commandusage
+*color now gives the correct hex color
+
+====================================================================
+2.6.1.1 (5/26/2020)
+
+REMOVED:lm
 *you no longer lose a level after being inactive for 2 days because of the 12 hour rules
 
 ====================================================================
@@ -13,7 +27,7 @@ CHANGES:
 *if you don't talk for 12 hours you will lose 0-1 xp every message
 
 ====================================================================
-2.6 (5/26/2020)
+2.6 (5/26/2020) (biggest update as of update)
 
 ADDITIONS:
 *roleinfo, gives some info about a role
@@ -199,7 +213,7 @@ CHANGES:
 *the default time for rps is now 15
 
 ====================================================================
-2.2 (5/20/2020)
+2.2 (5/20/2020) (biggest update as of update)
 
 ADDITIONS:
 *timer, starts a timer, say [timer again to end it, (it's always in seconds)
@@ -232,7 +246,7 @@ CHANGES:
 *command names are now not caps-sensitive
 
 ====================================================================
-2.1.1 (5/20/2020)
+2.1.1 (5/20/2020) (biggest update as of update)
 
 ADDITIONS:
 *Update log

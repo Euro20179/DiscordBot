@@ -51,17 +51,16 @@ INFO
 ``mballreplylist/8ballreplylist/8breplylist`` (--delete)
 ``mostroles`` (-top <top>)
 ``color`` [role] [color <r, g, b>] (--delete)
-``cc`` [channel]
+``cc/channelinfo/ci`` [channel]
 ``servericon`` (--delete)
 ``changes`` (--nlatest) (--dms) (--delete) (-v)
 ``commandusage`` [command] (--delete)
 ``commandcount`` (--delete)
-``pincount`` [channel] (--delete)
 
 MISC
-ping (--delete)
+``ping`` (--delete)
 ``mymoney/mmoney`` (--delete)
-``alphabet/alpha`` (--delete)
+``alphabet/alpha`` (--delete) (--vowels) (--consonants)
 ``doesnothing`` <filename> (--delete)
 ``stop`` (--delete)
 ``mballreply`` <reply> (only availble to certain people)
