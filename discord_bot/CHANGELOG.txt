@@ -1,3 +1,9 @@
+2.6.1.1 (5/26/2020)
+
+REMOVED:
+*you no longer lose a level after being inactive for 2 days because of the 12 hour rules
+
+====================================================================
 2.6.1 (5/26/2020)
 
 CHANGES:

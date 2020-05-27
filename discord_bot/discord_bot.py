@@ -12,7 +12,7 @@ import json
 #^ maybe eventually
 
 DELETE = "--delete"
-VERSION = "2.6.1"
+VERSION = "2.6.1.1"
 Stop = False
 
 playingGuessingGame = {}
@@ -68,13 +68,9 @@ async def reduceXP(msg):
 			if time.time() - data[user]["lastTalked"] >= 43200:
 				if data[user]["xp"] > 0:
 					data[user]["xp"] -= random.randint(0, 1)
-				if data[user]["xp"] <= (data[user]["level"] * 1000) // 2:
+				if data[user]["xp"] <= (data[user]["level"] * 1000) // 2 and data[user]["level"] > 0:
 					data[user]["level"] -= 1
 					data[user]["xp"] = (data[user]["level"] * 1000) // 2 + 1500
-			if time.time() - data[user]["lastTalked"] >= 172800 and data[user]["level"] >= 0:
-				data[user]["level"] -= 1
-				data[user]["xp"] -= 1000
-				data[user]["lastTalked"] = time.time()
 		clearFile(f)
 		json.dump(data, f)
 
