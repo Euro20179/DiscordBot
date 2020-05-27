@@ -1067,13 +1067,13 @@ async def on_message(msg):
 		elif cmd == "timer":
 			if TICDelete(content):
 				await msg.delete()
-			if not runningTimer.get(msg.author):
+			if not runningTimer.get(msg.author.id):
 				runningTimer[msg.author.id] = time.time()
 				await msg.channel.send(f'{msg.author.mention} timer started')
 				return
-			if runningTimer.get(msg.author) and testInContent(content, "--get"):
+			if runningTimer.get(msg.author.id) and testInContent(content, "--get"):
 				await msg.channel.send(embed=discord.Embed(title=str(round(time.time() - runningTimer[msg.author.id], 2)) + " seconds"))
-			elif runningTimer.get(msg.author):
+			elif runningTimer.get(msg.author.id):
 				await msg.channel.send(embed=discord.Embed(title=str(round(time.time() - runningTimer[msg.author.id], 2)) + " seconds"))
 				del runningTimer[msg.author.id]
 				return
