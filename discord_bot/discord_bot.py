@@ -12,7 +12,7 @@ tracemalloc.start()
 #TODO Make a stopwatch and a timer
 
 DELETE = "--delete"
-VERSION = "3.1.1"
+VERSION = "3.1.1.2"
 Stop = False
 
 playingGuessingGame = {}
@@ -820,7 +820,7 @@ async def mostRoles(msg, content, cmd="mostroles"):
 
 async def clear(msg, content, cmd="clear"):
 	amnt = int(content.split(PREFIX + cmd)[1].strip())
-	if userHasRole(msg, "Staff", "Supreme Admin :)", "Admin"):
+	if userHasRole(msg, "Staff", "Supreme Admin :)", "Admin", "Supreme Administrator :)", "Administrator"):
 		await msg.channel.purge(limit=amnt)
 	else:
 		await msg.channel.send(f"{msg.author.mention} you can't do that")
@@ -873,7 +873,7 @@ async def changes(msg, content, cmd="changes"):
 	if TICDelete(content): await msg.delete()
 	ver = splitContent(content, "-v ")[1].strip() if testInContent(content, "-v ") else None
 	with open("CHANGELOG.txt", "r") as f:
-		if testInContent(content, "--nlatest"):
+		if not testInContent(content, "--nlatest"):
 			c = f.read().split("\n")
 			c = c[:c.index("====================================================================")]
 		elif ver:
