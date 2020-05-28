@@ -1,31 +1,36 @@
 KEY
 key: () optional option, <> required parameter, [] optional parameter, *: as many as you want
 
+ANYMESSAGE:
+``---chkx`` the bot will react with a check and x on your message
+```---delete``` the bot will delete your message
+
 HELP
 ``help`` [command or category] (--all)
 
 FUN
 ``level/rank`` [user]
-``top``
+``top`` [top] (--delete)
 ``ship`` <name1>, <name2> (sep with commas)
-``echo`` <message> (--e/--embed) (--delete)
-``8ball`` [question]
+``echo`` <message> (--e) (--delete)
+``8ball`` [question] (-dofirst)
 ``spam`` <amount> <message> (--delete) [-random <op1>, <op2>]
-``randomface/rface`` (--delete)
+``randomface/rface`` (--delete) (-dofirst)
 ``thetroycommand/ttc`` (--delete)
-``unicodechar/ucodechar`` (--delete)
+``unicodechar/ucodechar`` (--delete) (-dofirst)
 ``spacer`` <spaces> <message> (-sep)
-``serveremtoe`` [amount]
-``upperlower/ul`` <message> (--delete)
+``serveremtoe`` [amount] (-dofirst)
+``upperlower/ul`` <message> (--delete) (-dofirst)
 ``flush`` <message> (--delete)
 ``longmessage`` (--delete)
 ``complexmessage`` <send> <filename.ext> <contents>
 ``message`` <send> <filename>.txt <contents>
-``sanity`` <message> (--delete) (-r)
+``sanity`` <message> (--delete) (-r) (-dofirst)
 ``family`` (--delete)
 ``count`` (--i) (--b) (--ib)
 ``reverse`` (--delete)
-``piglatin`` <essagemay> (--kc
+``piglatin`` <essagemay> (--kc) (-dofirst)
+``iq`` [something] (-dofirst)
 
 GAMES
 ``guessinggame`` [low] [high] [lives]
@@ -34,14 +39,16 @@ GAMES
 
 RANDOM
 ``coin`` (-bet h/t) (--delete)
-``rand`` <low> <high> [round] (--even) (--odd) (--delete)
-``choose`` *<picks> (seperated by commas) (-picks <amount>)
+``rand`` <low> <high> [round] (--even) (--odd) (--delete) (-dofirst)
+``choose`` *<picks> (seperated by commas) (-picks <amount>) (-dofirst)
 
 MATHY
-``toc`` <fahrenheit temp>
-``tof`` <celcius temp>
-``hex`` *<num> (seperated with commas)
-``bin`` *<num> (seperated with commas)
+``toc`` <fahrenheit temp> (-dofirst)
+``tof`` <celcius temp> (-dofirst)
+``hex`` *<num> (seperated with commas) (-dofirst)
+``bin`` *<num> (seperated with commas) (-dofirst)
+``oct`` *<num> (seperated with commas) (-dofirst)
+``calc/eval`` <equation> (--delete)
 
 INFO
 ``roleinfo`` <role> (--delete)
@@ -49,7 +56,7 @@ INFO
 ``rolecount`` [server member] (--delete)
 ``compareroles/comproles`` <server member 1> <server member 2>
 ``mballreplylist/8ballreplylist/8breplylist`` (--delete)
-``mostroles`` (-top <top>)
+``mostroles`` (-top <top>) (-dofirst)
 ``color`` [role] [color <r, g, b>] (--delete)
 ``cc/channelinfo/ci`` [channel]
 ``servericon`` (--delete)
@@ -60,12 +67,12 @@ INFO
 MISC
 ``ping`` (--delete)
 ``mymoney/mmoney`` (--delete)
-``alphabet/alpha`` (--delete) (--vowels) (--consonants)
+``alphabet/alpha`` (--delete) (--vowels) (--consonants) (-dofirst)
 ``doesnothing`` <filename> (--delete)
 ``stop`` (--delete)
 ``mballreply`` <reply> (only availble to certain people)
-``timer`` (--delete)
-``response`` <message> (-lim)
+``stopwatch`` (--delete)
+``response`` <message> (-lim) (-dofirst)
 ``wiki/wikipedia`` <query> (--delete)
 ``clear`` <messages> (only available to staff)
 

@@ -1,3 +1,42 @@
+3.0-R1 (5/27/2020) (biggest update as of update)
+
+ADDITIONS:
+*iq, gives an iq
+*add ---reactchkx or ---chkx for the bot to react with a check and x on your message
+*top now has --delete and you can specify the top [blank]
+*--delete now works with calc
+*oct, gives the base 8 version of a number
+*add -dofirst before the second command in a command to get the result of that first
+    *example: [spam 10 -dofirst [piglatin hello
+    *this will send 10 of ellohay
+    *it'll only work for some commands
+        *commands that work with it will be shown in the help
+
+CHANGES:
+*sarcastic responses are rarer
+*you must use --e to embed with the echo command
+*calc command is now actually in the help thing (very nice i know)
+*renamed timer to stopwatch
+*removed rawlevels command
+
+REMOVED:
+*--lives+ and --lives- in guessinggame
+
+FIXES:
+*small bug
+*testing if user had a certain role was broken which broke the following commands:
+    8brdel
+    mballreply
+    clear
+*in rps if someone does r and the other person does rock it should now be a tie
+    *this goes with p, and s as well
+*level command broke itself somehow, should be fixed
+
+TECHNICAL:
+*code overhaul
+    *everything now has it's own funciton (except for simple commands like flush or ping, and message and complexmessage share a function)
+
+====================================================================
 2.6.2 (5/26/2020)
 
 ADDITIONS:

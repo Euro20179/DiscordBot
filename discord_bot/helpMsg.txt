@@ -14,12 +14,19 @@ if [user] is provided it'll send that user's stats
 you get 1-100 xp every minute if you talk
 if you're innactive for a month, you'll lose a level, once, per, month
 
-top
+---chkx
+the bot will react with a check and x on your message
+
+---delete
+the bot will delete your message
+
+top [top] (--delete)
 gives the top 10 on the leveling leaderboard
+if top is specified gives the top [top]
 
 ping (--delete)
 
-8ball [question] (--delete) (--embed)
+8ball [question] (--delete) (--embed) (-dofirst)
 (--embed) puts it in an embed
 magic 8 ball command
 
@@ -28,7 +35,7 @@ floods chat with <amount> of <message>
 provide either random or message
 seperate options for random with a comma and space
 
-randface (--delete)
+randface (--delete) (-dofirst)
 says a random face ex: :)
 
 ttc / thetroycommand (--delete)
@@ -38,13 +45,16 @@ PS: Troy says hi
 mymoney (--delete)
 tells you your money
 
-alphabet (--delete) (--vowels) (--consonants)
+alphabet (--delete) (--vowels) (--consonants) (-dofirst)
 says the alphabet
 
-unicodechar [amount] (--delete)
+iq [something] (-dofirst)
+gives the iq of something otherwise you if something isn't specified
+
+unicodechar [amount] (--delete) (-dofirst)
 says [amount] of random unicode/utf-8 characters
 
-serveremote <amount> (--delete)
+serveremote <amount> (--delete) (-dofirst)
 says [amount] of random server emotes
 
 doesnothing <filename> (--delete)
@@ -58,7 +68,7 @@ if -sep is specified it will seperate with the value instead of a space
 version (--delete)
 sends the bot's current version
 
-upperlower / ul <message> (--delete)
+upperlower / ul <message> (--delete) (-dofirst)
 sends <message> but alternating caps
 LiKe ThIs
 
@@ -83,21 +93,24 @@ message <send to chat>, <filename>.txt, <message>
 perameters same as complexmessage except the file is always a text file
 seperate with commas again
 
-echo <message> (--e/--embed) (--delete)
+echo <message> (--e) (--delete)
 deletes your command if (--delete) isn't added
 sends <message> to the chat
 if (--e/--embed) it embeds your message
 is equivelent to:
 spam 1 <message> --delete except it doesn't say done
 
-sanity <message> (--delete) (-r)
+calc / eval <equation> (--delete)
+solves the equation (can't be algebreic)
+
+sanity <message> (--delete) (-r) (-dofirst)
 says the sanity of <message> rounded to (-round) if specified
 
 coin (-bet h/t) (--delete)
 flips a coin
 -bet bets on a side
 
-rand <low> <high> [round] (--even) (--odd) (--delete)
+rand <low> <high> [round] (--even) (--odd) (--delete) (-dofirst)
 sends a random number from <low> to <high>
 if it is a decimal number it rounds it by [round] amount
 if [round] is left blank it doesn't round
@@ -125,7 +138,7 @@ counts in #counting
 --b makes it bold
 --ib makes it both
 
-choose *<options> (-picks <picks>)
+choose *<options> (-picks <picks>) (-dofirst)
 chooses <picks> amount between <options>
 seperate each option with a comma
 
@@ -135,11 +148,11 @@ shows a list of all the 8ball replies
 reverse <message>
 reverses your message
 
-piglatin <message> (--kc)
+piglatin <message> (--kc) (-dofirst)
 puts your message in pig latin
 (--kc) keeps capitalization
 
-mostroles <top> (--delete)
+mostroles <top> (--delete) (-dofirst)
 prodcues a list of the <top> amount of people with the most roles
 
 imscared
@@ -175,8 +188,8 @@ you get [lives] attemps to guess it, by default 5
 you can do --lives+ to add 1 life
 and --lives- to subtract 1 life durring a game
 
-timer (--delete)
-starts a timer that always tells the seconds passed until you do [timer again
+stopwatch (--delete)
+starts a stopwatch that always tells the seconds passed until you do [stopwatch again
 
 commandcount (--delete)
 says the amount of commands
@@ -185,18 +198,22 @@ reactiontime
 it'll say GO
 and you have to say a message and it'll tell you your "reaction time" idk how accurate it is
 
-response <message> (-lim)
+response <message> (-lim) (-dofirst)
 sesarches for <message> in the current channel with a limit of (-lim) (by default 1000) messages if it finds it it says the message after <message>
 
 wiki / wikipedia <query> (--delete)
 searches wikipedia for <query> deletes your message if (--delete)
 
-hex *<num>
+hex *<num> (-dofirst)
 gives the hexidecimal form of a number
 make sure to seperate each number with a comma and space
 
-bin *<num>
+bin *<num> (-dofirst)
 gives the binary form of a number
+make sure to seperate each number with a comma and space
+
+oct *<num> (-dofirst)
+gives the base 8 version of a number
 make sure to seperate each number with a comma and space
 
 commandusage [command] (--delete)
@@ -210,10 +227,10 @@ info = time + date creation and role color
 ship <name1>, <name2> (sep with commas)
 takes the first half of name 1 and combinds it with the 2nd half of name 2
 
-toc <fahrenheit temp>
+toc <fahrenheit temp> (-dofirst)
 converts to fahrenheit from celcius
 
-tof <celcius temp>
+tof <celcius temp> (-dofirst)
 converts from celcius to fahrenheit
 
 clear <messages> (only available to staff)
