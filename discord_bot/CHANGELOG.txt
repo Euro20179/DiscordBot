@@ -1,3 +1,15 @@
+3.0-rc3 (5/27/2020)
+
+CHANGES:
+*timer can be used along with stopwatch
+
+FIXES:
+*serveremote works
+*fixed a coding error that broke a million things, they should work now
+*reacion -> reaction
+
+====================================================================
+
 3.0-rc2 (5/27/2020)
 
 ADDITIONS:

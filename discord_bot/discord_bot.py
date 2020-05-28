@@ -11,7 +11,7 @@ import json
 #TODO Make a stopwatch and a timer
 
 DELETE = "--delete"
-VERSION = "3.0-rc2"
+VERSION = "3.0-rc3"
 Stop = False
 
 playingGuessingGame = {}
@@ -113,9 +113,10 @@ def userHasRole(msg, *roles)->bool:
 	return False
 
 def isInt(testee)->bool:
-	try: int(testee)
+	try: 
+		int(testee)
+		return True
 	except:	return False
-	else:  True
 
 def findMember(c, msg)->discord.Member:
 	return discord.utils.find(lambda m: str(m.id) == c or str(m.display_name.split("#")[0].lower()) == c.lower(), msg.guild.members)
@@ -269,9 +270,11 @@ async def iq(msg, content, cmd="iq"):
 	c = msg.author.mention if not splitContent(content, cmd, index=1) else splitContent(content, cmd, index=1)
 	await msg.channel.send(f'{c} your iq is *DRUMROLL*...')
 	await asyncio.sleep(random.uniform(.7, 1.3))
-	if iq > 150:
+	if iq == 200:
+		msg = await msg.channel.send(f'you are the next einstein, you are smart enough to realize iq is dumb, so there is no need to say it')
+	elif iq > 150:
 		msg = await msg.channel.send(f"that's a pretty high iq: {iq}")
-	if iq > 50 and iq < 150:
+	elif iq > 50 and iq <= 150:
 		msg = await msg.channel.send(iq)
 	elif iq < 50:
 		msg = await msg.channel.send(f"you good there mate, your iq is {iq}")
@@ -428,7 +431,7 @@ async def serverEmote(msg, content, cmd="serveremote"):
 	sep = "\n"
 	if testInContent(content, "-sep"):
 		sep = content.split("-sep ")[1]
-	if check_int(splitContent(content.lower(), " ", index=1)): amount = int(splitContent(content.lower(), " ", index=1))
+	if isInt(splitContent(content.lower(), " ", index=1)): amount = int(splitContent(content.lower(), " ", index=1))
 	sendE = [str(random.choice(client.emojis)) for _ in range(amount)]
 	msg = await oneLineCmd(msg, sep.join(sendE))
 	return msg
@@ -1068,7 +1071,7 @@ async def on_message(msg):
 		cmd = getCmd(content)
 
 		#ongoing events
-		if cmd == "stopwatch":
+		if cmd in ["stopwatch", "timer"]:
 			if TICDelete(content):
 				await msg.delete()
 			if not runningStopwatch.get(msg.author.id):
@@ -1110,7 +1113,7 @@ async def on_message(msg):
 			await runCommand(msg, content, cmd)
 
 	if reacting.get(msg.author.id):
-		await msg.channel.send(f'{msg.author.mention} your reacion time is {time.time() - reacting[msg.author.id] - client.latency} seconds')
+		await msg.channel.send(f'{msg.author.mention} your reaction time is {time.time() - reacting[msg.author.id] - client.latency} seconds')
 		del reacting[msg.author.id]
 
 	if playingGuessingGame.get(msg.author.id):

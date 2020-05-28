@@ -71,7 +71,7 @@ MISC
 ``doesnothing`` <filename> (--delete)
 ``stop`` (--delete)
 ``mballreply`` <reply> (only availble to certain people)
-``stopwatch`` (--delete)
+``stopwatch/timer`` (--delete)
 ``response`` <message> (-lim) (-dofirst)
 ``wiki/wikipedia`` <query> (--delete)
 ``clear`` <messages> (only available to staff)

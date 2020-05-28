@@ -188,7 +188,7 @@ you get [lives] attemps to guess it, by default 5
 you can do --lives+ to add 1 life
 and --lives- to subtract 1 life durring a game
 
-stopwatch (--delete)
+stopwatch / timer (--delete)
 starts a stopwatch that always tells the seconds passed until you do [stopwatch again
 
 commandcount (--delete)
@@ -240,6 +240,9 @@ XD
 
 XD
 lol
+
+me 
+no
 
 helpMsg.txt
 a very epic text file
