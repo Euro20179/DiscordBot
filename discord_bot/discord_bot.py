@@ -12,7 +12,7 @@ tracemalloc.start()
 #TODO Make a stopwatch and a timer
 
 DELETE = "--delete"
-VERSION = "3.1"
+VERSION = "3.1.1"
 Stop = False
 
 playingGuessingGame = {}
@@ -490,6 +490,7 @@ async def writeRoles(msg, content, cmd="doesnothing"):
 
 
 async def spacer(msg, content, cmd="spacer"):
+	await msg.delete()
 	sep = " "
 	c = splitContent(content.lower(), f'{cmd} ', index=1)
 	spaces = c[:c.find(" ")]
@@ -862,8 +863,8 @@ async def channelInfo(msg, content, cmd="cc"):
 	diff = datetime.datetime.now() - created
 	pinCount = len(await channel.pins())
 	daysTillLastPin = (50 - pinCount) / int(str(diff).split(" ")[0])
-	embed.add_field(name="Created at", value=channel.created_at, inline=False)
-	embed.add_field(name="Pins", value=len(await channel.pins()), inline=False)
+	embed.add_field(name="Created at", value=created, inline=False)
+	embed.add_field(name="Pins", value=pinCount, inline=False)
 	embed.add_field(name="days till last pin", value=str(daysTillLastPin), inline=False)
 	embed.add_field(name="time since creation", value=diff)
 	await msg.channel.send(embed=embed)
@@ -1061,9 +1062,6 @@ async def on_message(msg):
 
 	content = msg.content
 	if not content: return
-
-	if msg.author.id == 469703194751008768 and content in ["people know me as weird gif girl", "im known as weird gif girl", "ppl call me weird gif girl", "ppl know me as weird gif girl"]:
-		msg.channel.send("nice to meet you ghostly")
 
 	if msg.author.id == 311621977339068418 and msg.channel.id not in (658815060646297659, 715043261110288415):
 		await msg.delete()
