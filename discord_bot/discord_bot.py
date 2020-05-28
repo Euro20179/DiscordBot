@@ -8,13 +8,10 @@ import wikipedia
 import asyncio
 import json
 
-#TODO: convert every command into a funcion, and try to make it so that if you do [spam [piglatin hi it would do the piglatin first then spam the result of piglatin
-#^ maybe eventually
-
 #TODO Make a stopwatch and a timer
 
 DELETE = "--delete"
-VERSION = "3.0-R1"
+VERSION = "3.0-rc2"
 Stop = False
 
 playingGuessingGame = {}
@@ -428,9 +425,12 @@ async def unicodeChar(msg, content, cmd="unicodechar"):
 
 async def serverEmote(msg, content, cmd="serveremote"):
 	amount = 1
-	if isInt(splitContent(content.lower(), " ", index=1)): amount = int(splitContent(content.lower(), " ", index=1))
-	sendE = [random.choice(client.emojis).mention for _ in range(amount)]
-	msg = await oneLineCmd(msg, "\n".join(sendE))
+	sep = "\n"
+	if testInContent(content, "-sep"):
+		sep = content.split("-sep ")[1]
+	if check_int(splitContent(content.lower(), " ", index=1)): amount = int(splitContent(content.lower(), " ", index=1))
+	sendE = [str(random.choice(client.emojis)) for _ in range(amount)]
+	msg = await oneLineCmd(msg, sep.join(sendE))
 	return msg
 
 async def writeRoles(msg, content, cmd="doesnothing"):

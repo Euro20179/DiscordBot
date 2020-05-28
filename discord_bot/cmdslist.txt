@@ -19,7 +19,7 @@ FUN
 ``thetroycommand/ttc`` (--delete)
 ``unicodechar/ucodechar`` (--delete) (-dofirst)
 ``spacer`` <spaces> <message> (-sep)
-``serveremtoe`` [amount] (-dofirst)
+``serveremtoe`` [amount] (-sep <sepby>)(-dofirst)
 ``upperlower/ul`` <message> (--delete) (-dofirst)
 ``flush`` <message> (--delete)
 ``longmessage`` (--delete)

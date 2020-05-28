@@ -1,3 +1,12 @@
+3.0-rc2 (5/27/2020)
+
+ADDITIONS:
+*you can use sep for the serveremote command
+
+FIXES:
+*serveremote works
+
+====================================================================
 3.0-R1 (5/27/2020) (biggest update as of update)
 
 ADDITIONS:
