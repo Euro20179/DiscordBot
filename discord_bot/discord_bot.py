@@ -7,11 +7,14 @@ import pyautogui
 import wikipedia
 import asyncio
 import json
+import tracemalloc
+
+tracemalloc.start()
 
 #TODO Make a stopwatch and a timer
 
 DELETE = "--delete"
-VERSION = "3.0-rc3"
+VERSION = "3.0"
 Stop = False
 
 playingGuessingGame = {}
@@ -25,9 +28,14 @@ token = "NjQxNzk1NjU2Mzc3MTcyMDAw.XcNk8g.HEvnaXjuXFQhN1iilaaffbiPcoo"
 
 client = commands.Bot(command_prefix=PREFIX)
 
-BASICINFO = {"level": 1, "xp": 0, "required": 100, "lastTalked": 0}
+BASICINFO = {"level": 1, "xp": 0, "required": 1000, "lastTalked": 0}
 
-equation = "level * 1000"
+def timeIt(func):
+	async def inner(*args, **kwargs):
+		start = time.time()
+		await func(*args, **kwargs)
+		print(time.time() - start, func)
+	return inner
 
 def isBot(msg, client)->bool:
 	if msg.author == client.user: return True
@@ -38,8 +46,8 @@ async def giveXP(msg):
 	if isBot(msg, client): return
 	with open("levelingData.json", "r+") as f:
 		data = json.load(f)
-		if data.get(str(msg.author.id)):
-			userInfo = data[str(msg.author.id)]
+		userInfo = data.get(str(msg.author.id))
+		if userInfo:
 			lastTalked = int(userInfo["lastTalked"])
 			if time.time() - lastTalked >= 60:
 				level = userInfo["level"]
@@ -51,7 +59,7 @@ async def giveXP(msg):
 					level += 1
 					xp //= 2
 					await msg.channel.send(f'{msg.author.mention} you have leveled up to level {level}, very cool')
-				required = eval(equation)
+				required = 1000 * level
 				userInfo = {"level": level, "xp": xp, "required": required, "lastTalked": lastTalked}
 			data[str(msg.author.id)] = userInfo
 		else:
@@ -79,7 +87,7 @@ def testInContent(content, *testfor)->str:
 		if x.lower() in content.lower():
 			return x
 	return ""
-	
+
 def TICDelete(content)->bool:
 	return testInContent(content, DELETE)
 
@@ -125,6 +133,7 @@ def clearFile(file):
 	file.seek(0)
 	file.truncate()
 
+
 async def oneLineCmd(msg, say, delete=True):
 	if TICDelete(msg.content) and delete: 
 		say = say.replace(DELETE, "")
@@ -132,8 +141,9 @@ async def oneLineCmd(msg, say, delete=True):
 	msg = await msg.channel.send(say)
 	return msg
 
+
 async def help(msg, content, cmd="help"):
-	categories = ["HELP", "FUN", "GAMES", "RANDOM", "MATHY", "INFO", "MISC", "INTERESTING", ""]
+	categories = ("HELP", "FUN", "GAMES", "RANDOM", "MATHY", "INFO", "MISC", "INTERESTING", "")
 	if splitContent(content, cmd + " ", index=1, func=lambda x: x.upper()) in categories:
 		with open("cmdslist.txt", "r") as f:
 			embed = discord.Embed(title="Help", color=discord.Color(0x00ffe2))
@@ -188,6 +198,7 @@ async def help(msg, content, cmd="help"):
 				if n+1 >= endLN: break
 			await msg.channel.send(embed=discord.Embed(title=text, color=discord.Colour(0x00ffe2)))
 
+
 async def spam(msg, messages, message, BlockStop=False):
 	global Stop
 	for _ in range(int(messages)):
@@ -196,6 +207,7 @@ async def spam(msg, messages, message, BlockStop=False):
 			return ""
 		await msg.channel.send(random.choice(message))
 		await asyncio.sleep(random.uniform(.6, 1.3))
+
 
 async def ping(msg, content, cmd="ping"):
 	if "<@" in content:
@@ -216,6 +228,7 @@ async def ping(msg, content, cmd="ping"):
 		await msg.channel.send("LOL GET PRANKD THIS DOES NOTHING ROFL XD XD XD XD XD")
 	else: await msg.channel.send(f':ping_pong: {round(client.latency * 1000)}ms')	
 
+
 async def echo(msg, content, cmd="echo"):
 	if not TICDelete(content): 
 		await msg.delete()
@@ -225,9 +238,10 @@ async def echo(msg, content, cmd="echo"):
 		embed = discord.Embed(title=splitContent(c, cmd, index=1))
 		await msg.channel.send(embed=embed)			
 		return ""
-	if random.random() > .99: await msg.author.send("the secret message dm euro for a doubley secret role, if you tell anyone how you got this the role will be taken away\nif you already have the role, you may choose to dm a screenshot of this message to someone, and they have the chance to get the role")
 	msg = await msg.channel.send(splitContent(content, cmd, index=1))
+	if random.random() > .99: await msg.author.send("the secret message dm euro for a doubley secret role, if you tell anyone how you got this the role will be taken away\nif you already have the role, you may choose to dm a screenshot of this message to someone, and they have the chance to get the role")	
 	return msg
+
 
 async def timers(msg, content, cmd="timers"):
 	embed = discord.Embed(title="timers")
@@ -235,11 +249,12 @@ async def timers(msg, content, cmd="timers"):
 		embed.add_field(name=user, value=round(time.time() - t, 2))
 	await msg.channel.send(embed=embed)
 
+
 async def cmdUsage(msg, content, cmd="commandusage"):
 	if TICDelete(content): 
 		await msg.delete()
 		content = content.replace(DELETE, "")
-	split = splitContent(content, cmd, index=1, func=lambda x: x.strip())
+	split = splitContent(content, cmd, index=1).strip()
 	if testInContent(content, "--raw"):
 		with open("commandusage.json", "rb") as j:
 			await msg.channel.send(file=discord.File(j, "commandusage.json"))
@@ -265,6 +280,7 @@ async def cmdUsage(msg, content, cmd="commandusage"):
 				n += 1
 			await msg.channel.send(embed=embed)
 
+
 async def iq(msg, content, cmd="iq"):
 	iq = random.randint(-3, 200)
 	c = msg.author.mention if not splitContent(content, cmd, index=1) else splitContent(content, cmd, index=1)
@@ -282,6 +298,7 @@ async def iq(msg, content, cmd="iq"):
 		msg = await msg.channel.send(f"you literally don't have a brain you somehow have a negative iq idek\nIQ: {iq}")
 	return msg
 
+
 async def shrug(msg, content, cmd="shrug"):
 	if TICDelete(content): await msg.delete()
 	msg = await msg.channel.send(content=r"¯\_(ツ)_/¯")
@@ -294,6 +311,7 @@ async def getUserData(user):
 	with open("levelingData.json", "r") as f:
 		data = json.load(f)
 		return data.get(str(user))
+
 
 async def level(msg, content, cmd="level"):
 	c = str(content.split(cmd)[1].strip())
@@ -312,6 +330,7 @@ async def level(msg, content, cmd="level"):
 	embed.add_field(name="xp", value=xp, inline=False)
 	embed.add_field(name="required", value=required, inline=False)
 	await msg.channel.send(embed=embed)
+
 
 async def leaderboard(msg, content, cmd="top"):
 	if testInContent(content, "--rawlevels"):
@@ -345,6 +364,7 @@ async def leaderboard(msg, content, cmd="top"):
 		await users[0][0].add_roles(firstPlaceRole)
 		await msg.channel.send(embed=embed)
 
+
 async def magicBall(msg, content, cmd="8ball"):
 	if TICDelete(content): await msg.delete()
 	with open("mballresponse.txt", "r") as f:
@@ -355,6 +375,7 @@ async def magicBall(msg, content, cmd="8ball"):
 	else: 
 		msg = await msg.channel.send(f'Answer: {random.choice(responses)}')
 		return msg
+
 
 async def spamCmd(msg, content, cmd="spam"):
 	global Stop
@@ -370,34 +391,37 @@ async def spamCmd(msg, content, cmd="spam"):
 	lim = random.randint(40000, 110000)
 	messages = c[:c.find(" ")]
 
-	if not check_int(messages):
-		await msg.channel.send("not a valid number of messages")			
-		return ""
+	if not isInt(messages):
+		msg = await msg.channel.send("not a valid number of messages")			
+		return msg
 	if int(messages) > lim:
-		await msg.channel.send(f"pls consult a psychiatrist that's too many messages\nthe limit is: {lim}")		
-		return ""
+		msg = await msg.channel.send(f"pls consult a psychiatrist that's too many messages\nthe limit is: {lim}")		
+		return msg
 
-	message = c[c.find(messages) + len(messages):]
+	if int(messages) < 0: 
+		msg = await msg.channel.send("ERROR: MESSAGE COUNT LESS THAN 0")
+		return msg
 
 	if testInContent(c, "-random"):
 		c = c.replace("-random", "")
 		c = c[c.find(messages) + len(messages):]
 		options = c.split(", ")
 		await spam(msg, int(messages), options)
-		await msg.channel.send(random.choice(["done", "Done"]))
-		return ""
+	message = c[c.find(messages) + len(messages):]
 
-	await spam(msg, int(messages), [message])
+	if not testInContent(c, "-random"):
+		await spam(msg, int(messages), [message])
 
-	if random.random() >= .99:
-		await msg.channel.send("You found an easter egg hehe")
+	if random.random() >= .99: await msg.channel.send("You found an easter egg hehe")
 	else: await msg.channel.send(random.choice(["done", "Done"]))
+
 
 async def randomFace(msg, content, cmd="randomface"):
 	EYES = [":", ";"]
 	MOUTHS = [")", "(", "{", "}", "[", "]", "p", "P", "d", "l"]
 	msg = await oneLineCmd(msg, f'{random.choice(EYES)}{random.choice(MOUTHS)}' if random.random() >= .5 else f'{random.choice(MOUTHS)}{random.choice(EYES)}')
 	return msg
+
 
 async def alphabet(msg, content, cmd="alphabet"):
 	if testInContent(content, "--vowels"): send = "aeiou(y)"
@@ -407,6 +431,7 @@ async def alphabet(msg, content, cmd="alphabet"):
 	msg = await oneLineCmd(msg, send)
 	return msg
 
+
 async def unicodeChar(msg, content, cmd="unicodechar"):
 	amount = 1
 	if TICDelete(content): 
@@ -415,8 +440,8 @@ async def unicodeChar(msg, content, cmd="unicodechar"):
 	if testInContent(content, " "):
 		amount = splitContent(content, " ", index=1)
 		if not isInt(amount):
-			await msg.channel.send("NaN")
-			return
+			msg = await msg.channel.send("NaN")
+			return msg
 		else: amount = int(amount)
 
 	if "--value" in content:
@@ -425,6 +450,7 @@ async def unicodeChar(msg, content, cmd="unicodechar"):
 	
 	msg = await msg.channel.send("\n".join(chars))
 	return msg
+
 
 async def serverEmote(msg, content, cmd="serveremote"):
 	amount = 1
@@ -435,6 +461,7 @@ async def serverEmote(msg, content, cmd="serveremote"):
 	sendE = [str(random.choice(client.emojis)) for _ in range(amount)]
 	msg = await oneLineCmd(msg, sep.join(sendE))
 	return msg
+
 
 async def writeRoles(msg, content, cmd="doesnothing"):
 	filename = splitContent(content.lower(), cmd, index=1)
@@ -466,6 +493,7 @@ async def writeRoles(msg, content, cmd="doesnothing"):
 	with open(f'.\\roles\\{filename}.txt', "rb") as f:
 		await msg.channel.send(file=discord.File(f, f'{filename}.txt'))
 
+
 async def spacer(msg, content, cmd="spacer"):
 	sep = " "
 	c = splitContent(content.lower(), f'{cmd} ', index=1)
@@ -481,6 +509,7 @@ async def spacer(msg, content, cmd="spacer"):
 	word = add.join(c)
 	msg = await oneLineCmd(msg, word)
 	return msg
+
 
 async def upperLower(msg, content, cmd="upperlower"):
 	mssg = splitContent(content, cmd + " ", index=1)
@@ -499,6 +528,7 @@ async def upperLower(msg, content, cmd="upperlower"):
 
 	msg = await msg.channel.send("".join(newPhrase))
 	return msg
+
 
 async def startRPS(msg, content, cmd="rps"):
 	opps = {"rock": "scissors", "paper": "rock", "scissors": "paper", "r": "scissors", "p": "rock", "s": "paper"}
@@ -535,6 +565,7 @@ async def startRPS(msg, content, cmd="rps"):
 		else: await msg.channel.send("ITS A DRAW")
 	else: await msg.channel.send("either someone spelled something wrong, or someone isn't playing by the rules")
 
+
 async def complexMessage(msg, content, cmd="complexmessage"):
 	c = splitContent(content.lower(), cmd, index=1).split(", ")
 	await msg.delete()
@@ -544,13 +575,9 @@ async def complexMessage(msg, content, cmd="complexmessage"):
 		mssg = c[2]
 	except: await msg.channel.send("make sure you give and seperate each paremeter with a ','")
 
-	if send == "dm":
-		dm = True
-		send = False
-	else:
-		send = True
-		dm = False
-		
+	dm = True if send == "dm" else False
+	send = False if send == "dm" else True
+
 	if cmd == "message": filename = f'{filename}.txt'
 
 	with open(f'.\\message\\{filename}', "w") as f:
@@ -561,6 +588,7 @@ async def complexMessage(msg, content, cmd="complexmessage"):
 	if dm:
 		with open(f'.\\message\\{filename}', 'rb') as f:
 			await msg.author.send(file=discord.File(f, filename))
+
 
 async def sanity(msg, content, cmd="sanity"):
 	c = content.split(cmd)[1]
@@ -767,6 +795,8 @@ async def mball(msg, content, cmd="8ball"):
 	if TICDelete(content): await msg.delete()
 	with open("mballresponse.txt", "rb") as f:
 		await msg.channel.send(file=discord.File(f, "mballresponse.txt"))
+
+
 async def pigLatin(msg, content, cmd="piglatin"):
 	CASE = "--kc"
 	content = content.replace(CASE, "") if testInContent(content, CASE) else content.lower()
@@ -800,25 +830,6 @@ async def mostRoles(msg, content, cmd="mostroles"):
 	top = [f'{r}, {memberRoles[r]}' for n, r in enumerate(sortedKeys) if n < top]
 	msg = await msg.channel.send("\n".join(top))
 	return msg
-
-async def spamDms(msg, content, cmd="spamdms"):
-	if TICDelete(content):
-		await msg.delete()
-		content = content.replace(DELETE, "")
-	amnt = content.split(" ")[1]
-	message = content[content.find(amnt):]
-	message = message.replace(amnt, "")
-	if not isInt(amnt):
-		await msg.author.send("not a valid number")
-		return ""
-	amnt = int(amnt)
-	await spam(msg, amnt, message)
-	for x in range(int(amnt)):
-		if Stop:
-			await msg.author.send("stopped")
-			return ""
-		await msg.author.send(message)
-		await asyncio.sleep(random.uniform(.6, 1.3))
 
 async def clear(msg, content, cmd="clear"):
 	amnt = int(content.split(PREFIX + cmd)[1].strip())
@@ -864,6 +875,7 @@ async def channelInfo(msg, content, cmd="cc"):
 	embed.add_field(name="Created at", value=channel.created_at, inline=False)
 	embed.add_field(name="Pins", value=len(await channel.pins()), inline=False)
 	await msg.channel.send(embed=embed)
+
 async def changes(msg, content, cmd="changes"):
 	if TICDelete(content): await msg.delete()
 	Latest = False if testInContent(content, "--nlatest") else True
@@ -879,15 +891,15 @@ async def changes(msg, content, cmd="changes"):
 					c = c[lineN:c.index("====================================================================", lineN)]
 					break
 			else:
-				await msg.channel.send("did not find version")
-				return "did not find version"
+				msg = await msg.channel.send("did not find version")
+				return msg
 		
 		else: c = None
 
 	with open("CHANGELOG.txt", "rb") as f:
-		if testInContent(content, "--dms"): await msg.author.send("\n".join(c)) if c else msg.author.send(file=discord.File(f, "changes.txt"))
-		else: await msg.channel.send("\n".join(c)) if c else await msg.channel.send(file=discord.File(f, "changes.txt"))
-	return
+		if testInContent(content, "--dms"): msg = await msg.author.send("\n".join(c)) if c else msg.author.send(file=discord.File(f, "changes.txt"))
+		else: msg = await msg.channel.send("\n".join(c)) if c else await msg.channel.send(file=discord.File(f, "changes.txt"))
+	return msg
 
 async def commandCount(msg, content, cmd="commandcount"):
 	with open("cmdslist.txt", "r") as f:
@@ -910,30 +922,46 @@ async def hexBinOct(msg, content, cmd="hex"):
 async def response(msg, content, cmd="response", doFirst=False):
 	global Stop
 	if Stop: Stop = False
-	if isBot(msg, client): return ""
+	if isBot(msg, client): return "is bot"
 	limit = 1000
 	mssg = splitContent(content, "response ")[1]
 	if testInContent(mssg, "-lim"):
 		limit = int(splitContent(mssg, "-lim ")[1].strip())
 		if limit > 100000:
-			await msg.channel.send("you cannot go above 100k")
-			return
+			msg = await msg.channel.send("you cannot go above 100k")
+			return msg
 		mssg = splitContent(mssg, " -lim")[0]
 	async with msg.channel.typing():
 		hist = [m.content async for m in msg.channel.history(limit=limit)]
 		responses = []
 		for n, message in enumerate(hist):
-			if Stop: await msg.channel.send("stopped searching")
+			if Stop: 
+				msg = await msg.channel.send("stopped searching")
+				break
 			if message == mssg: responses.append(hist[n - 1])
 		if responses:
 			msg = await msg.channel.send(f'{msg.author.mention} I HAVE FOUND A RESPONSE\n{random.choice(responses)}')
-			return msg
-		else: await msg.channel.send(f'did not find {mssg} in the past {limit} messages in this channel')
+		else: msg = await msg.channel.send(f'did not find {mssg} in the past {limit} messages in this channel')
+		return msg
+
+async def timer(msg, content, cmd="stopwatch"):
+	if TICDelete(content):
+		await msg.delete()
+	if not runningStopwatch.get(msg.author.id):
+		runningStopwatch[msg.author.id] = time.time()
+		msg = await msg.channel.send(f'{msg.author.mention} stopawtch started')
+	if runningStopwatch.get(msg.author.id) and testInContent(content, "--get"):
+		msg = await msg.channel.send(embed=discord.Embed(title=str(round(time.time() - runningStopwatch[msg.author.id], 2)) + " seconds"))
+	elif runningStopwatch.get(msg.author.id):
+		msg = await msg.channel.send(embed=discord.Embed(title=str(round(time.time() - runningStopwatch[msg.author.id], 2)) + " seconds"))
+		del runningStopwatch[msg.author.id]
+	return msg
 
 async def runCommand(msg, content, cmd):
-	if "-dofirst" in content:
-		c = await runCommand(msg, content.replace("-dofirst ", ""), splitContent(content, "-dofirst ", index=1).split(" ")[0][1:])
-		foo = f'{content.split(" -dofirst")[0]} {c.content}'
+	DOFIRST = "-first"
+	if DOFIRST in content:
+		c = await runCommand(msg, content.replace(DOFIRST, ""), splitContent(content, DOFIRST, index=1).split(" ")[0][1:])
+		foo = f'{content.split(f" {DOFIRST}")[0]} {c.content}'
 		await c.delete()
 		content = foo
 	with open("commandusage.json", "r+") as j:
@@ -942,19 +970,20 @@ async def runCommand(msg, content, cmd):
 		except: data[cmd] = 1
 		clearFile(j)
 		json.dump(data, j)
+		
+	if cmd == "timeit":
+		start = time.time()
+		await runCommand(msg, content.replace('[timeit ', ""), splitContent(content, "timeit ", index=1).split(" ")[0][1:])
+		await msg.channel.send(time.time() - start)
 
-	if cmd == "ENDPLS":
+	elif cmd == "ENDPLS":
 		if msg.author.id == 334538784043696130:
 			await msg.channel.send("Logging out")
 			await client.logout()
 		else: await msg.channel.send("smh you can't shut me down i have p o w e r over you")
 
-	elif cmd == "secretcommand":
-		await msg.channel.send("you have found a SECRET COMMAND do secretcommand + 10 for another command (10 doesn't equal 10 ;) )")
-
-	elif cmd == "secretcommand2":
-		await msg.channel.send("the final clue... save - e + 3")
-	
+	elif cmd == "secretcommand": await msg.channel.send("you have found a SECRET COMMAND do secretcommand + 10 for another command (10 doesn't equal 10 ;) )")
+	elif cmd == "secretcommand2": await msg.channel.send("the final clue... save - e + 3")
 	elif cmd == "sav3":
 		await msg.channel.send("i have been lost for 15 years")
 		await asyncio.sleep(1.2)
@@ -1012,7 +1041,6 @@ async def runCommand(msg, content, cmd):
 	elif cmd in ["piglatin", "igpayatinlay"]: content = await pigLatin(msg, content, cmd=cmd)
 	elif cmd == "mostroles": content = await mostRoles(msg, content)
 	elif cmd == "imscared": content = await oneLineCmd(msg, random.choice(["don't be :smiling_imp:", "oh it's ok :)))))))))))))))))", "just don't pay attention of the sounds coming from your attic.....\nit's ok", "it's ok... he's comming :)"]))
-	elif cmd == "spamdms": content = await spamDms(msg, content)
 	elif cmd == "clear": content = await clear(msg, content)
 	elif cmd == "color": content = await color(msg, content)
 	elif cmd == "servericon": content = await serverIcon(msg, content)
@@ -1024,6 +1052,14 @@ async def runCommand(msg, content, cmd):
 	elif cmd == "tof": content = await oneLineCmd(msg, "NaN" if not check_int(splitContent(content, cmd + " ", index=1)) else 9 / 5 * int(splitContent(content, cmd + " ", index=1)) + 32)
 	elif cmd == "toc": content = await oneLineCmd(msg, "NaN" if not check_int(splitContent(content, cmd + " ", index=1)) else 5 / 9 * (int(splitContent(content, cmd + " ", index=1)) - 32))
 	elif cmd == "response": content = await response(msg, content)
+	elif cmd in ["stopwatch", "timer"]: content = await timer(msg, content, cmd=cmd)
+	else: 
+		with open("commandusage.json", "r+") as j:
+			data = json.load(j)
+			del data[cmd]
+			clearFile(j)
+			json.dump(data, j)
+		await msg.channel.send(f'{cmd} is not a thing')
 
 	return content
 
@@ -1046,11 +1082,18 @@ async def on_message(msg):
 		await msg.delete()
 		print("message deleted")
 
+	if testInContent(content, "---delete", "—-delete"): await msg.delete()
+	if testInContent(content, "---delin "):
+		time = splitContent(content, "---delin ", index=1).strip()
+		try: await asyncio.sleep(int(time))
+		except: 
+			await msg.channel.send("NaN")
+			return 
+		await msg.delete()
+
 	if msg.channel.id == 427973752647712768 or testInContent(content, "---chkx", "---reactchkx"):
 		await msg.add_reaction(discord.utils.get(client.emojis, name="Blue_check"))
 		await msg.add_reaction("❌")
-
-	if testInContent(content, "---delete", "—-delete"): await msg.delete()
 
 	if random.random() >= .9993: 
 		if isBot(msg, client): return
@@ -1070,22 +1113,8 @@ async def on_message(msg):
 
 		cmd = getCmd(content)
 
-		#ongoing events
-		if cmd in ["stopwatch", "timer"]:
-			if TICDelete(content):
-				await msg.delete()
-			if not runningStopwatch.get(msg.author.id):
-				runningStopwatch[msg.author.id] = time.time()
-				await msg.channel.send(f'{msg.author.mention} stopawtch started')
-				return
-			if runningStopwatch.get(msg.author.id) and testInContent(content, "--get"):
-				await msg.channel.send(embed=discord.Embed(title=str(round(time.time() - runningStopwatch[msg.author.id], 2)) + " seconds"))
-			elif runningStopwatch.get(msg.author.id):
-				await msg.channel.send(embed=discord.Embed(title=str(round(time.time() - runningStopwatch[msg.author.id], 2)) + " seconds"))
-				del runningStopwatch[msg.author.id]
-				return
-
-		elif cmd == "guessinggame":
+		#ongoing events			
+		if cmd == "guessinggame":
 			c = splitContent(content, cmd)[1]
 			low, high, lives = 1, 100, 5
 			if len(c) > 0:
@@ -1109,8 +1138,7 @@ async def on_message(msg):
 		elif cmd == "stop":
 			if TICDelete(content): await msg.message.delete()
 			Stop = True
-		else: 
-			await runCommand(msg, content, cmd)
+		else: await runCommand(msg, content, cmd)
 
 	if reacting.get(msg.author.id):
 		await msg.channel.send(f'{msg.author.mention} your reaction time is {time.time() - reacting[msg.author.id] - client.latency} seconds')

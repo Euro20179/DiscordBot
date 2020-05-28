@@ -3,7 +3,8 @@ key: () optional option, <> required parameter, [] optional parameter, *: as man
 
 ANYMESSAGE:
 ``---chkx`` the bot will react with a check and x on your message
-```---delete``` the bot will delete your message
+``---delete`` the bot will delete your message
+``---delin``<time> same as delete but in time seconds
 
 HELP
 ``help`` [command or category] (--all)
@@ -13,24 +14,24 @@ FUN
 ``top`` [top] (--delete)
 ``ship`` <name1>, <name2> (sep with commas)
 ``echo`` <message> (--e) (--delete)
-``8ball`` [question] (-dofirst)
+``8ball`` [question] (-first)
 ``spam`` <amount> <message> (--delete) [-random <op1>, <op2>]
-``randomface/rface`` (--delete) (-dofirst)
+``randomface/rface`` (--delete) (-first)
 ``thetroycommand/ttc`` (--delete)
-``unicodechar/ucodechar`` (--delete) (-dofirst)
+``unicodechar/ucodechar`` (--delete) (-first)
 ``spacer`` <spaces> <message> (-sep)
-``serveremtoe`` [amount] (-sep <sepby>)(-dofirst)
-``upperlower/ul`` <message> (--delete) (-dofirst)
+``serveremtoe`` [amount] (-sep <sepby>)(-first)
+``upperlower/ul`` <message> (--delete) (-first)
 ``flush`` <message> (--delete)
 ``longmessage`` (--delete)
 ``complexmessage`` <send> <filename.ext> <contents>
 ``message`` <send> <filename>.txt <contents>
-``sanity`` <message> (--delete) (-r) (-dofirst)
+``sanity`` <message> (--delete) (-r) (-first)
 ``family`` (--delete)
 ``count`` (--i) (--b) (--ib)
 ``reverse`` (--delete)
-``piglatin`` <essagemay> (--kc) (-dofirst)
-``iq`` [something] (-dofirst)
+``piglatin`` <essagemay> (--kc) (-first)
+``iq`` [something] (-first)
 
 GAMES
 ``guessinggame`` [low] [high] [lives]
@@ -39,15 +40,15 @@ GAMES
 
 RANDOM
 ``coin`` (-bet h/t) (--delete)
-``rand`` <low> <high> [round] (--even) (--odd) (--delete) (-dofirst)
-``choose`` *<picks> (seperated by commas) (-picks <amount>) (-dofirst)
+``rand`` <low> <high> [round] (--even) (--odd) (--delete) (-first)
+``choose`` *<picks> (seperated by commas) (-picks <amount>) (-first)
 
 MATHY
-``toc`` <fahrenheit temp> (-dofirst)
-``tof`` <celcius temp> (-dofirst)
-``hex`` *<num> (seperated with commas) (-dofirst)
-``bin`` *<num> (seperated with commas) (-dofirst)
-``oct`` *<num> (seperated with commas) (-dofirst)
+``toc`` <fahrenheit temp> (-first)
+``tof`` <celcius temp> (-first)
+``hex`` *<num> (seperated with commas) (-first)
+``bin`` *<num> (seperated with commas) (-first)
+``oct`` *<num> (seperated with commas) (-first)
 ``calc/eval`` <equation> (--delete)
 
 INFO
@@ -56,7 +57,7 @@ INFO
 ``rolecount`` [server member] (--delete)
 ``compareroles/comproles`` <server member 1> <server member 2>
 ``mballreplylist/8ballreplylist/8breplylist`` (--delete)
-``mostroles`` (-top <top>) (-dofirst)
+``mostroles`` (-top <top>) (-first)
 ``color`` [role] [color <r, g, b>] (--delete)
 ``cc/channelinfo/ci`` [channel]
 ``servericon`` (--delete)
@@ -67,17 +68,18 @@ INFO
 MISC
 ``ping`` (--delete)
 ``mymoney/mmoney`` (--delete)
-``alphabet/alpha`` (--delete) (--vowels) (--consonants) (-dofirst)
+``alphabet/alpha`` (--delete) (--vowels) (--consonants) (-first)
 ``doesnothing`` <filename> (--delete)
 ``stop`` (--delete)
 ``mballreply`` <reply> (only availble to certain people)
 ``stopwatch/timer`` (--delete)
-``response`` <message> (-lim) (-dofirst)
+``response`` <message> (-lim) (-first)
 ``wiki/wikipedia`` <query> (--delete)
 ``clear`` <messages> (only available to staff)
+``timeit`` <command + [] + ()>
 
 INTERESTING
 ``imscared``
-``spamdms`` <messages> <message> (--delete)
+
 END
 ``end``

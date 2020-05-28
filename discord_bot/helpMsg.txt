@@ -20,13 +20,16 @@ the bot will react with a check and x on your message
 ---delete
 the bot will delete your message
 
+---delin <time>
+deletes your message in time seconds
+
 top [top] (--delete)
 gives the top 10 on the leveling leaderboard
 if top is specified gives the top [top]
 
 ping (--delete)
 
-8ball [question] (--delete) (--embed) (-dofirst)
+8ball [question] (--delete) (--embed) (-first)
 (--embed) puts it in an embed
 magic 8 ball command
 
@@ -35,7 +38,7 @@ floods chat with <amount> of <message>
 provide either random or message
 seperate options for random with a comma and space
 
-randface (--delete) (-dofirst)
+randface (--delete) (-first)
 says a random face ex: :)
 
 ttc / thetroycommand (--delete)
@@ -45,16 +48,16 @@ PS: Troy says hi
 mymoney (--delete)
 tells you your money
 
-alphabet (--delete) (--vowels) (--consonants) (-dofirst)
+alphabet (--delete) (--vowels) (--consonants) (-first)
 says the alphabet
 
-iq [something] (-dofirst)
+iq [something] (-first)
 gives the iq of something otherwise you if something isn't specified
 
-unicodechar [amount] (--delete) (-dofirst)
+unicodechar [amount] (--delete) (-first)
 says [amount] of random unicode/utf-8 characters
 
-serveremote <amount> (--delete) (-dofirst)
+serveremote <amount> (--delete) (-first)
 says [amount] of random server emotes
 
 doesnothing <filename> (--delete)
@@ -68,7 +71,7 @@ if -sep is specified it will seperate with the value instead of a space
 version (--delete)
 sends the bot's current version
 
-upperlower / ul <message> (--delete) (-dofirst)
+upperlower / ul <message> (--delete) (-first)
 sends <message> but alternating caps
 LiKe ThIs
 
@@ -103,14 +106,14 @@ spam 1 <message> --delete except it doesn't say done
 calc / eval <equation> (--delete)
 solves the equation (can't be algebreic)
 
-sanity <message> (--delete) (-r) (-dofirst)
+sanity <message> (--delete) (-r) (-first)
 says the sanity of <message> rounded to (-round) if specified
 
 coin (-bet h/t) (--delete)
 flips a coin
 -bet bets on a side
 
-rand <low> <high> [round] (--even) (--odd) (--delete) (-dofirst)
+rand <low> <high> [round] (--even) (--odd) (--delete) (-first)
 sends a random number from <low> to <high>
 if it is a decimal number it rounds it by [round] amount
 if [round] is left blank it doesn't round
@@ -138,7 +141,7 @@ counts in #counting
 --b makes it bold
 --ib makes it both
 
-choose *<options> (-picks <picks>) (-dofirst)
+choose *<options> (-picks <picks>) (-first)
 chooses <picks> amount between <options>
 seperate each option with a comma
 
@@ -148,11 +151,11 @@ shows a list of all the 8ball replies
 reverse <message>
 reverses your message
 
-piglatin <message> (--kc) (-dofirst)
+piglatin <message> (--kc) (-first)
 puts your message in pig latin
 (--kc) keeps capitalization
 
-mostroles <top> (--delete) (-dofirst)
+mostroles <top> (--delete) (-first)
 prodcues a list of the <top> amount of people with the most roles
 
 imscared
@@ -168,8 +171,10 @@ gives info on channel defaults to current channel
 servericon (--delete)
 gives the server's icon
 
-spamdms <messages> <message> (--delete)
-spam's your dms with <messages> amount of <message>
+timeit <command>
+times how long a command takes
+for example, [timeit [echo hi
+would time how long that echo command would take
 
 rps / rockpaperscissors @<member> (-time)
 ping <member> to force them to join a game of rps with you
@@ -198,21 +203,21 @@ reactiontime
 it'll say GO
 and you have to say a message and it'll tell you your "reaction time" idk how accurate it is
 
-response <message> (-lim) (-dofirst)
+response <message> (-lim) (-first)
 sesarches for <message> in the current channel with a limit of (-lim) (by default 1000) messages if it finds it it says the message after <message>
 
 wiki / wikipedia <query> (--delete)
 searches wikipedia for <query> deletes your message if (--delete)
 
-hex *<num> (-dofirst)
+hex *<num> (-first)
 gives the hexidecimal form of a number
 make sure to seperate each number with a comma and space
 
-bin *<num> (-dofirst)
+bin *<num> (-first)
 gives the binary form of a number
 make sure to seperate each number with a comma and space
 
-oct *<num> (-dofirst)
+oct *<num> (-first)
 gives the base 8 version of a number
 make sure to seperate each number with a comma and space
 
@@ -227,10 +232,10 @@ info = time + date creation and role color
 ship <name1>, <name2> (sep with commas)
 takes the first half of name 1 and combinds it with the 2nd half of name 2
 
-toc <fahrenheit temp> (-dofirst)
+toc <fahrenheit temp> (-first)
 converts to fahrenheit from celcius
 
-tof <celcius temp> (-dofirst)
+tof <celcius temp> (-first)
 converts from celcius to fahrenheit
 
 clear <messages> (only available to staff)

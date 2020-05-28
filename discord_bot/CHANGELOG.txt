@@ -1,3 +1,17 @@
+3.0 (5/28/2020)
+
+ADDITIONS:
+*---delin <time>, deletes your message in <time> seconds
+*timeit, times how long a command takes do [help timeit for more info
+
+CHANGES:
+*renamed -dofirst to -first
+*<cmd> is not a thing, if the command isn't a thing instead of just saying "that command doesn't exist" or whatever
+
+REMOVED:
+*spamdms, pointless, kept breaking
+
+====================================================================
 3.0-rc3 (5/27/2020)
 
 CHANGES:
@@ -9,7 +23,6 @@ FIXES:
 *reacion -> reaction
 
 ====================================================================
-
 3.0-rc2 (5/27/2020)
 
 ADDITIONS:
@@ -19,7 +32,7 @@ FIXES:
 *serveremote works
 
 ====================================================================
-3.0-R1 (5/27/2020) (biggest update as of update)
+3.0-rc1 (5/27/2020) (biggest update as of update)
 
 ADDITIONS:
 *iq, gives an iq
