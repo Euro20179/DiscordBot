@@ -3,8 +3,6 @@ from discord.ext import commands
 import time, datetime
 import random
 import string
-import pyautogui
-import wikipedia
 import asyncio
 import json
 import tracemalloc
@@ -14,7 +12,7 @@ tracemalloc.start()
 #TODO Make a stopwatch and a timer
 
 DELETE = "--delete"
-VERSION = "3.0"
+VERSION = "3.1"
 Stop = False
 
 playingGuessingGame = {}
@@ -38,8 +36,7 @@ def timeIt(func):
 	return inner
 
 def isBot(msg, client)->bool:
-	if msg.author == client.user: return True
-	if msg.author.bot: return True
+	if msg.author == client.user or msg.author.bot: return True
 	return False
 
 async def giveXP(msg):
@@ -143,8 +140,7 @@ async def oneLineCmd(msg, say, delete=True):
 
 
 async def help(msg, content, cmd="help"):
-	categories = ("HELP", "FUN", "GAMES", "RANDOM", "MATHY", "INFO", "MISC", "INTERESTING", "")
-	if splitContent(content, cmd + " ", index=1, func=lambda x: x.upper()) in categories:
+	if splitContent(content, cmd + " ", index=1, func=lambda x: x.upper()) in ("HELP", "FUN", "GAMES", "RANDOM", "MATHY", "INFO", "MISC", "INTERESTING", ""):
 		with open("cmdslist.txt", "r") as f:
 			embed = discord.Embed(title="Help", color=discord.Color(0x00ffe2))
 			cat = splitContent(content, cmd + " ")
@@ -349,8 +345,8 @@ async def leaderboard(msg, content, cmd="top"):
 		data = json.load(f)
 		users = [(discord.utils.get(msg.guild.members, id=int(user)), int(data[user]["level"])) for user in data.keys()]
 		users.sort(key=lambda x: x[1], reverse=True)
-		if data[str(users[0][0].id)]["level"] == data[str(users[1][0].id)]["level"]:
-			if data[str(users[0][0].id)]["xp"] <= data[str(users[1][0].id)]["xp"]:
+		if (first := data[str(users[0][0].id)])["level"] == (second := data[str(users[1][0].id)])["level"]:
+			if first["xp"] <= second["xp"]:
 				first = users.pop(1)
 				users.insert(0, first)
 		embed = discord.Embed(title=f"Top {top}", color=users[0][0].color)
@@ -388,13 +384,12 @@ async def spamCmd(msg, content, cmd="spam"):
 		await msg.delete()
 		c = c.replace(DELETE, "")
 
-	lim = random.randint(40000, 110000)
 	messages = c[:c.find(" ")]
 
 	if not isInt(messages):
 		msg = await msg.channel.send("not a valid number of messages")			
 		return msg
-	if int(messages) > lim:
+	if int(messages) > (lim := random.randint(40000, 110000)):
 		msg = await msg.channel.send(f"pls consult a psychiatrist that's too many messages\nthe limit is: {lim}")		
 		return msg
 
@@ -437,8 +432,8 @@ async def unicodeChar(msg, content, cmd="unicodechar"):
 	if TICDelete(content): 
 		await msg.delete()
 		content = content.replace(DELETE, "")
-	if testInContent(content, " "):
-		amount = splitContent(content, " ", index=1)
+	if (split := splitContent(content, " ")):
+		amount = split[1]
 		if not isInt(amount):
 			msg = await msg.channel.send("NaN")
 			return msg
@@ -608,13 +603,9 @@ async def sanity(msg, content, cmd="sanity"):
 				san >=49.5 and san <= 50.5: f'{c} is perfectly balanced between sane and insane',
 				san < 0: f'how is {c} even alive'}
 				
-	for case in cases.keys():
-		if case:
-			msg = await msg.channel.send(cases[case])
-			return msg
-	else: 
-		msg = await msg.channel.send(f'{c} has {san}% sanity')
-		return msg
+	if (case := cases.get(True)): msg = await msg.channel.send(case)
+	else: msg = await msg.channel.send(f'{c} has {san}% sanity')
+	return msg
 
 async def coin(msg, content, cmd="coin"):
 	if TICDelete(content): 
@@ -656,8 +647,7 @@ async def roleCount(msg, content, cmd="rolecount"):
 		c = c.replace(" --showroles", "") if c != "--showroles" else ""
 	c = c[3:-1] if "<@!" in c else c
 	if not c: c = str(msg.author.id)
-	m = findMember(c, msg)
-	if m:
+	if (m := findMember(c, msg)):
 		roles = [x.mention for x in m.roles]
 		roleCount = len(roles) - 1
 		if Showroles:
@@ -760,23 +750,20 @@ async def count(msg, content, cmd="count"):
 	highest = max([x.content.strip(".") async for x in channel.history(limit=5)])
 	async for x in channel.history(limit=1):
 		if isBot(x, client): return ""
-	if testInContent(content, "--i"):
-		await channel.send(f'*.{int(highest) + 1}.*')
-		return ""
-	elif testInContent(content, "--b"):
-		await channel.send(f'**.{int(highest) + 1}.**')
-		return ""
-	elif testInContent(content, "--ib"):
-		await channel.send(f'***.{int(highest) + 1}.***')
-		return ""
-	elif testInContent(content, "--e"):
-		if testInContent(content, "-c"):
-			color = splitContent(content, "-c ")[1]
-			color.strip("#")
-		else: color = 0x000000
-		await channel.send(embed=discord.Embed(title=f'.{int(highest) + 1}.', color=color))
-		return 
-	await channel.send(f'.{int(highest) + 1}.')
+	if (style := testInContent(content, "--i", "--b", "--ib", "--e")):
+		if style == "--i":
+			await channel.send(f'*.{int(highest) + 1}.*')
+		elif style == "--b":
+			await channel.send(f'**.{int(highest) + 1}.**')
+		elif style == "--ib":
+			await channel.send(f'***.{int(highest) + 1}.***')
+		elif style == "--e":
+			if testInContent(content, "-c"):
+				color = splitContent(content, "-c ")[1]
+				color.strip("#")
+			else: color = 0x000000
+			await channel.send(embed=discord.Embed(title=f'.{int(highest) + 1}.', color=color))
+	else: await channel.send(f'.{int(highest) + 1}.')
 
 async def choose(msg, content, cmd="choose"):
 	options = splitContent(content, f'{cmd} ')[1].split(", ")
@@ -795,7 +782,6 @@ async def mball(msg, content, cmd="8ball"):
 	if TICDelete(content): await msg.delete()
 	with open("mballresponse.txt", "rb") as f:
 		await msg.channel.send(file=discord.File(f, "mballresponse.txt"))
-
 
 async def pigLatin(msg, content, cmd="piglatin"):
 	CASE = "--kc"
@@ -872,16 +858,21 @@ async def channelInfo(msg, content, cmd="cc"):
 	if splitContent(content, cmd)[1]:
 		c = content.split(cmd)[1].strip()[2:-1]
 		channel = discord.utils.get(msg.guild.channels, id=int(c))
+	created = channel.created_at
+	diff = datetime.datetime.now() - created
+	pinCount = len(await channel.pins())
+	daysTillLastPin = (50 - pinCount) / int(str(diff).split(" ")[0])
 	embed.add_field(name="Created at", value=channel.created_at, inline=False)
 	embed.add_field(name="Pins", value=len(await channel.pins()), inline=False)
+	embed.add_field(name="days till last pin", value=str(daysTillLastPin), inline=False)
+	embed.add_field(name="time since creation", value=diff)
 	await msg.channel.send(embed=embed)
 
 async def changes(msg, content, cmd="changes"):
 	if TICDelete(content): await msg.delete()
-	Latest = False if testInContent(content, "--nlatest") else True
 	ver = splitContent(content, "-v ")[1].strip() if testInContent(content, "-v ") else None
 	with open("CHANGELOG.txt", "r") as f:
-		if Latest:
+		if testInContent(content, "--nlatest"):
 			c = f.read().split("\n")
 			c = c[:c.index("====================================================================")]
 		elif ver:
@@ -910,13 +901,10 @@ async def commandCount(msg, content, cmd="commandcount"):
 async def hexBinOct(msg, content, cmd="hex"):
 	content = splitContent(content, cmd + " ")[1]
 	num = list(map(lambda n: int(n), content.split(", "))) if ", " in content else [int(content)]
-	if cmd == "hex":
-		hexes = list(map(lambda n: str(hex(n)).replace("0x", ""), num))
-	elif cmd == "bin":
-		hexes = list(map(lambda n: str(bin(n)).replace("0b", ""), num))
-	elif cmd == "oct":
-		hexes = list(map(lambda n: str(oct(n)).replace("0o", ""), num))
-	msg = await msg.channel.send(", ".join(hexes))
+	ans = {"hex": list(map(lambda n: str(hex(n)).replace("0x", ""), num)),
+			 "bin": list(map(lambda n: str(bin(n)).replace("0b", ""), num)),
+			 "oct": list(map(lambda n: str(oct(n)).replace("0o", ""), num))}[cmd]
+	msg = await msg.channel.send(", ".join(ans))
 	return msg
 
 async def response(msg, content, cmd="response", doFirst=False):
@@ -945,20 +933,19 @@ async def response(msg, content, cmd="response", doFirst=False):
 		return msg
 
 async def timer(msg, content, cmd="stopwatch"):
-	if TICDelete(content):
-		await msg.delete()
-	if not runningStopwatch.get(msg.author.id):
+	if TICDelete(content): await msg.delete()
+	Running = runningStopwatch.get(msg.author.id)
+	if not Running:
 		runningStopwatch[msg.author.id] = time.time()
-		msg = await msg.channel.send(f'{msg.author.mention} stopawtch started')
-	if runningStopwatch.get(msg.author.id) and testInContent(content, "--get"):
-		msg = await msg.channel.send(embed=discord.Embed(title=str(round(time.time() - runningStopwatch[msg.author.id], 2)) + " seconds"))
-	elif runningStopwatch.get(msg.author.id):
-		msg = await msg.channel.send(embed=discord.Embed(title=str(round(time.time() - runningStopwatch[msg.author.id], 2)) + " seconds"))
+		await msg.channel.send(f'{msg.author.mention} stopawtch started')
+	elif Running and testInContent(content, "--get"):
+		await msg.channel.send(embed=discord.Embed(title=str(round(time.time() - Running, 2)) + " seconds"))
+	elif Running:
+		await msg.channel.send(embed=discord.Embed(title=str(round(time.time() - Running, 2)) + " seconds"))
 		del runningStopwatch[msg.author.id]
-	return msg
 
 async def runCommand(msg, content, cmd):
-	DOFIRST = "-first"
+	DOFIRST = "-first "
 	if DOFIRST in content:
 		c = await runCommand(msg, content.replace(DOFIRST, ""), splitContent(content, DOFIRST, index=1).split(" ")[0][1:])
 		foo = f'{content.split(f" {DOFIRST}")[0]} {c.content}'
@@ -1054,18 +1041,18 @@ async def runCommand(msg, content, cmd):
 	elif cmd == "response": content = await response(msg, content)
 	elif cmd in ["stopwatch", "timer"]: content = await timer(msg, content, cmd=cmd)
 	else: 
-		with open("commandusage.json", "r+") as j:
+		with open("commandusage.json") as j:
 			data = json.load(j)
 			del data[cmd]
 			clearFile(j)
 			json.dump(data, j)
-		await msg.channel.send(f'{cmd} is not a thing')
-
+		content = await msg.channel.send(f'{cmd} is not a thing')
 	return content
 
 @client.event
 async def on_ready():
 	await client.change_presence(activity=discord.Game(f'version: {VERSION}'))
+
 	print(f"ONLINE\nversion: {VERSION}")
 
 @client.event
@@ -1091,11 +1078,14 @@ async def on_message(msg):
 			return 
 		await msg.delete()
 
+	if msg.author.id == 589614752385335335 and random.random() > .98:
+		await msg.channel.send(random.choice(["I LOVE YOU CHRIS <3", "CHRIS YOUR AMAZING <3 <3"]))
+
 	if msg.channel.id == 427973752647712768 or testInContent(content, "---chkx", "---reactchkx"):
 		await msg.add_reaction(discord.utils.get(client.emojis, name="Blue_check"))
 		await msg.add_reaction("❌")
 
-	if random.random() >= .9993: 
+	if random.random() >= .9994: 
 		if isBot(msg, client): return
 		await msg.channel.send(random.choice(["mhm", "interesting", "fascinating", "very cool"]))
 		

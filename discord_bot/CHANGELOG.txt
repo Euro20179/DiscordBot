@@ -1,3 +1,18 @@
+3.1 (5/28/2020)
+
+ADDITIONS:
+*cc now displays days until last pin, and time since creation in addition to the creation time
+
+RELATIONSHIP STATUS:
+*offically married to chris <3
+
+FIXED:
+*-first
+
+TECHNICAL:
+*runs on python 3.8 instead of python 3.7
+
+====================================================================
 3.0 (5/28/2020)
 
 ADDITIONS:
