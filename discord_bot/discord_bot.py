@@ -12,7 +12,7 @@ tracemalloc.start()
 #TODO Make a stopwatch and a timer
 
 DELETE = "--delete"
-VERSION = "3.1.1.2"
+VERSION = "3.2"
 Stop = False
 
 playingGuessingGame = {}
@@ -26,7 +26,7 @@ token = "NjQxNzk1NjU2Mzc3MTcyMDAw.XcNk8g.HEvnaXjuXFQhN1iilaaffbiPcoo"
 
 client = commands.Bot(command_prefix=PREFIX)
 
-BASICINFO = {"level": 1, "xp": 0, "required": 1000, "lastTalked": 0}
+BASICINFO = {"level": 1, "xp": 0, "required": 1000, "lastTalked": 0, "message": '{author} you have leveled up to level {level}, very cool'}
 
 def timeIt(func):
 	async def inner(*args, **kwargs):
@@ -54,10 +54,15 @@ async def giveXP(msg):
 				required = userInfo["required"]
 				if xp >= required:
 					level += 1
+					levelUpMessage = userInfo.get("message")
+					if levelUpMessage: 
+						rawLvlMsg = levelUpMessage
+						levelUpMessage = levelUpMessage.replace("{author}", msg.author.mention).replace("{level}", str(level)).replace("{time}", str(datetime.datetime.now())).replace("{emote}", str(random.choice(client.emojis)))
+					else: rawLvlMsg = levelUpMessage = f'{msg.author.mention} you have leveled up to level {level}, very cool'
 					xp //= 2
-					await msg.channel.send(f'{msg.author.mention} you have leveled up to level {level}, very cool')
+					await msg.channel.send(levelUpMessage)
 				required = 1000 * level
-				userInfo = {"level": level, "xp": xp, "required": required, "lastTalked": lastTalked}
+				userInfo = {"level": level, "xp": xp, "required": required, "lastTalked": lastTalked, "message": rawLvlMsg}
 			data[str(msg.author.id)] = userInfo
 		else:
 			data[str(msg.author.id)] = BASICINFO
@@ -245,6 +250,16 @@ async def timers(msg, content, cmd="timers"):
 		embed.add_field(name=user, value=round(time.time() - t, 2))
 	await msg.channel.send(embed=embed)
 
+async def levelMessage(msg, content, cmd="lvlmsg"):
+	with open("levelingData.json", "r+") as j:
+		data = json.load(j)
+		changeTo = splitContent(content, cmd, index=1).strip()
+		userData = data[str(msg.author.id)]
+		userData["message"] = changeTo
+		clearFile(j)
+		json.dump(data, j)
+		msg = await msg.channel.send(f"changed to {changeTo}")
+	return msg
 
 async def cmdUsage(msg, content, cmd="commandusage"):
 	if TICDelete(content): 
@@ -824,7 +839,8 @@ async def clear(msg, content, cmd="clear"):
 		await msg.channel.purge(limit=amnt)
 	else:
 		await msg.channel.send(f"{msg.author.mention} you can't do that")
-		await spam(msg, random.randint(10, 15), ["you cannot do that, don't do it again"], BlockStop=True)	
+		for _ in range(random.randint(10, 15)):
+			await msg.author.send("you cannot do that, don't do it again")
 
 async def color(msg, content, cmd="color"):
 	c = splitContent(content, f'{cmd}')[1].strip()
@@ -862,10 +878,10 @@ async def channelInfo(msg, content, cmd="cc"):
 	created = channel.created_at
 	diff = datetime.datetime.now() - created
 	pinCount = len(await channel.pins())
-	daysTillLastPin = (50-pinCount) / (pinCount / int(str(diff).split(" ")[0]))
+	if pinCount != 0: daysTillLastPin = (50-pinCount) / (pinCount / int(str(diff).split(" ")[0]))
 	embed.add_field(name="Created at", value=created, inline=False)
 	embed.add_field(name="Pins", value=pinCount, inline=False)
-	embed.add_field(name="days till last pin", value=str(daysTillLastPin), inline=False)
+	if pinCount != 0: embed.add_field(name="days till last pin", value=str(daysTillLastPin), inline=False)
 	embed.add_field(name="time since creation", value=diff)
 	await msg.channel.send(embed=embed)
 
@@ -917,19 +933,12 @@ async def response(msg, content, cmd="response", doFirst=False):
 	if testInContent(mssg, "-lim"):
 		limit = int(splitContent(mssg, "-lim ")[1].strip())
 		if limit > 100000:
-			msg = await msg.channel.send("you cannot go above 100k")
-			return msg
+			return await msg.channel.send("you cannot go above 100k")
 		mssg = splitContent(mssg, " -lim")[0]
 	async with msg.channel.typing():
 		hist = [m.content async for m in msg.channel.history(limit=limit)]
-		responses = []
-		for n, message in enumerate(hist):
-			if Stop: 
-				msg = await msg.channel.send("stopped searching")
-				break
-			if message == mssg: responses.append(hist[n - 1])
-		if responses:
-			msg = await msg.channel.send(f'{msg.author.mention} I HAVE FOUND A RESPONSE\n{random.choice(responses)}')
+		responses = [hist[n - 1] for n, message in enumerate(hist) if message == mssg]
+		if responses: msg = await msg.channel.send(f'{msg.author.mention} I HAVE FOUND A RESPONSE\n{random.choice(responses)}')
 		else: msg = await msg.channel.send(f'did not find {mssg} in the past {limit} messages in this channel')
 		return msg
 
@@ -1041,6 +1050,7 @@ async def runCommand(msg, content, cmd):
 	elif cmd == "toc": content = await oneLineCmd(msg, "NaN" if not check_int(splitContent(content, cmd + " ", index=1)) else 5 / 9 * (int(splitContent(content, cmd + " ", index=1)) - 32))
 	elif cmd == "response": content = await response(msg, content)
 	elif cmd in ["stopwatch", "timer"]: content = await timer(msg, content, cmd=cmd)
+	elif cmd == "lvlmsg": content = await levelMessage(msg, content)
 	else: 
 		with open("commandusage.json") as j:
 			data = json.load(j)

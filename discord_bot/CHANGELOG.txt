@@ -1,19 +1,29 @@
+3.2
+
+ADDITIONS:
+*you can change the level up message to whatever you want
+
+FIXES:
+*if the pin count in a given channel for cc was 0, it wouldn't work because of a divide by 0 error
+*a different clear fix
+
+====================================================================
 3.1.1.2 (5/28/2020)
 
-FIXED:
+FIXES:
 *chnages now works as intended
 *clear works
 
 ====================================================================
 3.1.1.1 (5/28/2020)
 
-FIXED:
+FIXES:
 *cc didn't say the correct days till last pin
 
 ====================================================================
 3.1.1 (5/28/2020)
 
-FIXED:
+FIXES:
 *cc was super slow, now it's normal
 
 ====================================================================
@@ -25,7 +35,7 @@ ADDITIONS:
 RELATIONSHIP STATUS:
 *offically married to chris <3
 
-FIXED:
+FIXES:
 *-first
 
 TECHNICAL:
@@ -114,7 +124,7 @@ ADDITIONS:
 REMOVED:
 *pincount, use channelinfo/ci/cc/channelcreated instead
 
-FIXED:
+FIXES:
 *non-commands no longer count as commands in [commandusage
 *color now gives the correct hex color
 

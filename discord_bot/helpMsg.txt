@@ -168,6 +168,16 @@ if left blank, your color
 cc [channel]
 gives info on channel defaults to current channel
 
+lvlmsg <message>
+changes your level up message
+there are 4 special words
+{author}, {level}, {time}, {emote}
+author pings you
+level is your level
+time is the current date and time
+emote is a random emote
+you don't have to include any, but you can include all if you want
+
 servericon (--delete)
 gives the server's icon
 
