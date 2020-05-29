@@ -1070,12 +1070,13 @@ async def on_ready():
 async def on_message(msg):
 	global Stop, playingGuessingGame
 
+	if msg.author.id == 311621977339068418 and msg.channel.id not in (715043261110288415, 658815060646297659):
+		await msg.delete()
+		print("message deleted")
+		
 	content = msg.content
 	if not content: return
 
-	if msg.author.id == 311621977339068418 and msg.channel.id not in (658815060646297659, 715043261110288415):
-		await msg.delete()
-		print("message deleted")
 
 	if testInContent(content, "---delete", "—-delete"): await msg.delete()
 	if testInContent(content, "---delin "):
