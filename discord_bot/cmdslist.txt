@@ -77,7 +77,7 @@ MISC
 ``wiki/wikipedia`` <query> (--delete)
 ``clear`` <messages> (only available to staff)
 ``timeit`` <command + [] + ()>
-``lvlmsg`` <message> 
+``lvlmsg`` <message> (--see/--get)
 
 INTERESTING
 ``imscared``

@@ -7,12 +7,12 @@ import asyncio
 import json
 import tracemalloc
 
-tracemalloc.start()
-
 #TODO Make a stopwatch and a timer
 
+tracemalloc.start()
+
 DELETE = "--delete"
-VERSION = "3.2"
+VERSION = "3.2.2"
 Stop = False
 
 playingGuessingGame = {}
@@ -27,13 +27,6 @@ token = "NjQxNzk1NjU2Mzc3MTcyMDAw.XcNk8g.HEvnaXjuXFQhN1iilaaffbiPcoo"
 client = commands.Bot(command_prefix=PREFIX)
 
 BASICINFO = {"level": 1, "xp": 0, "required": 1000, "lastTalked": 0, "message": '{author} you have leveled up to level {level}, very cool'}
-
-def timeIt(func):
-	async def inner(*args, **kwargs):
-		start = time.time()
-		await func(*args, **kwargs)
-		print(time.time() - start, func)
-	return inner
 
 def isBot(msg, client)->bool:
 	if msg.author == client.user or msg.author.bot: return True
@@ -57,7 +50,7 @@ async def giveXP(msg):
 				else: rawLvlMsg = levelUpMessage
 				if xp >= required:
 					level += 1
-					if levelUpMessage: levelUpMessage = levelUpMessage.replace("{author}", msg.author.mention).replace("{level}", str(level)).replace("{time}", str(datetime.datetime.now())).replace("{emote}", str(random.choice(client.emojis)))
+					if levelUpMessage: levelUpMessage = levelUpMessage.replace("{author}", msg.author.mention).replace("{level}", str(level)).replace("{time}", str(datetime.datetime.now())).replace("{emote}", str(random.choice(client.emojis))).replace("{channel}", msg.channel.name)
 					else: levelUpMessage = f'{msg.author.mention} you have leveled up to level {level}, very cool'
 					xp //= 2
 					await msg.channel.send(levelUpMessage)
@@ -143,7 +136,6 @@ async def oneLineCmd(msg, say, delete=True):
 	msg = await msg.channel.send(say)
 	return msg
 
-
 async def help(msg, content, cmd="help"):
 	if splitContent(content, cmd + " ", index=1, func=lambda x: x.upper()) in ("HELP", "FUN", "GAMES", "RANDOM", "MATHY", "INFO", "MISC", "INTERESTING", ""):
 		with open("cmdslist.txt", "r") as f:
@@ -199,7 +191,6 @@ async def help(msg, content, cmd="help"):
 				if n+1 >= endLN: break
 			await msg.channel.send(embed=discord.Embed(title=text, color=discord.Colour(0x00ffe2)))
 
-
 async def spam(msg, messages, message, BlockStop=False):
 	global Stop
 	for _ in range(int(messages)):
@@ -208,7 +199,6 @@ async def spam(msg, messages, message, BlockStop=False):
 			return ""
 		await msg.channel.send(random.choice(message))
 		await asyncio.sleep(random.uniform(.6, 1.3))
-
 
 async def ping(msg, content, cmd="ping"):
 	if "<@" in content:
@@ -229,7 +219,6 @@ async def ping(msg, content, cmd="ping"):
 		await msg.channel.send("LOL GET PRANKD THIS DOES NOTHING ROFL XD XD XD XD XD")
 	else: await msg.channel.send(f':ping_pong: {round(client.latency * 1000)}ms')	
 
-
 async def echo(msg, content, cmd="echo"):
 	if not TICDelete(content): 
 		await msg.delete()
@@ -243,7 +232,6 @@ async def echo(msg, content, cmd="echo"):
 	if random.random() > .99: await msg.author.send("the secret message dm euro for a doubley secret role, if you tell anyone how you got this the role will be taken away\nif you already have the role, you may choose to dm a screenshot of this message to someone, and they have the chance to get the role")	
 	return msg
 
-
 async def timers(msg, content, cmd="timers"):
 	embed = discord.Embed(title="timers")
 	for user, t in runningStopwatch.items():
@@ -255,10 +243,13 @@ async def levelMessage(msg, content, cmd="lvlmsg"):
 		data = json.load(j)
 		changeTo = splitContent(content, cmd, index=1).strip()
 		userData = data[str(msg.author.id)]
-		userData["message"] = changeTo
-		clearFile(j)
-		json.dump(data, j)
-		msg = await msg.channel.send(f"changed to {changeTo}")
+		if testInContent(changeTo, "--see", "--get"):
+			msg = await msg.channel.send(userData["message"])
+		else:
+			userData["message"] = changeTo
+			clearFile(j)
+			json.dump(data, j)
+			msg = await msg.channel.send(f"changed to {changeTo}")
 	return msg
 
 async def cmdUsage(msg, content, cmd="commandusage"):
@@ -291,7 +282,6 @@ async def cmdUsage(msg, content, cmd="commandusage"):
 				n += 1
 			await msg.channel.send(embed=embed)
 
-
 async def iq(msg, content, cmd="iq"):
 	iq = random.randint(-3, 200)
 	c = msg.author.mention if not splitContent(content, cmd, index=1) else splitContent(content, cmd, index=1)
@@ -309,7 +299,6 @@ async def iq(msg, content, cmd="iq"):
 		msg = await msg.channel.send(f"you literally don't have a brain you somehow have a negative iq idek\nIQ: {iq}")
 	return msg
 
-
 async def shrug(msg, content, cmd="shrug"):
 	if TICDelete(content): await msg.delete()
 	msg = await msg.channel.send(content=r"¯\_(ツ)_/¯")
@@ -322,7 +311,6 @@ async def getUserData(user):
 	with open("levelingData.json", "r") as f:
 		data = json.load(f)
 		return data.get(str(user))
-
 
 async def level(msg, content, cmd="level"):
 	c = str(content.split(cmd)[1].strip())
@@ -342,7 +330,6 @@ async def level(msg, content, cmd="level"):
 	embed.add_field(name="required", value=required, inline=False)
 	await msg.channel.send(embed=embed)
 
-
 async def leaderboard(msg, content, cmd="top"):
 	if testInContent(content, "--rawlevels"):
 		with open("levelingData.json", "rb") as f:
@@ -358,12 +345,8 @@ async def leaderboard(msg, content, cmd="top"):
 		except: await msg.channel.send("NaN")
 	with open("levelingData.json", "r") as f:
 		data = json.load(f)
-		users = [(discord.utils.get(msg.guild.members, id=int(user)), int(data[user]["level"])) for user in data.keys()]
-		users.sort(key=lambda x: x[1], reverse=True)
-		if (first := data[str(users[0][0].id)])["level"] == (second := data[str(users[1][0].id)])["level"]:
-			if first["xp"] <= second["xp"]:
-				first = users.pop(1)
-				users.insert(0, first)
+		users = [(discord.utils.get(msg.guild.members, id=int(user)), int(data[user]["level"]), int(data[user]["xp"])) for user in data.keys()]
+		users.sort(key=lambda x: x[2] * x[1], reverse=True)
 		embed = discord.Embed(title=f"Top {top}", color=users[0][0].color)
 		firstPlaceRole = discord.utils.get(msg.guild.roles, name="first place (in crappy-off-brand leaderboards)")
 		for n, user in enumerate(users):
