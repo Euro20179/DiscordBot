@@ -166,13 +166,14 @@ async def help(msg, content, cmd="help"):
 						val[cat].append(line)
 			await msg.channel.send(embed=embed)
 
-	elif testInContent(content, "--all"):
+	elif testInContent(content, "--all", "--indepth"):
 		with open("helpMsg.txt", "rb") as f:
 			await msg.channel.send(file=discord.File(f, "helpMsg.txt"))
 			return
 
 	elif len(splitContent(content, " ")) > 1:
 		command = splitContent(content, " ", index=1)
+		embed = discord.Embed(title=command, color=discord.Color(0x00ffe2))
 		with open("helpMsg.txt") as f:
 			c = f.read().split("\n")
 			startLN = endLN = 0
@@ -189,7 +190,8 @@ async def help(msg, content, cmd="help"):
 				if n + 1 >= startLN and n + 1 <= endLN:
 					text += f'{lineText}\n'
 				if n+1 >= endLN: break
-			await msg.channel.send(embed=discord.Embed(title=text, color=discord.Colour(0x00ffe2)))
+			embed.add_field(name="description", value=text)
+			await msg.channel.send(embed=embed)
 
 async def spam(msg, messages, message, BlockStop=False):
 	global Stop
@@ -872,7 +874,7 @@ async def changes(msg, content, cmd="changes"):
 	if TICDelete(content): await msg.delete()
 	ver = splitContent(content, "-v ")[1].strip() if testInContent(content, "-v ") else None
 	with open("CHANGELOG.txt", "r") as f:
-		if not testInContent(content, "--nlatest"):
+		if not testInContent(content, "--nlatest") and not ver:
 			c = f.read().split("\n")
 			c = c[:c.index("====================================================================")]
 		elif ver:

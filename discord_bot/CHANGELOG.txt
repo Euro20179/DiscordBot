@@ -1,3 +1,13 @@
+3.2.3
+
+CHANGES:
+*--indpeth works for help again
+
+FIXES:
+*help command shouldn't have as much of a problem with text limitations
+*changes works properly
+
+====================================================================
 3.2.2
 
 ADDITIONS:
