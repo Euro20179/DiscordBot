@@ -1052,7 +1052,7 @@ async def runCommand(msg, content, cmd):
 	elif cmd in ["stopwatch", "timer"]: content = await timer(msg, content, cmd=cmd)
 	elif cmd == "lvlmsg": content = await levelMessage(msg, content)
 	else: 
-		with open("commandusage.json") as j:
+		with open("commandusage.json", "r+") as j:
 			data = json.load(j)
 			del data[cmd]
 			clearFile(j)
@@ -1073,7 +1073,7 @@ async def on_message(msg):
 	if msg.author.id == 311621977339068418 and msg.channel.id not in (715043261110288415, 658815060646297659):
 		await msg.delete()
 		print("message deleted")
-		
+
 	content = msg.content
 	if not content: return
 

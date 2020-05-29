@@ -2,6 +2,7 @@
 
 FIXES:
 *bug where the bot wouldn't delete rockhoppers messages when they weren't in poekmonspam / bot cmds
+*wasn't counting commands properly
 ====================================================================
 3.2
 
