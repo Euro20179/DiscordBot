@@ -52,13 +52,13 @@ async def giveXP(msg):
 				xp += random.randint(15, 100)
 				lastTalked = time.time()
 				required = userInfo["required"]
+				levelUpMessage = userInfo.get("message")
+				if not levelUpMessage: rawLvlMsg = '{author} you have leveled up to level {level}, very cool'
+				else: rawLvlMsg = levelUpMessage
 				if xp >= required:
 					level += 1
-					levelUpMessage = userInfo.get("message")
-					if levelUpMessage: 
-						rawLvlMsg = levelUpMessage
-						levelUpMessage = levelUpMessage.replace("{author}", msg.author.mention).replace("{level}", str(level)).replace("{time}", str(datetime.datetime.now())).replace("{emote}", str(random.choice(client.emojis)))
-					else: rawLvlMsg = levelUpMessage = f'{msg.author.mention} you have leveled up to level {level}, very cool'
+					if levelUpMessage: levelUpMessage = levelUpMessage.replace("{author}", msg.author.mention).replace("{level}", str(level)).replace("{time}", str(datetime.datetime.now())).replace("{emote}", str(random.choice(client.emojis)))
+					else: levelUpMessage = f'{msg.author.mention} you have leveled up to level {level}, very cool'
 					xp //= 2
 					await msg.channel.send(levelUpMessage)
 				required = 1000 * level
