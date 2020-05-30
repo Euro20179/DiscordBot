@@ -1,4 +1,22 @@
-3.2.4
+3.3 (5/30/2020)
+
+ADDITIONS:
+*emoteinfo, gives info about a server emote
+*avatar, gives your avatar, you can get the avatar of others as well
+*] works as a prefix cause whynot
+*"**Slow Down** :snail:"
+
+CHANGES:
+*help command is now different, you have to specify a category to get commands
+    *or do [help --all to get a file of all commands and a cescription
+*the raw text file of help commands is now alphabetical
+*time things are formated as "dd/mm/yyy at h:m:s" instead of "yyyy-mm-dd h:m:s.ms" i think it's nicer
+
+FIXES:
+*rps ***should*** work
+
+====================================================================
+3.2.4 (5/29/2020)
 
 ADDITIONS:
 *lvl is an alias to level and rank
@@ -8,7 +26,7 @@ FIXES:
 *fixed leaderboard
 
 ====================================================================
-3.2.3
+3.2.3 (5/29/2020)
 
 CHANGES:
 *--indpeth works for help again
@@ -18,7 +36,7 @@ FIXES:
 *changes works properly
 
 ====================================================================
-3.2.2
+3.2.2 (5/29/2020)
 
 ADDITIONS:
 *you can do [lvlmsg --see or --get to see what your current level message is
@@ -26,13 +44,13 @@ ADDITIONS:
 *added {channel} for level messages which will replace it with the current channel
 
 ====================================================================
-3.2.1
+3.2.1 (5/29/2020)
 
 FIXES:
 *bug where the bot wouldn't delete rockhoppers messages when they weren't in poekmonspam / bot cmds
 *wasn't counting commands properly
 ====================================================================
-3.2
+3.2 (5/29/2020)
 
 ADDITIONS:
 *you can change the level up message to whatever you want

@@ -1,19 +1,5 @@
 prefix: [
 
-when specifying whether to delete
-type --delete at the end of the message
-
-help [command or category] (--all)
-sends a help message
-if command is specified it will show the help for that command only
-if --indepth, it sends this file
-
-level / rank / lvl [user]
-sends your level, xp, and required until the next level
-if [user] is provided it'll send that user's stats
-you get 1-100 xp every minute if you talk
-if you're innactive for a month, you'll lose a level, once, per, month
-
 ---chkx
 the bot will react with a check and x on your message
 
@@ -23,66 +9,60 @@ the bot will delete your message
 ---delin <time>
 deletes your message in time seconds
 
-top [top] (--delete)
-gives the top 10 on the leveling leaderboard
-if top is specified gives the top [top]
-
-ping (--delete)
+when specifying whether to delete
+type --delete at the end of the message
 
 8ball [question] (--delete) (--embed) (-first)
 (--embed) puts it in an embed
 magic 8 ball command
 
-spam <amount> <message> [-random <op1> <op2>] (--delete) 
-floods chat with <amount> of <message>
-provide either random or message
-seperate options for random with a comma and space
-
-randface (--delete) (-first)
-says a random face ex: :)
-
-ttc / thetroycommand (--delete)
-says something troy would say
-PS: Troy says hi
-
-mymoney (--delete)
-tells you your money
-
 alphabet (--delete) (--vowels) (--consonants) (-first)
 says the alphabet
 
-iq [something] (-first)
-gives the iq of something otherwise you if something isn't specified
+avatar [user]
+gives the avatar of user, otherwise gives your avatar
 
-unicodechar [amount] (--delete) (-first)
-says [amount] of random unicode/utf-8 characters
+bin *<num> (-first)
+gives the binary form of a number
+make sure to seperate each number with a comma and space
 
-serveremote <amount> (--delete) (-first)
-says [amount] of random server emotes
+changes (--nlatest) (--dms) (--delete) (-v <version>)
+sends a txt file of the changes
+if (--dms) it'll send to dms instead of chat
+if -v it'll say the changes for that version
 
-doesnothing <filename> (--delete)
-produces a filename called <filename> with
-every user and their roles in it
+coin (-bet h/t) (--delete)
+flips a coin
+-bet bets on a side
 
-spacer <spaces> <message> (-sep)
-sends your <message> but with <spaces> imbetween each letter
-if -sep is specified it will seperate with the value instead of a space
+calc / eval <equation> (--delete)
+solves the equation (can't be algebreic)
 
-version (--delete)
-sends the bot's current version
+cc [channel]
+gives info on channel defaults to current channel
 
-upperlower / ul <message> (--delete) (-first)
-sends <message> but alternating caps
-LiKe ThIs
+color [role] [color <r, g, b>] (--delete)
+says the color of [role]'s color
+specify either [role] or [color] not both
+if left blank, your color
 
-longmessage (--delete)
-try it... just not in general please thanks
+choose *<options> (-picks <picks>) (-first)
+chooses <picks> amount between <options>
+seperate each option with a comma
 
-flush <message> (--delete)
-flushes <message> down the toilet
+clear <messages> (only available to staff)
 
-stop (--delete)
-stops anything spamming chat (hopefuly)
+compareroles / comproles <user1> <user2>
+gives roles that both users have
+roles that <user1> has
+and roles that <user2> has
+
+commandcount (--delete)
+says the amount of commands
+
+commandusage [command] (--delete)
+gives the top 10 most used commands
+if command is specified it gives the uses of that command
 
 complexmessage <send to chat>, <filename.ext>, <message>,
 usage: 
@@ -92,9 +72,15 @@ usage:
 ex: complexmessage yes, filename.txt, the message in the file
 seperate with commas
 
-message <send to chat>, <filename>.txt, <message>
-perameters same as complexmessage except the file is always a text file
-seperate with commas again
+count (--i) (--b) (--ib)
+counts in #counting
+--i makes it italisized
+--b makes it bold
+--ib makes it both
+
+doesnothing <filename> (--delete)
+produces a filename called <filename> with
+every user and their roles in it
 
 echo <message> (--e) (--delete)
 deletes your command if (--delete) isn't added
@@ -103,70 +89,49 @@ if (--e/--embed) it embeds your message
 is equivelent to:
 spam 1 <message> --delete except it doesn't say done
 
-calc / eval <equation> (--delete)
-solves the equation (can't be algebreic)
-
-sanity <message> (--delete) (-r) (-first)
-says the sanity of <message> rounded to (-round) if specified
-
-coin (-bet h/t) (--delete)
-flips a coin
--bet bets on a side
-
-rand <low> <high> [round] (--even) (--odd) (--delete) (-first)
-sends a random number from <low> to <high>
-if it is a decimal number it rounds it by [round] amount
-if [round] is left blank it doesn't round
-if [round] isn't left blank don't use --even or --odd
-
-rolecount [user] (--showroles) (--delete)
-gives the rolecount of [user]
-(--showroes) shows the roles [user] has
-if left blank it gives your role count
-
-compareroles / comproles <user1> <user2>
-gives roles that both users have
-roles that <user1> has
-and roles that <user2> has
+emoteinfo <server emote>
+gives info about an emote from this server
 
 family (--delete)
 a family tree
 
-mballreply <message>
-adds a reply to 8ball if you have the mballresponseadder role
+flush <message> (--delete)
+flushes <message> down the toilet
 
-count (--i) (--b) (--ib)
-counts in #counting
---i makes it italisized
---b makes it bold
---ib makes it both
+guessinggame [low] [high] [lives]
+it's a guessing game!
+the computer picks a number from [low] to [high] by default 1-100
+you get [lives] attemps to guess it, by default 5
+you can do --lives+ to add 1 life
+and --lives- to subtract 1 life durring a game
 
-choose *<options> (-picks <picks>) (-first)
-chooses <picks> amount between <options>
-seperate each option with a comma
+help [command or category] (--all)
+sends a help message
+if command is specified it will show the help for that command only
+if --indepth, it sends this file
 
-mballreplylist (--delete)
-shows a list of all the 8ball replies
-
-reverse <message>
-reverses your message
-
-piglatin <message> (--kc) (-first)
-puts your message in pig latin
-(--kc) keeps capitalization
-
-mostroles <top> (--delete) (-first)
-prodcues a list of the <top> amount of people with the most roles
+hex *<num> (-first)
+gives the hexidecimal form of a number
+make sure to seperate each number with a comma and space
 
 imscared
 
-color [role] [color <r, g, b>] (--delete)
-says the color of [role]'s color
-specify either [role] or [color] not both
-if left blank, your color
+iq [something] (-first)
+gives the iq of something otherwise you if something isn't specified
 
-cc [channel]
-gives info on channel defaults to current channel
+level / rank / lvl [user]
+sends your level, xp, and required until the next level
+if [user] is provided it'll send that user's stats
+you get 1-100 xp every minute if you talk
+if you're innactive for a month, you'll lose a level, once, per, month
+
+mymoney (--delete)
+tells you your money
+
+ping (--delete)
+
+longmessage (--delete)
+try it... just not in general please thanks
 
 lvlmsg <message> (--see/--get)
 --see/--get shows what the current message is
@@ -180,36 +145,35 @@ emote is a random emote
 channel is the current channel
 you don't have to include any, but you can include all if you want
 
-servericon (--delete)
-gives the server's icon
+mballreply <message>
+adds a reply to 8ball if you have the mballresponseadder role
 
-timeit <command>
-times how long a command takes
-for example, [timeit [echo hi
-would time how long that echo command would take
+mballreplylist (--delete)
+shows a list of all the 8ball replies
 
-rps / rockpaperscissors @<member> (-time)
-ping <member> to force them to join a game of rps with you
-dm the bot what your move is, you have 15 seconds by default or (-time) seconds if specified
-your move can be --rand, which will make your answer randomly either rock, paper, or scissors
+message <send to chat>, <filename>.txt, <message>
+perameters same as complexmessage except the file is always a text file
+seperate with commas again
 
-changes (--nlatest) (--dms) (--delete) (-v <version>)
-sends a txt file of the changes
-if (--dms) it'll send to dms instead of chat
-if -v it'll say the changes for that version
+mostroles <top> (--delete) (-first)
+prodcues a list of the <top> amount of people with the most roles
 
-guessinggame [low] [high] [lives]
-it's a guessing game!
-the computer picks a number from [low] to [high] by default 1-100
-you get [lives] attemps to guess it, by default 5
-you can do --lives+ to add 1 life
-and --lives- to subtract 1 life durring a game
+oct *<num> (-first)
+gives the base 8 version of a number
+make sure to seperate each number with a comma and space
 
-stopwatch / timer (--delete)
-starts a stopwatch that always tells the seconds passed until you do [stopwatch again
+piglatin <message> (--kc) (-first)
+puts your message in pig latin
+(--kc) keeps capitalization
 
-commandcount (--delete)
-says the amount of commands
+rand <low> <high> [round] (--even) (--odd) (--delete) (-first)
+sends a random number from <low> to <high>
+if it is a decimal number it rounds it by [round] amount
+if [round] is left blank it doesn't round
+if [round] isn't left blank don't use --even or --odd
+
+randface (--delete) (-first)
+says a random face ex: :)
 
 reactiontime
 it'll say GO
@@ -218,31 +182,56 @@ and you have to say a message and it'll tell you your "reaction time" idk how ac
 response <message> (-lim) (-first)
 sesarches for <message> in the current channel with a limit of (-lim) (by default 1000) messages if it finds it it says the message after <message>
 
-wiki / wikipedia <query> (--delete)
-searches wikipedia for <query> deletes your message if (--delete)
+reverse <message>
+reverses your message
 
-hex *<num> (-first)
-gives the hexidecimal form of a number
-make sure to seperate each number with a comma and space
-
-bin *<num> (-first)
-gives the binary form of a number
-make sure to seperate each number with a comma and space
-
-oct *<num> (-first)
-gives the base 8 version of a number
-make sure to seperate each number with a comma and space
-
-commandusage [command] (--delete)
-gives the top 10 most used commands
-if command is specified it gives the uses of that command
+rolecount [user] (--showroles) (--delete)
+gives the rolecount of [user]
+(--showroes) shows the roles [user] has
+if left blank it gives your role count
 
 roleinfo <role> (--delete)
 gives roleinfo about <role>
 info = time + date creation and role color
 
+rps / rockpaperscissors @<member> (-time)
+ping <member> to force them to join a game of rps with you
+dm the bot what your move is, you have 15 seconds by default or (-time) seconds if specified
+your move can be --rand, which will make your answer randomly either rock, paper, or scissors
+
+sanity <message> (--delete) (-r) (-first)
+says the sanity of <message> rounded to (-round) if specified
+
+serveremote <amount> (--delete) (-first)
+says [amount] of random server emotes
+
+servericon (--delete)
+gives the server's icon
+
 ship <name1>, <name2> (sep with commas)
 takes the first half of name 1 and combinds it with the 2nd half of name 2
+
+slowdown (--delete)
+
+spacer <spaces> <message> (-sep)
+sends your <message> but with <spaces> imbetween each letter
+if -sep is specified it will seperate with the value instead of a space
+
+spam <amount> <message> [-random <op1> <op2>] (--delete) 
+floods chat with <amount> of <message>
+provide either random or message
+seperate options for random with a comma and space
+
+stop (--delete)
+stops anything spamming chat (hopefuly)
+
+stopwatch / timer (--delete)
+starts a stopwatch that always tells the seconds passed until you do [stopwatch again
+
+timeit <command>
+times how long a command takes
+for example, [timeit [echo hi
+would time how long that echo command would take
 
 toc <fahrenheit temp> (-first)
 converts to fahrenheit from celcius
@@ -250,7 +239,26 @@ converts to fahrenheit from celcius
 tof <celcius temp> (-first)
 converts from celcius to fahrenheit
 
-clear <messages> (only available to staff)
+top [top] (--delete)
+gives the top 10 on the leveling leaderboard
+if top is specified gives the top [top]
+
+ttc / thetroycommand (--delete)
+says something troy would say
+PS: Troy says hi
+
+unicodechar [amount] (--delete) (-first)
+says [amount] of random unicode/utf-8 characters
+
+upperlower / ul <message> (--delete) (-first)
+sends <message> but alternating caps
+LiKe ThIs
+
+version (--delete)
+sends the bot's current version
+
+wiki / wikipedia <query> (--delete)
+searches wikipedia for <query> deletes your message if (--delete)
 
 lol
 XD
