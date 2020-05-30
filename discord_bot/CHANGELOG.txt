@@ -1,3 +1,13 @@
+3.2.4
+
+ADDITIONS:
+*lvl is an alias to level and rank
+*reacts with :neutral: in #suggestions
+
+FIXES:
+*fixed leaderboard
+
+====================================================================
 3.2.3
 
 CHANGES:

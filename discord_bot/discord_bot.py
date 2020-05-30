@@ -12,7 +12,7 @@ import tracemalloc
 tracemalloc.start()
 
 DELETE = "--delete"
-VERSION = "3.2.2"
+VERSION = "3.2.4"
 Stop = False
 
 playingGuessingGame = {}
@@ -203,11 +203,11 @@ async def spam(msg, messages, message, BlockStop=False):
 		await asyncio.sleep(random.uniform(.6, 1.3))
 
 async def ping(msg, content, cmd="ping"):
-	if "<@" in content:
-		await msg.channel.send("are you trying to ping someone..... don't do that. :/")
-		return ""
 	if TICDelete(content): await msg.delete()
 
+	if "<@" in content:
+		msg = await msg.channel.send("are you trying to ping someone..... don't do that. :/")
+		
 	if random.random() >= .95:
 		await msg.author.send("upupdowndownleftrightleftright")
 		await asyncio.sleep(5)
@@ -216,10 +216,11 @@ async def ping(msg, content, cmd="ping"):
 		await msg.author.send("goodbye")
 
 	if random.random() >= .99:
-		await msg.channel.send("uh yeah tbh i don't really know what this does, like i have an idea but like idk")
+		msg = await msg.channel.send("uh yeah tbh i don't really know what this does, like i have an idea but like idk")
 	elif random.random() >= .97:
-		await msg.channel.send("LOL GET PRANKD THIS DOES NOTHING ROFL XD XD XD XD XD")
-	else: await msg.channel.send(f':ping_pong: {round(client.latency * 1000)}ms')	
+		msg = await msg.channel.send("LOL GET PRANKD THIS DOES NOTHING ROFL XD XD XD XD XD")
+	else: msg = await msg.channel.send(f':ping_pong: {round(client.latency * 1000)}ms')	
+	return msg
 
 async def echo(msg, content, cmd="echo"):
 	if not TICDelete(content): 
@@ -229,7 +230,7 @@ async def echo(msg, content, cmd="echo"):
 		c = content.replace(" --e", "")
 		embed = discord.Embed(title=splitContent(c, cmd, index=1))
 		await msg.channel.send(embed=embed)			
-		return ""
+		return "EMBED"
 	msg = await msg.channel.send(splitContent(content, cmd, index=1))
 	if random.random() > .99: await msg.author.send("the secret message dm euro for a doubley secret role, if you tell anyone how you got this the role will be taken away\nif you already have the role, you may choose to dm a screenshot of this message to someone, and they have the chance to get the role")	
 	return msg
@@ -347,8 +348,8 @@ async def leaderboard(msg, content, cmd="top"):
 		except: await msg.channel.send("NaN")
 	with open("levelingData.json", "r") as f:
 		data = json.load(f)
-		users = [(discord.utils.get(msg.guild.members, id=int(user)), int(data[user]["level"]), int(data[user]["xp"])) for user in data.keys()]
-		users.sort(key=lambda x: x[2] * x[1], reverse=True)
+		users = [(discord.utils.get(msg.guild.members, id=int(user)), int(data[user]["level"])) for user in data.keys()]
+		users.sort(key=lambda x: x[1], reverse=True)
 		embed = discord.Embed(title=f"Top {top}", color=users[0][0].color)
 		firstPlaceRole = discord.utils.get(msg.guild.roles, name="first place (in crappy-off-brand leaderboards)")
 		for n, user in enumerate(users):
@@ -988,7 +989,7 @@ async def runCommand(msg, content, cmd):
 	elif cmd in ["findans", "equation", "result", "eval", "calc"]: content = await oneLineCmd(msg, eval(splitContent(content, cmd + " ", index=1)))
 	elif cmd == "iq": content = await iq(msg, content)
 	elif cmd == "shrug": content = await shrug(msg, content)
-	elif cmd in ["level", "rank"]: content = await level(msg, content, cmd=cmd)
+	elif cmd in ["level", "rank", "lvl"]: content = await level(msg, content, cmd=cmd)
 	elif cmd == "top": content = await leaderboard(msg, content)
 	elif cmd in ["magicball", "8ball", "7ball"]: content = await magicBall(msg, content, cmd=cmd)
 	elif cmd == "spam": content = await spamCmd(msg, content)
@@ -1047,13 +1048,17 @@ async def runCommand(msg, content, cmd):
 
 @client.event
 async def on_ready():
+	global blueCheck, neutral
 	await client.change_presence(activity=discord.Game(f'version: {VERSION}'))
+	blueCheck = discord.utils.get(client.emojis, name="Blue_check")
+	neutral = discord.utils.get(client.emojis, name="neutral")
 
 	print(f"ONLINE\nversion: {VERSION}")
 
 @client.event
 async def on_message(msg):
 	global Stop, playingGuessingGame
+	global blueCheck, neutral
 
 	if msg.author.id == 311621977339068418 and msg.channel.id not in (715043261110288415, 658815060646297659):
 		await msg.delete()
@@ -1076,7 +1081,8 @@ async def on_message(msg):
 		await msg.channel.send(random.choice(["I LOVE YOU CHRIS <3", "CHRIS YOUR AMAZING <3 <3"]))
 
 	if msg.channel.id == 427973752647712768 or testInContent(content, "---chkx", "---reactchkx"):
-		await msg.add_reaction(discord.utils.get(client.emojis, name="Blue_check"))
+		await msg.add_reaction(blueCheck)
+		await msg.add_reaction(neutral)
 		await msg.add_reaction("❌")
 
 	if random.random() >= .9994: 

@@ -10,7 +10,7 @@ HELP
 ``help`` [command or category] (--all)
 
 FUN
-``level/rank`` [user]
+``level/rank/lvl`` [user]
 ``top`` [top] (--delete)
 ``ship`` <name1>, <name2> (sep with commas)
 ``echo`` <message> (--e) (--delete)

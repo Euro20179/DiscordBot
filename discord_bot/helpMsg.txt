@@ -8,7 +8,7 @@ sends a help message
 if command is specified it will show the help for that command only
 if --indepth, it sends this file
 
-level / rank [user]
+level / rank / lvl [user]
 sends your level, xp, and required until the next level
 if [user] is provided it'll send that user's stats
 you get 1-100 xp every minute if you talk
