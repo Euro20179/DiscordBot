@@ -12,7 +12,7 @@ import tracemalloc
 tracemalloc.start()
 
 DELETE = "--delete"
-VERSION = "3.3"
+VERSION = "3.3.1"
 Stop = False
 
 playingGuessingGame = {}
@@ -141,7 +141,7 @@ async def oneLineCmd(msg, say, delete=True):
 	msg = await msg.channel.send(say)
 	return msg
 
-async def help(msg, content, cmd="help"):
+async def hlp(msg, content, cmd="help"):
 	if splitContent(content, cmd + " ", index=1).upper() in ("HELP", "FUN", "GAMES", "RANDOM", "MATHY", "INFO", "MISC", "INTERESTING", ""):
 		embed = discord.Embed(title="Help", color=discord.Color(0x00ffe2))
 		cat = splitContent(content, cmd + " ")
@@ -164,8 +164,11 @@ async def help(msg, content, cmd="help"):
 				for n, line in enumerate(read):
 					if line.isupper() and line == cat:
 						LN = n
+						val.append(True)
 					if line.isupper() and n > LN:
+						val.remove(True)
 						embed.add_field(name=cat, value="\n".join(val))
+						del val
 						break
 					if val and LN != n:
 						val.append(line)
@@ -578,12 +581,9 @@ async def complexMessage(msg, content, cmd="complexmessage"):
 
 	with open(f'.\\message\\{filename}', "w") as f:
 		f.write(mssg)
-	if send:
-		with open(f'.\\message\\{filename}', 'rb') as f:
-			await msg.channel.send(file=discord.File(f, filename))
-	if dm:
-		with open(f'.\\message\\{filename}', 'rb') as f:
-			await msg.author.send(file=discord.File(f, filename))
+	with open(f'.\\message\\{filename}', 'rb') as f:
+		if send: await msg.channel.send(file=discord.File(f, filename))
+		if dm:await msg.author.send(file=discord.File(f, filename))
 
 async def sanity(msg, content, cmd="sanity"):
 	c = content.split(cmd)[1]
@@ -727,9 +727,10 @@ async def mballreply(msg, content, cmd="mballreply"):
 	if userHasRole(msg, "mballresponseadder"):
 		with open(mballresponseFilePath, "a") as f:
 			f.write(mssg + "\n")
-		await msg.channel.send("message added")				
+		msg = await msg.channel.send("message added")				
 		return
-	else: await msg.channel.send("you don't have perms")
+	else: msg = await msg.channel.send("you don't have perms")
+	return msg
 
 async def mballDel(msg, content, cmd="8brdel"):
 	reply = content.split(f"{cmd} ")[1]
@@ -997,7 +998,7 @@ async def runCommand(msg, content, cmd):
 	elif cmd == "timers": content = await timers(msg, content)
 	elif cmd == "echo": content = await echo(msg, content)
 	elif cmd == "ping": content = await ping(msg, content)
-	elif cmd == "help": content = await help(msg, content)
+	elif cmd == "help": content = await hlp(msg, content)
 	elif cmd in ["commandusage", "cmduse", "cmdusage", "commanduse"]: content = await cmdUsage(msg, content, cmd=cmd)
 	elif cmd in ["findans", "equation", "result", "eval", "calc"]: content = await oneLineCmd(msg, eval(splitContent(content, cmd + " ", index=1)))
 	elif cmd == "iq": content = await iq(msg, content)
