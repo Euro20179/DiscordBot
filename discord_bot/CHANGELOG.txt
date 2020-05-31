@@ -1,4 +1,17 @@
-3.3.1.1
+3.4
+
+ADDITIONS:
+*fetchuser, finds a user in the server by their id
+*clearinvites (for staff only :watching:)
+
+CHANGES:
+*doesnothing files are formatted slightly better
+
+FIXES:
+*minor bug fixes
+
+====================================================================
+3.3.1.1 (5/30/2020)
 
 FIXES:
 *toc and tof now can use decimals lol

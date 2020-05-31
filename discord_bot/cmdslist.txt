@@ -74,12 +74,16 @@ MISC
 ``stopwatch/timer`` (--delete)
 ``response`` <message> (-lim) (-first)
 ``wiki/wikipedia`` <query> (--delete)
-``clear`` <messages> (only available to staff)
 ``timeit`` <command + [] + ()>
 ``lvlmsg`` <message> (--see/--get)
 ``avatar`` [user]
 ``servericon`` (--delete)
 ``count`` (--i) (--b) (--ib) (--e)
+``fetchuser`` <userid>
+
+STAFF
+``clearinvites``
+``clear`` <messages>
 
 INTERESTING
 ``imscared``

@@ -12,7 +12,7 @@ import tracemalloc
 tracemalloc.start()
 
 DELETE = "--delete"
-VERSION = "3.3.1.1"
+VERSION = "3.4"
 Stop = False
 
 playingGuessingGame = {}
@@ -125,9 +125,7 @@ def stop(*args, **kwargs):
 	if args: return random.choice(args)
 
 def userHasRole(msg, *roles)->bool:
-	if discord.utils.find(lambda r: r.name in roles, msg.author.roles):
-		return True
-	return False
+	return True if discord.utils.find(lambda r: r.name in roles, msg.author.roles) else False
 
 def isInt(testee)->bool:
 	try: 
@@ -247,7 +245,7 @@ async def echo(msg, content, cmd="echo"):
 		embed = discord.Embed(title=splitContent(c, cmd, index=1))
 		await msg.channel.send(embed=embed)			
 		return "EMBED"
-	msg = await msg.channel.send(splitContent(content, cmd, index=1))
+	msg = await msg.channel.send(splitContent(content, cmd)[1])
 	if random.random() > .99: await msg.author.send("the secret message dm euro for a doubley secret role, if you tell anyone how you got this the role will be taken away\nif you already have the role, you may choose to dm a screenshot of this message to someone, and they have the chance to get the role")	
 	return msg
 
@@ -302,7 +300,7 @@ async def cmdUsage(msg, content, cmd="commandusage"):
 
 async def iq(msg, content, cmd="iq"):
 	iq = random.randint(-3, 200)
-	c = msg.author.mention if not splitContent(content, cmd, index=1) else splitContent(content, cmd, index=1)
+	c = msg.author.mention if not splitContent(content, cmd, index=1) else splitContent(content, cmd)[1]
 	await msg.channel.send(f'{c} your iq is *DRUMROLL*...')
 	await asyncio.sleep(random.uniform(.7, 1.3))
 	if iq == 200:
@@ -473,8 +471,8 @@ async def writeRoles(msg, content, cmd="doesnothing"):
 
 	with open(f".\\roles\\{filename}.txt", "w") as f:
 		for x in client.get_all_members():
-			try: f.write(f'{str(x.name)}\n')
-			except: f.write("UNWRITEABLE")
+			try: f.write(f'\n{str(x.name)}\n')
+			except: f.write(f"\n{x.id}\n")
 			for y in x.roles:
 				if "HAPPY" in y.name:
 					f.write("HAPPY BIRTHDAY")
@@ -498,7 +496,7 @@ async def writeRoles(msg, content, cmd="doesnothing"):
 async def spacer(msg, content, cmd="spacer"):
 	await msg.delete()
 	sep = " "
-	c = splitContent(content.lower(), f'{cmd} ', index=1)
+	c = splitContent(content.lower(), f'{cmd} ')[1]
 	spaces = c[:c.find(" ")]
 	c = c[c.find(" "):]
 	if "-sep" in c:
@@ -792,7 +790,7 @@ async def pigLatin(msg, content, cmd="piglatin"):
 	CASE = "--kc"
 	content = content.replace(CASE, "") if testInContent(content, CASE) else content.lower()
 
-	m = splitContent(content, cmd, index=1).split(" ")[1:]
+	m = splitContent(content, cmd)[1].split(" ")[1:]
 
 	if DELETE in m:
 		await msg.delete()
@@ -824,12 +822,22 @@ async def mostRoles(msg, content, cmd="mostroles"):
 
 async def clear(msg, content, cmd="clear"):
 	amnt = int(splitContent(cmd, index=1).strip())
-	if userHasRole(msg, "Staff", "Supreme Admin :)", "Admin", "Supreme Administrator :)", "Administrator"):
+	perms = msg.author.guild_permissions.manage_messages
+	if perms and msg.author.id != 579117856994623498:
 		await msg.channel.purge(limit=amnt)
 	else:
 		await msg.channel.send(f"{msg.author.mention} you can't do that")
 		for _ in range(random.randint(10, 15)):
 			await msg.author.send("you cannot do that, don't do it again")
+
+async def ridInvites(msg, content, cmd="clearinvites"):
+	perms = msg.author.guild_permissions.create_instant_invite
+	if perms:
+		invites = await msg.guild.invites()
+		for inv in invites:
+			await inv.delete()
+		return ""
+	else: return await msg.channel.send("you don't have perms")
 
 async def color(msg, content, cmd="color"):
 	c = splitContent(content, f'{cmd}')[1].strip()
@@ -917,7 +925,7 @@ async def response(msg, content, cmd="response", doFirst=False):
 	if Stop: Stop = False
 	if isBot(msg, client): return "is bot"
 	limit = 1000
-	mssg = splitContent(content, cmd + " ", index=1).lower()
+	mssg = splitContent(content, cmd + " ")[1].lower()
 	if testInContent(mssg, "-lim"):
 		limit = int(splitContent(mssg, "-lim ")[1].strip())
 		if limit > 100000:
@@ -951,11 +959,7 @@ async def emoteInfo(msg, content, cmd="emoteinfo"):
 	await msg.channel.send(embed=embed)
 
 async def avatar(msg, content, cmd="avatar"):
-	c = str(content.split(cmd)[1].strip())
-	c = c[3:-1] if "<@!" in c else c
-	if not c: c = str(msg.author.id)
-	user = findMember(c, msg)
-	user = msg.author if not user else user
+	user = getUserInContent(msg, content, cmd)
 	return await msg.channel.send(user.avatar_url)
 
 async def runCommand(msg, content, cmd):
@@ -1058,6 +1062,8 @@ async def runCommand(msg, content, cmd):
 	elif cmd == "emoteinfo": content = await emoteInfo(msg, content)
 	elif cmd == "avatar": content = await avatar(msg, content)
 	elif cmd == "slowdown": content = await echo(msg, cmd + " **Slow Down** 🐌", cmd="slowdown")
+	elif cmd == "fetchuser": content = await msg.channel.send((await client.fetch_user(int(splitContent(content, f'{cmd} ', index=1)))).name)
+	elif cmd == "clearinvites": content = await ridInvites(msg, content)
 	else: 
 		with open(commandusageFilePath, "r+") as j:
 			data = json.load(j)
