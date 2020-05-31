@@ -72,11 +72,12 @@ usage:
 ex: complexmessage yes, filename.txt, the message in the file
 seperate with commas
 
-count (--i) (--b) (--ib)
+count (--i) (--b) (--ib) (--e)
 counts in #counting
 --i makes it italisized
 --b makes it bold
 --ib makes it both
+--e makes an embed
 
 doesnothing <filename> (--delete)
 produces a filename called <filename> with

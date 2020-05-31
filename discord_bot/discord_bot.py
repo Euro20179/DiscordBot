@@ -12,7 +12,7 @@ import tracemalloc
 tracemalloc.start()
 
 DELETE = "--delete"
-VERSION = "3.3.1"
+VERSION = "3.3.1.1"
 Stop = False
 
 playingGuessingGame = {}
@@ -38,6 +38,14 @@ def isBot(msg, client)->bool:
 
 async def formatDateTime(createdAt):
 	return f'{createdAt.day}/{createdAt.month}/{createdAt.year} at {createdAt.hour}:{createdAt.minute}:{createdAt.second}'
+
+async def getUserInContent(msg, c, cmd):
+	c = str(c.split(cmd)[1].strip())
+	c = c[3:-1] if "<@!" in c else c
+	if not c: c = str(msg.author.id)
+	user = findMember(c, msg)
+	user = msg.author if not user else user
+	return user
 
 async def giveXP(msg):
 	if isBot(msg, client): return
@@ -323,11 +331,7 @@ async def getUserData(user):
 		return data.get(str(user))
 
 async def level(msg, content, cmd="level"):
-	c = str(content.split(cmd)[1].strip())
-	c = c[3:-1] if "<@!" in c else c
-	if not c: c = str(msg.author.id)
-	user = findMember(c, msg)
-	user = msg.author if not user else user
+	user = await getUserInContent(msg, content, cmd)
 	if len(splitContent(content, " ")) > 1:
 		user = discord.utils.get(msg.guild.members, id=user.id)
 	userData = await getUserData(user.id)
@@ -669,7 +673,7 @@ async def rand(msg, content, cmd="rand"):
 			await msg.delete()
 			c.remove(DELETE)
 		Even = True if testInContent(" ".join(c), EVEN) else False
-		Odd = True if testInContent(" ".join(c), ODD) else False
+		Odd = False if Even else True
 		if Even: c.remove(EVEN)
 		if Odd: c.remove(ODD)
 		low = c[0].strip()
@@ -1046,8 +1050,8 @@ async def runCommand(msg, content, cmd):
 	elif cmd in ["wiki", "wikipedia"]: content = await oneLineCmd(msg, f'https://en.wikipedia.org/wiki/Special:Search?search={splitContent(content, cmd + " ", index=1).replace(" ", "_")}')
 	elif cmd == "commandcount": content = await commandCount(msg, content)
 	elif cmd in ["hex", "bin", "oct"]: content = await hexBinOct(msg, content, cmd=cmd)
-	elif cmd == "tof": content = await oneLineCmd(msg, "NaN" if not check_int(splitContent(content, cmd + " ", index=1)) else 9 / 5 * int(splitContent(content, cmd + " ", index=1)) + 32)
-	elif cmd == "toc": content = await oneLineCmd(msg, "NaN" if not check_int(splitContent(content, cmd + " ", index=1)) else 5 / 9 * (int(splitContent(content, cmd + " ", index=1)) - 32))
+	elif cmd == "tof": content = await oneLineCmd(msg, 9 / 5 * float(splitContent(content, cmd + " ", index=1)) + 32)
+	elif cmd == "toc": content = await oneLineCmd(msg, 5 / 9 * (float(splitContent(content, cmd + " ", index=1)) - 32))
 	elif cmd == "response": content = await response(msg, content)
 	elif cmd in ["stopwatch", "timer"]: content = await timer(msg, content, cmd=cmd)
 	elif cmd == "lvlmsg": content = await levelMessage(msg, content)

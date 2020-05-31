@@ -28,7 +28,6 @@ FUN
 ``message`` <send> <filename>.txt <contents>
 ``sanity`` <message> (--delete) (-r) (-first)
 ``family`` (--delete)
-``count`` (--i) (--b) (--ib)
 ``reverse`` (--delete)
 ``piglatin`` <essagemay> (--kc) (-first)
 ``iq`` [something] (-first)
@@ -80,6 +79,7 @@ MISC
 ``lvlmsg`` <message> (--see/--get)
 ``avatar`` [user]
 ``servericon`` (--delete)
+``count`` (--i) (--b) (--ib) (--e)
 
 INTERESTING
 ``imscared``
