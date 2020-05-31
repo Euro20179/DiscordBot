@@ -1,3 +1,13 @@
+3.4.1
+
+CHANGES:
+*iq now says <message>'s iq instead of <message> your iq
+
+FIXES:
+*echo now pings people
+*fixed reactiontime
+
+====================================================================
 3.4
 
 ADDITIONS:

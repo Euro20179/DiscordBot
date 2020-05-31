@@ -12,7 +12,7 @@ import tracemalloc
 tracemalloc.start()
 
 DELETE = "--delete"
-VERSION = "3.4"
+VERSION = "3.4.1"
 Stop = False
 
 playingGuessingGame = {}
@@ -235,7 +235,6 @@ async def ping(msg, content, cmd="ping"):
 	return msg
 
 async def echo(msg, content, cmd="echo"):
-	content = discord.utils.escape_mentions(content)
 	print(content)
 	if not TICDelete(content): 
 		await msg.delete()
@@ -301,7 +300,7 @@ async def cmdUsage(msg, content, cmd="commandusage"):
 async def iq(msg, content, cmd="iq"):
 	iq = random.randint(-3, 200)
 	c = msg.author.mention if not splitContent(content, cmd, index=1) else splitContent(content, cmd)[1]
-	await msg.channel.send(f'{c} your iq is *DRUMROLL*...')
+	await msg.channel.send(f'{c}\'s iq is *DRUMROLL*...')
 	await asyncio.sleep(random.uniform(.7, 1.3))
 	if iq == 200:
 		msg = await msg.channel.send(f'you are the next einstein, you are smart enough to realize iq is dumb, so there is no need to say it')
@@ -1096,8 +1095,8 @@ async def on_message(msg):
 
 	if testInContent(content, "---delete", "—-delete"): await msg.delete()
 	if testInContent(content, "---delin "):
-		time = splitContent(content, "---delin ", index=1).strip()
-		try: await asyncio.sleep(int(time))
+		t = splitContent(content, "---delin ", index=1).strip()
+		try: await asyncio.sleep(int(t))
 		except: 
 			await msg.channel.send("NaN")
 			return 
