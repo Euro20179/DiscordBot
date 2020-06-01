@@ -1,4 +1,11 @@
-3.5
+3.5.1 (6/1/2020)
+
+ADDITIONS:
+*change your lvlmsg to none or null to not get notified when you level up
+*stop now works for recursive commands for example: [echo [echo [echo [echo [echo [echo [echo [echo 
+
+====================================================================
+3.5 (6/1/2020)
 
 ADDITIONS:
 *3.5-rc1 - 3.5

@@ -68,12 +68,16 @@ async def giveXP(msg : discord.Message)->None:
 				levelUpMessage = userInfo.get("message")
 				if not levelUpMessage: rawLvlMsg = '{author} you have leveled up to level {level}, very cool'
 				else: rawLvlMsg = levelUpMessage
-				if xp >= required:
+				if xp >= required:				
 					level += 1
 					if levelUpMessage: levelUpMessage = levelUpMessage.replace("{author}", msg.author.mention).replace("{level}", str(level)).replace("{time}", await formatDateTime(datetime.datetime.now())).replace("{emote}", str(random.choice(client.emojis))).replace("{channel}", msg.channel.name)
 					else: levelUpMessage = f'{msg.author.mention} you have leveled up to level {level}, very cool'
 					xp //= 2
-					await msg.channel.send(levelUpMessage)
+					if levelUpMessage in ["none", "None", "null", "Null"]:
+						required = (1000 * level) * 1.1
+						userInfo = {"level": level, "xp": xp, "required": required, "lastTalked": lastTalked, "message": rawLvlMsg}
+					else:
+						await msg.channel.send(levelUpMessage)
 				required = 1000 * level
 				userInfo = {"level": level, "xp": xp, "required": required, "lastTalked": lastTalked, "message": rawLvlMsg}
 			data[str(msg.author.id)] = userInfo
@@ -1095,6 +1099,10 @@ async def on_ready():
 async def on_message(msg):
 	global Stop, playingGuessingGame
 	global blueCheck, neutral
+
+	if msg.author.bot and Stop:
+		Stop = False
+		return
 
 	if msg.author.id == 311621977339068418 and msg.channel.id not in (715043261110288415, 658815060646297659):
 		await msg.delete()
