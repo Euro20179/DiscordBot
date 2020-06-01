@@ -18,7 +18,7 @@ import bs4 as bs
 tracemalloc.start()
 
 DELETE = "--delete"
-VERSION = "3.5-rc1"
+VERSION = "3.5-rc2"
 Stop = False
 
 playingGuessingGame = {}
@@ -948,13 +948,13 @@ async def typeFor(msg, content, cmd="type"):
 
 async def sendBlank(msg, content, cmd="sendblank"):
 	amnt = 5
-	print(content)
 	if TICDelete(content):
 		await msg.delete()
 		content = content.replace(DELETE, "")
 	if (split := splitContent(content, f"{cmd} ", index=1)):
 		amnt = int(split)
-	return await msg.channel.send("_ _\n"*amnt)
+	send = "_" + ("\n" * amnt) + "_"
+	return await msg.channel.send(send)
 
 async def hangman(msg, content, cmd="hangman"):
 	user = (await getUserInContent(msg, content, cmd))
