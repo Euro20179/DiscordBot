@@ -1,4 +1,33 @@
-3.4.1
+3.5-rc1 (6/1/2020)
+
+ADDITIONS:
+*typefor, makes the bot type for 5 seconds if no time is specified
+*added "C" and "c" to the list of random mouths to the randomface command
+*hangman, ping a user and play hangman (suggested by penguin)
+*sendblank, sends 10 lines of blank messages
+*boat and boip are now aliases for ship
+*added "does not exist" when command doesn't exist
+*daily command gives you randomly 0 to 1000000 dollars!!!1!!11!1!!!@!!
+*added --u and --ui options to count
+
+CHANGES:
+*the tile for channel info is now the name of the channel
+*created at is now mm/dd/yyyy instead of dd/mm/yyyy because I like mm/dd/yyyy better
+*help command is now in a json file, instead of 2 seperate files
+*levels now has it's own category in the help command
+*information about the bot has been moved to its own category from the info category
+*the grace time for levels is now 24 hours instead of 12
+
+FIXES:
+*stuff like [iq iq will actually say "iq's iq is..." instead of "<blank>'s iq is..."
+*-c for --e in count now works
+*count works when the previous message has formatting
+
+TECHNICAL:
+*changed the way it takes out the command from message meaning:
+    
+====================================================================
+3.4.1 (5/30/2020)
 
 CHANGES:
 *iq now says <message>'s iq instead of <message> your iq
@@ -8,7 +37,7 @@ FIXES:
 *fixed reactiontime
 
 ====================================================================
-3.4
+3.4 (5/30/2020)
 
 ADDITIONS:
 *fetchuser, finds a user in the server by their id
@@ -98,7 +127,7 @@ FIXES:
 3.1.1.2 (5/28/2020)
 
 FIXES:
-*chnages now works as intended
+*changes now works as intended
 *clear works
 
 ====================================================================
@@ -130,17 +159,58 @@ TECHNICAL:
 
 ====================================================================
 3.0 (5/28/2020)
+THIS EXACT UPDATE:
+    ADDITIONS:
+    *---delin <time>, deletes your message in <time> seconds
+    *timeit, times how long a command takes do [help timeit for more info
 
-ADDITIONS:
-*---delin <time>, deletes your message in <time> seconds
-*timeit, times how long a command takes do [help timeit for more info
+    CHANGES:
+    *renamed -dofirst to -first
+    *<cmd> is not a thing, if the command isn't a thing instead of just saying "that command doesn't exist" or whatever
 
-CHANGES:
-*renamed -dofirst to -first
-*<cmd> is not a thing, if the command isn't a thing instead of just saying "that command doesn't exist" or whatever
+    REMOVED:
+    *spamdms, pointless, kept breaking
+NEW IN 3.0:
+    ADDITIONS:
+    *you can use sep for the serveremote command
+    *iq, gives an iq
+    *add ---reactchkx or ---chkx for the bot to react with a check and x on your message
+    *top now has --delete and you can specify the top [blank]
+    *--delete now works with calc
+    *oct, gives the base 8 version of a number
+    *add -dofirst before the second command in a command to get the result of that first
+        *example: [spam 10 -dofirst [piglatin hello
+        *this will send 10 of ellohay
+        *it'll only work for some commands
+            *commands that work with it will be shown in the help
 
-REMOVED:
-*spamdms, pointless, kept breaking
+    CHANGES:
+    *timer can be used along with stopwatch
+    *sarcastic responses are rarer
+    *you must use --e to embed with the echo command
+    *calc command is now actually in the help thing (very nice i know)
+    *renamed timer to stopwatch
+    *removed rawlevels command
+
+    FIXES:
+    *serveremote works x 2
+    *fixed a coding error that broke a million things, they should work now
+    *reacion -> reaction
+    *small bug
+    *testing if user had a certain role was broken which broke the following commands:
+        8brdel
+        mballreply
+        clear
+    *in rps if someone does r and the other person does rock it should now be a tie
+        *this goes with p, and s as well
+    *level command broke itself somehow, should be fixed
+
+    REMOVED:
+    *--lives+ and --lives- in guessinggame
+
+    TECHNICAL:
+    *code overhaul
+        *everything now has it's own funciton (except for simple commands like flush or ping, and message and complexmessage share a function)
 
 ====================================================================
 3.0-rc3 (5/27/2020)
