@@ -729,26 +729,27 @@ async def count(msg, content, cmd="count"):
 	await msg.delete()
 	channel = discord.utils.get(msg.guild.channels, name="counting")
 	highest = max([x.content.replace("*", "").replace("_", "").replace("`", "").strip(".") async for x in channel.history(limit=3)])
+	highest = int(highest) + 1
 	async for x in channel.history(limit=1):
 		if isBot(x, client): return ""
-	if (style := testInContent(content, "--i", "--b", "--ib", "--e")):
+	if (style := testInContent(content, "--i", "--b", "--ib", "--e", "--u", "--ui")):
 		if style == "--i":
-			await channel.send(f'*.{int(highest) + 1}.*')
+			await channel.send(f'*.{highest}.*')
 		elif style == "--b":
-			await channel.send(f'**.{int(highest) + 1}.**')
+			await channel.send(f'**.{highest}.**')
 		elif style == "--ib":
-			await channel.send(f'***.{int(highest) + 1}.***')
+			await channel.send(f'***.{highest}.***')
 		elif style == "--u":
-			await channel.send(f"__.{int(highest) + 1}.__")
+			await channel.send(f"__.{highest}.__")
 		elif style == "--ui":
-			await channel.send(f"___.{int(highest) + 1}.___")
+			await channel.send(f"___.{highest}.___")
 		elif style == "--e":
 			if testInContent(content, "-c"):
 				color = splitContent(content, "-c ")[1]
 				color = int(f'0x{color}', 16)
 			else: color = 0x000000
-			await channel.send(embed=discord.Embed(title=f'.{int(highest) + 1}.', color=discord.Color(color)))
-	else: await channel.send(f'.{int(highest) + 1}.')
+			await channel.send(embed=discord.Embed(title=f'.{highest}.', color=discord.Color(color)))
+	else: await channel.send(f'.{highest}.')
 
 async def choose(msg, content, cmd="choose"):
 	options = splitContent(content, f'{cmd} ')[1].split(", ")
