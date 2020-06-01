@@ -18,7 +18,7 @@ import bs4 as bs
 tracemalloc.start()
 
 DELETE = "--delete"
-VERSION = "3.5-rc2"
+VERSION = "3.5"
 Stop = False
 
 playingGuessingGame = {}
@@ -1111,9 +1111,6 @@ async def on_message(msg):
 			await msg.channel.send("NaN")
 			return 
 		await msg.delete()
-
-	if msg.author.id == 589614752385335335 and random.random() > .99:
-		await msg.channel.send(random.choice(["I LOVE YOU CHRIS <3", "CHRIS YOUR AMAZING <3 <3"]))
 
 	if msg.channel.id == 427973752647712768 or testInContent(content, "---chkx", "---reactchkx"):
 		await msg.add_reaction(blueCheck)
