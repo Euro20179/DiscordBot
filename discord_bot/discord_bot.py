@@ -18,7 +18,7 @@ import bs4 as bs
 tracemalloc.start()
 
 DELETE = "--delete"
-VERSION = "3.5.3"
+VERSION = "3.5.3.1"
 Stop = False
 
 playingGuessingGame = {}
@@ -965,7 +965,7 @@ async def hangman(msg, content, cmd="hangman"):
 	if (split := splitContent(content, user.mention, index=1)): lives = int(split.strip())
 	else: lives = 9
 	await msg.author.send(f"you will have 15 seconds to send a word of your choice, and {user.name} will have to guess it in {msg.channel.name}")
-	await asyncio.sleep(5)
+	await asyncio.sleep(15)
 	async for i in msg.author.dm_channel.history(limit=1):
 		word = i.content.lower()
 	disp = "".join(["-" if x not in [" ", "," "." "'" '"'] else x for x in word])
