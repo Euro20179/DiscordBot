@@ -207,6 +207,10 @@
    },
    "INFO":{
        "desc": "commands that give info",
+        "serverinfo": {
+            "params": "(--delete)",
+            "desc": "gets info on the server"
+        },
         "roleinfo": {
             "params": "<role> (--delete)",
             "desc": "gets info on <role>"
@@ -263,8 +267,8 @@
             "desc": "gives the total number of commands"
         },
         "changes": {
-            "params": "(--nlatest) (--dms) (--delete) (-v <version>)",
-            "desc": "gives the latest changes\n-nlatest gives the text file\n--dms sends to dms\n-v gives changes on <version>"
+            "params": "[version] (--nlatest) (--dms) (--delete)",
+            "desc": "gives the latest changes, if version is specified it gives that version's changes\n-nlatest gives the text file\n--dms sends to dms"
         },
         "version": {
             "params": "(--delete)",

@@ -1,3 +1,18 @@
+3.5.4 (6/2/2020)
+
+ADDITIONS:
+*rank # in lvl command is back
+*serverinfo command
+
+CHANGES:
+*you no longer have to do -v to specify which version for the changes command
+*tells you the letters you have guessed
+
+FIXES:
+*commancount is now accurate
+*hangman now ends properly
+
+====================================================================
 3.5.3.1 (6/1/2020)
 
 FIXES:
@@ -84,7 +99,7 @@ FIXES:
 *count works when the previous message has formatting
 
 TECHNICAL:
-*changed the way it takes out the command from message meaning:
+*changed the way it takes out the command from message
     
 ====================================================================
 3.4.1 (5/30/2020)
