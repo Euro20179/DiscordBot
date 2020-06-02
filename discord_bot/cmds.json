@@ -35,7 +35,7 @@
         },
         "lvlmsg": {
             "params": "<message> (--see/--get)",
-            "desc": "sets your level up message to <message>\nif see or get, shows your level up message"
+            "desc": "sets your level up message to <message>\nif see or get, shows your level up message\nif message is none it wont say when you level up"
         }
    },
    "FUN": {

@@ -1,3 +1,12 @@
+3.5.2
+
+CHANGES:
+*leveling is 10% slower per level
+
+FIXES:
+*small leveling bug fix
+
+====================================================================
 3.5.1 (6/1/2020)
 
 ADDITIONS:

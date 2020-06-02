@@ -18,7 +18,7 @@ import bs4 as bs
 tracemalloc.start()
 
 DELETE = "--delete"
-VERSION = "3.5.1"
+VERSION = "3.5.2"
 Stop = False
 
 playingGuessingGame = {}
@@ -73,12 +73,11 @@ async def giveXP(msg : discord.Message)->None:
 					if levelUpMessage: levelUpMessage = levelUpMessage.replace("{author}", msg.author.mention).replace("{level}", str(level)).replace("{time}", await formatDateTime(datetime.datetime.now())).replace("{emote}", str(random.choice(client.emojis))).replace("{channel}", msg.channel.name)
 					else: levelUpMessage = f'{msg.author.mention} you have leveled up to level {level}, very cool'
 					xp //= 2
-					if levelUpMessage in ["none", "None", "null", "Null"]:
-						required = (1000 * level) * 1.1
-						userInfo = {"level": level, "xp": xp, "required": required, "lastTalked": lastTalked, "message": rawLvlMsg}
-					else:
+					required = round((1000 * level) * 1.1)
+					userInfo = {"level": level, "xp": xp, "required": required, "lastTalked": lastTalked, "message": rawLvlMsg}
+					if levelUpMessage not in ["none", "None", "null", "Null"]:
 						await msg.channel.send(levelUpMessage)
-				required = 1000 * level
+				required = round((1000 * level) * 1.1)
 				userInfo = {"level": level, "xp": xp, "required": required, "lastTalked": lastTalked, "message": rawLvlMsg}
 			data[str(msg.author.id)] = userInfo
 		else:
