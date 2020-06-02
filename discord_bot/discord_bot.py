@@ -967,7 +967,7 @@ async def hangman(msg, content, cmd="hangman"):
 	await msg.author.send(f"you will have 15 seconds to send a word of your choice, and {user.name} will have to guess it in {msg.channel.name}")
 	await asyncio.sleep(5)
 	async for i in msg.author.dm_channel.history(limit=1):
-		word = i.content
+		word = i.content.lower()
 	disp = "".join(["-" if x not in [" ", "," "." "'" '"'] else x for x in word])
 	playingHangman[user.id] = {"word": word, "lives": lives, "guessed": [], "disp": disp}
 	await msg.channel.send(f'{user.mention} guessing time')
