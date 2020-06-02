@@ -962,7 +962,7 @@ async def sendBlank(msg, content, cmd="sendblank"):
 
 async def hangman(msg, content, cmd="hangman"):
 	user = (await getUserInContent(msg, content, cmd))
-	if (split := splitContent(content, f'{cmd} ', index=1)): lives = int(split.strip())
+	if (split := splitContent(content, user.mention, index=1)): lives = int(split.strip())
 	else: lives = 9
 	await msg.author.send(f"you will have 15 seconds to send a word of your choice, and {user.name} will have to guess it in {msg.channel.name}")
 	await asyncio.sleep(5)
@@ -970,6 +970,7 @@ async def hangman(msg, content, cmd="hangman"):
 		word = i.content
 	disp = "".join(["-" if x not in [" ", "," "." "'" '"'] else x for x in word])
 	playingHangman[user.id] = {"word": word, "lives": lives, "guessed": [], "disp": disp}
+	await msg.channel.send(f'{user.mention} guessing time')
 	return await msg.channel.send(disp)
 
 async def runCommand(msg, content, cmd):
@@ -1197,6 +1198,9 @@ async def on_message(msg):
 		await msg.channel.send(f"guess\nyou have {lives} lives left")
 
 	if playingHangman.get(msg.author.id):
+		if len(content) != 1:
+			return
+		content = content.lower()
 		tempWord = playingHangman[msg.author.id]["word"]
 		tempLives = playingHangman[msg.author.id]["lives"]
 		tempDisp = playingHangman[msg.author.id]["disp"]
