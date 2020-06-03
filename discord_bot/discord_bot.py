@@ -660,7 +660,7 @@ async def rand(msg, content, cmd="rand"):
 			await msg.delete()
 			c.remove(DELETE)
 		Even = True if testInContent(" ".join(c), EVEN) else False
-		Odd = False if Even else True
+		Even = True if testInContent(" ".join(c), ODD) else False
 		if Even: c.remove(EVEN)
 		if Odd: c.remove(ODD)
 		low = c[0].strip()
@@ -1115,6 +1115,7 @@ async def runCommand(msg, content, cmd):
 	elif cmd == "sendblank": content = await sendBlank(msg, content)
 	elif cmd == "daily": content = await oneLineCmd(msg, f"you earned ${random.randint(0, 1000000)} you can use this command once a day!")
 	elif cmd == "serverinfo": content = await serverInfo(msg, content)
+	elif cmd == "pokemon": content = await oneLineCmd(msg, "WE DONT NEED ANOTHER POKEMON COMMAND THANK YOU VERY MUCH")
 	elif cmd not in CMDLIST: 
 		with open(commandusageFilePath, "r+") as j:
 			data = json.load(j)
@@ -1238,6 +1239,7 @@ async def on_message(msg):
 	if playingHangman.get(msg.author.id):
 		if content in ["QUIT", "STOP", "CANCEL", "END"]:
 			del playingHangman[msg.author.id]
+			await msg.channel.send(f'{msg.author.mention} CANCELLED')
 			return
 		content = content.lower()
 		tempWord = playingHangman[msg.author.id]["word"]
@@ -1250,7 +1252,6 @@ async def on_message(msg):
 			return
 		if len(content) != 1:
 			return
-		print(content, tempWord)
 		if content in tempGuessed:
 			await msg.channel.send(f'you already said {content}')
 			return

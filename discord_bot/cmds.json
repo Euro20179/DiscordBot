@@ -40,6 +40,10 @@
    },
    "FUN": {
        "desc": "fun commands",
+       "pokemon": {
+           "params": null,
+           "desc": "gets a pokemon"
+       },
        "ship": {
            "params": "<name1>, <name2> (sep with commas)",
            "desc": "takes the first half of name1 and combines it with the second half of name2",
