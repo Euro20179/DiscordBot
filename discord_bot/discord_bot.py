@@ -17,7 +17,7 @@ import bs4 as bs
 tracemalloc.start()
 
 DELETE = "--delete"
-VERSION = "3.5.4"
+VERSION = "3.5.5"
 Stop = False
 
 playingGuessingGame = {}
@@ -967,6 +967,8 @@ async def sendBlank(msg, content, cmd="sendblank"):
 
 async def hangman(msg, content, cmd="hangman"):
 	user = (await getUserInContent(msg, content, cmd))
+	if user.id in playingHangman.keys():
+		await msg.channel.send(f'{msg.author.mention} {user.name} is already in a game')
 	if (split := splitContent(content, user.mention, index=1)): lives = int(split.strip())
 	else: lives = 9
 	await msg.author.send(f"you will have 15 seconds to send a word of your choice, and {user.name} will have to guess it in {msg.channel.name}")
@@ -981,12 +983,15 @@ async def hangman(msg, content, cmd="hangman"):
 async def serverInfo(msg, content, cmd="serverinfo"):
 	if TICDelete(content): await msg.delete()
 	roles = msg.guild.roles
+	creation = msg.guild.created_at
+	t = datetime.datetime.now()
 	embed = discord.Embed(title="Server Info", color=roles[-1].color)
 	embed.add_field(name="region", value=msg.guild.region)
 	embed.add_field(name="icon link", value=msg.guild.icon_url)
 	embed.add_field(name="icon animated?", value=msg.guild.is_icon_animated())
 	embed.add_field(name="splash link", value=msg.guild.splash_url)
-	embed.add_field(name="emoji count", value=len(msg.guild.emojis))
+	embed.add_field(name="emojis", value=f'{len(msg.guild.emojis)}/{msg.guild.emoji_limit * 2}')
+	embed.add_field(name="filesize limit", value=msg.guild.filesize_limit)
 	embed.add_field(name="guild id", value=msg.guild.id)
 	embed.add_field(name="boost count", value=msg.guild.premium_subscription_count)
 	embed.add_field(name="boosters", value="\n".join([x.mention for x in msg.guild.premium_subscribers]))
@@ -994,10 +999,11 @@ async def serverInfo(msg, content, cmd="serverinfo"):
 	embed.add_field(name="channel count", value=len(msg.guild.channels))
 	embed.add_field(name="voice channel count", value=len(msg.guild.voice_channels))
 	embed.add_field(name="text channel count", value=len(msg.guild.text_channels))
-	embed.add_field(name="roles", value=len(msg.guild.roles))
+	embed.add_field(name="roles", value=len(roles))
 	embed.add_field(name="members", value=msg.guild.member_count)
 	embed.add_field(name="owner", value=msg.guild.owner.mention)
-	embed.add_field(name="creation time", value=await formatDateTime(msg.guild.created_at))
+	embed.add_field(name="creation time", value=await formatDateTime(creation))
+	embed.add_field(name="age", value=t - creation)
 	await msg.channel.send(embed=embed)
 
 async def runCommand(msg, content, cmd):
@@ -1162,7 +1168,7 @@ async def on_message(msg):
 		await msg.channel.send(f"no {discord.utils.get(client.emojis, name='Watching1')}")
 		return
 
-	if f"<@!{client.user.id}>" in content:
+	if f"<@!{client.user.id}>" in content and client.user.id not in playingHangman.keys():
 		await msg.channel.send(random.choice([discord.utils.find(lambda e: e.name.lower() == "watching1", client.emojis), discord.utils.find(lambda e: e.name.lower() == "pinged", client.emojis)]))
 		
 	await giveXP(msg)
@@ -1227,6 +1233,10 @@ async def on_message(msg):
 		await msg.channel.send(f"guess\nyou have {lives} lives left")
 
 	if playingHangman.get(msg.author.id):
+		if content.lower() == tempWord.lower():
+			await msg.channel.send(f'{msg.author.mention} YOU WIN')
+			del playingHangman[msg.author.id]
+			return
 		if len(content) != 1:
 			return
 		content = content.lower()
@@ -1234,11 +1244,11 @@ async def on_message(msg):
 		tempLives = playingHangman[msg.author.id]["lives"]
 		tempDisp = playingHangman[msg.author.id]["disp"]
 		tempGuessed = playingHangman[msg.author.id]["guessed"]
-		tempGuessed.append(content)
-		if content == tempWord:
-			await msg.chanenl.send(f'{msg.author.mention} YOU WIN')
-			del playingHangman[msg.author.id]
+		print(content, tempWord)
+		if content in tempGuessed:
+			await msg.channel.send(f'you already said {content}')
 			return
+		tempGuessed.append(content)
 		if content in tempWord:
 			foo = [x for x in tempDisp]
 			for n, w in enumerate(tempWord):
@@ -1259,7 +1269,7 @@ async def on_message(msg):
 			await msg.channel.send(f'YOU WIN\nYou won with {tempLives} left!')
 			del playingHangman[msg.author.id]
 			return
-		else: await msg.channel.send(f'Guesses left: {tempLives}\nKnown word: {tempDisp}\nguesses: {" ".join(tempGuessed)}')
+		else: await msg.channel.send(f'{msg.author.mention}\nGuesses left: {tempLives}\nKnown word: {tempDisp}\nguesses: {" ".join(tempGuessed)}')
 		playingHangman[msg.author.id] = {"word": tempWord, "lives": tempLives, "disp": tempDisp}
 
 @client.event

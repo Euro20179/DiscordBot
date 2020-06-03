@@ -1,3 +1,17 @@
+3.5.5 (6/2/2020)
+
+ADDITIONS:
+*serverinfo now says the days + time since creation
+*serverinfo now says total possible emojis
+*serverinfo now says maximum file size you can send
+
+*CHANGES:
+*can no longer play someone who is in a game in hangman
+
+FIXES:
+*hangman will now end if entire phrase is guessed
+
+====================================================================
 3.5.4 (6/2/2020)
 
 ADDITIONS:
