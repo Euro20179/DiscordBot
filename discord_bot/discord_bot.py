@@ -17,7 +17,7 @@ import bs4 as bs
 tracemalloc.start()
 
 DELETE = "--delete"
-VERSION = "3.6.1"
+VERSION = "3.6.2"
 Stop = False
 
 playingGuessingGame = {}
@@ -51,7 +51,7 @@ async def formatDateTime(createdAt : datetime.datetime)->str:
 
 async def getUserInContent(msg : discord.Message, c : str, cmd : str)->discord.User:
 	c = str(c.split(cmd)[1].strip())
-	c = c[3:-1] if "<@!" in c else c
+	c = c.replace("!", "")[2:-1] if "<@" in c else c
 	if not c: c = str(msg.author.id)
 	user = findMember(c, msg)
 	user = msg.author if not user else user
@@ -634,7 +634,7 @@ async def roleCount(msg, content, cmd="rolecount"):
 	if "--showroles" in c:
 		Showroles = True
 		c = c.replace(" --showroles", "") if c != "--showroles" else ""
-	c = c[3:-1] if "<@!" in c else c
+	c = c.replace("!", "")[2:-1] if "<@" in c else c
 	if not c: c = str(msg.author.id)
 	if (m := findMember(c, msg)):
 		roles = [x.mention for x in m.roles]
@@ -693,10 +693,10 @@ async def compareRoles(msg, content, cmd="compareroles"):
 	c = content.split(testInContent(content, "comproles", "compareroles"), index=1).split(" ")
 	user1 = str(c[1].strip()) 
 	user2 = str(c[2].strip())
-	if "<@!" in user1:
-		user1 = str(user1)[3:-1]
-	if "<@!" in user2:
-		user2 = str(user2)[3:-1]
+	if "<@" in user1:
+		user1 = str(user1).replace("!", "")[2:-1]
+	if "<@" in user2:
+		user2 = str(user2).replace("!", "")[2:-1]
 	u1name = findMember(user1, msg)
 	u2name = findMember(user2, msg)
 	if u1name and u2name:
@@ -1002,6 +1002,7 @@ async def sendBlank(msg, content, cmd="sendblank"):
 
 async def hangman(msg, content, cmd="hangman"):
 	user = (await getUserInContent(msg, content, cmd))
+	print(user)
 	content = content[len(cmd) + 2:]
 	if user.id in playingHangman.keys():
 		await msg.channel.send(f'{msg.author.mention} {user.name} is already in a game')

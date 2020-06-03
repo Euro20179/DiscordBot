@@ -1,3 +1,9 @@
+3.6.2
+
+FIXES:
+*hangman and some other stuff on mobile (because for some reason, it matters)
+
+====================================================================
 3.6.1
 
 CHANGES:
