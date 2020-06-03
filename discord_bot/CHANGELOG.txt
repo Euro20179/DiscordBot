@@ -1,3 +1,20 @@
+3.5.9 (6/3/2020)
+
+ADDITIONS:
+*userinfo
+
+CHANGES:
+*rolecount's embed color is now your top role color
+*the ordering of serverinfo is a bit different
+*if no role is provided for roleinfo it'll give info on your top role
+
+FIXES:
+*avatar
+
+REMOVED:
+*{time} from lvlmsg
+
+====================================================================
 3.5.8 (6/2/2020)
 
 CHANGES:

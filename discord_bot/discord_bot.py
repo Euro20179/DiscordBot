@@ -17,7 +17,7 @@ import bs4 as bs
 tracemalloc.start()
 
 DELETE = "--delete"
-VERSION = "3.5.8"
+VERSION = "3.5.9"
 Stop = False
 
 playingGuessingGame = {}
@@ -46,7 +46,7 @@ def isBot(msg, client)->bool:
 	return False
 
 async def formatDateTime(createdAt : datetime.datetime)->str:
-	return f'{createdAt.month}/{createdAt.day}/{createdAt.year} at {createdAt.hour}:{createdAt.minute}:{createdAt.second}'
+	return f'{createdAt.month}/{createdAt.day}/{createdAt.year}\nat {createdAt.hour}:{createdAt.minute}:{createdAt.second}'
 
 async def getUserInContent(msg : discord.Message, c : str, cmd : str)->discord.User:
 	c = str(c.split(cmd)[1].strip())
@@ -73,7 +73,7 @@ async def giveXP(msg : discord.Message)->None:
 				else: rawLvlMsg = levelUpMessage
 				if xp >= required:				
 					level += 1
-					if levelUpMessage: levelUpMessage = levelUpMessage.replace("{author}", msg.author.mention).replace("{level}", str(level)).replace("{time}", await formatDateTime(datetime.datetime.now())).replace("{emote}", str(random.choice(client.emojis))).replace("{channel}", msg.channel.name)
+					if levelUpMessage: levelUpMessage = levelUpMessage.replace("{author}", msg.author.mention).replace("{level}", str(level)).replace("{emote}", str(random.choice(client.emojis))).replace("{channel}", msg.channel.name)
 					else: levelUpMessage = f'{msg.author.mention} you have leveled up to level {level}, very cool'
 					xp //= 2
 					required = round((1000 * level) * 1.1)
@@ -617,11 +617,17 @@ async def roleInfo(msg, content, cmd="roleinfo"):
 	if TICDelete(content):
 		await msg.delete()
 		content = content.replace(DELETE, "")
-	rolename = splitContent(content, cmd + " ")[1]
+	if not splitContent(content, cmd + " "):
+		rolename = msg.author.top_role.name
+	else:
+		rolename = splitContent(content, cmd + " ")[1]
 	try:
 		role = discord.utils.find(lambda r: r.name.lower() == rolename.lower(), msg.guild.roles)
 		embed = discord.Embed(title=role.name, color=role.color)
 		embed.add_field(name="Color", value=role.color)
+		embed.add_field(name="displayed seperately?", value=role.hoist)
+		embed.add_field(name="hierarchical position", value=len(msg.guild.roles) - role.position)
+		embed.add_field(name="members with role", value=len(role.members))
 		embed.add_field(name="Created at", value=await formatDateTime(role.created_at))
 		await msg.channel.send(embed=embed)
 	except AttributeError:
@@ -642,7 +648,7 @@ async def roleCount(msg, content, cmd="rolecount"):
 		roles = [x.mention for x in m.roles]
 		roleCount = len(roles) - 1
 		if Showroles:
-			embed = discord.Embed(title=f"{m.name}'s Roles")
+			embed = discord.Embed(title=f"{m.name}'s Roles", color=m.color)
 			embed.add_field(name="Count", value=roleCount)
 			embed.add_field(name="Roles", value="".join(roles))
 			msg = await msg.channel.send(embed=embed)
@@ -828,7 +834,7 @@ async def ridInvites(msg, content, cmd="clearinvites"):
 		invites = await msg.guild.invites()
 		for inv in invites:
 			await inv.delete()
-		return ""
+		return await msg.channel.send("invites cleared")
 	else: return await msg.channel.send("you don't have perms")
 
 async def color(msg, content, cmd="color"):
@@ -990,10 +996,10 @@ async def serverInfo(msg, content, cmd="serverinfo"):
 	creation = msg.guild.created_at
 	t = datetime.datetime.now()
 	embed = discord.Embed(title="Server Info", color=roles[-1].color)
-	embed.add_field(name="region", value=msg.guild.region)
 	embed.add_field(name="icon link", value=msg.guild.icon_url)
 	embed.add_field(name="icon animated?", value=msg.guild.is_icon_animated())
 	embed.add_field(name="splash link", value=msg.guild.splash_url)
+	embed.add_field(name="region", value=msg.guild.region)
 	embed.add_field(name="emojis", value=f'{len(msg.guild.emojis)}/{msg.guild.emoji_limit * 2}')
 	embed.add_field(name="filesize limit", value=msg.guild.filesize_limit)
 	embed.add_field(name="guild id", value=msg.guild.id)
@@ -1009,6 +1015,24 @@ async def serverInfo(msg, content, cmd="serverinfo"):
 	embed.add_field(name="creation time", value=await formatDateTime(creation))
 	embed.add_field(name="age", value=t - creation)
 	await msg.channel.send(embed=embed)
+
+async def userInfo(msg, content, cmd="userinfo"):
+	if TICDelete(content):
+		await msg.delete()
+		content = content.replace(DELETE, "")
+	user = (await getUserInContent(msg, content, cmd))
+	embed = discord.Embed(title=user.name, color=user.color)
+	embed.add_field(name="Join date", value=await formatDateTime(user.joined_at))
+	embed.add_field(name="nick name", value=user.nick)
+	embed.add_field(name="color", value=user.color.to_rgb())
+	embed.add_field(name="role count", value=len(user.roles))
+	embed.add_field(name="avatar url", value=user.avatar_url, inline=False)
+	embed.add_field(name="created at", value=await formatDateTime(user.created_at))
+	embed.add_field(name="discriminator", value=user.discriminator)
+	embed.add_field(name="id", value=user.id)
+	embed.set_thumbnail(url=user.avatar_url)
+	await msg.channel.send(embed=embed)
+
 
 async def runCommand(msg, content, cmd):
 	DOFIRST = "-first "
@@ -1107,7 +1131,7 @@ async def runCommand(msg, content, cmd):
 	elif cmd in ["stopwatch", "timer"]: content = await timer(msg, content, cmd=cmd)
 	elif cmd == "lvlmsg": content = await levelMessage(msg, content)
 	elif cmd == "emoteinfo": content = await emoteInfo(msg, content)
-	elif cmd == "avatar": content = await msg.channel.send(getUserInContent(msg, content, cmd).avatar_url)
+	elif cmd == "avatar": content = await msg.channel.send((await getUserInContent(msg, content, cmd)).avatar_url)
 	elif cmd == "slowdown": content = await echo(msg, cmd + " **Slow Down** 🐌", cmd="slowdown")
 	elif cmd == "fetchuser": content = await msg.channel.send((await client.fetch_user(int(splitContent(content, f'{cmd} ', index=1)))).name)
 	elif cmd == "clearinvites": content = await ridInvites(msg, content)
@@ -1117,6 +1141,7 @@ async def runCommand(msg, content, cmd):
 	elif cmd == "daily": content = await oneLineCmd(msg, f"you earned ${random.randint(0, 1000000)} you can use this command once a day!")
 	elif cmd == "serverinfo": content = await serverInfo(msg, content)
 	elif cmd == "pokemon": content = await oneLineCmd(msg, "WE DONT NEED ANOTHER POKEMON COMMAND THANK YOU VERY MUCH")
+	elif cmd == "userinfo": content = await userInfo(msg, content)
 	elif cmd not in CMDLIST: 
 		with open(commandusageFilePath, "r+") as j:
 			data = json.load(j)
