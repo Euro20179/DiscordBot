@@ -17,7 +17,7 @@ import bs4 as bs
 tracemalloc.start()
 
 DELETE = "--delete"
-VERSION = "3.5.9"
+VERSION = "3.6"
 Stop = False
 
 playingGuessingGame = {}
@@ -463,21 +463,10 @@ async def writeRoles(msg, content, cmd="doesnothing"):
 			try: f.write(f'\n{str(x.name)}\n')
 			except: f.write(f"\n{x.id}\n")
 			for y in x.roles:
-				if "HAPPY" in y.name:
-					f.write("HAPPY BIRTHDAY")
-				elif "Cart Surfer Queen" in y.name:
-					f.write("CS Queen")
-				elif "Cart Surfer King" in y.name:
-					f.write("CS King")
-				elif "Flower Lover" in y.name:
-					f.write("Flower lover")
-				elif "Rain Lover" in y.name:
-					f.write("Rain Lover")
-				elif "Easter" in y.name:
-					f.write("Easter")
-				else:
-					try: f.write(f'{y.name}\n')
-					except: f.write("UNICODE\n")
+				try:
+					f.write(f'{y.name}\n')
+				except:
+					f.write(f'{y.id}\n')
 
 	with open(f'.\\roles\\{filename}.txt', "rb") as f:
 		await msg.channel.send(file=discord.File(f, f'{filename}.txt'))
@@ -624,6 +613,7 @@ async def roleInfo(msg, content, cmd="roleinfo"):
 	try:
 		role = discord.utils.find(lambda r: r.name.lower() == rolename.lower(), msg.guild.roles)
 		embed = discord.Embed(title=role.name, color=role.color)
+		embed.add_field(name="id", value=role.id)
 		embed.add_field(name="Color", value=role.color)
 		embed.add_field(name="displayed seperately?", value=role.hoist)
 		embed.add_field(name="hierarchical position", value=len(msg.guild.roles) - role.position)
@@ -949,7 +939,44 @@ async def emoteInfo(msg, content, cmd="emoteinfo"):
 	embed.add_field(name="Animated", value=emote.animated)
 	embed.add_field(name="Added by", value=emote.user)
 	embed.add_field(name="created at", value=await formatDateTime(emote.created_at))
+	embed.add_field(name="id", value=emote.id)
 	await msg.channel.send(embed=embed)
+
+async def messageInfo(msg, content, cmd="messageinfo"):
+	sendTo = msg.channel
+	content = splitContent(content, f'{cmd} ', index=1).strip()
+	fetchFrom = msg.channel
+	if TICDelete(content):
+		await msg.delete()
+		content = content.replace(DELETE, "").strip()
+	if msg.channel_mentions:
+		fetchFrom = msg.channel_mentions[0]
+		content = content.replace(fetchFrom.mention,  "").strip()
+		print(content)
+	if content.isnumeric():
+		try:
+			msg = await fetchFrom.fetch_message(content)
+		except discord.errors.NotFound:
+			return await msg.channel.send("sorry that message wasn't found")
+	if not msg.content:
+		return await msg.channel.send("sorry that message doesn't exist")
+	embed = discord.Embed(title="message info")
+	embed.add_field(name="is tts", value=msg.tts)
+	embed.add_field(name="author", value=msg.author.mention)
+	embed.add_field(name="content", value=msg.content)
+	embed.add_field(name="channel", value=msg.channel.mention)
+	embed.add_field(name="id", value=msg.id)
+	if msg.mentions:
+		embed.add_field(name="member mentions", value=" ".join([x.mention for x in msg.mentions]))
+	if msg.channel_mentions:
+		embed.add_field(name="channel mentions", value=" ".join([x.mention for x in msg.channel_mentions]))
+	if msg.role_mentions:
+		embed.add_field(name="role mentions", value=" ".join([x.mention for x in msg.role_mentions]))
+	embed.add_field(name="pinned", value=msg.pinned)
+	embed.add_field(name="created at", value=await formatDateTime(msg.created_at))
+	embed.add_field(name="jump to link", value=msg.jump_url)
+
+	await sendTo.send(embed=embed)
 
 async def typeFor(msg, content, cmd="type"):
 	timeToType = 5
@@ -996,6 +1023,7 @@ async def serverInfo(msg, content, cmd="serverinfo"):
 	creation = msg.guild.created_at
 	t = datetime.datetime.now()
 	embed = discord.Embed(title="Server Info", color=roles[-1].color)
+	embed.set_thumbnail(url=msg.guild.icon_url)
 	embed.add_field(name="icon link", value=msg.guild.icon_url)
 	embed.add_field(name="icon animated?", value=msg.guild.is_icon_animated())
 	embed.add_field(name="splash link", value=msg.guild.splash_url)
@@ -1026,11 +1054,29 @@ async def userInfo(msg, content, cmd="userinfo"):
 	embed.add_field(name="nick name", value=user.nick)
 	embed.add_field(name="color", value=user.color.to_rgb())
 	embed.add_field(name="role count", value=len(user.roles))
-	embed.add_field(name="avatar url", value=user.avatar_url, inline=False)
+	embed.add_field(name="avatar url", value=user.avatar_url)
 	embed.add_field(name="created at", value=await formatDateTime(user.created_at))
 	embed.add_field(name="discriminator", value=user.discriminator)
 	embed.add_field(name="id", value=user.id)
+	embed.add_field(name="roles", value=" ".join([x.mention for x in user.roles]), inline=False)
 	embed.set_thumbnail(url=user.avatar_url)
+	await msg.channel.send(embed=embed)
+
+async def fetchRole(msg, content, cmd="fetchrole"):
+	roleId = int(content[len(cmd) + 2:])
+	role = msg.guild.get_role(roleId)
+	return await msg.channel.send(role.name)
+
+async def categoryInfo(msg, content, cmd="categoryinfo"):
+	content = content[len(cmd) + 2:]
+	cat = discord.utils.find(lambda x: x.name.lower() == content.lower(), msg.guild.categories)
+	embed = discord.Embed(title=cat.name)
+	embed.add_field(name="id", value=cat.id)
+	embed.add_field(name="position", value=cat.position)
+	embed.add_field(name="channels", value=len(cat.channels))
+	embed.add_field(name="text channels", value=len(cat.text_channels))
+	embed.add_field(name="voice channels", value=len(cat.voice_channels))
+	embed.add_field(name="created at", value=await formatDateTime(cat.created_at))
 	await msg.channel.send(embed=embed)
 
 
@@ -1142,6 +1188,9 @@ async def runCommand(msg, content, cmd):
 	elif cmd == "serverinfo": content = await serverInfo(msg, content)
 	elif cmd == "pokemon": content = await oneLineCmd(msg, "WE DONT NEED ANOTHER POKEMON COMMAND THANK YOU VERY MUCH")
 	elif cmd == "userinfo": content = await userInfo(msg, content)
+	elif cmd in ["msginfo", "messageinfo"]: content = await messageInfo(msg, content, cmd=cmd)
+	elif cmd == "fetchrole": content = await fetchRole(msg, content)
+	elif cmd == "categoryinfo": content = await categoryInfo(msg, content)
 	elif cmd not in CMDLIST: 
 		with open(commandusageFilePath, "r+") as j:
 			data = json.load(j)

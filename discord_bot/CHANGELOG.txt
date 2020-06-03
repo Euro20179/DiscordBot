@@ -1,3 +1,13 @@
+3.6 (6/3/2020)
+
+ADDITIONS:
+*added id to emoteinfo
+*messageinfo, probably very useless lol
+*serverinfo now has a thumbnail
+*fetchrole, gets the name of a role id
+*categoryinfo
+
+====================================================================
 3.5.9 (6/3/2020)
 
 ADDITIONS:

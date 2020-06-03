@@ -211,6 +211,14 @@
    },
    "INFO":{
        "desc": "commands that give info",
+       "categoryinfo": {
+            "params": "<category>",
+            "desc": "gets info on the category"
+       },
+       "messageinfo": {
+            "params": "[message id] [channel where mesage is] (--delete)",
+            "desc": "gets mesage info on the message you just sent, or on message id\nif the message id isn't in the current channel specify which chanenl the message is from"  
+       },
        "userinfo": {
             "params": "[user] (--delete)",
             "desc": "gets info on user"
@@ -349,6 +357,10 @@
         "fetchuser": {
             "params": "<userid>",
             "desc": "says the nick_name of <userid> (must be an id)"
+        },
+        "fetchrole": {
+            "params": "<role id>",
+            "desc": "says the name of <role id> (must be an id)"
         }
    },
    "STAFF": {
