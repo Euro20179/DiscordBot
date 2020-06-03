@@ -17,7 +17,7 @@ import bs4 as bs
 tracemalloc.start()
 
 DELETE = "--delete"
-VERSION = "3.5.5.1"
+VERSION = "3.5.6"
 Stop = False
 
 playingGuessingGame = {}
@@ -25,7 +25,7 @@ runningStopwatch = {}
 reacting = {}
 playingHangman = {}
 
-PREFIX = "[]"
+PREFIX = "["
 
 token = "NjQxNzk1NjU2Mzc3MTcyMDAw.XcNk8g.HEvnaXjuXFQhN1iilaaffbiPcoo"
 
@@ -967,9 +967,11 @@ async def sendBlank(msg, content, cmd="sendblank"):
 
 async def hangman(msg, content, cmd="hangman"):
 	user = (await getUserInContent(msg, content, cmd))
+	content = content[len(cmd) + 2:]
 	if user.id in playingHangman.keys():
 		await msg.channel.send(f'{msg.author.mention} {user.name} is already in a game')
-	if (split := splitContent(content, user.mention, index=1)): lives = int(split.strip())
+	if (split := splitContent(content, " ", index=1)): 
+		lives = int(split.strip())
 	else: lives = 9
 	playingHangman[user.id] = None
 	await msg.author.send(f"you will have 15 seconds to send a word of your choice, and {user.name} will have to guess it in {msg.channel.name}")
@@ -1234,6 +1236,9 @@ async def on_message(msg):
 		await msg.channel.send(f"guess\nyou have {lives} lives left")
 
 	if playingHangman.get(msg.author.id):
+		if content in ["QUIT", "STOP", "CANCEL", "END"]:
+			del playingHangman[msg.author.id]
+			return
 		content = content.lower()
 		tempWord = playingHangman[msg.author.id]["word"]
 		tempLives = playingHangman[msg.author.id]["lives"]
@@ -1270,7 +1275,7 @@ async def on_message(msg):
 			await msg.channel.send(f'YOU WIN\nYou won with {tempLives} left!')
 			del playingHangman[msg.author.id]
 			return
-		else: await msg.channel.send(f'{msg.author.mention}\nGuesses left: {tempLives}\nKnown word: {tempDisp}\nguesses: {" ".join(tempGuessed)}')
+		else: await msg.channel.send(f'{msg.author.mention}\nLives left: {tempLives}\nKnown word: {tempDisp}\nguesses: {" ".join(tempGuessed)}')
 		playingHangman[msg.author.id] = {"word": tempWord, "lives": tempLives, "disp": tempDisp, "guessed": tempGuessed}
 
 @client.event

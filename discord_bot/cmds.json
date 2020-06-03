@@ -160,7 +160,7 @@
        },
        "hangman": {
            "params": "<user>",
-           "desc": "you have 15 seconds to dm the bot the word <user> will be guessing\n<user> will guess letters indevidually in chat"
+           "desc": "you have 15 seconds to dm the bot the word <user> will be guessing\n<user> will guess letters indevidually in chat\nif you're the player say STOP to stop the game"
        }
    },
    "RANDOM": {
