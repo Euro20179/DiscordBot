@@ -17,7 +17,7 @@ import bs4 as bs
 tracemalloc.start()
 
 DELETE = "--delete"
-VERSION = "3.5.5"
+VERSION = "3.5.5.1"
 Stop = False
 
 playingGuessingGame = {}
@@ -971,6 +971,7 @@ async def hangman(msg, content, cmd="hangman"):
 		await msg.channel.send(f'{msg.author.mention} {user.name} is already in a game')
 	if (split := splitContent(content, user.mention, index=1)): lives = int(split.strip())
 	else: lives = 9
+	playingHangman[user.id] = None
 	await msg.author.send(f"you will have 15 seconds to send a word of your choice, and {user.name} will have to guess it in {msg.channel.name}")
 	await asyncio.sleep(15)
 	async for i in msg.author.dm_channel.history(limit=1):
@@ -1233,17 +1234,17 @@ async def on_message(msg):
 		await msg.channel.send(f"guess\nyou have {lives} lives left")
 
 	if playingHangman.get(msg.author.id):
+		content = content.lower()
+		tempWord = playingHangman[msg.author.id]["word"]
+		tempLives = playingHangman[msg.author.id]["lives"]
+		tempDisp = playingHangman[msg.author.id]["disp"]
+		tempGuessed = playingHangman[msg.author.id]["guessed"]
 		if content.lower() == tempWord.lower():
 			await msg.channel.send(f'{msg.author.mention} YOU WIN')
 			del playingHangman[msg.author.id]
 			return
 		if len(content) != 1:
 			return
-		content = content.lower()
-		tempWord = playingHangman[msg.author.id]["word"]
-		tempLives = playingHangman[msg.author.id]["lives"]
-		tempDisp = playingHangman[msg.author.id]["disp"]
-		tempGuessed = playingHangman[msg.author.id]["guessed"]
 		print(content, tempWord)
 		if content in tempGuessed:
 			await msg.channel.send(f'you already said {content}')
@@ -1270,7 +1271,7 @@ async def on_message(msg):
 			del playingHangman[msg.author.id]
 			return
 		else: await msg.channel.send(f'{msg.author.mention}\nGuesses left: {tempLives}\nKnown word: {tempDisp}\nguesses: {" ".join(tempGuessed)}')
-		playingHangman[msg.author.id] = {"word": tempWord, "lives": tempLives, "disp": tempDisp}
+		playingHangman[msg.author.id] = {"word": tempWord, "lives": tempLives, "disp": tempDisp, "guessed": tempGuessed}
 
 @client.event
 async def on_voice_state_update(member, before, after):
