@@ -1,3 +1,10 @@
+3.6.1
+
+CHANGES:
+*you can now spam [stop
+*CANCEL in hangman now tells you what the word was
+
+====================================================================
 3.6 (6/3/2020)
 
 ADDITIONS:

@@ -17,7 +17,7 @@ import bs4 as bs
 tracemalloc.start()
 
 DELETE = "--delete"
-VERSION = "3.6"
+VERSION = "3.6.1"
 Stop = False
 
 playingGuessingGame = {}
@@ -34,6 +34,7 @@ client = commands.Bot(command_prefix=PREFIX)
 mballresponseFilePath = "../mballresponse.txt"
 levelingDataFilePath = "../levelingData.json"
 commandusageFilePath = "../commandusage.json"
+bannedFilePath = "../banned.json"
 
 BASICINFO = {"level": 1, "xp": 0, "required": 1000, "lastTalked": 0, "message": '{author} you have leveled up to level {level}, very cool'}
 
@@ -197,7 +198,8 @@ async def hlp(msg, content, cmd="help"):
 async def spam(msg, messages, message, BlockStop=False):
 	global Stop
 	for _ in range(int(messages)):
-		if Stop and not BlockStop:
+		print(message)
+		if Stop and not BlockStop and message[0].strip() != f"{PREFIX}stop":
 			await msg.channel.send(stop("stopped spam", "Stopped spam"))
 			return ""
 		msg = await msg.channel.send(random.choice(message))
@@ -325,7 +327,7 @@ async def level(msg, content, cmd="level"):
 	userData = await getUserData(user.id)
 	with open(levelingDataFilePath, "r") as f:
 		data = json.load(f)
-		users = [(discord.utils.get(msg.guild.members, id=int(userr)).id, int(data[userr]["level"])) for userr in data.keys()]
+		users = [(discord.utils.get(msg.guild.members, id=int(user.id)).id, int(data[userr]["level"])) for userr in data.keys()]
 		users.sort(key=lambda x: x[1], reverse=True)
 	level = userData["level"]
 	xp = userData["xp"]
@@ -1105,6 +1107,34 @@ async def runCommand(msg, content, cmd):
 			await client.logout()
 		else: await msg.channel.send("smh you can't shut me down i have p o w e r over you")
 
+	elif cmd == "BAN" and msg.author.id == 334538784043696130:
+		user = await getUserInContent(msg, content, cmd)
+		banFrom = splitContent(content, " ", index=2)
+		with open(bannedFilePath, "r+") as bannedJ:
+			data = json.load(bannedJ)
+			if data.get(str(user.id)):
+				data[str(user.id)].append(banFrom)
+			else:
+				data[str(user.id)] = [banFrom]
+			clearFile(bannedJ)
+			await msg.channel.send(f'banned {user.name} from {banFrom}')
+			json.dump(data, bannedJ)
+
+	elif cmd == "UNBAN" and msg.author.id == 334538784043696130:
+		user = await getUserInContent(msg, content, cmd)
+		unbanFrom = splitContent(content, " ", index=2)
+		with open(bannedFilePath, "r+") as bannedJ:
+			data = json.load(bannedJ)
+			if data.get(str(user.id)):
+				data[str(user.id)].remove(unbanFrom)
+			else:
+				await msg.channel.send("did not find user")
+				return
+			clearFile(bannedJ)
+			await msg.channel.send(f'unbanned {user.name} from {unbanFrom}')
+			json.dump(data, bannedJ)
+
+
 	elif cmd == "secretcommand": await msg.channel.send("you have found a SECRET COMMAND do secretcommand + 10 for another command (10 doesn't equal 10 ;) )")
 	elif cmd == "secretcommand2": await msg.channel.send("the final clue... save - e + 3")
 	elif cmd == "sav3":
@@ -1133,7 +1163,7 @@ async def runCommand(msg, content, cmd):
 	elif cmd in ["magicball", "8ball", "7ball"]: content = await magicBall(msg, content, cmd=cmd)
 	elif cmd == "spam": content = await spamCmd(msg, content)
 	elif cmd in ["randomface","randface", "rface"]: content = await randomFace(msg, content, cmd=cmd)
-	elif cmd in ["ttc", "thetroycommand"]: content = await oneLineCmd(msg, random.choice(["meow", "7", "**7**", "*7*", "mo"]))
+	elif cmd in ["ttc", "thetroycommand"]: content = await oneLineCmd(msg, random.choice(["meow", "7", "**7**", "*7*", "mo", ":TiredPuffle:"]))
 	elif cmd in ["mmoney", "mymoney"]: content = await oneLineCmd(msg, f'{str(msg.author).split("#")[0]}, you have ${random.randint(0, 1000000)}')
 	elif cmd in ["alphabet", "alpha"]: content = await alphabet(msg, content, cmd=cmd)
 	elif cmd in ["ucodechar", "unicodechar"]: content = content = await unicodeChar(msg, content, cmd=cmd)
@@ -1258,6 +1288,13 @@ async def on_message(msg):
 
 		cmd = getCmd(content)
 
+		with open(bannedFilePath, "r") as bannedJ:
+			data = json.load(bannedJ)
+			if str(msg.author.id) in data:
+				if cmd in data[str(msg.author.id)]:
+					await msg.channel.send(f"You cannot use {cmd}")
+					return
+
 		#ongoing events			
 		if cmd == "guessinggame":
 			c = splitContent(content, cmd)[1]
@@ -1313,15 +1350,15 @@ async def on_message(msg):
 		await msg.channel.send(f"guess\nyou have {lives} lives left")
 
 	if playingHangman.get(msg.author.id):
+		tempWord = playingHangman[msg.author.id]["word"]
 		if content in ["QUIT", "STOP", "CANCEL", "END"]:
 			del playingHangman[msg.author.id]
-			await msg.channel.send(f'{msg.author.mention} CANCELLED')
+			await msg.channel.send(f'{msg.author.mention} CANCELLED\nthe word was {tempWord}')
 			return
-		content = content.lower()
-		tempWord = playingHangman[msg.author.id]["word"]
 		tempLives = playingHangman[msg.author.id]["lives"]
 		tempDisp = playingHangman[msg.author.id]["disp"]
 		tempGuessed = playingHangman[msg.author.id]["guessed"]
+		content = content.lower()
 		if content.lower() == tempWord.lower():
 			await msg.channel.send(f'{msg.author.mention} YOU WIN')
 			del playingHangman[msg.author.id]
