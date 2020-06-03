@@ -17,7 +17,7 @@ import bs4 as bs
 tracemalloc.start()
 
 DELETE = "--delete"
-VERSION = "3.5.7"
+VERSION = "3.5.8"
 Stop = False
 
 playingGuessingGame = {}
@@ -660,7 +660,7 @@ async def rand(msg, content, cmd="rand"):
 			await msg.delete()
 			c.remove(DELETE)
 		Even = True if testInContent(" ".join(c), EVEN) else False
-		Even = True if testInContent(" ".join(c), ODD) else False
+		Odd = True if testInContent(" ".join(c), ODD) else False
 		if Even: c.remove(EVEN)
 		if Odd: c.remove(ODD)
 		low = c[0].strip()
@@ -970,6 +970,7 @@ async def hangman(msg, content, cmd="hangman"):
 	content = content[len(cmd) + 2:]
 	if user.id in playingHangman.keys():
 		await msg.channel.send(f'{msg.author.mention} {user.name} is already in a game')
+		return
 	if (split := splitContent(content, " ", index=1)): 
 		lives = int(split.strip())
 	else: lives = 9
@@ -1159,9 +1160,10 @@ async def on_message(msg):
 			return 
 		await msg.delete()
 
-	if msg.channel.id == 427973752647712768 or testInContent(content, "---chkx", "---reactchkx"):
+	if msg.channel.id == 427973752647712768 or (chkX := testInContent(content, "---chkx", "---reactchkx")):
 		await msg.add_reaction(blueCheck)
-		await msg.add_reaction(neutral)
+		if not chkX:
+			await msg.add_reaction(neutral)
 		await msg.add_reaction("❌")
 
 	if random.random() >= .9994: 

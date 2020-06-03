@@ -1,3 +1,12 @@
+3.5.8 (6/2/2020)
+
+CHANGES:
+*---chkx now longer reacts with :neutral:
+
+FIXES:
+*hangman won't override when user in a game
+
+====================================================================
 3.5.7 (6/2/2020)
 
 ADDITIONS:
