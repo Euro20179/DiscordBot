@@ -17,7 +17,7 @@ import bs4 as bs
 tracemalloc.start()
 
 DELETE = "--delete"
-VERSION = "3.6.3"
+VERSION = "3.6.3.1"
 Stop = False
 
 playingGuessingGame = {}
@@ -421,7 +421,7 @@ async def randomFace(msg, content, cmd="randomface"):
 	return await oneLineCmd(msg, f'{random.choice(EYES)}{random.choice(MOUTHS)}' if random.random() >= .5 else f'{random.choice(MOUTHS)}{random.choice(EYES)}')
 
 async def alphabet(msg, content, cmd="alphabet"):
-	send = string.ascii_lower
+	send = string.ascii_lowercase
 	if testInContent(content, "--vowels"): send = "aeiou(y)"
 	if testInContent(content, "--consonants"):
 		send = "".join([x for x in string.ascii_lowercase if x not in "aeiou"])
@@ -1211,7 +1211,7 @@ async def runCommand(msg, content, cmd):
 	elif cmd == "lvlmsg": content = await levelMessage(msg, content)
 	elif cmd == "emoteinfo": content = await emoteInfo(msg, content)
 	elif cmd == "avatar": content = await msg.channel.send((await getUserInContent(msg, content, cmd)).avatar_url)
-	elif cmd == "slowdown": content = await oneLineCmd(msg, cmd + " **Slow Down** 🐌")
+	elif cmd == "slowdown": content = await oneLineCmd(msg, " **Slow Down** 🐌")
 	elif cmd == "fetchuser": content = await msg.channel.send((await client.fetch_user(int(splitContent(content, f'{cmd} ', index=1)))).name)
 	elif cmd == "clearinvites": content = await ridInvites(msg, content)
 	elif cmd == "typefor": content = await typeFor(msg, content)
