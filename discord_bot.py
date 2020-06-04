@@ -25,7 +25,7 @@ runningStopwatch = {}
 reacting = {}
 playingHangman = {}
 
-PREFIX = "["
+PREFIX = "]"
 
 token = "NjQxNzk1NjU2Mzc3MTcyMDAw.XcNk8g.HEvnaXjuXFQhN1iilaaffbiPcoo"
 
