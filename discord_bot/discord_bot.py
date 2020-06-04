@@ -17,7 +17,7 @@ import bs4 as bs
 tracemalloc.start()
 
 DELETE = "--delete"
-VERSION = "3.6.2"
+VERSION = "3.6.3"
 Stop = False
 
 playingGuessingGame = {}
@@ -332,12 +332,14 @@ async def level(msg, content, cmd="level"):
 	level = userData["level"]
 	xp = userData["xp"]
 	required = userData["required"]
+	message = userData["message"]
 	pos = users.index((user.id, level)) + 1
 	embed = discord.Embed(title=user.display_name, color=user.color)
 	embed.add_field(name="level", value=level, inline=False)
 	embed.add_field(name="xp", value=xp, inline=False)
 	embed.add_field(name="required", value=required, inline=False)
 	embed.add_field(name="rank #", value=pos, inline=False)
+	embed.add_field(name="level up mesage", value=message)
 	await msg.channel.send(embed=embed)
 
 async def leaderboard(msg, content, cmd="top"):
@@ -419,6 +421,7 @@ async def randomFace(msg, content, cmd="randomface"):
 	return await oneLineCmd(msg, f'{random.choice(EYES)}{random.choice(MOUTHS)}' if random.random() >= .5 else f'{random.choice(MOUTHS)}{random.choice(EYES)}')
 
 async def alphabet(msg, content, cmd="alphabet"):
+	send = string.ascii_lower
 	if testInContent(content, "--vowels"): send = "aeiou(y)"
 	if testInContent(content, "--consonants"):
 		send = "".join([x for x in string.ascii_lowercase if x not in "aeiou"])
@@ -690,7 +693,7 @@ async def rand(msg, content, cmd="rand"):
 
 async def compareRoles(msg, content, cmd="compareroles"):
 	embed = discord.Embed(name="Role Comparison")
-	c = content.split(testInContent(content, "comproles", "compareroles"), index=1).split(" ")
+	c = content.split(testInContent(content, "comproles", "compareroles"))[1].split(" ")
 	user1 = str(c[1].strip()) 
 	user2 = str(c[2].strip())
 	if "<@" in user1:
@@ -1166,7 +1169,6 @@ async def runCommand(msg, content, cmd):
 	elif cmd in ["randomface","randface", "rface"]: content = await randomFace(msg, content, cmd=cmd)
 	elif cmd in ["ttc", "thetroycommand"]: content = await oneLineCmd(msg, random.choice(["meow", "7", "**7**", "*7*", "mo", ":TiredPuffle:"]))
 	elif cmd in ["mmoney", "mymoney"]: content = await oneLineCmd(msg, f'{str(msg.author).split("#")[0]}, you have ${random.randint(0, 1000000)}')
-	elif cmd in ["alphabet", "alpha"]: content = await alphabet(msg, content, cmd=cmd)
 	elif cmd in ["ucodechar", "unicodechar"]: content = content = await unicodeChar(msg, content, cmd=cmd)
 	elif cmd == "serveremote": content = await serverEmote(msg, content)
 	elif cmd == "doesnothing": content = await writeRoles(msg, content)
@@ -1209,7 +1211,7 @@ async def runCommand(msg, content, cmd):
 	elif cmd == "lvlmsg": content = await levelMessage(msg, content)
 	elif cmd == "emoteinfo": content = await emoteInfo(msg, content)
 	elif cmd == "avatar": content = await msg.channel.send((await getUserInContent(msg, content, cmd)).avatar_url)
-	elif cmd == "slowdown": content = await echo(msg, cmd + " **Slow Down** 🐌", cmd="slowdown")
+	elif cmd == "slowdown": content = await oneLineCmd(msg, cmd + " **Slow Down** 🐌")
 	elif cmd == "fetchuser": content = await msg.channel.send((await client.fetch_user(int(splitContent(content, f'{cmd} ', index=1)))).name)
 	elif cmd == "clearinvites": content = await ridInvites(msg, content)
 	elif cmd == "typefor": content = await typeFor(msg, content)
@@ -1222,6 +1224,7 @@ async def runCommand(msg, content, cmd):
 	elif cmd in ["msginfo", "messageinfo"]: content = await messageInfo(msg, content, cmd=cmd)
 	elif cmd == "fetchrole": content = await fetchRole(msg, content)
 	elif cmd == "categoryinfo": content = await categoryInfo(msg, content)
+	elif cmd in ["alphabet", "alpha", "beta", "gamma", "delta", "epsilon", "zeta", "eta", "theta", "iota", "kappa", "lambda", "mu", "nu", "xi", "omicron", "pi", "rho", "sigma", "tau", "upsilon", "phi", "chi", "psi", "omega"]: content = await alphabet(msg, content, cmd=cmd)
 	elif cmd not in CMDLIST: 
 		with open(commandusageFilePath, "r+") as j:
 			data = json.load(j)
