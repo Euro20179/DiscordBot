@@ -17,7 +17,7 @@ import bs4 as bs
 tracemalloc.start()
 
 DELETE = "--delete"
-VERSION = "3.6.4.1"
+VERSION = "3.6.5"
 Stop = False
 
 playingGuessingGame = {}
@@ -203,8 +203,7 @@ async def hlp(msg, content, cmd="help"):
 async def spam(msg, messages, message, BlockStop=False):
 	global Stop
 	for _ in range(int(messages)):
-		print(message)
-		if Stop and not BlockStop and message[0].strip() != f"{PREFIX}stop":
+		if Stop and not BlockStop:
 			await msg.channel.send(stop("stopped spam", "Stopped spam"))
 			return ""
 		msg = await msg.channel.send(random.choice(message))
@@ -1091,6 +1090,10 @@ async def categoryInfo(msg, content, cmd="categoryinfo"):
 	embed.add_field(name="created at", value=await formatDateTime(cat.created_at))
 	await msg.channel.send(embed=embed)
 
+async def spamStop(msg, content, cmd="spamstop"):
+	for _ in range(10):
+		await msg.channel.send(f'{PREFIX}stop')
+		await asyncio.sleep(random.uniform(.3, 1.2))
 
 async def runCommand(msg, content, cmd):
 	DOFIRST = "-first "
@@ -1232,6 +1235,7 @@ async def runCommand(msg, content, cmd):
 	elif cmd == "fetchrole": content = await fetchRole(msg, content)
 	elif cmd == "categoryinfo": content = await categoryInfo(msg, content)
 	elif cmd in ["alphabet", "alpha", "beta", "gamma", "delta", "epsilon", "zeta", "eta", "theta", "iota", "kappa", "lambda", "mu", "nu", "xi", "omicron", "pi", "rho", "sigma", "tau", "upsilon", "phi", "chi", "psi", "omega"]: content = await alphabet(msg, content, cmd=cmd)
+	elif cmd == "spamstop": content = await spamStop(msg, content)
 	elif cmd not in CMDLIST: 
 		with open(commandusageFilePath, "r+") as j:
 			data = json.load(j)
