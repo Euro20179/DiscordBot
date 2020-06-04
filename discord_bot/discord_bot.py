@@ -17,7 +17,7 @@ import bs4 as bs
 tracemalloc.start()
 
 DELETE = "--delete"
-VERSION = "3.6.3.1"
+VERSION = "3.6.4"
 Stop = False
 
 playingGuessingGame = {}
@@ -25,7 +25,7 @@ runningStopwatch = {}
 reacting = {}
 playingHangman = {}
 
-PREFIX = "["
+PREFIX = "]"
 
 token = "NjQxNzk1NjU2Mzc3MTcyMDAw.XcNk8g.HEvnaXjuXFQhN1iilaaffbiPcoo"
 
@@ -95,7 +95,7 @@ async def reduceXP(msg : discord.Message)->None:
 	with open(levelingDataFilePath, "r+") as f:
 		data = json.load(f)
 		for user in data.keys():
-			if time.time() - data[user]["lastTalked"] >= 86400:
+			if time.time() - data[user]["lastTalked"] >= 604800:
 				if data[user]["xp"] > 0:
 					data[user]["xp"] -= random.randint(0, 1)
 				if data[user]["xp"] <= (data[user]["level"] * 1000) // 2 and data[user]["level"] > 0:
@@ -335,11 +335,13 @@ async def level(msg, content, cmd="level"):
 	message = userData["message"]
 	pos = users.index((user.id, level)) + 1
 	embed = discord.Embed(title=user.display_name, color=user.color)
-	embed.add_field(name="level", value=level, inline=False)
-	embed.add_field(name="xp", value=xp, inline=False)
-	embed.add_field(name="required", value=required, inline=False)
-	embed.add_field(name="rank #", value=pos, inline=False)
-	embed.add_field(name="level up mesage", value=message)
+	embed.add_field(name="level", value=level)
+	embed.add_field(name="xp", value=xp)
+	embed.add_field(name="required", value=required)
+	embed.add_field(name="rank #", value=pos)
+	embed.add_field(name="xp needed", value=required - xp)
+	embed.add_field(name="approx minutes", value=round((required - xp) / 57.5))
+	embed.add_field(name="level up mesage", value=message, inline=False)
 	await msg.channel.send(embed=embed)
 
 async def leaderboard(msg, content, cmd="top"):
@@ -802,8 +804,7 @@ async def pigLatin(msg, content, cmd="piglatin"):
 
 async def mostRoles(msg, content, cmd="mostroles"):
 	c = content.split(cmd)[1]
-	TOP = "-top "
-	top = int(splitContent(content, TOP, index=1)) if TOP in c else 5
+	top = int(splitContent(content, " ", index=1)) if splitContent(content, " ", index=1) in c else 5
 	if TICDelete(content): await msg.delete()
 
 	memberRoles = {member.display_name.split("#")[0]: len(member.roles) - 1 for member in msg.guild.members}
@@ -1168,6 +1169,7 @@ async def runCommand(msg, content, cmd):
 	elif cmd == "spam": content = await spamCmd(msg, content)
 	elif cmd in ["randomface","randface", "rface"]: content = await randomFace(msg, content, cmd=cmd)
 	elif cmd in ["ttc", "thetroycommand"]: content = await oneLineCmd(msg, random.choice(["meow", "7", "**7**", "*7*", "mo", ":TiredPuffle:"]))
+	elif cmd in ["thepenguincommand", "tpc", "thewavecommand", "twc"]: content = await oneLineCmd(msg, random.choice(["very nice!", "very cool!", ":TiredPuffle:"]))
 	elif cmd in ["mmoney", "mymoney"]: content = await oneLineCmd(msg, f'{str(msg.author).split("#")[0]}, you have ${random.randint(0, 1000000)}')
 	elif cmd in ["ucodechar", "unicodechar"]: content = content = await unicodeChar(msg, content, cmd=cmd)
 	elif cmd == "serveremote": content = await serverEmote(msg, content)

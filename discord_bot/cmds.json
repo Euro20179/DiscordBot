@@ -82,6 +82,15 @@
                 "rface"
             ]
        },
+       "thewavecommand": {
+            "params": "(--delete)",
+            "desc": "says something wave would",
+            "aliases": [
+                "twc",
+                "thepenguincommand",
+                "tpc"
+            ]
+       },
        "thetroycommand": {
            "params": "(--delete)",
            "desc": "says something troy would say",
@@ -252,7 +261,7 @@
             ]
         },
         "mostroles": {
-            "params": "(-top <top>) (-first)",
+            "params": "[top] (-first)",
             "desc": "sends the top top members by role count, defaults to top 5"
         },
         "color": {

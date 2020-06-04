@@ -1,3 +1,15 @@
+3.6.4 (6/4/2020)
+
+ADDITIONS:
+*lvl now says your xp needed, and approximate minutes until you next level up
+*thepenguincommand
+
+CHANGES:
+*you don't have to do -top when saying the top [top] rolecount
+*xp decay starts after 1 week
+*changed the way [lvl looks
+
+====================================================================
 3.6.3.1 (6/3/2020)
 
 FIXES FOR REAL THO:
