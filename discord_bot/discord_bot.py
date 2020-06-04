@@ -17,7 +17,7 @@ import bs4 as bs
 tracemalloc.start()
 
 DELETE = "--delete"
-VERSION = "3.6.5"
+VERSION = "3.6.5.1"
 Stop = False
 
 playingGuessingGame = {}
@@ -1131,7 +1131,7 @@ async def runCommand(msg, content, cmd):
 		else: await msg.channel.send("smh you can't shut me down i have p o w e r over you")
 
 	elif cmd == "BAN" and msg.author.id == 334538784043696130:
-		user = await getUserInContent(msg, content, cmd)
+		user = await getUserInContent(msg, " ".join(content.split(" ")[0:2]), cmd)
 		banFrom = splitContent(content, " ", index=2)
 		with open(bannedFilePath, "r+") as bannedJ:
 			data = json.load(bannedJ)
@@ -1144,7 +1144,7 @@ async def runCommand(msg, content, cmd):
 			json.dump(data, bannedJ)
 
 	elif cmd == "UNBAN" and msg.author.id == 334538784043696130:
-		user = await getUserInContent(msg, content, cmd)
+		user = await getUserInContent(msg, " ".join(content.split(" ")[0:2]), cmd)
 		unbanFrom = splitContent(content, " ", index=2)
 		with open(bannedFilePath, "r+") as bannedJ:
 			data = json.load(bannedJ)
