@@ -17,7 +17,7 @@ import bs4 as bs
 tracemalloc.start()
 
 DELETE = "--delete"
-VERSION = "3.6.4"
+VERSION = "3.6.4.1"
 Stop = False
 
 playingGuessingGame = {}
@@ -74,7 +74,12 @@ async def giveXP(msg : discord.Message)->None:
 				else: rawLvlMsg = levelUpMessage
 				if xp >= required:				
 					level += 1
-					if levelUpMessage: levelUpMessage = levelUpMessage.replace("{author}", msg.author.mention).replace("{level}", str(level)).replace("{emote}", str(random.choice(client.emojis))).replace("{channel}", msg.channel.name)
+					if levelUpMessage: 
+						levelUpMessage = levelUpMessage.replace("{author}", msg.author.mention).replace("{level}", str(level)).replace("{channel}", msg.channel.name)
+						if "{emote}" in levelUpMessage:
+							new = [x if x != "{emote}" else str(random.choice(client.emojis)) for x in levelUpMessage.split(" ")]
+							levelUpMessage = " ".join(new)
+
 					else: levelUpMessage = f'{msg.author.mention} you have leveled up to level {level}, very cool'
 					xp //= 2
 					required = round((1000 * level) * 1.1)

@@ -1,4 +1,10 @@
-3.6.4 (6/4/2020)
+3.6.4.1 (6/3/2020)
+
+FIXES:
+*{emote} works properly
+
+====================================================================
+3.6.4 (6/3/2020)
 
 ADDITIONS:
 *lvl now says your xp needed, and approximate minutes until you next level up
