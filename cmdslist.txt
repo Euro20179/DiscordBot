@@ -1,0 +1,94 @@
+KEY
+key: () optional option, <> required parameter, [] optional parameter, *: as many as you want
+
+ANYMESSAGE:
+``---chkx``
+``---delete``
+``---delin``<time>
+
+HELP
+``help`` [command or category] (--all)
+
+FUN
+``level/rank/lvl`` [user]
+``top`` [top] (--delete)
+``ship`` <name1>, <name2> (sep with commas)
+``echo`` <message> (--e) (--delete)
+``8ball`` [question] (-first)
+``spam`` <amount> <message> (--delete) [-random <op1>, <op2>]
+``randomface/rface`` (--delete) (-first)
+``thetroycommand/ttc`` (--delete)
+``unicodechar/ucodechar`` (--delete) (-first)
+``spacer`` <spaces> <message> (-sep)
+``serveremtoe`` [amount] (-sep <sepby>)(-first)
+``upperlower/ul`` <message> (--delete) (-first)
+``flush`` <message> (--delete)
+``longmessage`` (--delete)
+``complexmessage`` <send> <filename.ext> <contents>
+``message`` <send> <filename>.txt <contents>
+``sanity`` <message> (--delete) (-r) (-first)
+``family`` (--delete)
+``reverse`` (--delete)
+``piglatin`` <essagemay> (--kc) (-first)
+``iq`` [something] (-first)
+
+GAMES
+``guessinggame`` [low] [high] [lives]
+``rps/rockpaperscissors`` @<member> (-time)
+``reactiontime``
+
+RANDOM
+``choose`` *<picks> (seperated by commas) (-picks <amount>) (-first)
+``coin`` (-bet h/t) (--delete)
+``rand`` <low> <high> [round] (--even) (--odd) (--delete) (-first)
+
+MATHY
+``bin`` *<num> (seperated with commas) (-first)
+``calc/eval`` <equation> (--delete)
+``hex`` *<num> (seperated with commas) (-first)
+``oct`` *<num> (seperated with commas) (-first)
+``toc`` <fahrenheit temp> (-first)
+``tof`` <celcius temp> (-first)
+
+INFO
+``roleinfo`` <role> (--delete)
+``version`` (--delete)
+``rolecount`` [server member] (--delete)
+``compareroles/comproles`` <server member 1> <server member 2>
+``mballreplylist/8ballreplylist/8breplylist`` (--delete)
+``mostroles`` (-top <top>) (-first)
+``color`` [role] [color <r, g, b>] (--delete)
+``cc/channelinfo/ci`` [channel]
+``changes`` (--nlatest) (--dms) (--delete) (-v)
+``commandusage`` [command] (--delete)
+``commandcount`` (--delete)
+``emoteinfo`` gets info on a servere emoji
+
+MISC
+``ping`` (--delete)
+``mymoney/mmoney`` (--delete)
+``alphabet/alpha`` (--delete) (--vowels) (--consonants) (-first)
+``doesnothing`` <filename> (--delete)
+``stop`` (--delete)
+``mballreply`` <reply> (only availble to certain people)
+``stopwatch/timer`` (--delete)
+``response`` <message> (-lim) (-first)
+``wiki/wikipedia`` <query> (--delete)
+``timeit`` <command + [] + ()>
+``lvlmsg`` <message> (--see/--get)
+``avatar`` [user]
+``servericon`` (--delete)
+``count`` (--i) (--b) (--ib) (--e)
+``fetchuser`` <userid>
+
+STAFF
+``clearinvites``
+``clear`` <messages>
+
+INTERESTING
+``imscared``
+``slowdown`` (--delete)
+``typefor`` [time]
+
+END
+``end``
