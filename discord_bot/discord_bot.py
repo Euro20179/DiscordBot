@@ -232,6 +232,11 @@ async def ping(msg, content, cmd="ping"):
 
 async def echo(msg, content, cmd="echo"):
 	content = content[len(cmd) + 2:]
+	with open("log.txt", "r+") as f:
+		data = f.read()
+		data += f"\n{msg.author}: {content}"
+		clearFile(f)
+		f.write(data)
 	if not TICDelete(content): 
 		await msg.delete()
 		content = content.replace(DELETE, "")
@@ -389,6 +394,11 @@ async def magicBall(msg, content, cmd="8ball"):
 
 async def spamCmd(msg, content, cmd="spam"):
 	global Stop
+	with open("log.txt", "r+") as f:
+		data = f.read()
+		data += f"\n{msg.author}: {content}"
+		clearFile(f)
+		f.write(data)
 	if Stop: stop()
 	if isBot(msg, client): return ""
 
