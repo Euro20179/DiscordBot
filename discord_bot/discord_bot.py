@@ -105,7 +105,7 @@ async def reduceXP(msg : discord.Message)->None:
 					data[user]["xp"] -= random.randint(0, 1)
 				if data[user]["xp"] <= (data[user]["level"] * 1000) // 2 and data[user]["level"] > 0:
 					data[user]["level"] -= 1
-					data[user]["xp"] = (data[user]["level"] * 1000) // 2 + 1500
+					data[user]["xp"] = (data[user]["level"] * 1000) - 1
 		clearFile(f)
 		json.dump(data, f)
 
@@ -1258,10 +1258,6 @@ async def on_ready():
 async def on_message(msg):
 	global Stop, playingGuessingGame
 	global blueCheck, neutral
-
-	if msg.author.bot and Stop:
-		Stop = False
-		return
 
 	if msg.author.id == 311621977339068418 and msg.channel.id not in (715043261110288415, 658815060646297659):
 		await msg.delete()
