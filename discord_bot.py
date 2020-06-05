@@ -31,11 +31,13 @@ token = "NjQxNzk1NjU2Mzc3MTcyMDAw.XcNk8g.HEvnaXjuXFQhN1iilaaffbiPcoo"
 
 client = commands.Bot(command_prefix=PREFIX)
 
-mballresponseFilePath = "../disbot_ext/mballresponse.txt"
-levelingDataFilePath = "../disbot_ext/levelingData.json"
-commandusageFilePath = "../disbot_ext/commandusage.json"
-bannedFilePath = "../disbot_ext/banned.json"
-timersPath = "../disbot_ext/timers.json"
+DISEXT = "../disbot_ext"
+
+mballresponseFilePath = f"{DISEXT}/mballresponse.txt"
+levelingDataFilePath = f"{DISEXT}/levelingData.json"
+commandusageFilePath = f"{DISEXT}/commandusage.json"
+bannedFilePath = f"{DISEXT}/banned.json"
+timersPath = f"{DISEXT}/timers.json"
 
 BASICINFO = {"level": 1, "xp": 0, "required": 1000, "lastTalked": 0, "message": '{author} you have leveled up to level {level}, very cool'}
 
@@ -44,8 +46,7 @@ with open("cmds.json", "r") as cmdsJson:
 CMDLIST = tuple(cmd for _, i in data.items() for cmd in i.keys() if cmd != "desc")
 
 def isBot(msg, client)->bool:
-    if msg.author == client.user or msg.author.bot: return True
-    return False
+    return msg.author == client.user or msg.author.bot
 
 async def formatDateTime(createdAt : datetime.datetime)->str:
     return f'{createdAt.month}/{createdAt.day}/{createdAt.year}\nat {createdAt.hour}:{createdAt.minute}:{createdAt.second}'
