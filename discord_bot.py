@@ -23,9 +23,9 @@ Stop = False
 playingGuessingGame = {}
 runningStopwatch = {}
 reacting = {}
-playingHangman = []
+playingHangman = {}
 
-PREFIX = "]"
+PREFIX = "["
 
 token = "NjQxNzk1NjU2Mzc3MTcyMDAw.XcNk8g.HEvnaXjuXFQhN1iilaaffbiPcoo"
 
