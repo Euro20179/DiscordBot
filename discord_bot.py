@@ -23,7 +23,7 @@ Stop = False
 playingGuessingGame = {}
 runningStopwatch = {}
 reacting = {}
-playingHangman = []
+playingHangman = {}
 
 PREFIX = "]"
 
