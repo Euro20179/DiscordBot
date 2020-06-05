@@ -1,3 +1,808 @@
+3.6.11
+
+ADDITIONS:
+*lvlmsg --see now formats message
+
+====================================================================
+3.6.10
+
+FIXES:
+*spam -random
+
+====================================================================
+3.6.9
+
+ADDITIONS:
+*--s and --g now work for lvlmsg
+*top now tells how much xp someone has
+
+CHANGES:
+*you now have to say y/n before changing the lvlmsg
+
+FIXES:
+*top/lb is now accurate
+
+====================================================================
+3.6.8.1 (6/4/2020)
+
+FIXES:
+*literally everything
+
+====================================================================
+3.6.8 (6/4/2020)
+
+ADDITIONS:
+*there is now a message saying you can't use BAN and UNBAN
+
+====================================================================
+3.6.7 (6/4/2020)
+
+ADDITIONS:
+*color now works with hex strings
+    *ex: [color #ff02a3
+*--rw, reacts with the emotes given
+
+CHANGES:
+*for ANY MESSAGE, you only need 2 - instead of 3
+*color now longer requires exactly a ", ", it'll take any number of spaces now (hopefully)
+
+FIXES:
+*can now get help for anymessage and botinfo
+
+====================================================================
+3.6.6.1 (6/4/2020)
+
+FIXES:
+*mostroles
+
+====================================================================
+3.6.6 (6/4/2020)
+
+CHANGES:
+*timer is now stored on disk instead of ram, meaning you can have permenant timers *yay*
+
+====================================================================
+3.6.5.1 (6/4/2020)
+
+FIXES:
+*stop
+
+====================================================================
+3.6.5 (6/3/2020)
+
+ADDITIONS:
+*spamstop
+
+REMOVED:
+*ability to spam stop
+
+====================================================================
+3.6.4.1 (6/3/2020)
+
+FIXES:
+*{emote} works properly
+
+====================================================================
+3.6.4 (6/3/2020)
+
+ADDITIONS:
+*lvl now says your xp needed, and approximate minutes until you next level up
+*thepenguincommand
+
+CHANGES:
+*you don't have to do -top when saying the top [top] rolecount
+*xp decay starts after 1 week
+*changed the way [lvl looks
+
+====================================================================
+3.6.3.1 (6/3/2020)
+
+FIXES FOR REAL THO:
+*slowdown
+
+====================================================================
+3.6.3 (6/3/2020)
+
+ADDITIONS:
+*level/rank now shows what your level up message is
+
+FIXES:
+*slowdown
+
+====================================================================
+3.6.2 (6/3/2020)
+
+FIXES:
+*hangman and some other stuff on mobile (because for some reason, it matters)
+
+====================================================================
+3.6.1 (6/3/2020)
+
+CHANGES:
+*you can now spam [stop
+*CANCEL in hangman now tells you what the word was
+
+====================================================================
+3.6 (6/3/2020)
+
+ADDITIONS:
+*added id to emoteinfo
+*messageinfo, probably very useless lol
+*serverinfo now has a thumbnail
+*fetchrole, gets the name of a role id
+*categoryinfo
+
+====================================================================
+3.5.9 (6/3/2020)
+
+ADDITIONS:
+*userinfo
+
+CHANGES:
+*rolecount's embed color is now your top role color
+*the ordering of serverinfo is a bit different
+*if no role is provided for roleinfo it'll give info on your top role
+
+FIXES:
+*avatar
+
+REMOVED:
+*{time} from lvlmsg
+
+====================================================================
+3.5.8 (6/2/2020)
+
+CHANGES:
+*---chkx now longer reacts with :neutral:
+
+FIXES:
+*hangman won't override when user in a game
+
+====================================================================
+3.5.7 (6/2/2020)
+
+ADDITIONS:
+*pokemon command
+
+FIXES:
+*rand
+
+====================================================================
+3.5.6 (6/2/2020)
+
+ADDITIONS:
+*type CANCEL/END/STOP/QUIT to stop a hangman game
+
+FIXES:
+*the lives paramater works
+
+====================================================================
+3.5.5.1 (6/2/2020)
+
+FIXES:
+*hangman
+
+====================================================================
+3.5.5 (6/2/2020)
+
+ADDITIONS:
+*serverinfo now says the days + time since creation
+*serverinfo now says total possible emojis
+*serverinfo now says maximum file size you can send
+
+*CHANGES:
+*can no longer play someone who is in a game in hangman
+
+FIXES:
+*hangman will now end if entire phrase is guessed
+
+====================================================================
+3.5.4 (6/2/2020)
+
+ADDITIONS:
+*rank # in lvl command is back
+*serverinfo command
+
+CHANGES:
+*you no longer have to do -v to specify which version for the changes command
+*tells you the letters you have guessed
+
+FIXES:
+*commancount is now accurate
+*hangman now ends properly
+
+====================================================================
+3.5.3.1 (6/1/2020)
+
+FIXES:
+*hangman providing word timing fix
+
+====================================================================
+3.5.3 (6/1/2020)
+
+FIXES:
+*clear command
+*hangman is fixed
+
+====================================================================
+3.5.2 (6/1/2020)
+
+CHANGES:
+*leveling is 10% slower per level
+
+FIXES:
+*small leveling bug fix
+
+====================================================================
+3.5.1 (6/1/2020)
+
+ADDITIONS:
+*change your lvlmsg to none or null to not get notified when you level up
+*stop now works for recursive commands for example: [echo [echo [echo [echo [echo [echo [echo [echo 
+
+====================================================================
+3.5 (6/1/2020)
+
+ADDITIONS:
+*3.5-rc1 - 3.5
+
+CHANGES:
+*3.5-rc1 - 3.5
+
+FIXES:
+*3.5-rc1 - 3.5
+
+TECHNICAL:
+*3.5-rc1 - 3.5
+
+REMOVED:
+*the chris easter egg
+
+====================================================================
+3.5-rc3
+
+FIXES:
+*fixed --u and --ui for the count command
+
+====================================================================
+3.5-rc2 (6/1/2020)
+
+CHANGES:
+*[sendblank is more efficient meaning it sends the message with less chars
+    *it now supports 1998 blanks instead of ~666
+
+====================================================================
+3.5-rc1 (6/1/2020)
+
+ADDITIONS:
+*typefor, makes the bot type for 5 seconds if no time is specified
+*added "C" and "c" to the list of random mouths to the randomface command
+*hangman, ping a user and play hangman (suggested by penguin)
+*sendblank, sends 10 lines of blank messages
+*boat and boip are now aliases for ship
+*added "does not exist" when command doesn't exist
+*daily command gives you randomly 0 to 1000000 dollars!!!1!!11!1!!!@!!
+*added --u and --ui options to count
+
+CHANGES:
+*the tile for channel info is now the name of the channel
+*created at is now mm/dd/yyyy instead of dd/mm/yyyy because I like mm/dd/yyyy better
+*help command is now in a json file, instead of 2 seperate files
+*levels now has it's own category in the help command
+*information about the bot has been moved to its own category from the info category
+*the grace time for levels is now 24 hours instead of 12
+
+FIXES:
+*stuff like [iq iq will actually say "iq's iq is..." instead of "<blank>'s iq is..."
+*-c for --e in count now works
+*count works when the previous message has formatting
+
+TECHNICAL:
+*changed the way it takes out the command from message
+    
+====================================================================
+3.4.1 (5/30/2020)
+
+CHANGES:
+*iq now says <message>'s iq instead of <message> your iq
+
+FIXES:
+*echo now pings people
+*fixed reactiontime
+
+====================================================================
+3.4 (5/30/2020)
+
+ADDITIONS:
+*fetchuser, finds a user in the server by their id
+*clearinvites (for staff only :watching:)
+
+CHANGES:
+*doesnothing files are formatted slightly better
+
+FIXES:
+*minor bug fixes
+
+====================================================================
+3.3.1.1 (5/30/2020)
+
+FIXES:
+*toc and tof now can use decimals lol
+
+====================================================================
+3.3.1 (5/30/2020)
+
+FIXES:
+*help command
+
+====================================================================
+3.3 (5/30/2020)
+
+ADDITIONS:
+*emoteinfo, gives info about a server emote
+*avatar, gives your avatar, you can get the avatar of others as well
+*] works as a prefix cause whynot
+*"**Slow Down** :snail:"
+
+CHANGES:
+*help command is now different, you have to specify a category to get commands
+    *or do [help --all to get a file of all commands and a cescription
+*the raw text file of help commands is now alphabetical
+*time things are formated as "dd/mm/yyy at h:m:s" instead of "yyyy-mm-dd h:m:s.ms" i think it's nicer
+
+FIXES:
+*rps ***should*** work
+
+====================================================================
+3.2.4 (5/29/2020)
+
+ADDITIONS:
+*lvl is an alias to level and rank
+*reacts with :neutral: in #suggestions
+
+FIXES:
+*fixed leaderboard
+
+====================================================================
+3.2.3 (5/29/2020)
+
+CHANGES:
+*--indpeth works for help again
+
+FIXES:
+*help command shouldn't have as much of a problem with text limitations
+*changes works properly
+
+====================================================================
+3.2.2 (5/29/2020)
+
+ADDITIONS:
+*you can do [lvlmsg --see or --get to see what your current level message is
+*hopefuly the leaderboard is accurate and not sudo-accurate
+*added {channel} for level messages which will replace it with the current channel
+
+====================================================================
+3.2.1 (5/29/2020)
+
+FIXES:
+*bug where the bot wouldn't delete rockhoppers messages when they weren't in poekmonspam / bot cmds
+*wasn't counting commands properly
+====================================================================
+3.2 (5/29/2020)
+
+ADDITIONS:
+*you can change the level up message to whatever you want
+
+FIXES:
+*if the pin count in a given channel for cc was 0, it wouldn't work because of a divide by 0 error
+*a different clear fix
+
+====================================================================
+3.1.1.2 (5/28/2020)
+
+FIXES:
+*changes now works as intended
+*clear works
+
+====================================================================
+3.1.1.1 (5/28/2020)
+
+FIXES:
+*cc didn't say the correct days till last pin
+
+====================================================================
+3.1.1 (5/28/2020)
+
+FIXES:
+*cc was super slow, now it's normal
+
+====================================================================
+3.1 (5/28/2020)
+
+ADDITIONS:
+*cc now displays days until last pin, and time since creation in addition to the creation time
+
+RELATIONSHIP STATUS:
+*offically married to chris <3
+
+FIXES:
+*-first
+
+TECHNICAL:
+*runs on python 3.8 instead of python 3.7
+
+====================================================================
+3.0 (5/28/2020)
+THIS EXACT UPDATE:
+    ADDITIONS:
+    *---delin <time>, deletes your message in <time> seconds
+    *timeit, times how long a command takes do [help timeit for more info
+
+    CHANGES:
+    *renamed -dofirst to -first
+    *<cmd> is not a thing, if the command isn't a thing instead of just saying "that command doesn't exist" or whatever
+
+    REMOVED:
+    *spamdms, pointless, kept breaking
+NEW IN 3.0:
+    ADDITIONS:
+    *you can use sep for the serveremote command
+    *iq, gives an iq
+    *add ---reactchkx or ---chkx for the bot to react with a check and x on your message
+    *top now has --delete and you can specify the top [blank]
+    *--delete now works with calc
+    *oct, gives the base 8 version of a number
+    *add -dofirst before the second command in a command to get the result of that first
+        *example: [spam 10 -dofirst [piglatin hello
+        *this will send 10 of ellohay
+        *it'll only work for some commands
+            *commands that work with it will be shown in the help
+
+    CHANGES:
+    *timer can be used along with stopwatch
+    *sarcastic responses are rarer
+    *you must use --e to embed with the echo command
+    *calc command is now actually in the help thing (very nice i know)
+    *renamed timer to stopwatch
+    *removed rawlevels command
+
+    FIXES:
+    *serveremote works x 2
+    *fixed a coding error that broke a million things, they should work now
+    *reacion -> reaction
+    *small bug
+    *testing if user had a certain role was broken which broke the following commands:
+        8brdel
+        mballreply
+        clear
+    *in rps if someone does r and the other person does rock it should now be a tie
+        *this goes with p, and s as well
+    *level command broke itself somehow, should be fixed
+
+    REMOVED:
+    *--lives+ and --lives- in guessinggame
+
+    TECHNICAL:
+    *code overhaul
+        *everything now has it's own funciton (except for simple commands like flush or ping, and message and complexmessage share a function)
+
+====================================================================
+3.0-rc3 (5/27/2020)
+
+CHANGES:
+*timer can be used along with stopwatch
+
+FIXES:
+*serveremote works
+*fixed a coding error that broke a million things, they should work now
+*reacion -> reaction
+
+====================================================================
+3.0-rc2 (5/27/2020)
+
+ADDITIONS:
+*you can use sep for the serveremote command
+
+FIXES:
+*serveremote works
+
+====================================================================
+3.0-rc1 (5/27/2020) (biggest update as of update)
+
+ADDITIONS:
+*iq, gives an iq
+*add ---reactchkx or ---chkx for the bot to react with a check and x on your message
+*top now has --delete and you can specify the top [blank]
+*--delete now works with calc
+*oct, gives the base 8 version of a number
+*add -dofirst before the second command in a command to get the result of that first
+    *example: [spam 10 -dofirst [piglatin hello
+    *this will send 10 of ellohay
+    *it'll only work for some commands
+        *commands that work with it will be shown in the help
+
+CHANGES:
+*sarcastic responses are rarer
+*you must use --e to embed with the echo command
+*calc command is now actually in the help thing (very nice i know)
+*renamed timer to stopwatch
+*removed rawlevels command
+
+REMOVED:
+*--lives+ and --lives- in guessinggame
+
+FIXES:
+*small bug
+*testing if user had a certain role was broken which broke the following commands:
+    8brdel
+    mballreply
+    clear
+*in rps if someone does r and the other person does rock it should now be a tie
+    *this goes with p, and s as well
+*level command broke itself somehow, should be fixed
+
+TECHNICAL:
+*code overhaul
+    *everything now has it's own funciton (except for simple commands like flush or ping, and message and complexmessage share a function)
+
+====================================================================
+2.6.2 (5/26/2020)
+
+ADDITIONS:
+*you can now do --vowels and --consonants in the alphabet command
+*reacts with blue_check and x in suggestions
+
+REMOVED:
+*pincount, use channelinfo/ci/cc/channelcreated instead
+
+FIXES:
+*non-commands no longer count as commands in [commandusage
+*color now gives the correct hex color
+
+====================================================================
+2.6.1.1 (5/26/2020)
+
+REMOVED:lm
+*you no longer lose a level after being inactive for 2 days because of the 12 hour rules
+
+====================================================================
+2.6.1 (5/26/2020)
+
+CHANGES:
+*help overhaul
+    *help command is now split into categories
+        *you can do help [category] or help [command]
+*if you don't talk for 12 hours you will lose 0-1 xp every message
+
+====================================================================
+2.6 (5/26/2020) (biggest update as of update)
+
+ADDITIONS:
+*roleinfo, gives some info about a role
+*ship, ships people lol, (it's really bad)
+*toc and tof, converts from fahrenheit to celcius and from celcius to Fahrenheit respectively
+*--e in the count command sends as embed
+    *-c specifies the color ex:
+        [count --e -c 00ffe2
+
+CHANGES:
+*leveling is slightly faster
+*changes now defaults to show the latest update, do --nlatest to get the full file
+*mostroles now sends in 1 message instead of 5
+*giving 3 colors for [color will now title as the hex value instead of the 3 numbers
+*when doing [level/rank the color will be your top role color
+*use -r instead of -round to round for the sanity command
+*color of the embed of the top command is now the color of the first place person
+
+FIXES:
+*hopefuly clear actually works for staff now
+*once out of first place the role will be removed
+*top 10 commands used, now actually only shows the top 10 commands
+
+====================================================================
+2.5.2 (5/23/2020)
+
+ADDITIONS:
+*a counter for each command that says how many times each command has been used
+
+CHANGES:
+*you can now check someone's level by saying their name and not pinging them
+*you go down a level every 2 days instead of a month (hopefully it works properly lol)
+
+====================================================================
+2.5.1.1 (5/23/2020)
+
+CHANGES:
+*changed how leveling works ONCE AGAIN
+====================================================================
+2.5.1 (5/23/2020)
+
+ADDITIONS:
+*leaderboard!
+*equation command
+*shrug command
+
+FIXES:
+*fixed a bug where every message would recduce people's xp after a point, now it'll only reduce you're level once per month, if you're innactive
+====================================================================
+2.5.0.8 (nope) (5/22/2020)
+
+OTHER:
+*PARTIAL LEVELING RESET
+
+FIXES:
+talking once then leaving would cause you to gain negative levels very quickly, this should be fixed
+
+====================================================================
+2.5.0.7 (hopefuly the last leveling equation update) (5/22/2020)
+
+CHANGES:
+*HOPEFULLY I DONT HAVE TO CHANGE LEVELING AGAIN
+*leveling up now says what level you went to
+*you will now lose xp for being inactive for more than a day
+    *you will lose a level for being inactive for more than a month
+
+====================================================================
+2.5.0.6 (5/22/2020)
+
+CHANGES:
+*leveling is slower
+
+====================================================================
+2.5.0.5 (5/22/2020)
+
+CHANGES:
+*leveling up is a bit slower
+*you now start at level 1 instead of 0
+
+====================================================================
+2.5.0.4 (5/22/2020)
+
+CHANGES:
+*leveling up is slower
+
+====================================================================
+2.5.0.3 (5/22/2020)
+
+FIXES:
+*leveling bug fixes
+
+====================================================================
+2.5.0.2 (5/22/2020)
+
+CHANGES:
+*made leveling hopefully a bit slower
+
+====================================================================
+2.5.0.1 (5/22/2020)
+
+FIXES:
+*fixed the bot not saying when you level up
+
+====================================================================
+2.5 (5/22/2020)
+
+ADDITIONS:
+*leveling system
+    *you gain 20-100 xp every minute if you talk
+    *the required xp is wonky don't question it
+*do [help randominfo to get some random info
+
+CHANGES:
+*--indepth in the help command has been replaced with --all, so use that instead
+
+FIXES:
+*help command
+*counting won't count if the last message was the blue circle
+
+====================================================================
+2.4.2 (5/22/2020)
+
+ADDITIONS:
+*you can now specify which version you want to see changes with by doing -v (version number) in the changes command
+
+====================================================================
+2.4.1.1 (5/22/2020)
+
+FIXES:
+*fixed an issue with something ;)
+
+====================================================================
+2.4.1 (the seeeeecret update) (5/22/2020)
+
+*very cool e a s t e r  e g g s
+*including secretcommand(s) ;)
+
+====================================================================
+2.4 (5/21/2020)
+
+ADDITIONS:
+*hex converts a number(s) into it's hexidecimal form
+    *if more than 1 number seperate with , and space
+*bin converts a number(s) into it's binary form
+    *same as hex
+*if the response command finds more than one response, it'll pick randomly
+*you can now specify what you want to seperate each character with in spacer by doing -sep (char)
+*you can say r, p, or s in addition to rock, paper, or scissors in rockpaperscissors
+
+FIXES:
+*if you don't have perms to add an 8ball reply it'll say it now
+*fixed the help command
+
+====================================================================
+2.3 (5/21/2020)
+
+ADDITIONS:
+*wiki/wikipedia command, searches wikipedia for a given <search>
+*added help to the indepth help
+*you can now do --rand as an answer for rps, it will generate either rock, paper, or scissors randomly as your answer
+
+CHANGES:
+*you can now specify which command you want help with in the help command
+*changes command now by default sends to chat do --dms to send to dms
+
+====================================================================
+2.2.2 (5/21/2020)
+
+CHANGES:
+*help now shows correct perameters for rps
+*added a limit of 120 seconds for the time perameter
+*if someone doesn't respond it should say <user> didn't respond
+*increased the spam limit
+
+FIXES:
+*fixed a glitch involving time
+
+====================================================================
+2.2.1 (5/20/2020)
+
+CHANGES:
+*rps now has -time it specifies how much time each player has to respond
+*the default time for rps is now 15
+
+====================================================================
+2.2 (5/20/2020) (biggest update as of update)
+
+ADDITIONS:
+*timer, starts a timer, say [timer again to end it, (it's always in seconds)
+*commandcount, says the amount of commands
+*pincount, gives the number of pins in the current channel
+*reactiontime, tests your reaction time
+*response, (suggested by wave/penguin)
+*hidden secrets :smirk:
+
+CHANGES:
+*changes command can now send to chat instead of dms by adding -chat to the end
+*spam is now up to .1 seconds faster!1!!1!1!1!!!1!!!1
+*rockpaperscissors now is multiplayer, instead of against the bot
+
+====================================================================
+2.1.2 (5/20/2020)
+
+CHANGES:
+*upperlower can now be called with ul
+    --delete as an option for upperlower
+*easter egg changes
+
+REMOVED:
+*command names being not caps-sensitive
+
+====================================================================
+2.1.1.1 (5/20/2020)
+
+CHANGES:
+*command names are now not caps-sensitive
+
+====================================================================
+2.1.1 (5/20/2020) (biggest update as of update)
+
+ADDITIONS:
+*Update log
+*Update log command
+
+CHANGES:
+*you can now delete rockpaperscissors command with --
+=======
 3.6.11 (6/5/2020)
 
 ADDITIONS:
