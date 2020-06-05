@@ -810,8 +810,9 @@ async def pigLatin(msg, content, cmd="piglatin"):
 	return msg
 
 async def mostRoles(msg, content, cmd="mostroles"):
-	c = content.split(cmd)[1]
-	top = int(splitContent(content, " ", index=1)) if splitContent(content, " ", index=1) in c else 5
+	c = splitContent(content, cmd, index=1)
+	print(content)
+	top = int(splitContent(content, " ", index=1)) if splitContent(content, " ", index=1) else 5
 	if TICDelete(content): await msg.delete()
 
 	memberRoles = {member.display_name.split("#")[0]: len(member.roles) - 1 for member in msg.guild.members}
