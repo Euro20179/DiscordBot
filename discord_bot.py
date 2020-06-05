@@ -18,7 +18,7 @@ import bs4 as bs
 tracemalloc.start()
 
 DELETE = "--delete"
-VERSION = "3.6.7"
+VERSION = "3.6.8"
 Stop = False
 
 playingGuessingGame = {}
