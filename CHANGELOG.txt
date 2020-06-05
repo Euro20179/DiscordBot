@@ -3,6 +3,14 @@
 ADDITIONS:
 *color now works with hex strings
     *ex: [color #ff02a3
+*--rw, reacts with the emotes given
+
+CHANGES:
+*for ANY MESSAGE, you only need 2 - instead of 3
+*color now longer requires exactly a ", ", it'll take any number of spaces now (hopefully)
+
+FIXES:
+*can now get help for anymessage and botinfo
 
 ====================================================================
 3.6.6.1

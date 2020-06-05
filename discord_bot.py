@@ -847,14 +847,14 @@ async def color(msg, content, cmd="color"):
 		c = c.replace(DELETE, "")
 	if "#" in c:
 		color = c.replace("#", "")
-		print(color)
 		r = int(color[0:2], 16)
 		g = int(color[2:4], 16)
 		b = int(color[4:], 16)
 		embed = discord.Embed(title=f'{r} {g} {b}', color=discord.Color(int(color, 16)))
 		await msg.channel.send(embed=embed)
 	if ", " in c:
-		color = [int(x) for x in c.split(", ")]
+		c = c.replace(" ", "")
+		color = [int(x) for x in c.split(",")]
 		hexColor = [str(hex(x))[2:] for x in color]
 		hexColor = list(map(lambda x: f'0{x}' if len(x) == 1 else x, hexColor))
 		await msg.channel.send(embed=discord.Embed(title=f'#{"".join(hexColor)}', color=discord.Color.from_rgb(color[0], color[1], color[2])))			
@@ -1282,20 +1282,14 @@ async def on_message(msg):
 	content = msg.content
 	if not content: return
 
-	if testInContent(content, "---delete", "—-delete"): await msg.delete()
-	if testInContent(content, "---delin "):
-		t = splitContent(content, "---delin ", index=1).strip()
+	if testInContent(content, "--delete", "--delete"): await msg.delete()
+	if testInContent(content, "--delin "):
+		t = splitContent(content, "--delin", index=1).strip()
 		try: await asyncio.sleep(int(t))
 		except: 
 			await msg.channel.send("NaN")
 			return 
 		await msg.delete()
-
-	if msg.channel.id == 427973752647712768 or (chkX := testInContent(content, "---chkx", "---reactchkx")):
-		await msg.add_reaction(blueCheck)
-		if not chkX:
-			await msg.add_reaction(neutral)
-		await msg.add_reaction("❌")
 
 	if random.random() >= .9994: 
 		if isBot(msg, client): return

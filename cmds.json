@@ -1,9 +1,10 @@
 {
-   "ANY MESSAGE": {
+   "ANYMESSAGE": {
        "desc": "can be applied to any message",
-       "---chkx": {"desc": "reacts with check neutral and x on your message"},
-       "---delete": {"desc": "deletes your message"},
-       "---delin": {
+       "--chkx": {"params": null, "desc": "reacts with check neutral and x on your message"},
+       "--delete": {"params": null, "desc": "deletes your message"},
+       "--rw": {"params": "*<emote> (sep with ,)", "desc": "reacts"},
+       "--delin": {
            "params": "<time>",
            "desc": "deletes your message in time seconds"
        }
@@ -281,7 +282,7 @@
             "desc": "gives info about a server emote"
         }
    },
-   "BOT INFO": {
+   "BOTINFO": {
         "desc": "like info but only about the bot",
         "commandusage": {
             "params": "[command] (--delete)",
