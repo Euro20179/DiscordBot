@@ -6,6 +6,7 @@ ADDITIONS:
 ====================================================================
 3.6.10 (6/5/2020)
 
+<<<<<<< Updated upstream
 ====================================================================
 FIXES:
 *spam -random
@@ -811,14 +812,20 @@ ADDITIONS:
 ====================================================================
 3.6.10 (6/5/2020)
 
+=======
+>>>>>>> Stashed changes
 FIXES:
 *spam -random
 
 ====================================================================
 3.6.9 (6/5/2020)
+<<<<<<< Updated upstream
 
 ADDITIONS:
 *--s and --g now work for lvlmsg
+=======
+--s and --g now work for lvlmsg
+>>>>>>> Stashed changes
 *top now tells how much xp someone has
 
 CHANGES:
