@@ -1,3 +1,10 @@
+3.6.7
+
+ADDITIONS:
+*color now works with hex strings
+    *ex: [color #ff02a3
+
+====================================================================
 3.6.6.1
 
 FIXES:
