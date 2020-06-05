@@ -18,7 +18,7 @@ import bs4 as bs
 tracemalloc.start()
 
 DELETE = "--delete"
-VERSION = "3.6.8"
+VERSION = "3.6.8.1"
 Stop = False
 
 playingGuessingGame = {}
@@ -1125,9 +1125,6 @@ async def runCommand(msg, content, cmd):
 		start = time.time()
 		await runCommand(msg, content.replace('[timeit ', ""), splitContent(content, "timeit ", index=1).split(" ")[0][1:])
 		await msg.channel.send(time.time() - start)
-
-	elif cmd in ("ENDPLS", "BAN", "UNBAN") and msg.author.id != 334538784043696130:
-		return await msg.channel.send("smh you can't shut me down i have p o w e r over you")
 
 	elif cmd == "ENDPLS" and msg.author.id == 334538784043696130:
 		await msg.channel.send("Logging out")
