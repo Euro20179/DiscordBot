@@ -1,3 +1,16 @@
+3.6.9
+
+ADDITIONS:
+*--s and --g now work for lvlmsg
+*top now tells how much xp someone has
+
+CHANGES:
+*you now have to say y/n before changing the lvlmsg
+
+FIXES:
+*top/lb is now accurate
+
+====================================================================
 3.6.8.1 (6/4/2020)
 
 FIXES:
