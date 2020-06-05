@@ -17,7 +17,7 @@ import bs4 as bs
 tracemalloc.start()
 
 DELETE = "--delete"
-VERSION = "3.6.9"
+VERSION = "3.6.10"
 Stop = False
 
 playingGuessingGame = {}
@@ -42,7 +42,6 @@ BASICINFO = {"level": 1, "xp": 0, "required": 1000, "lastTalked": 0, "message": 
 with open("cmds.json", "r") as cmdsJson:
 	data = json.load(cmdsJson)
 CMDLIST = tuple(cmd for _, i in data.items() for cmd in i.keys() if cmd != "desc")
-print(CMDLIST)
 
 def isBot(msg, client)->bool:
 	if msg.author == client.user or msg.author.bot: return True
@@ -206,7 +205,7 @@ async def spam(msg, messages, message, BlockStop=False):
 	global Stop
 	for _ in range(int(messages)):
 		if Stop and not BlockStop:
-			return stop("Stopped")
+			return await msg.channel.send(stop("Stopped"))
 		msg = await msg.channel.send(random.choice(message))
 		await asyncio.sleep(random.uniform(.6, 1.3))
 	return msg
@@ -405,8 +404,7 @@ async def spamCmd(msg, content, cmd="spam"):
 		c = c.replace("-random", "")
 		c = c[c.find(str(messages)) + len(str(messages)):]
 		options = c.split(", ")
-		try: await spam(msg, int(messages), options)
-		except StopError: await msg.channel.send("Stopped")
+		return await spam(msg, int(messages), options)
 
 	message = c[c.find(str(messages)) + len(str(messages)):]
 	await spam(msg, messages, [message])
@@ -1092,6 +1090,11 @@ async def spamStop(msg, content, cmd="spamstop"):
 		await msg.channel.send(f'{PREFIX}stop')
 		await asyncio.sleep(random.uniform(.3, 1.2))
 
+async def calc(msg, content, cmd="calc"):
+	if "help" in content or "quit" in content or "exit" in content:
+		return await msg.channel.send('nice try')
+	else: return await msg.channel.send(eval(splitContent(content, cmd + " ", index=1)))
+
 async def runCommand(msg, content, cmd):
 	DOFIRST = "-first "
 	if DOFIRST in content:
@@ -1175,7 +1178,7 @@ async def runCommand(msg, content, cmd):
 	elif cmd == "ping": content = await ping(msg, content)
 	elif cmd == "help": content = await hlp(msg, content)
 	elif cmd in ["commandusage", "cmduse", "cmdusage", "commanduse"]: content = await cmdUsage(msg, content, cmd=cmd)
-	elif cmd in ["findans", "equation", "result", "eval", "calc"]: content = await oneLineCmd(msg, eval(splitContent(content, cmd + " ", index=1)))
+	elif cmd in ["findans", "equation", "result", "eval", "calc"]: content = await calc(msg, content, cmd=cmd)
 	elif cmd == "iq": content = await iq(msg, content)
 	elif cmd == "shrug": content = await shrug(msg, content)
 	elif cmd in ["level", "rank", "lvl"]: content = await level(msg, content, cmd=cmd)
