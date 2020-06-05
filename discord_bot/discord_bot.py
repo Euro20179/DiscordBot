@@ -17,7 +17,7 @@ import bs4 as bs
 tracemalloc.start()
 
 DELETE = "--delete"
-VERSION = "3.6.5.1"
+VERSION = "3.6.6"
 Stop = False
 
 playingGuessingGame = {}
@@ -31,10 +31,11 @@ token = "NjQxNzk1NjU2Mzc3MTcyMDAw.XcNk8g.HEvnaXjuXFQhN1iilaaffbiPcoo"
 
 client = commands.Bot(command_prefix=PREFIX)
 
-mballresponseFilePath = "../mballresponse.txt"
-levelingDataFilePath = "../levelingData.json"
-commandusageFilePath = "../commandusage.json"
-bannedFilePath = "../banned.json"
+mballresponseFilePath = "../disbot_ext/mballresponse.txt"
+levelingDataFilePath = "../disbot_ext/levelingData.json"
+commandusageFilePath = "../disbot_ext/commandusage.json"
+bannedFilePath = "../disbot_ext/banned.json"
+timersPath = "../disbot_ext/timers.json"
 
 BASICINFO = {"level": 1, "xp": 0, "required": 1000, "lastTalked": 0, "message": '{author} you have leveled up to level {level}, very cool'}
 
@@ -232,11 +233,6 @@ async def ping(msg, content, cmd="ping"):
 
 async def echo(msg, content, cmd="echo"):
 	content = content[len(cmd) + 2:]
-	with open("log.txt", "r+") as f:
-		data = f.read()
-		data += f"\n{msg.author}: {content}"
-		clearFile(f)
-		f.write(data)
 	if not TICDelete(content): 
 		await msg.delete()
 		content = content.replace(DELETE, "")
@@ -250,10 +246,12 @@ async def echo(msg, content, cmd="echo"):
 	return msg
 
 async def timers(msg, content, cmd="timers"):
-	embed = discord.Embed(title="timers")
-	for user, t in runningStopwatch.items():
-		embed.add_field(name=user, value=round(time.time() - t, 2))
-	await msg.channel.send(embed=embed)
+	embed = discord.Embed(title="Timers")
+	with open(timersPath, "r") as tJ:
+		data = json.load(tJ)
+		for user, t in data.items():
+			embed.add_field(name=user, value=round(time.time() - t, 2))
+		await msg.chanel.send(embed=embed)
 
 async def levelMessage(msg, content, cmd="lvlmsg"):
 	with open(levelingDataFilePath, "r+") as j:
@@ -394,11 +392,6 @@ async def magicBall(msg, content, cmd="8ball"):
 
 async def spamCmd(msg, content, cmd="spam"):
 	global Stop
-	with open("log.txt", "r+") as f:
-		data = f.read()
-		data += f"\n{msg.author}: {content}"
-		clearFile(f)
-		f.write(data)
 	if Stop: stop()
 	if isBot(msg, client): return ""
 
@@ -943,15 +936,20 @@ async def response(msg, content, cmd="response", doFirst=False):
 
 async def timer(msg, content, cmd="stopwatch"):
 	if TICDelete(content): await msg.delete()
-	Running = runningStopwatch.get(msg.author.id)
-	if not Running:
-		runningStopwatch[msg.author.id] = time.time()
-		await msg.channel.send(f'{msg.author.mention} stopawtch started')
-	elif Running and testInContent(content, "--get"):
-		await msg.channel.send(embed=discord.Embed(title=str(round(time.time() - Running, 2)) + " seconds"))
-	elif Running:
-		await msg.channel.send(embed=discord.Embed(title=str(round(time.time() - Running, 2)) + " seconds"))
-		del runningStopwatch[msg.author.id]
+	with open(timersPath, "r+") as tJ:
+		data = json.load(tJ)
+		Running = data.get(str(msg.author.id))
+		print(Running)
+		if not Running:
+			data[msg.author.id] = time.time()
+			await msg.channel.send(f'{msg.author.mention} stopawtch started')
+		elif Running and testInContent(content, "--get"):
+			await msg.channel.send(embed=discord.Embed(title=str(round(time.time() - Running, 2)) + " seconds"))
+		elif Running:
+			await msg.channel.send(embed=discord.Embed(title=str(round(time.time() - Running, 2)) + " seconds"))
+			del data[str(msg.author.id)]
+		clearFile(tJ)
+		json.dump(data, tJ)
 
 async def emoteInfo(msg, content, cmd="emoteinfo"):
 	emote = await msg.guild.fetch_emoji(int(content.split(":")[2][:-1]))

@@ -1,3 +1,9 @@
+3.6.6 
+
+CHANGES:
+*timer is now stored on disk instead of ram, meaning you can have permenant timers *yay*
+
+====================================================================
 3.6.5.1 (6/4/2020)
 
 FIXES:
