@@ -1,1 +1,7 @@
+<<<<<<< HEAD
 .vscode/settings.json
+=======
+.vscode
+.settings
+*.ini
+>>>>>>> Dev

@@ -35,7 +35,7 @@
             ]
         },
         "lvlmsg": {
-            "params": "<message> (--see/--get) SPECIAL WORDS: {author}, {channel}, {emote}, {level}",
+            "params": "<message> (--see/--get/--s/--g) SPECIAL WORDS: {author}, {channel}, {emote}, {level}",
             "desc": "sets your level up message to <message>\n{author}: pings you\n{channel}: the current channel\n{emote} randoms server emote\n{level} the level you leveld up to\nif see or get, shows your level up message\nif message is none it wont say when you level up"
         }
    },
