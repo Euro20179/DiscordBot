@@ -2,6 +2,7 @@
 
 ADDITIONS:
 *lvlmsg --see now formats the message
+*the bot has it's own custom level up message!!!!
 
 ====================================================================
 3.6.10 (6/5/2020)

@@ -43,17 +43,16 @@ BASICINFO = {"level": 1, "xp": 0, "required": 1000, "lastTalked": 0, "message": 
 
 with open("cmds.json", "r") as cmdsJson:
     data = json.load(cmdsJson)
-CMDLIST = tuple(cmd for _, i in data.items() for cmd in i.keys() if cmd != "desc")
+    CMDLIST = tuple(cmd for _, i in data.items() for cmd in i.keys() if cmd != "desc")
 
 def isBot(msg, client)->bool:
     return msg.author == client.user or msg.author.bot
 
 async def formatLevelMessage(msg, message, level):
-    message = message.replace("{author}", msg.author.mention).replace("{level}", str(level)).replace("{channel}", msg.channel.name)
     if "{emote}" in message:
         new = [x if x != "{emote}" else str(random.choice(client.emojis)) for x in message.split(" ")]
         message = " ".join(new)
-    return message
+    return message.replace("{author}", msg.author.mention).replace("{level}", str(level)).replace("{channel}", msg.channel.name)
 
 async def formatDateTime(createdAt : datetime.datetime)->str:
     return f'{createdAt.month}/{createdAt.day}/{createdAt.year}\nat {createdAt.hour}:{createdAt.minute}:{createdAt.second}'
@@ -252,6 +251,7 @@ async def timers(msg, content, cmd="timers"):
         await msg.chanel.send(embed=embed)
 
 async def levelMessage(msg, content, cmd="lvlmsg"):
+    if isBot(msg, client): return await msg.channel.send(await formatLevelMessage(msg, "I AM GREAT I AM LEVEL {level}", 9999999))
     with open(levelingDataFilePath, "r+") as j:
         data = json.load(j)
         changeTo = content[len(cmd) + 2:].strip()
