@@ -48,6 +48,13 @@ CMDLIST = tuple(cmd for _, i in data.items() for cmd in i.keys() if cmd != "desc
 def isBot(msg, client)->bool:
     return msg.author == client.user or msg.author.bot
 
+async def formatLevelMessage(msg, message, level):
+    message = message.replace("{author}", msg.author.mention).replace("{level}", str(level)).replace("{channel}", msg.channel.name)
+    if "{emote}" in message:
+        new = [x if x != "{emote}" else str(random.choice(client.emojis)) for x in message.split(" ")]
+        message = " ".join(new)
+    return message
+
 async def formatDateTime(createdAt : datetime.datetime)->str:
     return f'{createdAt.month}/{createdAt.day}/{createdAt.year}\nat {createdAt.hour}:{createdAt.minute}:{createdAt.second}'
 
@@ -76,12 +83,7 @@ async def giveXP(msg : discord.Message)->None:
                 else: rawLvlMsg = levelUpMessage
                 if xp >= required:				
                     level += 1
-                    if levelUpMessage: 
-                        levelUpMessage = levelUpMessage.replace("{author}", msg.author.mention).replace("{level}", str(level)).replace("{channel}", msg.channel.name)
-                        if "{emote}" in levelUpMessage:
-                            new = [x if x != "{emote}" else str(random.choice(client.emojis)) for x in levelUpMessage.split(" ")]
-                            levelUpMessage = " ".join(new)
-
+                    if levelUpMessage: levelUpMessage = await formatLevelMessage(msg, levelUpMessage, level)
                     else: levelUpMessage = f'{msg.author.mention} you have leveled up to level {level}, very cool'
                     xp //= 2
                     required = round((1000 * level) * 1.1)
@@ -255,7 +257,7 @@ async def levelMessage(msg, content, cmd="lvlmsg"):
         changeTo = content[len(cmd) + 2:].strip()
         userData = data[str(msg.author.id)]
         if testInContent(changeTo, "--see", "--get", "--s", "--g"):
-            return await msg.channel.send(userData["message"])
+            return await msg.channel.send(await formatLevelMessage(msg, userData["message"], userData["level"]))
         await msg.channel.send("type y to change message, type n to cancel")
         yn = (await client.wait_for('message', check=lambda message: message.author == msg.author)).content.lower()
         if yn in ("yes", "y"):
