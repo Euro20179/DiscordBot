@@ -388,8 +388,7 @@ async def magicBall(msg, content, cmd="8ball"):
 
 	if testInContent(content, "--embed", "--e"):
 		await msg.channel.send(embed=discord.Embed(title=random.choice(responses)))
-	else: 
-		return await msg.channel.send(f'Answer: {random.choice(responses)}')
+	else: return await msg.channel.send(f'Answer: {random.choice(responses)}')
 
 async def spamCmd(msg, content, cmd="spam"):
 	global Stop
@@ -402,15 +401,13 @@ async def spamCmd(msg, content, cmd="spam"):
 		await msg.delete()
 		c = c.replace(DELETE, "")
 
-	messages = c[:c.find(" ")]
+	try: messages = int(c[:c.find(" ")])
+	except: return await msg.channel.send("not a valid number of messages")		
 
-	if not isInt(messages):
-		return await msg.channel.send("not a valid number of messages")			
-
-	if int(messages) > (lim := random.randint(40000, 110000)):
+	if messages > (lim := random.randint(40000, 110000)):
 		return await msg.channel.send(f"pls consult a psychiatrist that's too many messages\nthe limit is: {lim}")		
 
-	if int(messages) < 0: 
+	if messages < 0: 
 		return await msg.channel.send("ERROR: MESSAGE COUNT LESS THAN 0")
 
 	if testInContent(c, "-random"):
@@ -420,7 +417,7 @@ async def spamCmd(msg, content, cmd="spam"):
 		return await spam(msg, int(messages), options)
 
 	message = c[c.find(messages) + len(messages):]
-	await spam(msg, int(messages), [message])
+	await spam(msg, messages, [message])
 
 	if random.random() >= .99: await msg.channel.send("You found an easter egg hehe")
 	else: await msg.channel.send(random.choice(["done", "Done"]))
@@ -1029,8 +1026,7 @@ async def hangman(msg, content, cmd="hangman"):
 	print(user)
 	content = content[len(cmd) + 2:]
 	if user.id in playingHangman.keys():
-		await msg.channel.send(f'{msg.author.mention} {user.name} is already in a game')
-		return
+		return await msg.channel.send(f'{msg.author.mention} {user.name} is already in a game')
 	if (split := splitContent(content, " ", index=1)): 
 		lives = int(split.strip())
 	else: lives = 9
@@ -1130,11 +1126,24 @@ async def runCommand(msg, content, cmd):
 		await runCommand(msg, content.replace('[timeit ', ""), splitContent(content, "timeit ", index=1).split(" ")[0][1:])
 		await msg.channel.send(time.time() - start)
 
-	elif cmd == "ENDPLS":
-		if msg.author.id == 334538784043696130:
-			await msg.channel.send("Logging out")
-			await client.logout()
-		else: await msg.channel.send("smh you can't shut me down i have p o w e r over you")
+	elif cmd in ("ENDPLS", "BAN", "UNBAN") and msg.author.id != 334538784043696130:
+		return await msg.channel.send("smh you can't shut me down i have p o w e r over you")
+
+	elif cmd == "ENDPLS" and msg.author.id == 334538784043696130:
+		await msg.channel.send("Logging out")
+		await client.logout()
+
+	elif cmd == "BANS" and msg.author.id == 334538784043696130:
+		with open(bannedFilePath, "r+") as bannedJ:
+			data = json.load(bannedJ)
+			mssg = ""
+			for user in data.keys():
+				u = await client.fetch_user(int(user))
+				mssg += f'{u.name}: {data[user]}\n'
+			try: return await msg.channel.send(mssg)
+			except: pass
+		with open(bannedFilePath, "rb") as bannedJ:
+			await msg.channel.send(file=discord.File(bannedJ, "bans.json"))
 
 	elif cmd == "BAN" and msg.author.id == 334538784043696130:
 		user = await getUserInContent(msg, " ".join(content.split(" ")[0:2]), cmd)
@@ -1311,10 +1320,8 @@ async def on_message(msg):
 
 		with open(bannedFilePath, "r") as bannedJ:
 			data = json.load(bannedJ)
-			if str(msg.author.id) in data:
-				if cmd in data[str(msg.author.id)]:
-					await msg.channel.send(f"You cannot use {cmd}")
-					return
+			if cmd in data.get(str(msg.author.id)):
+				return await msg.channel.send(f"You cannot use {cmd}")
 
 		#ongoing events			
 		if cmd == "guessinggame":
@@ -1357,8 +1364,7 @@ async def on_message(msg):
 		elif isInt(c):
 			lives -= 1
 			if lives <= 0:
-				if int(content) == ans:
-					await msg.channel.send(embed=discord.Embed(title=f'{msg.author.display_name} ITS A DRAW', color=discord.Color.from_rgb(155, 155, 155)))
+				if int(content) == ans: await msg.channel.send(embed=discord.Embed(title=f'{msg.author.display_name} ITS A DRAW', color=discord.Color.from_rgb(155, 155, 155)))
 				else: await msg.channel.send(embed=discord.Embed(title=f'{msg.author.display_name} YOU LOSE\nTHE ANSWER WAS {ans}', color=discord.Color.from_rgb(255, 0, 0)))
 				del playingGuessingGame[msg.author.id]
 			elif int(content) == ans:
