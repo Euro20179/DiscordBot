@@ -1335,7 +1335,7 @@ async def on_message(msg):
 
 		with open(bannedFilePath, "r") as bannedJ:
 			data = json.load(bannedJ)
-			if cmd in data.get(str(msg.author.id)):
+			if cmd in str(data.get(str(msg.author.id))):
 				return await msg.channel.send(f"You cannot use {cmd}")
 
 		#ongoing events			
