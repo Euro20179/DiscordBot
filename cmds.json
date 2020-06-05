@@ -105,7 +105,7 @@
        },
        "spacer": {
            "params": "<spaces> <message> (-sep <sepby>)",
-           "desc": "sends <message> with <spaces> amount of spaces in between each letter\nif -sep is specified it'll seperate with that instead of spaces"
+           "desc": "sends <message> with <spaces> amount of spaces in between each letter\nif -sep is specified it'll seperate with that instead of spaces\nif sep is \\n it'll seperate by a new line"
        },
        "serveremote": {
            "params": "[amount] (-sep <sepby>) (-first)",

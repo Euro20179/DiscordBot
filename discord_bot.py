@@ -78,19 +78,13 @@ async def giveXP(msg : discord.Message)->None:
                 lastTalked = time.time()
                 required = userInfo["required"]
                 levelUpMessage = userInfo.get("message")
-                if not levelUpMessage: rawLvlMsg = '{author} you have leveled up to level {level}, very cool'
-                else: rawLvlMsg = levelUpMessage
+                if not levelUpMessage: levelUpMessage = '{author} you have leveled up to level {level}, very cool'
                 if xp >= required:				
-                    level += 1
-                    if levelUpMessage: levelUpMessage = await formatLevelMessage(msg, levelUpMessage, level)
-                    else: levelUpMessage = f'{msg.author.mention} you have leveled up to level {level}, very cool'
-                    xp //= 2
-                    required = round((1000 * level) * 1.1)
-                    userInfo = {"level": level, "xp": xp, "required": required, "lastTalked": lastTalked, "message": rawLvlMsg}
-                    if levelUpMessage not in ["none", "None", "null", "Null"]:
-                        await msg.channel.send(levelUpMessage)
+                    level += 1; xp //= 2 #gives level; reduces xp
+                    if (disp := await formatLevelMessage(msg, levelUpMessage, level)) not in ["none", "None", "null", "Null"]:
+                        await msg.channel.send(disp)
                 required = round((1000 * level) * 1.1)
-                userInfo = {"level": level, "xp": xp, "required": required, "lastTalked": lastTalked, "message": rawLvlMsg}
+                userInfo = {"level": level, "xp": xp, "required": required, "lastTalked": lastTalked, "message": levelUpMessage}
             data[str(msg.author.id)] = userInfo
         else:
             data[str(msg.author.id)] = BASICINFO
@@ -214,7 +208,6 @@ async def spam(msg, messages, message, BlockStop=False):
 
 async def ping(msg, content, cmd="ping"):
     if TICDelete(content): await msg.delete()
-        
     if random.random() >= .95:
         await msg.author.send("upupdowndownleftrightleftright")
         await asyncio.sleep(5)
@@ -441,7 +434,7 @@ async def unicodeChar(msg, content, cmd="unicodechar"):
         else: amount = int(amount)
 
     if "--value" in content:
-        chars = [f"{chr('%s')} value: ({'%s'})" %random.randint(0, 185000) for _ in range(amount)]
+        chars = [f"{chr('%s')} value: ({'%s'})" %random.randint(32, 185000) for _ in range(amount)]
     else: chars = [chr(random.randint(0, 185000)) for _ in range(amount)]
     
     return await msg.channel.send("\n".join(chars))
@@ -478,16 +471,18 @@ async def writeRoles(msg, content, cmd="doesnothing"):
 async def spacer(msg, content, cmd="spacer"):
     await msg.delete()
     sep = " "
-    c = splitContent(content.lower(), f'{cmd} ')[1]
+    c = content.split(cmd)[1].strip()
     spaces = c[:c.find(" ")]
     c = c[c.find(" "):]
     if "-sep" in c:
         sep = splitContent(c, "-sep ", index=1)
-        c = splitContent(c, " -sep", index=0)
-    if not check_int(spaces):
+        c = c.replace(f' -sep {sep}', "")
+        if sep == r"\n": sep = "\n"
+    if not isInt(spaces):
         return await msg.channel.send(f"{spaces} is not a valid number of spaces")
     add = sep * int(spaces)
     word = add.join(c)
+    print(word)
     return await oneLineCmd(msg, word)
 
 async def upperLower(msg, content, cmd="upperlower"):

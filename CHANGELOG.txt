@@ -3,6 +3,11 @@
 ADDITIONS:
 *lvlmsg --see now formats the message
 *the bot has it's own custom level up message!!!!
+*you can now sep by \n in spacer
+
+FIXES:
+*unicodechar had a VERY slight chance of not working
+*spacer -sep works
 
 ====================================================================
 3.6.10 (6/5/2020)
