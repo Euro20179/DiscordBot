@@ -7,6 +7,7 @@ import asyncio
 import json
 import tracemalloc
 import requests
+import math
 import bs4 as bs
 
 #TODO Make a stopwatch and a timer
@@ -17,7 +18,7 @@ import bs4 as bs
 tracemalloc.start()
 
 DELETE = "--delete"
-VERSION = "3.6.6.1"
+VERSION = "3.6.7"
 Stop = False
 
 playingGuessingGame = {}
@@ -25,7 +26,7 @@ runningStopwatch = {}
 reacting = {}
 playingHangman = {}
 
-PREFIX = "["
+PREFIX = "]"
 
 token = "NjQxNzk1NjU2Mzc3MTcyMDAw.XcNk8g.HEvnaXjuXFQhN1iilaaffbiPcoo"
 
@@ -844,6 +845,14 @@ async def color(msg, content, cmd="color"):
 	if TICDelete(content):
 		await msg.delete()
 		c = c.replace(DELETE, "")
+	if "#" in c:
+		color = c.replace("#", "")
+		print(color)
+		r = int(color[0:2], 16)
+		g = int(color[2:4], 16)
+		b = int(color[4:], 16)
+		embed = discord.Embed(title=f'{r} {g} {b}', color=discord.Color(int(color, 16)))
+		await msg.channel.send(embed=embed)
 	if ", " in c:
 		color = [int(x) for x in c.split(", ")]
 		hexColor = [str(hex(x))[2:] for x in color]
