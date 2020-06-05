@@ -17,29 +17,25 @@ import bs4 as bs
 tracemalloc.start()
 
 DELETE = "--delete"
-VERSION = "3.6.11"
+VERSION = "3.6.12"
 Stop = False
 
 playingGuessingGame = {}
 runningStopwatch = {}
-reacting = {}
 playingHangman = {}
 
+#CONSTS
 PREFIX = "]"
-
 token = "NjQxNzk1NjU2Mzc3MTcyMDAw.XcNk8g.HEvnaXjuXFQhN1iilaaffbiPcoo"
-
-client = commands.Bot(command_prefix=PREFIX)
-
 DISEXT = "../disbot_ext"
-
+client = commands.Bot(command_prefix=PREFIX)
+BASICINFO = {"level": 1, "xp": 0, "required": 1000, "lastTalked": 0, "message": '{author} you have leveled up to level {level}, very cool'}
 mballresponseFilePath = f"{DISEXT}/mballresponse.txt"
 levelingDataFilePath = f"{DISEXT}/levelingData.json"
 commandusageFilePath = f"{DISEXT}/commandusage.json"
 bannedFilePath = f"{DISEXT}/banned.json"
 timersPath = f"{DISEXT}/timers.json"
-
-BASICINFO = {"level": 1, "xp": 0, "required": 1000, "lastTalked": 0, "message": '{author} you have leveled up to level {level}, very cool'}
+EUROID = 334538784043696130
 
 with open("cmds.json", "r") as cmdsJson:
     data = json.load(cmdsJson)
@@ -129,10 +125,11 @@ def splitContent(content : str, *split, index=None, func=None)->str:
             return ret
     return ""
 
-def check_int(s)->bool:
-    if s[0] in ('-', '+'):
-        return s[1:].isdigit()
-    return s.isdigit()
+def isInt(testee : str)->bool:
+    try: 
+        int(testee)
+        return True
+    except:	return False
 
 def stop(*args, **kwargs)->None:
     global Stop
@@ -142,11 +139,6 @@ def stop(*args, **kwargs)->None:
 def userHasRole(msg : discord.Message, *roles)->bool:
     return True if discord.utils.find(lambda r: r.name in roles, msg.author.roles) else False
 
-def isInt(testee : str)->bool:
-    try: 
-        int(testee)
-        return True
-    except:	return False
 
 def findMember(c : str, msg : discord.Message)->discord.Member:
     return discord.utils.find(lambda m: str(m.id) == c or str(m.display_name.split("#")[0].lower()) == c.lower(), msg.guild.members)
@@ -203,7 +195,7 @@ async def spam(msg, messages, message, BlockStop=False):
         if Stop and not BlockStop:
             return await msg.channel.send(stop("Stopped"))
         msg = await msg.channel.send(random.choice(message))
-        await asyncio.sleep(random.uniform(.6, 1.3))
+        await asyncio.sleep(random.uniform(.7, 1.3))
     return msg
 
 async def ping(msg, content, cmd="ping"):
@@ -252,7 +244,8 @@ async def levelMessage(msg, content, cmd="lvlmsg"):
         if testInContent(changeTo, "--see", "--get", "--s", "--g"):
             return await msg.channel.send(await formatLevelMessage(msg, userData["message"], userData["level"]))
         await msg.channel.send("type y to change message, type n to cancel")
-        yn = (await client.wait_for('message', check=lambda message: message.author == msg.author)).content.lower()
+        try: yn = (await client.wait_for('message', check=lambda message: message.author == msg.author, timeout=60.0)).content.lower()
+        except asyncio.TimeoutError: yn = "n"
         if yn in ("yes", "y"):
             userData["message"] = changeTo
             clearFile(j)
@@ -294,13 +287,12 @@ async def iq(msg, content, cmd="iq"):
     c = msg.author.mention if not splitContent(content, f'{cmd} ', index=1) else content[len(cmd) + 2:]
     await msg.channel.send(f'{c}\'s iq is *DRUMROLL*...')
     await asyncio.sleep(random.uniform(.7, 1.3))
-    cases = {msg.author.bot: "i am computer i have [ERROR] iq",
-             iq == 200: f'you are the next einstein, you are smart enough to realize iq is dumb, so there is no need to say it',
-             iq > 150 and iq < 200: f"that's a pretty high iq: {iq}",
-             iq > 50 and iq <= 150: iq,
-             iq <= 50 and iq >= 0: f"you good there mate, your iq is {iq}",
-             iq < 0: f"you literally don't have a brain you somehow have a negative iq idek\nIQ: {iq}"}
-    return await msg.channel.send(cases.get(True))
+    return await msg.channel.send({msg.author.bot: "i am computer i have [ERROR] iq",
+            iq == 200: f'you are the next einstein, you are smart enough to realize iq is dumb, so there is no need to say it',
+            iq > 150 and iq < 200: f"that's a pretty high iq: {iq}",
+            iq > 50 and iq <= 150: iq,
+            iq <= 50 and iq >= 0: f"you good there mate, your iq is {iq}",
+            iq < 0: f"you literally don't have a brain you somehow have a negative iq idek\nIQ: {iq}"}.get(True))
 
 async def shrug(msg, content, cmd="shrug"):
     if TICDelete(content): await msg.delete()
@@ -379,7 +371,7 @@ async def magicBall(msg, content, cmd="8ball"):
 
 async def spamCmd(msg, content, cmd="spam"):
     global Stop
-    if Stop: stop("test")
+    if Stop: stop()
     if isBot(msg, client): return ""
 
     c = content[len(cmd) + 2:]
@@ -658,14 +650,12 @@ async def rand(msg, content, cmd="rand"):
         r = int(c[2].strip()) if len(c) == 3 else 15
 
         if not isInt(r):
-            await msg.channel.send("you are not rounding to a whole number")				
-            return ""
+            return await msg.channel.send("you are not rounding to a whole number")				
 
         if float(low) >= float(high):
-            await msg.channel.send("Low must be lower than high")
-            return ""
+            return await msg.channel.send("Low must be lower than high")
 
-        if check_int(low) and check_int(high):
+        if isInt(low) and isInt(high):
             while True:
                 if Stop: await msg.channel.send(stop("stopped picking a number"))
                 res = random.randint(int(low), int(high))
@@ -707,10 +697,8 @@ async def mballreply(msg, content, cmd="mballreply"):
     if userHasRole(msg, "mballresponseadder"):
         with open(mballresponseFilePath, "a") as f:
             f.write(mssg + "\n")
-        msg = await msg.channel.send("message added")				
-        return
-    else: msg = await msg.channel.send("you don't have perms")
-    return msg
+        return await msg.channel.send("message added")				
+    else: return await msg.channel.send("you don't have perms")
 
 async def mballDel(msg, content, cmd="8brdel"):
     reply = content.split(f"{cmd} ")[1]
@@ -732,7 +720,7 @@ async def count(msg, content, cmd="count"):
     highest = int(highest) + 1
     async for x in channel.history(limit=1):
         if isBot(x, client): return ""
-    if (style := testInContent(content, "--i", "--b", "--ib", "--e", "--u", "--ui")):
+    if (style := testInContent(content, "--i", "--b", "--ib", "--e", "--u", "--ui", "--all")):
         if style == "--i":
             await channel.send(f'*.{highest}.*')
         elif style == "--b":
@@ -743,6 +731,8 @@ async def count(msg, content, cmd="count"):
             await channel.send(f"__.{highest}.__")
         elif style == "--ui":
             await channel.send(f"___.{highest}.___")
+        elif style == "--all":
+            await channel.send(f'__***.{highest}.***__')
         elif style == "--e":
             if testInContent(content, "-c"):
                 color = splitContent(content, "-c ")[1]
@@ -904,7 +894,7 @@ async def hexBinOct(msg, content, cmd="hex"):
 
 async def response(msg, content, cmd="response", doFirst=False):
     global Stop
-    if Stop: Stop = False
+    if Stop: stop()
     if isBot(msg, client): return "is bot"
     limit = 1000
     mssg = content[len(cmd) + 2:].lower()
@@ -1019,7 +1009,10 @@ async def hangman(msg, content, cmd="hangman"):
     disp = "".join(["-" if x not in [" ", "," "." "'" '"'] else x for x in word])
     playingHangman[user.id] = {"word": word, "lives": lives, "guessed": [], "disp": disp}
     await msg.channel.send(f'{user.mention} guessing time')
-    return await msg.channel.send(disp)
+    mssg = await msg.channel.send(disp)
+    try: await client.wait_for("message", check=lambda message: message.author.id == user.id, timeout=90.0)
+    except: return await msg.channel.send("user did not respond in 1.5 minutes")
+    else: return mssg
 
 async def serverInfo(msg, content, cmd="serverinfo"):
     if TICDelete(content): await msg.delete()
@@ -1112,11 +1105,11 @@ async def runCommand(msg, content, cmd):
         await runCommand(msg, content.replace('[timeit ', ""), splitContent(content, "timeit ", index=1).split(" ")[0][1:])
         await msg.channel.send(time.time() - start)
 
-    elif cmd == "ENDPLS" and msg.author.id == 334538784043696130:
+    elif cmd == "ENDPLS" and msg.author.id == EUROID:
         await msg.channel.send("Logging out")
         await client.logout()
 
-    elif cmd == "BANS" and msg.author.id == 334538784043696130:
+    elif cmd == "BANS" and msg.author.id == EUROID:
         with open(bannedFilePath, "r+") as bannedJ:
             data = json.load(bannedJ)
             mssg = ""
@@ -1128,7 +1121,7 @@ async def runCommand(msg, content, cmd):
         with open(bannedFilePath, "rb") as bannedJ:
             await msg.channel.send(file=discord.File(bannedJ, "bans.json"))
 
-    elif cmd == "BAN" and msg.author.id == 334538784043696130:
+    elif cmd == "BAN" and msg.author.id == EUROID:
         user = await getUserInContent(msg, " ".join(content.split(" ")[0:2]), cmd)
         banFrom = splitContent(content, " ", index=2)
         with open(bannedFilePath, "r+") as bannedJ:
@@ -1141,7 +1134,7 @@ async def runCommand(msg, content, cmd):
             await msg.channel.send(f'banned {user.name} from {banFrom}')
             json.dump(data, bannedJ)
 
-    elif cmd == "UNBAN" and msg.author.id == 334538784043696130:
+    elif cmd == "UNBAN" and msg.author.id == EUROID:
         user = await getUserInContent(msg, " ".join(content.split(" ")[0:2]), cmd)
         unbanFrom = splitContent(content, " ", index=2)
         with open(bannedFilePath, "r+") as bannedJ:
@@ -1278,9 +1271,7 @@ async def on_message(msg):
     if testInContent(content, "--delin "):
         t = splitContent(content, "--delin", index=1).strip()
         try: await asyncio.sleep(int(t))
-        except: 
-            await msg.channel.send("NaN")
-            return 
+        except: return await msg.channel.send("NaN")
         await msg.delete()
 
     if (s := testInContent(content, "--rw", "--reactwith")):
@@ -1295,10 +1286,9 @@ async def on_message(msg):
             e = discord.utils.get(client.emojis, id=int(c.split(":")[2][:-1])) if c in client.emojis else c
             await msg.add_reaction(e)
         
-    if msg.channel.id == 427973752647712768 or (chkX := testInContent(content, "--chkx", "--reactchkx")):
+    if msg.channel.id == 427973752647712768 or (chkX := testInContent(content, "--chkx", "--reactchkx", "--p", "--v")):
         await msg.add_reaction(blueCheck)
-        if not chkX:
-            await msg.add_reaction(neutral)
+        if not chkX: await msg.add_reaction(neutral)
         await msg.add_reaction("❌")
 
     if random.random() >= .9994: 
@@ -1306,8 +1296,7 @@ async def on_message(msg):
         await msg.channel.send(random.choice(("mhm", "interesting", "fascinating", "very cool")))
         
     if content == f'is <@!{client.user.id}> a bot' or content == f'are you a bot <@!{client.user.id}>':
-        await msg.channel.send(f"no {discord.utils.get(client.emojis, name='Watching1')}")
-        return
+        return await msg.channel.send(f"no {discord.utils.get(client.emojis, name='Watching1')}")
 
     if f"<@!{client.user.id}>" in content and client.user.id not in playingHangman.keys():
         await msg.channel.send(random.choice((discord.utils.find(lambda e: e.name.lower() == "watching1", client.emojis), discord.utils.find(lambda e: e.name.lower() == "pinged", client.emojis))))
@@ -1341,19 +1330,18 @@ async def on_message(msg):
 
         elif cmd == "reactiontime":
             await msg.channel.send("i will say GO and you have to send something as fast as possible (probably prepare the message before hand)")
-            reacting[msg.author.id] = 0
             await asyncio.sleep(random.uniform(1.5, 6))
-            reacting[msg.author.id] = time.time()
+            start = time.time()
             await msg.channel.send("GO")
-            return
+            try: await client.wait_for("message", check=lambda message: message.author == msg.author, timeout=60.0)
+            except asyncio.TimeoutError: return await msg.channel.send(f"{msg.author} ran out of time to react")
+            else: 
+                end = time.time()
+                return await msg.channel.send(f'your reaction time {end - start}')
         elif cmd == "stop":
             if TICDelete(content): await msg.message.delete()
             Stop = True
         else: await runCommand(msg, content, cmd)
-
-    if reacting.get(msg.author.id):
-        await msg.channel.send(f'{msg.author.mention} your reaction time is {time.time() - reacting[msg.author.id] - client.latency} seconds')
-        del reacting[msg.author.id]
 
     if playingGuessingGame.get(msg.author.id):
         c = msg.content
@@ -1381,21 +1369,18 @@ async def on_message(msg):
         tempWord = playingHangman[msg.author.id]["word"]
         if content in ["QUIT", "STOP", "CANCEL", "END"]:
             del playingHangman[msg.author.id]
-            await msg.channel.send(f'{msg.author.mention} CANCELLED\nthe word was {tempWord}')
-            return
+            return await msg.channel.send(f'{msg.author.mention} CANCELLED\nthe word was {tempWord}')
         tempLives = playingHangman[msg.author.id]["lives"]
         tempDisp = playingHangman[msg.author.id]["disp"]
         tempGuessed = playingHangman[msg.author.id]["guessed"]
         content = content.lower()
         if content.lower() == tempWord.lower():
-            await msg.channel.send(f'{msg.author.mention} YOU WIN')
             del playingHangman[msg.author.id]
-            return
+            return await msg.channel.send(f'{msg.author.mention} YOU WIN')
         if len(content) != 1:
             return
         if content in tempGuessed:
-            await msg.channel.send(f'you already said {content}')
-            return
+            return await msg.channel.send(f'you already said {content}')
         tempGuessed.append(content)
         if content in tempWord:
             foo = [x for x in tempDisp]
@@ -1406,17 +1391,14 @@ async def on_message(msg):
         else:
             tempLives -= 1
         if tempLives <= 0 and tempDisp == tempWord:
-            await msg.channel.send(f"ITS A DRAW\nThe word was {tempWord}\n{msg.author} ran out of lives but guessed the word")
             del playingHangman[msg.author.id]
-            return
+            return await msg.channel.send(f"ITS A DRAW\nThe word was {tempWord}\n{msg.author} ran out of lives but guessed the word")
         elif tempLives <= 0:
-            await msg.channel.send(f'YOU LOSE\nThe word was {tempWord}')
             del playingHangman[msg.author.id]
-            return
+            return await msg.channel.send(f'YOU LOSE\nThe word was {tempWord}')
         elif tempDisp == tempWord:
-            await msg.channel.send(f'YOU WIN\nYou won with {tempLives} left!')
             del playingHangman[msg.author.id]
-            return
+            return await msg.channel.send(f'YOU WIN\nYou won with {tempLives} left!')
         else: await msg.channel.send(f'{msg.author.mention}\nLives left: {tempLives}\nKnown word: {tempDisp}\nguesses: {" ".join(tempGuessed)}')
         playingHangman[msg.author.id] = {"word": tempWord, "lives": tempLives, "disp": tempDisp, "guessed": tempGuessed}
 

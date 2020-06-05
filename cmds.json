@@ -1,7 +1,7 @@
 {
    "ANYMESSAGE": {
        "desc": "can be applied to any message",
-       "--chkx": {"params": null, "desc": "reacts with check neutral and x on your message"},
+       "--chkx": {"params": null, "desc": "reacts with check neutral and x on your message", "aliases": ["--p", "--v", "--reactchkx"]},
        "--delete": {"params": null, "desc": "deletes your message"},
        "--rw": {"params": "*<emote> (sep with ,)", "desc": "reacts"},
        "--delin": {
@@ -361,8 +361,8 @@
             "desc": "gets the server icon"
         },
         "count": {
-            "params": "(--i) (--b) (--ib) (--e (-c <color>)) (--u) (--ui)",
-            "desc": "counts in #counting\n--i makes *italic*\n--b makes **bold**\n--ib makes ***italic and bold***\n--e makes embeded, if -c must be a hex code like 00ffe2\n--u makes underlined\n--ui makes underlined + italic"
+            "params": "(--i) (--b) (--ib) (--e (-c <color>)) (--u) (--ui) (--all)",
+            "desc": "counts in #counting\n--i makes *italic*\n--b makes **bold**\n--ib makes ***italic and bold***\n--e makes embeded, if -c must be a hex code like 00ffe2\n--u makes underlined\n--ui makes underlined + italic\n-all sends __***number***__"
         },
         "fetchuser": {
             "params": "<userid>",
