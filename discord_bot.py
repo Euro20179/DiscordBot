@@ -424,12 +424,8 @@ async def unicodeChar(msg, content, cmd="unicodechar"):
 
     if (split := splitContent(content, " ")):
         amount = split[1]
-        if not isInt(amount):
-            return await msg.channel.send("NaN")
-        else: amount = int(amount)
-
-    if "--value" in content:
-        chars = [f"{chr('%s')} value: ({'%s'})" %random.randint(32, 185000) for _ in range(amount)]
+        if not isInt(amount) and amount != "--value": return await msg.channel.send("NaN")
+        elif isInt(amount): amount = int(amount)
     else: chars = [chr(random.randint(0, 185000)) for _ in range(amount)]
     
     return await msg.channel.send(sep.join(chars))
@@ -441,8 +437,7 @@ async def serverEmote(msg, content, cmd="serveremote"):
         sep = content.split("-sep ")[1]
     if isInt(splitContent(content.lower(), " ", index=1)): amount = int(splitContent(content.lower(), " ", index=1))
     sendE = [str(random.choice(client.emojis)) for _ in range(amount)]
-    msg = await oneLineCmd(msg, sep.join(sendE))
-    return msg
+    return await oneLineCmd(msg, sep.join(sendE))
 
 async def writeRoles(msg, content, cmd="doesnothing"):
     filename = splitContent(content.lower(), cmd, index=1)
@@ -1289,7 +1284,7 @@ async def on_message(msg):
             e = discord.utils.get(client.emojis, id=int(c.split(":")[2][:-1])) if c in client.emojis else c
             await msg.add_reaction(e)
         
-    if msg.channel.id == 427973752647712768 or (chkX := testInContent(content, "--chkx", "--reactchkx", "--p", "--v")):
+    if msg.channel.id == 427973752647712768 or (chkX := testInContent(content, "--chkx", "--reactchkx", "--p")):
         await msg.add_reaction(blueCheck)
         if not chkX: await msg.add_reaction(neutral)
         await msg.add_reaction("❌")
