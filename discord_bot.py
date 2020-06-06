@@ -216,9 +216,8 @@ async def ping(msg, content, cmd="ping"):
 
 async def echo(msg, content, cmd="echo"):
     content = content[len(cmd) + 2:]
-    if not TICDelete(content): 
-        await msg.delete()
-        content = content.replace(DELETE, "")
+    if TICDelete(content): content = content.replace(DELETE, "")
+    else: await msg.delete()
     if "--e" in content:
         c = content.replace(" --e", "")
         embed = discord.Embed(title=c)
@@ -600,7 +599,7 @@ async def roleInfo(msg, content, cmd="roleinfo"):
         role = discord.utils.find(lambda r: r.name.lower() == rolename.lower(), msg.guild.roles)
         embed = discord.Embed(title=role.name, color=role.color)
         embed.add_field(name="id", value=role.id)
-        embed.add_field(name="Color", value=role.color)
+        embed.add_field(name="Color", value=f'RGB: {", ".join(tuple(str(x) for x in role.color.to_rgb()))}\nHEX: {role.color}')
         embed.add_field(name="displayed seperately?", value=role.hoist)
         embed.add_field(name="hierarchical position", value=len(msg.guild.roles) - role.position)
         embed.add_field(name="members with role", value=len(role.members))
@@ -628,8 +627,7 @@ async def roleCount(msg, content, cmd="rolecount"):
             embed.add_field(name="Count", value=roleCount)
             embed.add_field(name="Roles", value="".join(roles))
             msg = await msg.channel.send(embed=embed)
-        else: 
-            msg = await msg.channel.send(roleCount)		
+        else: msg = await msg.channel.send(roleCount)		
     else: msg = await msg.channel.send("User not found")
     return msg
 
@@ -883,7 +881,9 @@ async def changes(msg, content, cmd="changes"):
     return msg
 
 async def commandCount(msg, content, cmd="commandcount"):
-    return await oneLineCmd(msg, len(CMDLIST))
+    with open("cmds.json", "r") as cmdsJson:
+        data = json.load(cmdsJson)
+        return await oneLineCmd(msg, len(tuple(cmd for _, i in data.items() for cmd in i.keys() if cmd != "desc"))) 
 
 async def hexBinOct(msg, content, cmd="hex"):
     content = splitContent(content, cmd + " ")[1]
@@ -1049,7 +1049,7 @@ async def userInfo(msg, content, cmd="userinfo"):
     embed = discord.Embed(title=user.name, color=user.color)
     embed.add_field(name="Join date", value=await formatDateTime(user.joined_at))
     embed.add_field(name="nick name", value=user.nick)
-    embed.add_field(name="color", value=user.color.to_rgb())
+    embed.add_field(name="color", value=f'RGB: {", ".join(tuple(str(x) for x in user.color.to_rgb()))}\nhex: {user.color}')
     embed.add_field(name="role count", value=len(user.roles))
     embed.add_field(name="avatar url", value=user.avatar_url)
     embed.add_field(name="created at", value=await formatDateTime(user.created_at))
@@ -1252,7 +1252,6 @@ async def on_ready():
     await client.change_presence(activity=discord.Game(f'version: {VERSION}'))
     blueCheck = discord.utils.get(client.emojis, name="Blue_check")
     neutral = discord.utils.get(client.emojis, name="neutral")
-
     print(f"ONLINE\nversion: {VERSION}")
 
 @client.event
@@ -1267,7 +1266,7 @@ async def on_message(msg):
     content = msg.content
     if not content: return
 
-    if testInContent(content, "--delete", "--delete"): await msg.delete()
+    if testInContent(content, "---delete"): await msg.delete()
     if testInContent(content, "--delin "):
         t = splitContent(content, "--delin", index=1).strip()
         try: await asyncio.sleep(int(t))

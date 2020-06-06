@@ -2,7 +2,7 @@
    "ANYMESSAGE": {
        "desc": "can be applied to any message",
        "--chkx": {"params": null, "desc": "reacts with check neutral and x on your message", "aliases": ["--p", "--v", "--reactchkx"]},
-       "--delete": {"params": null, "desc": "deletes your message"},
+       "---delete": {"params": null, "desc": "deletes your message"},
        "--rw": {"params": "*<emote> (sep with ,)", "desc": "reacts"},
        "--delin": {
            "params": "<time>",
