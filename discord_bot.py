@@ -414,9 +414,13 @@ async def alphabet(msg, content, cmd="alphabet"):
 
 async def unicodeChar(msg, content, cmd="unicodechar"):
     amount = 1
+    sep = "\n"
     if TICDelete(content): 
         await msg.delete()
         content = content.replace(DELETE, "")
+    
+    if testInContent(content, "-sep "):
+        sep = splitContent(content, "-sep ", index=1)
 
     if (split := splitContent(content, " ")):
         amount = split[1]
@@ -428,7 +432,7 @@ async def unicodeChar(msg, content, cmd="unicodechar"):
         chars = [f"{chr('%s')} value: ({'%s'})" %random.randint(32, 185000) for _ in range(amount)]
     else: chars = [chr(random.randint(0, 185000)) for _ in range(amount)]
     
-    return await msg.channel.send("\n".join(chars))
+    return await msg.channel.send(sep.join(chars))
 
 async def serverEmote(msg, content, cmd="serveremote"):
     amount = 1

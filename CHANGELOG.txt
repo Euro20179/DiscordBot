@@ -5,6 +5,7 @@ ADDITIONS:
 *--v and --p are now valid for --chkx
 *userinfo color now gives rgb and hex
     *same for roleinfo
+*-sep for unicodechar
 
 CHANGES:
 *spam is on average .1 seconds slower

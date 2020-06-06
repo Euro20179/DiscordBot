@@ -100,8 +100,11 @@
            ]
        },
        "unicodechar": {
-           "params": "[amount] (--delete) (-first)",
-           "desc": "sends [amount] of unicode chars, defaults to 1"
+           "params": "[amount] (--delete) (-first) (-sep)",
+           "desc": "sends [amount] of unicode chars, defaults to 1",
+           "aliases": [
+               "ucodechar"
+           ]
        },
        "spacer": {
            "params": "<spaces> <message> (-sep <sepby>)",
