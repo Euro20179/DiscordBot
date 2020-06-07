@@ -1,3 +1,28 @@
+3.6.12 (3/7/2020)
+
+ADDITIONS:
+*--all to count
+*--v and --p are now valid for --chkx
+*userinfo color now gives rgb and hex
+    *same for roleinfo
+*-sep for unicodechar
+
+CHANGES:
+*spam is on average .1 seconds slower
+*hangman will autocancell if user doesn't respond in 90 seconds
+
+FIXES:
+*changing ---delete to --delete broke --delete commands
+    *therefor --delete for normal messages is ---delete again
+*top
+
+REMOVED:
+*--value for ucodechar
+
+TECHNICAL:
+*reactiontime is now just 1 function instead of like 3 lol
+
+====================================================================
 3.6.11 (6/5/2020)
 
 ADDITIONS:
