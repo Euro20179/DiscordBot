@@ -350,6 +350,7 @@ async def leaderboard(msg, content, cmd="top"):
         embed = discord.Embed(title=f"Top {top}", color=users[0][0].color)
         firstPlaceRole = discord.utils.get(msg.guild.roles, id=713979970287829033)
         for n, user in enumerate(users):
+            if not user[0]: continue
             if firstPlaceRole in user[0].roles:
                 await user[0].remove_roles(firstPlaceRole)
             if n > top - 1: break
@@ -450,10 +451,8 @@ async def writeRoles(msg, content, cmd="doesnothing"):
             try: f.write(f'\n{str(x.name)}\n')
             except: f.write(f"\n{x.id}\n")
             for y in x.roles:
-                try:
-                    f.write(f'{y.name}\n')
-                except:
-                    f.write(f'{y.id}\n')
+                try: f.write(f'{y.name}\n')
+                except: f.write(f'{y.id}\n')
 
     with open(f'.\\roles\\{filename}.txt', "rb") as f:
         await msg.channel.send(file=discord.File(f, f'{filename}.txt'))
@@ -472,7 +471,6 @@ async def spacer(msg, content, cmd="spacer"):
         return await msg.channel.send(f"{spaces} is not a valid number of spaces")
     add = sep * int(spaces)
     word = add.join(c)
-    print(word)
     return await oneLineCmd(msg, word)
 
 async def upperLower(msg, content, cmd="upperlower"):
@@ -663,8 +661,7 @@ async def rand(msg, content, cmd="rand"):
             res = random.uniform(float(low), float(high))
             if r: res = round(res, r)
     else: res = random.randint(1, 10)
-    msg = await msg.channel.send(res)
-    return msg
+    return await msg.channel.send(res)
 
 async def compareRoles(msg, content, cmd="compareroles"):
     embed = discord.Embed(name="Role Comparison")
@@ -1127,8 +1124,7 @@ async def runCommand(msg, content, cmd):
             data = json.load(bannedJ)
             if data.get(str(user.id)):
                 data[str(user.id)].append(banFrom)
-            else:
-                data[str(user.id)] = [banFrom]
+            else: data[str(user.id)] = [banFrom]
             clearFile(bannedJ)
             await msg.channel.send(f'banned {user.name} from {banFrom}')
             json.dump(data, bannedJ)
@@ -1141,8 +1137,7 @@ async def runCommand(msg, content, cmd):
             if data.get(str(user.id)):
                 data[str(user.id)].remove(unbanFrom)
             else:
-                await msg.channel.send("did not find user")
-                return
+                return await msg.channel.send("did not find user")
             clearFile(bannedJ)
             await msg.channel.send(f'unbanned {user.name} from {unbanFrom}')
             json.dump(data, bannedJ)
@@ -1286,7 +1281,7 @@ async def on_message(msg):
         
     if msg.channel.id == 427973752647712768 or (chkX := testInContent(content, "--chkx", "--reactchkx", "--p")):
         await msg.add_reaction(blueCheck)
-        if not chkX: await msg.add_reaction(neutral)
+        await msg.add_reaction(neutral)
         await msg.add_reaction("❌")
 
     if random.random() >= .9994: 

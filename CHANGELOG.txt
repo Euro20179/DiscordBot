@@ -1,4 +1,4 @@
-3.6.12
+3.6.12 (3/7/2020)
 
 ADDITIONS:
 *--all to count
@@ -14,6 +14,7 @@ CHANGES:
 FIXES:
 *changing ---delete to --delete broke --delete commands
     *therefor --delete for normal messages is ---delete again
+*top
 
 REMOVED:
 *--value for ucodechar
