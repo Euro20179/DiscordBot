@@ -216,6 +216,10 @@
    },
    "INFO":{
        "desc": "commands that give info",
+       "pokemon": {
+           "params": "<pokemon pokedex #/name>",
+           "desc": "gets info on pokemon"
+       },
        "categoryinfo": {
             "params": "<category>",
             "desc": "gets info on the category"
@@ -328,9 +332,7 @@
         "stopwatch": {
             "params": "(--delete)",
             "desc": "starts a stopwatch",
-            "aliases": [
-                "timer"
-            ]
+            "aliases": ["timer"]
         },
         "response": {
             "params": "<message> (-lim) (-first)",
@@ -396,10 +398,6 @@
        "daily": {
             "params": "(--delete)",
             "desc": "daily coin money time"
-       },
-       "pokemon": {
-           "params": null,
-           "desc": "gets a pokemon"
        },
        "doihavecovid": {
            "params": "(--delete)",

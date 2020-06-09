@@ -44,6 +44,15 @@ with open("cmds.json", "r") as cmdsJson:
 def isBot(msg, client)->bool:
     return msg.author == client.user or msg.author.bot
 
+async def formatSeconds(t, layer="seconds", rec=0):
+    cases = {"seconds": "minutes", "minutes": "hours", "hours": "days"}
+    if t > 60:
+        if layer == "days": return t, layer
+        else: 
+            t /= 60
+            t, layer = await formatSeconds(t, layer=cases[layer], rec=rec + 1)
+    return t, layer
+
 async def formatLevelMessage(msg, message, level): #gives the levelmessage with the keywords replaced
     if "{emote}" in message:
         new = [x if x != "{emote}" else str(random.choice(client.emojis)) for x in message.split(" ")]
@@ -899,20 +908,21 @@ async def response(msg, content, cmd="response", doFirst=False):
         else: msg = await msg.channel.send(f'did not find {mssg} in the past {limit} messages in this channel')
         return msg
 
-async def timer(msg, content, cmd="stopwatch"):
+async def stopwatch(msg, content, cmd="stopwatch"):
     if TICDelete(content): await msg.delete()
     with open(timersPath, "r+") as tJ:
         data = json.load(tJ)
         Running = data.get(str(msg.author.id))
-        print(Running)
         if not Running:
             data[msg.author.id] = time.time()
-            await msg.channel.send(f'{msg.author.mention} stopawtch started')
-        elif Running and testInContent(content, "--get"):
-            await msg.channel.send(embed=discord.Embed(title=str(round(time.time() - Running, 2)) + " seconds"))
-        elif Running:
-            await msg.channel.send(embed=discord.Embed(title=str(round(time.time() - Running, 2)) + " seconds"))
+            await msg.channel.send(f'{msg.author.mention} stopwatch started')
+        elif Running and testInContent(content, "--stop"):
+            t = await formatSeconds(time.time() - Running)
+            await msg.channel.send(embed=discord.Embed(title=str(round(t[0], 2)) + f' {t[1]}'))
             del data[str(msg.author.id)]
+        elif Running:
+            t = await formatSeconds(time.time() - Running)
+            await msg.channel.send(embed=discord.Embed(title=str(round(t[0], 2)) + f' {t[1]}'))
         clearFile(tJ)
         json.dump(data, tJ)
 
@@ -1085,7 +1095,27 @@ async def covid(msg, content, cmd="covid"):
         if n == 1: embed.add_field(name="DEATHS TOTAL", value=div.text.strip("\n").strip(), inline=False)
         if n == 2: embed.add_field(name="RECOVERED TOTAL", value=div.text.strip("\n").strip(), inline=False)
     await msg.channel.send(embed=embed)
-        
+
+async def pokemon(msg, content, cmd="pokemon"):
+    pokemon = splitContent(content, " ", index=1)
+    try:
+        request = requests.get(f"https://www.pokemon.com/us/pokedex/{pokemon}")
+        soup = bs.BeautifulSoup(request.text, features="html.parser")
+        name_id = soup.find("div", {"class": "pokedex-pokemon-pagination-title"})
+        name = name_id.find("div").text
+        embed = discord.Embed(title=name.replace("\n", ""))
+        img = soup.find("img", {"class": "active"})["src"]
+        div = soup.find("div", {"class": "pokemon-ability-info color-bg color-lightblue match active"})
+        titles = div.find_all("span", {"class": "attribute-title"})
+        values = div.find_all("span", {"class": "attribute-value"})
+        attrs = {name.text: value.text for name, value in zip(titles, values)}
+        for key, item in attrs.items():
+            if key == "Gender": continue
+            embed.add_field(name=key, value=item)
+        embed.set_thumbnail(url=img)
+        embed.set_footer(text=f'source: https://www.pokemon.com/us/pokedex/{pokemon}')
+        await msg.channel.send(embed=embed)
+    except: return await msg.channel.send("smth went wrong")
 async def runCommand(msg, content, cmd):
     DOFIRST = "-first "
     if DOFIRST in content:
@@ -1213,7 +1243,7 @@ async def runCommand(msg, content, cmd):
     elif cmd == "tof": content = await oneLineCmd(msg, 9 / 5 * float(splitContent(content, cmd + " ", index=1)) + 32)
     elif cmd == "toc": content = await oneLineCmd(msg, 5 / 9 * (float(splitContent(content, cmd + " ", index=1)) - 32))
     elif cmd == "response": content = await response(msg, content)
-    elif cmd in ["stopwatch", "timer"]: content = await timer(msg, content, cmd=cmd)
+    elif cmd in ["stopwatch", "timer"]: content = await stopwatch(msg, content, cmd=cmd)
     elif cmd == "lvlmsg": content = await levelMessage(msg, content)
     elif cmd == "emoteinfo": content = await emoteInfo(msg, content)
     elif cmd == "avatar": content = await msg.channel.send((await getUserInContent(msg, content, cmd)).avatar_url)
@@ -1225,7 +1255,7 @@ async def runCommand(msg, content, cmd):
     elif cmd == "sendblank": content = await sendBlank(msg, content)
     elif cmd == "daily": content = await oneLineCmd(msg, f"you earned ${random.randint(0, 1000000)} you can use this command once a day!")
     elif cmd == "serverinfo": content = await serverInfo(msg, content)
-    elif cmd == "pokemon": content = await oneLineCmd(msg, "WE DONT NEED ANOTHER POKEMON COMMAND THANK YOU VERY MUCH")
+    elif cmd == "pokemon": content = await pokemon(msg, content)
     elif cmd == "userinfo": content = await userInfo(msg, content)
     elif cmd in ["msginfo", "messageinfo"]: content = await messageInfo(msg, content, cmd=cmd)
     elif cmd == "fetchrole": content = await fetchRole(msg, content)

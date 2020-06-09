@@ -3,6 +3,13 @@
 ADDITIONS:
 *doihavecovid, gives you an accurate reading on if you have covid or not
 *covid, gives total cases, deaths, and recoveries of COVID-19
+*pokemon now gives info about a specified pokemon
+
+CHANGES:
+*you have to do [timer --stop to stop timer, by default it will give the time since start
+
+FIXES:
+*typo
 
 ====================================================================
 3.6.13 (6/8/2020)
