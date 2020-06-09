@@ -17,7 +17,7 @@ import bs4 as bs
 tracemalloc.start()
 
 DELETE = "--delete"
-VERSION = "3.6.13"
+VERSION = "3.7"
 Stop = False
 
 playingGuessingGame = {}
@@ -1075,6 +1075,17 @@ async def calc(msg, content, cmd="calc"):
         return await msg.channel.send('nice try')
     else: return await msg.channel.send(eval(splitContent(content, cmd + " ", index=1)))
 
+async def covid(msg, content, cmd="covid"):
+    request = requests.get("https://www.worldometers.info/coronavirus/")
+    embed = discord.Embed(title="Covid Stats", color=discord.Color(0xff0000))
+    embed.set_footer(text="source: https://www.worldometers.info/coronavirus/")
+    soup = bs.BeautifulSoup(request.text, features="html.parser")
+    for n, div in enumerate(soup.find_all("div", {"class": "maincounter-number"})):
+        if n == 0: embed.add_field(name="CASES TOTAL", value=div.text.strip("\n").strip(), inline=False)
+        if n == 1: embed.add_field(name="DEATHS TOTAL", value=div.text.strip("\n").strip(), inline=False)
+        if n == 2: embed.add_field(name="RECOVERED TOTAL", value=div.text.strip("\n").strip(), inline=False)
+    await msg.channel.send(embed=embed)
+        
 async def runCommand(msg, content, cmd):
     DOFIRST = "-first "
     if DOFIRST in content:
@@ -1221,6 +1232,8 @@ async def runCommand(msg, content, cmd):
     elif cmd == "categoryinfo": content = await categoryInfo(msg, content)
     elif cmd in ["alphabet", "alpha", "beta", "gamma", "delta", "epsilon", "zeta", "eta", "theta", "iota", "kappa", "lambda", "mu", "nu", "xi", "omicron", "pi", "rho", "sigma", "tau", "upsilon", "phi", "chi", "psi", "omega"]: content = await alphabet(msg, content, cmd=cmd)
     elif cmd == "spamstop": content = await spamStop(msg, content)
+    elif cmd == "doihavecovid": content = await oneLineCmd(msg, "yes" if random.random() < .995 else "no")
+    elif cmd == "covid": content = await covid(msg, content)
     elif cmd not in CMDLIST: 
         with open(commandusageFilePath, "r+") as j:
             data = json.load(j)

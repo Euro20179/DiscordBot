@@ -1,3 +1,10 @@
+3.7 
+
+ADDITIONS:
+*doihavecovid, gives you an accurate reading on if you have covid or not
+*covid, gives total cases, deaths, and recoveries of COVID-19
+
+====================================================================
 3.6.13 (6/8/2020)
 
 ADDITIONS:
