@@ -17,7 +17,7 @@ import bs4 as bs
 tracemalloc.start()
 
 DELETE = "--delete"
-VERSION = "3.6.12"
+VERSION = "3.6.13"
 Stop = False
 
 playingGuessingGame = {}
@@ -39,12 +39,12 @@ EUROID = 334538784043696130
 
 with open("cmds.json", "r") as cmdsJson:
     data = json.load(cmdsJson)
-    CMDLIST = tuple(cmd for _, i in data.items() for cmd in i.keys() if cmd != "desc")
+    CMDLIST = tuple(cmd for _, i in data.items() for cmd in i.keys() if cmd != "desc") #gets a list of commands
 
 def isBot(msg, client)->bool:
     return msg.author == client.user or msg.author.bot
 
-async def formatLevelMessage(msg, message, level):
+async def formatLevelMessage(msg, message, level): #gives the levelmessage with the keywords replaced
     if "{emote}" in message:
         new = [x if x != "{emote}" else str(random.choice(client.emojis)) for x in message.split(" ")]
         message = " ".join(new)
@@ -53,7 +53,7 @@ async def formatLevelMessage(msg, message, level):
 async def formatDateTime(createdAt : datetime.datetime)->str:
     return f'{createdAt.month}/{createdAt.day}/{createdAt.year}\nat {createdAt.hour}:{createdAt.minute}:{createdAt.second}'
 
-async def getUserInContent(msg : discord.Message, c : str, cmd : str)->discord.User:
+async def getUserInContent(msg : discord.Message, c : str, cmd : str)->discord.User: #gets user by id, name, etc
     c = str(c.split(cmd)[1].strip())
     c = c.replace("!", "")[2:-1] if "<@" in c else c
     if not c: c = str(msg.author.id)
@@ -116,7 +116,7 @@ def getCmd(content : str)->str:
 
 def splitContent(content : str, *split, index=None, func=None)->str:
     for x in split:
-        if x in content:
+        if x in content: #this is an IF STATEMENT, don't think it's a for loop
             ret = content.split(x)
             if func and index:
                 ret = func(content.split(x)[index])
@@ -131,14 +131,13 @@ def isInt(testee : str)->bool:
         return True
     except:	return False
 
-def stop(*args, **kwargs)->None:
+def stop(*args, **kwargs)->None: #similar to how raise StopIteration works, it stops whatever is happening
     global Stop
     Stop = False
     if args: return random.choice(args)
 
 def userHasRole(msg : discord.Message, *roles)->bool:
     return True if discord.utils.find(lambda r: r.name in roles, msg.author.roles) else False
-
 
 def findMember(c : str, msg : discord.Message)->discord.Member:
     return discord.utils.find(lambda m: str(m.id) == c or str(m.display_name.split("#")[0].lower()) == c.lower(), msg.guild.members)
@@ -151,19 +150,18 @@ async def oneLineCmd(msg : discord.Message, say : str, delete=True)->discord.Mes
     if TICDelete(msg.content) and delete: 
         say = say.replace(DELETE, "")
         await msg.delete()
-    msg = await msg.channel.send(say)
-    return msg
+    return await msg.channel.send(say)
 
 async def hlp(msg, content, cmd="help"):
     cat = splitContent(content, cmd + " ", index=1).upper()
     with open("cmds.json", "r") as j:
         data = json.load(j)
         if cat in [c for c in data.keys()] + [""]:
-            if not cat:
-                embed = discord.Embed(title="Help", color=discord.Color(0x00ffe2))
+            if not cat: #lists the categories, when none is specified
+                embed = discord.Embed(title="Help (DO HELP CATEGORY TO GET HELP ON THE CATEGORY ITS REALLY NOT THAT HARD PEOPLE)", color=discord.Color(0x00ffe2))
                 for category in data.keys():
                     embed.add_field(name=category, value=data[category].get("desc"))
-            else:
+            else: #gives the commands for specified category
                 embed = discord.Embed(title=cat, color=discord.Color(0x00ffe2))
                 for command in data[cat].keys():
                     if command == "desc": continue
@@ -172,9 +170,9 @@ async def hlp(msg, content, cmd="help"):
             return
 
     with open("cmds.json", "rb") as j:
-        if testInContent(content, "--all", "--indepth"):
+        if testInContent(content, "--all", "--indepth"): #the file
             await msg.channel.send(file=discord.File(j, "cmds.json"))
-        else:
+        else: #by specific commoand
             data = json.load(j)
             command = splitContent(content, " ", index=1)
             embed = discord.Embed(title=command, color=discord.Color(0x00ffe2))
@@ -184,7 +182,7 @@ async def hlp(msg, content, cmd="help"):
                     params = cmmd["params"]
                     desc = cmmd["desc"]
                     aliases = cmmd.get("aliases")
-                    text = f'{command} {params}\n{desc}\n\nALIASES: {aliases}'
+                    text = f'**``{command}``**: ``{params}``\n\n{desc}\n\nALIASES: {aliases}'
                     break
             embed.add_field(name="description", value=text)
             await msg.channel.send(embed=embed)
@@ -208,11 +206,10 @@ async def ping(msg, content, cmd="ping"):
         await msg.author.send("goodbye")
 
     if random.random() >= .99:
-        msg = await msg.channel.send("uh yeah tbh i don't really know what this does, like i have an idea but like idk")
+        return await msg.channel.send("uh yeah tbh i don't really know what this does, like i have an idea but like idk")
     elif random.random() >= .97:
-        msg = await msg.channel.send("LOL GET PRANKD THIS DOES NOTHING ROFL XD XD XD XD XD")
-    else: msg = await msg.channel.send(f':ping_pong: {round(client.latency * 1000)}ms')	
-    return msg
+        return await msg.channel.send("LOL GET PRANKD THIS DOES NOTHING ROFL XD XD XD XD XD")
+    else: return await msg.channel.send(f':ping_pong: {round(client.latency * 1000)}ms')	
 
 async def echo(msg, content, cmd="echo"):
     content = content[len(cmd) + 2:]
@@ -327,7 +324,7 @@ async def level(msg, content, cmd="level"):
     embed.add_field(name="rank #", value=pos)
     embed.add_field(name="xp needed", value=required - xp)
     embed.add_field(name="approx minutes", value=round((required - xp) / 57.5))
-    embed.add_field(name="level up mesage", value=message, inline=False)
+    embed.add_field(name="level up mesage", value=await formatLevelMessage(msg, message, level), inline=False)
     await msg.channel.send(embed=embed)
 
 async def leaderboard(msg, content, cmd="top"):
@@ -335,7 +332,7 @@ async def leaderboard(msg, content, cmd="top"):
         with open(levelingDataFilePath, "rb") as f:
             await msg.channel.send(file=discord.File(f, levelingDataFilePath))
             return "FILE"
-    top = 10
+    top = 12
     if TICDelete(content): 
         await msg.delete()
         content = content.replace(DELETE, "")
@@ -354,7 +351,7 @@ async def leaderboard(msg, content, cmd="top"):
             if firstPlaceRole in user[0].roles:
                 await user[0].remove_roles(firstPlaceRole)
             if n > top - 1: break
-            embed.add_field(name=str(n + 1), value=f'{user[0].mention}\nLevel: {user[1]}\nXp: {user[2]}', inline=False)
+            embed.add_field(name=str(n + 1), value=f'{user[0].mention}\nLevel: {user[1]}\nXp: {user[2]}')
 
         if firstPlaceRole not in users[0][0].roles:
             await users[0][0].add_roles(firstPlaceRole)
@@ -372,7 +369,7 @@ async def magicBall(msg, content, cmd="8ball"):
 async def spamCmd(msg, content, cmd="spam"):
     global Stop
     if Stop: stop()
-    if isBot(msg, client): return ""
+    if isBot(msg, client): return "n o"
 
     c = content[len(cmd) + 2:]
 
@@ -410,8 +407,7 @@ async def alphabet(msg, content, cmd="alphabet"):
     if testInContent(content, "--consonants"):
         send = "".join([x for x in string.ascii_lowercase if x not in "aeiou"])
     if random.random() > .98: send = "zyxwvutsrqponmlkjihgfedcba"
-    msg = await oneLineCmd(msg, send)
-    return msg
+    return await oneLineCmd(msg, send)
 
 async def unicodeChar(msg, content, cmd="unicodechar"):
     amount = 1
@@ -590,8 +586,7 @@ async def roleInfo(msg, content, cmd="roleinfo"):
         content = content.replace(DELETE, "")
     if not splitContent(content, cmd + " "):
         rolename = msg.author.top_role.name
-    else:
-        rolename = splitContent(content, cmd + " ")[1]
+    else: rolename = splitContent(content, cmd + " ")[1]
     try:
         role = discord.utils.find(lambda r: r.name.lower() == rolename.lower(), msg.guild.roles)
         embed = discord.Embed(title=role.name, color=role.color)
@@ -603,7 +598,7 @@ async def roleInfo(msg, content, cmd="roleinfo"):
         embed.add_field(name="Created at", value=await formatDateTime(role.created_at))
         await msg.channel.send(embed=embed)
     except AttributeError:
-        await msg.channel.send("role not found")
+        return await msg.channel.send("role not found")
 
 async def roleCount(msg, content, cmd="rolecount"):
     c = str(content.split(cmd)[1].strip())
@@ -644,11 +639,8 @@ async def rand(msg, content, cmd="rand"):
 
         r = int(c[2].strip()) if len(c) == 3 else 15
 
-        if not isInt(r):
-            return await msg.channel.send("you are not rounding to a whole number")				
-
-        if float(low) >= float(high):
-            return await msg.channel.send("Low must be lower than high")
+        if not isInt(r): return await msg.channel.send("you are not rounding to a whole number")				
+        if float(low) >= float(high): return await msg.channel.send("Low must be lower than high")
 
         if isInt(low) and isInt(high):
             while True:
@@ -754,7 +746,7 @@ async def mball(msg, content, cmd="8ball"):
         await msg.channel.send(file=discord.File(f, "mballresponse.txt"))
 
 async def pigLatin(msg, content, cmd="piglatin"):
-    CASE = "--kc"
+    CASE = " --kc"
     content = content.replace(CASE, "") if testInContent(content, CASE) else content.lower()
 
     m = content.split(" ")[1:]
@@ -766,7 +758,7 @@ async def pigLatin(msg, content, cmd="piglatin"):
     for n, word in enumerate(m):
         if word[0] in "aeiou": m[n] += "ay"
         else:
-            moveToEnd = [None if letter in "aeiou" else letter for letter in word] 
+            moveToEnd = [None if letter.lower() in "aeiou" else letter for letter in word] 
             moveToEnd = moveToEnd[:moveToEnd.index(None)] #all the letters until the first vowel represented by None
             m[n] = f'{word[len(moveToEnd):]}{"".join(moveToEnd)}ay'
     msg = await msg.channel.send(" ".join(m))
@@ -847,10 +839,14 @@ async def channelInfo(msg, content, cmd="cc"):
     diff = datetime.datetime.now() - created
     pinCount = len(await channel.pins())
     if pinCount != 0: daysTillLastPin = (50-pinCount) / (pinCount / int(str(diff).split(" ")[0]))
-    embed.add_field(name="Created at", value=await formatDateTime(created), inline=False)
-    embed.add_field(name="Pins", value=pinCount, inline=False)
-    if pinCount != 0: embed.add_field(name="days till last pin", value=str(daysTillLastPin), inline=False)
+    embed.add_field(name="Created at", value=await formatDateTime(created))
+    embed.add_field(name="Pins", value=pinCount)
+    if pinCount != 0: embed.add_field(name="days till last pin", value=str(daysTillLastPin))
     embed.add_field(name="time since creation", value=diff)
+    embed.add_field(name="id", value=channel.id)
+    embed.add_field(name="position", value=channel.position + 1)
+    embed.add_field(name="slowmode delay", value=channel.slowmode_delay)
+    embed.add_field(name="mention", value=channel.mention)
     await msg.channel.send(embed=embed)
 
 async def changes(msg, content, cmd="changes"):
@@ -872,14 +868,11 @@ async def changes(msg, content, cmd="changes"):
             else: c = None
 
     with open("CHANGELOG.txt", "rb") as f:
-        if testInContent(content, "--dms"): msg = await msg.author.send("\n".join(c)) if c else msg.author.send(file=discord.File(f, "changes.txt"))
-        else: msg = await msg.channel.send("\n".join(c)) if c else await msg.channel.send(file=discord.File(f, "changes.txt"))
-    return msg
+        if testInContent(content, "--dms"): return await msg.author.send("\n".join(c)) if c else msg.author.send(file=discord.File(f, "changes.txt"))
+        else: return await msg.channel.send("\n".join(c)) if c else await msg.channel.send(file=discord.File(f, "changes.txt"))
 
 async def commandCount(msg, content, cmd="commandcount"):
-    with open("cmds.json", "r") as cmdsJson:
-        data = json.load(cmdsJson)
-        return await oneLineCmd(msg, len(tuple(cmd for _, i in data.items() for cmd in i.keys() if cmd != "desc"))) 
+    return await msg.channel.send(len(CMDLIST))
 
 async def hexBinOct(msg, content, cmd="hex"):
     content = splitContent(content, cmd + " ")[1]
@@ -944,8 +937,7 @@ async def messageInfo(msg, content, cmd="messageinfo"):
         content = content.replace(fetchFrom.mention,  "").strip()
         print(content)
     if content.isnumeric():
-        try:
-            msg = await fetchFrom.fetch_message(content)
+        try: msg = await fetchFrom.fetch_message(content)
         except discord.errors.NotFound:
             return await msg.channel.send("sorry that message wasn't found")
     if not msg.content:
@@ -1051,6 +1043,7 @@ async def userInfo(msg, content, cmd="userinfo"):
     embed.add_field(name="created at", value=await formatDateTime(user.created_at))
     embed.add_field(name="discriminator", value=user.discriminator)
     embed.add_field(name="id", value=user.id)
+    embed.add_field(name="mention", value=user.mention)
     embed.add_field(name="roles", value=" ".join([x.mention for x in user.roles]), inline=False)
     embed.set_thumbnail(url=user.avatar_url)
     await msg.channel.send(embed=embed)
@@ -1105,13 +1098,10 @@ async def runCommand(msg, content, cmd):
         await msg.channel.send("Logging out")
         await client.logout()
 
-    elif cmd == "BANS" and msg.author.id == EUROID:
+    elif cmd == "BANS":
         with open(bannedFilePath, "r+") as bannedJ:
             data = json.load(bannedJ)
-            mssg = ""
-            for user in data.keys():
-                u = await client.fetch_user(int(user))
-                mssg += f'{u.name}: {data[user]}\n'
+            mssg = "".join([f'{(await client.fetch_user(int(user))).name}: {data[user]}\n' for user in data.keys()])
             try: return await msg.channel.send(mssg)
             except: pass
         with open(bannedFilePath, "rb") as bannedJ:
@@ -1253,14 +1243,10 @@ async def on_message(msg):
     global Stop, playingGuessingGame
     global blueCheck, neutral
 
-    if msg.author.id == 311621977339068418 and msg.channel.id not in (715043261110288415, 658815060646297659):
-        await msg.delete()
-        print("message deleted")
-
     content = msg.content
     if not content: return
 
-    if testInContent(content, "---delete"): await msg.delete()
+    if testInContent(content, "---delete") or (msg.author.id == 311621977339068418 and msg.channel.id not in (715043261110288415, 658815060646297659)): await msg.delete() #deletes message if requested or myustiak sent it
     if testInContent(content, "--delin "):
         t = splitContent(content, "--delin", index=1).strip()
         try: await asyncio.sleep(int(t))
@@ -1279,7 +1265,7 @@ async def on_message(msg):
             e = discord.utils.get(client.emojis, id=int(c.split(":")[2][:-1])) if c in client.emojis else c
             await msg.add_reaction(e)
         
-    if msg.channel.id == 427973752647712768 or (chkX := testInContent(content, "--chkx", "--reactchkx", "--p")):
+    if msg.channel.id == 427973752647712768 or testInContent(content, "--chkx", "--reactchkx", "--p"):
         await msg.add_reaction(blueCheck)
         await msg.add_reaction(neutral)
         await msg.add_reaction("❌")
@@ -1317,9 +1303,8 @@ async def on_message(msg):
                 high = int(c[1])
                 if len(c) >= 3: lives = int(c[2])
             ans = random.randint(low, high)
-            await msg.channel.send("guess")
             playingGuessingGame[msg.author.id] = {"ans": ans, "lives": lives}
-            return ""
+            return await msg.channel.send("guess")
 
         elif cmd == "reactiontime":
             await msg.channel.send("i will say GO and you have to send something as fast as possible (probably prepare the message before hand)")
