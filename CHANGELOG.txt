@@ -1,3 +1,20 @@
+3.6.13 (6/8/2020)
+
+ADDITIONS:
+*cc has a lot more info on the channel
+*userinfo now has "mention"
+
+CHANGES:
+*moved daily and pokemon to INTERESTING from FUN
+*help [command] looks a bit nicer
+*top is a grid instead of a list
+*anyone can see BANS now
+*help is more agressive
+
+FIXES:
+*--kc in piglatin works
+
+====================================================================
 3.6.12 (3/7/2020)
 
 ADDITIONS:
