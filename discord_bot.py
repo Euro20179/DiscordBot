@@ -9,7 +9,6 @@ import tracemalloc
 import requests
 import bs4 as bs
 
-#TODO IMPORTANT: mcplayerinfo
 #TODO customcmds, per person, stored in json file, ie:
     #[customcmd hi, i want to say hi how are you
     #then when the user does [hi it'd say "i want to say hi how are you"
@@ -1121,10 +1120,7 @@ async def hypixelPlayerCount(msg, content, cmd="hypixelpc"):
     soup = bs.BeautifulSoup(request.text, features="html.parser")
     pc = soup.find("div", {"class": "p-header-playNow-count"}).find("b").text
     return await msg.channel.send(pc)
-
-async def mcPlayerInfo(msg, content, cmd="mcPlayerInfo"):
-    pass
-
+    
 async def runCommand(msg, content, cmd, layer=1):
     DOFIRST = f"--{layer} "
     if DOFIRST in content:
@@ -1273,7 +1269,6 @@ async def runCommand(msg, content, cmd, layer=1):
     elif cmd == "doihavecovid": content = await oneLineCmd(msg, "yes" if random.random() < .995 else "no")
     elif cmd == "covid": content = await covid(msg, content)
     elif cmd == "hypixelpc": content = await hypixelPlayerCount(msg, content)
-    elif cmd == "mcplayerinfo": content = await mcPlayerInfo(msg, content)
     elif cmd not in CMDLIST: 
         with open(commandusageFilePath, "r+") as j:
             data = json.load(j)

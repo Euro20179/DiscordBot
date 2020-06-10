@@ -1,4 +1,4 @@
-3.7 
+3.7 (6/10/2020)
 
 ADDITIONS:
 *doihavecovid, gives you an accurate reading on if you have covid or not
