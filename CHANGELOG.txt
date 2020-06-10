@@ -1,3 +1,25 @@
+3.7 (6/9/2020)
+
+ADDITIONS:
+*doihavecovid, gives you an accurate reading on if you have covid or not
+*covid, gives total cases, deaths, and recoveries of COVID-19
+*pokemon now gives info about a specified pokemon
+*in addition to -first (--1) you can now do --2, --3, --4, and so on
+*there is now a fail-safe for when someone does @e/@h
+*hypixelpc, gives the player count of hypixel
+
+*some easter eggs ;)
+
+CHANGES:
+*you have to do [timer --stop to stop timer, by default it will give the time since start
+*-first is now -1
+*sarcastic comments are now .01% rarer, they have a 0.05% chance to appear
+*caps keep in hangman now, however cases don't matter when guessing
+
+FIXES:
+*stopawtch -> stopwatch
+
+====================================================================
 3.6.13.1 (6/9/2020)
 
 CHANGES:
