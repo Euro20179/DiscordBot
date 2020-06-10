@@ -1,4 +1,7 @@
 {
+   "KEY": {
+       "desc": "<> required parameter, [] optional parameter, () option, (--1) lets you do\n[serveremote 10 -sep --1 [serveremote"
+   },
    "ANYMESSAGE": {
        "desc": "can be applied to any message",
        "--chkx": {"params": null, "desc": "reacts with check neutral and x on your message", "aliases": ["--p", "--v", "--reactchkx"]},
@@ -20,7 +23,7 @@
         "desc": "anything that has to do with leveling",
         "level": {
             "params": "[user]",
-            "desc": "sends your level, xp, and required xp until the next level\nif [user] is provided it'll send that user's stats\nyou get 1-100 xp every minute if you talk\nif yo'ure innactive for 12 hours, youll lose 1xp per message until you talk aagin",
+            "desc": "sends your level, xp, and required xp until the next level\nif [user] is provided it'll send that user's stats\nyou get 1--100 xp every minute if you talk\nif yo'ure innactive for 12 hours, youll lose 1xp per message until you talk aagin",
             "aliases": [
                 "lvl",
                 "rank"
@@ -58,7 +61,7 @@
            "desc": "sends <message> and deletes your message\n--e embeds it\n--delete doesn't delete your message"
        },
        "8ball": {
-           "params": "[question], (-first)",
+           "params": "[question], (--1)",
            "desc": "the magic 8 ball ooooo spooky",
            "aliases": [
                "magicball"
@@ -69,7 +72,7 @@
             "desc": "spams <message> <amount> times\n-random sends op1 or op2 randomly each time"
        },
        "randomface": {
-            "params": "(--delete) (-first)",
+            "params": "(--delete) (--1)",
             "desc": "sends a random face ie: :]",
             "aliases": [
                 "rface"
@@ -92,7 +95,7 @@
            ]
        },
        "unicodechar": {
-           "params": "[amount] (--delete) (-first) (-sep)",
+           "params": "[amount] (--delete) (--1) (-sep)",
            "desc": "sends [amount] of unicode chars, defaults to 1",
            "aliases": [
                "ucodechar"
@@ -103,11 +106,11 @@
            "desc": "sends <message> with <spaces> amount of spaces in between each letter\nif -sep is specified it'll seperate with that instead of spaces\nif sep is \\n it'll seperate by a new line"
        },
        "serveremote": {
-           "params": "[amount] (-sep <sepby>) (-first)",
+           "params": "[amount] (-sep <sepby>) (--1)",
            "desc": "sends [amount] of random server emotes, defaults to 1"
        },
        "upperlower": {
-           "params": "<message> (--delete) (-first)",
+           "params": "<message> (--delete) (--1)",
            "desc": "sends <message> BuT lIkE tHiS",
            "aliases": [
                "ul"
@@ -130,7 +133,7 @@
            "desc": "sends <filename>.txt withe <content> to <send> (send is same as complexmessage)"
        },
        "sanity": {
-           "params": "<message> (--delete) (-r) (-first)",
+           "params": "<message> (--delete) (-r) (--1)",
            "desc": "gives the sanity of <message>\n-r rounds the decimal"
        },
        "family": {
@@ -142,11 +145,11 @@
            "desc": "reverses <message>"
        },
        "piglatin": {
-           "params": "<message> (--kc) (-first)",
+           "params": "<message> (--kc) (--1)",
            "desc": "onvertscay essagemay intoay igpay atinlay\n--kc eppskay asecay"
        },
        "iq": {
-           "params": "[message] (-first) (--delete)",
+           "params": "[message] (--1) (--delete)",
            "desc": "gives the iq of message, if not message, you"
        }
    },
@@ -175,7 +178,7 @@
    "RANDOM": {
        "desc": "random number generator stuff",
        "choose": {
-           "params": "*<from> (sep with commas) (-picks <amount>) (-first)",
+           "params": "*<from> (sep with commas) (-picks <amount>) (--1)",
            "desc": "chooses -picks amount of <from>, defaults to 1 pick"
        },
        "coin": {
@@ -183,14 +186,14 @@
            "desc": "flips a coin, if bet is specified it'll say if you won or lost"
        },
        "rand": {
-           "params": "<low> <high> [round] (--even) (-odd) (--delete) (-first)",
+           "params": "<low> <high> [round] (--even) (-odd) (--delete) (--1)",
            "desc": "picks a random number from <low> to <high>\nif either is a decimal it'll give a decimal rounded to [round] defaults to no round\nif --odd or --even it'll be an odd or even number"
        }
    },
    "MATHY": {
        "desc": "stuff like a calculator",
        "bin": {
-           "params": "*<num> (sep with commas) (-first)",
+           "params": "*<num> (sep with commas) (--1)",
            "desc": "gives the binary form of each <num> (base 2)"
        },
        "calc": {
@@ -198,19 +201,19 @@
            "desc": "gives the answer to <equation>\nsome things will not work as intended ie:\n ** is power instead of ^"
        },
        "hex": {
-           "params": "*<num> (sep with commas) (-first)",
+           "params": "*<num> (sep with commas) (--1)",
            "desc": "gives the hexidecimal form of each <num> (base 16)"
        },
        "oct": {
-           "params": "*<num> (sep with commas) (-first)",
+           "params": "*<num> (sep with commas) (--1)",
            "desc": "gives the oct form of each <num> (base 8)"
        },
        "toc": {
-           "params": "<temp (fahrenheit)> (-first)",
+           "params": "<temp (fahrenheit)> (--1)",
            "desc": "gives the celcius temp of <temp>"
        },
        "tof": {
-           "params": "<temp (celcius)> (-first)",
+           "params": "<temp (celcius)> (--1)",
            "desc": "gives the fahrenheit temp of <temp>"
        }
    },
@@ -261,7 +264,7 @@
             ]
         },
         "mostroles": {
-            "params": "[top] (-first)",
+            "params": "[top] (--1)",
             "desc": "sends the top top members by role count, defaults to top 5"
         },
         "color": {
@@ -311,7 +314,7 @@
             "desc": "your money"
         },
         "alphabet": {
-            "params": "(--delete) (--vowels) (--consonants) (-first)",
+            "params": "(--delete) (--vowels) (--consonants) (--1)",
             "desc": "gives the alphabet\n--vowels only vowels\nconsonants only consonants",
             "aliases": [
                 "alpha"
@@ -335,7 +338,7 @@
             "aliases": ["timer"]
         },
         "response": {
-            "params": "<message> (-lim) (-first)",
+            "params": "<message> (-lim) (--1)",
             "desc": "finds the message (response) after <message> in chat with a limit of lim defaults to 1000"
         },
         "wiki": {
@@ -401,7 +404,7 @@
        },
        "doihavecovid": {
            "params": "(--delete)",
-           "desc": "gives an accurate reading if you have COVID-19 or not"
+           "desc": "gives an accurate reading if you have COVID--19 or not"
        }
    }
 }

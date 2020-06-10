@@ -176,7 +176,7 @@ async def hlp(msg, content, cmd="help"):
                     if command == "desc": continue
                     embed.add_field(name=command, value=f'``{command}`` {data[cat][command]["params"]}', inline=False)
             await msg.channel.send(embed=embed)
-            return
+            return cat
 
     with open("cmds.json", "rb") as j:
         if testInContent(content, "--all", "--indepth"): #the file
@@ -332,7 +332,7 @@ async def level(msg, content, cmd="level"):
     embed.add_field(name="required", value=required)
     embed.add_field(name="rank #", value=pos)
     embed.add_field(name="xp needed", value=required - xp)
-    embed.add_field(name="approx minutes", value=round((required - xp) / 57.5))
+    embed.add_field(name="approx minutes", value=round((required - xp) / 57.5)) #TODO format this
     embed.add_field(name="level up mesage", value=await formatLevelMessage(msg, message, level), inline=False)
     await msg.channel.send(embed=embed)
 
@@ -408,6 +408,8 @@ async def spamCmd(msg, content, cmd="spam"):
 async def randomFace(msg, content, cmd="randomface"):
     EYES = (":", ";")
     MOUTHS = (")", "(", "{", "}", "[", "]", "p", "P", "d", "l", "C", "c")
+    if random.random() >= .995:
+        return await msg.channel.send("()-()\n ___")
     return await oneLineCmd(msg, f'{random.choice(EYES)}{random.choice(MOUTHS)}' if random.random() >= .5 else f'{random.choice(MOUTHS)}{random.choice(EYES)}')
 
 async def alphabet(msg, content, cmd="alphabet"):
@@ -420,19 +422,17 @@ async def alphabet(msg, content, cmd="alphabet"):
 
 async def unicodeChar(msg, content, cmd="unicodechar"):
     amount = 1
-    sep = "\n"
     if TICDelete(content): 
         await msg.delete()
         content = content.replace(DELETE, "")
     
-    if testInContent(content, "-sep "):
-        sep = splitContent(content, "-sep ", index=1)
+    sep = splitContent(content, "-sep ", index=1) if testInContent(content, "-sep ") else "\n"
 
     if (split := splitContent(content, " ")):
         amount = split[1]
-        if not isInt(amount) and amount != "--value": return await msg.channel.send("NaN")
+        if not isInt(amount): return await msg.channel.send("NaN")
         elif isInt(amount): amount = int(amount)
-    else: chars = [chr(random.randint(0, 185000)) for _ in range(amount)]
+    chars = [chr(random.randint(0, 185000)) for _ in range(amount)]
     
     return await msg.channel.send(sep.join(chars))
 
@@ -745,9 +745,7 @@ async def choose(msg, content, cmd="choose"):
             picks = int(op.split(PICKS)[1])
             options[options.index(op)] = op.split(PICKS)[0]
             break
-    choices = [random.choice(options) for _ in range(int(picks))]
-    msg = await msg.channel.send("\n".join(choices))
-    return msg
+    return await msg.channel.send("\n".join([random.choice(options) for _ in range(int(picks))]))
 
 async def mball(msg, content, cmd="8ball"):
     if TICDelete(content): await msg.delete()
@@ -878,10 +876,7 @@ async def changes(msg, content, cmd="changes"):
 
     with open("CHANGELOG.txt", "rb") as f:
         if testInContent(content, "--dms"): return await msg.author.send("\n".join(c)) if c else msg.author.send(file=discord.File(f, "changes.txt"))
-        else: return await msg.channel.send("\n".join(c)) if c else await msg.channel.send(file=discord.File(f, "changes.txt"))
-
-async def commandCount(msg, content, cmd="commandcount"):
-    return await msg.channel.send(len(CMDLIST))
+        else: return await msg.channel.send("\n".join(c)) if c else await msg.channel.send(file=discord.File(f, "changes.txt")) 
 
 async def hexBinOct(msg, content, cmd="hex"):
     content = splitContent(content, cmd + " ")[1]
@@ -1115,11 +1110,14 @@ async def pokemon(msg, content, cmd="pokemon"):
         embed.set_thumbnail(url=img)
         embed.set_footer(text=f'source: https://www.pokemon.com/us/pokedex/{pokemon}')
         await msg.channel.send(embed=embed)
-    except: return await msg.channel.send("smth went wrong")
-async def runCommand(msg, content, cmd):
-    DOFIRST = "-first "
+    except Exception as e: 
+        print(e)
+        return await msg.channel.send("smth went wrong")
+
+async def runCommand(msg, content, cmd, layer=1):
+    DOFIRST = f"--{layer} "
     if DOFIRST in content:
-        c = await runCommand(msg, content.split(DOFIRST)[1], splitContent(content, DOFIRST, index=1).split(" ")[0][1:])
+        c = await runCommand(msg, content.split(DOFIRST)[1], splitContent(content, DOFIRST, index=1).split(" ")[0][1:], layer=layer+1)
         content = f'{content.split(f" {DOFIRST}")[0]} {c.content}'
         await c.delete()
 
@@ -1167,8 +1165,7 @@ async def runCommand(msg, content, cmd):
             data = json.load(bannedJ)
             if data.get(str(user.id)):
                 data[str(user.id)].remove(unbanFrom)
-            else:
-                return await msg.channel.send("did not find user")
+            else: return await msg.channel.send("did not find user")
             clearFile(bannedJ)
             await msg.channel.send(f'unbanned {user.name} from {unbanFrom}')
             json.dump(data, bannedJ)
@@ -1184,10 +1181,10 @@ async def runCommand(msg, content, cmd):
         await msg.channel.send("you have followed the secret clues and awoken me")
         await asyncio.sleep(1.5)
         await msg.channel.send("congratulations to anyone whitnessing this event, you earn a secret role a very epic secret role :) as my gift for saving me")
-        await msg.channel.send("<!@334538784043696130> give them the role smh")
+        return await msg.channel.send("<!@334538784043696130> give them the role smh")
 
     elif cmd == "upupdowndownleftrightleftright":
-        await msg.channel.send("what do you think this is some arcade machine with secret codes, lol")
+        return await msg.channel.send("what do you think this is some arcade machine with secret codes, lol")
 
     elif cmd == "timers": content = await timers(msg, content)
     elif cmd == "echo": content = await echo(msg, content)
@@ -1205,7 +1202,7 @@ async def runCommand(msg, content, cmd):
     elif cmd in ["ttc", "thetroycommand"]: content = await oneLineCmd(msg, random.choice(("meow", "7", "**7**", "*7*", "mo", ":TiredPuffle:")))
     elif cmd in ["thepenguincommand", "tpc", "thewavecommand", "twc"]: content = await oneLineCmd(msg, random.choice(("very nice!", "very cool!", ":TiredPuffle:")))
     elif cmd in ["mmoney", "mymoney"]: content = await oneLineCmd(msg, f'{str(msg.author).split("#")[0]}, you have ${random.randint(0, 1000000)}')
-    elif cmd in ["ucodechar", "unicodechar"]: content = content = await unicodeChar(msg, content, cmd=cmd)
+    elif cmd in ["ucodechar", "unicodechar"]: content = await unicodeChar(msg, content, cmd=cmd)
     elif cmd == "serveremote": content = await serverEmote(msg, content)
     elif cmd == "doesnothing": content = await writeRoles(msg, content)
     elif cmd == "spacer": content = await spacer(msg, content)
@@ -1238,7 +1235,7 @@ async def runCommand(msg, content, cmd):
     elif cmd in ["cc", "channelcreated", "channelinfo", "ci"]: content = await channelInfo(msg, content, cmd=cmd)
     elif cmd == "changes": content = await changes(msg, content)					
     elif cmd in ["wiki", "wikipedia"]: content = await oneLineCmd(msg, f'https://en.wikipedia.org/wiki/Special:Search?search={content[len(cmd) + 2:].replace(" ", "_")}')
-    elif cmd == "commandcount": content = await commandCount(msg, content)
+    elif cmd == "commandcount": content = await oneLineCmd(msg, (len(CMDLIST)))
     elif cmd in ["hex", "bin", "oct"]: content = await hexBinOct(msg, content, cmd=cmd)
     elif cmd == "tof": content = await oneLineCmd(msg, 9 / 5 * float(splitContent(content, cmd + " ", index=1)) + 32)
     elif cmd == "toc": content = await oneLineCmd(msg, 5 / 9 * (float(splitContent(content, cmd + " ", index=1)) - 32))
@@ -1287,8 +1284,8 @@ async def on_message(msg):
     global blueCheck, neutral
 
     content = msg.content
-    if not content: return
 
+    if not content: return
     if testInContent(content, "---delete") or (msg.author.id == 311621977339068418 and msg.channel.id not in (715043261110288415, 658815060646297659)): await msg.delete() #deletes message if requested or myustiak sent it
     if testInContent(content, "--delin "):
         t = splitContent(content, "--delin", index=1).strip()
@@ -1313,7 +1310,7 @@ async def on_message(msg):
         await msg.add_reaction(neutral)
         await msg.add_reaction("❌")
 
-    if random.random() >= .9994: 
+    if random.random() >= .9995: 
         if isBot(msg, client): return
         await msg.channel.send(random.choice(("mhm", "interesting", "fascinating", "very cool")))
         
@@ -1329,6 +1326,8 @@ async def on_message(msg):
     if content[0] in PREFIX:
 
         cmd = getCmd(content)
+        if msg.mention_everyone:
+            return await msg.channel.send("NO")
 
         with open(bannedFilePath, "r") as bannedJ:
             data = json.load(bannedJ)
