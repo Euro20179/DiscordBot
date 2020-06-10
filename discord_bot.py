@@ -44,6 +44,15 @@ with open("cmds.json", "r") as cmdsJson:
 def isBot(msg, client)->bool:
     return msg.author == client.user or msg.author.bot
 
+async def formatSeconds(t, layer="seconds", rec=0):
+    cases = {"seconds": "minutes", "minutes": "hours", "hours": "days"}
+    if t > 60:
+        if layer == "days": return t, layer
+        else: 
+            t /= 60
+            t, layer = await formatSeconds(t, layer=cases[layer], rec=rec + 1)
+    return t, layer
+
 async def formatLevelMessage(msg, message, level): #gives the levelmessage with the keywords replaced
     if "{emote}" in message:
         new = [x if x != "{emote}" else str(random.choice(client.emojis)) for x in message.split(" ")]
@@ -907,12 +916,15 @@ async def timer(msg, content, cmd="stopwatch"):
         print(Running)
         if not Running:
             data[msg.author.id] = time.time()
-            await msg.channel.send(f'{msg.author.mention} stopawtch started')
-        elif Running and testInContent(content, "--get"):
-            await msg.channel.send(embed=discord.Embed(title=str(round(time.time() - Running, 2)) + " seconds"))
-        elif Running:
-            await msg.channel.send(embed=discord.Embed(title=str(round(time.time() - Running, 2)) + " seconds"))
+            await msg.channel.send(f'{msg.author.mention} stopwatch started')
+
+        elif Running and testInContent(content, "--stop"):
+            t = await formatSeconds(time.time() - Running)
+            await msg.channel.send(embed=discord.Embed(title=str(round(t[0], 2)) + f' {t[1]}'))
             del data[str(msg.author.id)]
+        elif Running:
+            t = await formatSeconds(time.time() - Running)
+            await msg.channel.send(embed=discord.Embed(title=str(round(t[0], 2)) + f' {t[1]}'))
         clearFile(tJ)
         json.dump(data, tJ)
 
