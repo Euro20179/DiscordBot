@@ -1,3 +1,9 @@
+3.7.1
+
+ADDITIONS:
+*whohas, gives the members who have a certain role
+
+====================================================================
 3.7 (6/9/2020)
 
 ADDITIONS:

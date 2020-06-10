@@ -8,10 +8,7 @@ import json
 import tracemalloc
 import requests
 import bs4 as bs
-
-#TODO customcmds, per person, stored in json file, ie:
-    #[customcmd hi, i want to say hi how are you
-    #then when the user does [hi it'd say "i want to say hi how are you"
+import os
 
 tracemalloc.start()
 
@@ -1076,20 +1073,21 @@ async def spamStop(msg, content, cmd="spamstop"):
         await asyncio.sleep(random.uniform(.3, 1.2))
 
 async def calc(msg, content, cmd="calc"):
-    if "help" in content or "quit" in content or "exit" in content:
+    if "help" in content or "quit" in content or "exit" in content or "os." in content:
         return await msg.channel.send('nice try')
     else: return await msg.channel.send(eval(splitContent(content, cmd + " ", index=1)))
 
 async def covid(msg, content, cmd="covid"):
-    request = requests.get("https://www.worldometers.info/coronavirus/")
-    embed = discord.Embed(title="Covid Stats", color=discord.Color(0xff0000))
-    embed.set_footer(text="source: https://www.worldometers.info/coronavirus/")
-    soup = bs.BeautifulSoup(request.text, features="html.parser")
-    for n, div in enumerate(soup.find_all("div", {"class": "maincounter-number"})):
-        if n == 0: embed.add_field(name="CASES TOTAL", value=div.text.strip("\n").strip(), inline=False)
-        if n == 1: embed.add_field(name="DEATHS TOTAL", value=div.text.strip("\n").strip(), inline=False)
-        if n == 2: embed.add_field(name="RECOVERED TOTAL", value=div.text.strip("\n").strip(), inline=False)
-    await msg.channel.send(embed=embed)
+    async with msg.channel.typing():
+        request = requests.get("https://www.worldometers.info/coronavirus/")
+        embed = discord.Embed(title="Covid Stats", color=discord.Color(0xff0000))
+        embed.set_footer(text="source: https://www.worldometers.info/coronavirus/")
+        soup = bs.BeautifulSoup(request.text, features="html.parser")
+        for n, div in enumerate(soup.find_all("div", {"class": "maincounter-number"})):
+            if n == 0: embed.add_field(name="CASES TOTAL", value=div.text.strip("\n").strip(), inline=False)
+            if n == 1: embed.add_field(name="DEATHS TOTAL", value=div.text.strip("\n").strip(), inline=False)
+            if n == 2: embed.add_field(name="RECOVERED TOTAL", value=div.text.strip("\n").strip(), inline=False)
+        await msg.channel.send(embed=embed)
 
 async def pokemon(msg, content, cmd="pokemon"):
     pokemon = splitContent(content, " ", index=1)
@@ -1121,6 +1119,23 @@ async def hypixelPlayerCount(msg, content, cmd="hypixelpc"):
     pc = soup.find("div", {"class": "p-header-playNow-count"}).find("b").text
     return await msg.channel.send(pc)
     
+async def whoHasRole(msg, content, cmd="hasrole"):
+    role = splitContent(content, " ", index=1)
+    role = discord.utils.find(lambda r: r.name.lower() == role.lower(), msg.channel.guild.roles)
+    embed = discord.Embed(title="has")
+    try: 
+        has = [user.mention for user in msg.channel.guild.members if role in user.roles]
+        embed.add_field(name="has", value="\n".join(has))
+        await msg.channel.send(embed=embed)
+    except:
+        await msg.channel.send("too many chars, here's a text file")
+        has = [user.name for user in msg.channel.guild.members if role in user.roles]
+        with open(f"whohas{role.name}.txt", "w") as f:
+            f.write("\n".join(has))
+        with open(f'whohas{role.name}.txt', "rb") as f:
+            await msg.channel.send(file=discord.File(f, f'whohas{role.name}.txt'))
+        os.remove(f"whohas{role.name}.txt")
+
 async def runCommand(msg, content, cmd, layer=1):
     DOFIRST = f"--{layer} "
     if DOFIRST in content:
@@ -1138,7 +1153,7 @@ async def runCommand(msg, content, cmd, layer=1):
     if cmd == "timeit":
         start = time.time()
         await runCommand(msg, content.replace('[timeit ', ""), splitContent(content, "timeit ", index=1).split(" ")[0][1:])
-        await msg.channel.send(time.time() - start)
+        return await msg.channel.send(time.time() - start)
 
     elif cmd == "ENDPLS" and msg.author.id == EUROID:
         await msg.channel.send("Logging out")
@@ -1269,6 +1284,7 @@ async def runCommand(msg, content, cmd, layer=1):
     elif cmd == "doihavecovid": content = await oneLineCmd(msg, "yes" if random.random() < .995 else "no")
     elif cmd == "covid": content = await covid(msg, content)
     elif cmd == "hypixelpc": content = await hypixelPlayerCount(msg, content)
+    elif cmd == "hasrole": content = await whoHasRole(msg, content)
     elif cmd not in CMDLIST: 
         with open(commandusageFilePath, "r+") as j:
             data = json.load(j)
