@@ -6,7 +6,7 @@ ADDITIONS:
 *pokemon now gives info about a specified pokemon
 *in addition to -first (--1) you can now do --2, --3, --4, and so on
 *there is now a fail-safe for when someone does @e/@h
-
+*hypixelpc, gives the player count of hypixel
 
 *some easter eggs ;)
 

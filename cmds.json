@@ -282,7 +282,11 @@
         "emoteinfo": {
             "params": null,
             "desc": "gives info about a server emote"
-        }
+        },
+		"hypixelpc": {
+			"params": "--delete",
+			"desc": "gives hypixel's current player count"
+		}
    },
    "BOTINFO": {
         "desc": "like info but only about the bot",
