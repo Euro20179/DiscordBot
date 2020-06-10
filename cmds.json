@@ -333,7 +333,7 @@
             "desc": "adds <reply> to the list of 8ball replies"
         },
         "stopwatch": {
-            "params": "(--delete)",
+            "params": "(--delete) (--stop)",
             "desc": "starts a stopwatch",
             "aliases": ["timer"]
         },

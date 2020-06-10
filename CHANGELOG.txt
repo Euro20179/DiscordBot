@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 3.7 
 
 ADDITIONS:
@@ -17,6 +18,13 @@ CHANGES:
 
 FIXES:
 *stopawtch -> stopwatch
+=======
+3.6.13.1 (6/9/2020)
+
+CHANGES:
+*by default [timer will show the timer
+    *do [timer --stop to stop it
+>>>>>>> Dev
 
 ====================================================================
 3.6.13 (6/8/2020)

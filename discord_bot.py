@@ -17,7 +17,11 @@ import bs4 as bs
 tracemalloc.start()
 
 DELETE = "--delete"
+<<<<<<< HEAD
 VERSION = "3.7"
+=======
+VERSION = "3.6.13.1"
+>>>>>>> Dev
 Stop = False
 
 playingGuessingGame = {}
@@ -911,6 +915,10 @@ async def stopwatch(msg, content, cmd="stopwatch"):
         if not Running:
             data[msg.author.id] = time.time()
             await msg.channel.send(f'{msg.author.mention} stopwatch started')
+<<<<<<< HEAD
+=======
+
+>>>>>>> Dev
         elif Running and testInContent(content, "--stop"):
             t = await formatSeconds(time.time() - Running)
             await msg.channel.send(embed=discord.Embed(title=str(round(t[0], 2)) + f' {t[1]}'))
