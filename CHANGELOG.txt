@@ -14,6 +14,7 @@ CHANGES:
 *you have to do [timer --stop to stop timer, by default it will give the time since start
 *-first is now -1
 *sarcastic comments are now .01% rarer, they have a 0.05% chance to appear
+*caps keep in hangman now, however cases don't matter when guessing
 
 FIXES:
 *stopawtch -> stopwatch

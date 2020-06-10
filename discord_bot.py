@@ -9,10 +9,10 @@ import tracemalloc
 import requests
 import bs4 as bs
 
-#TODO Make a stopwatch and a timer
-
-#TODO flag trivia
-#TODO LITERALLY ANYTHING WITH COUNTRIES
+#TODO IMPORTANT: mcplayerinfo
+#TODO customcmds, per person, stored in json file, ie:
+    #[customcmd hi, i want to say hi how are you
+    #then when the user does [hi it'd say "i want to say hi how are you"
 
 tracemalloc.start()
 
@@ -920,6 +920,7 @@ async def stopwatch(msg, content, cmd="stopwatch"):
             await msg.channel.send(embed=discord.Embed(title=str(round(t[0], 2)) + f' {t[1]}'))
         clearFile(tJ)
         json.dump(data, tJ)
+        
 
 async def emoteInfo(msg, content, cmd="emoteinfo"):
     emote = await msg.guild.fetch_emoji(int(content.split(":")[2][:-1]))
@@ -998,7 +999,7 @@ async def hangman(msg, content, cmd="hangman"):
     await msg.author.send(f"you will have 15 seconds to send a word of your choice, and {user.name} will have to guess it in {msg.channel.name}")
     await asyncio.sleep(15)
     async for i in msg.author.dm_channel.history(limit=1):
-        word = i.content.lower()
+        word = i.content
     disp = "".join(["-" if x not in [" ", "," "." "'" '"'] else x for x in word])
     playingHangman[user.id] = {"word": word, "lives": lives, "guessed": [], "disp": disp}
     await msg.channel.send(f'{user.mention} guessing time')
@@ -1120,6 +1121,9 @@ async def hypixelPlayerCount(msg, content, cmd="hypixelpc"):
     soup = bs.BeautifulSoup(request.text, features="html.parser")
     pc = soup.find("div", {"class": "p-header-playNow-count"}).find("b").text
     return await msg.channel.send(pc)
+
+async def mcPlayerInfo(msg, content, cmd="mcPlayerInfo"):
+    pass
 
 async def runCommand(msg, content, cmd, layer=1):
     DOFIRST = f"--{layer} "
@@ -1269,6 +1273,7 @@ async def runCommand(msg, content, cmd, layer=1):
     elif cmd == "doihavecovid": content = await oneLineCmd(msg, "yes" if random.random() < .995 else "no")
     elif cmd == "covid": content = await covid(msg, content)
     elif cmd == "hypixelpc": content = await hypixelPlayerCount(msg, content)
+    elif cmd == "mcplayerinfo": content = await mcPlayerInfo(msg, content)
     elif cmd not in CMDLIST: 
         with open(commandusageFilePath, "r+") as j:
             data = json.load(j)
@@ -1410,10 +1415,10 @@ async def on_message(msg):
         if content in tempGuessed:
             return await msg.channel.send(f'you already said {content}')
         tempGuessed.append(content)
-        if content in tempWord:
+        if content.lower() in tempWord.lower():
             foo = [x for x in tempDisp]
             for n, w in enumerate(tempWord):
-                if content == w:
+                if content.lower() == w.lower():
                     foo[n] = w
             tempDisp = "".join(foo)
         else:
