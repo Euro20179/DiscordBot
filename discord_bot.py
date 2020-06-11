@@ -91,7 +91,14 @@ async def giveXP(msg : discord.Message)->None:
                 required = userInfo["required"]
                 levelUpMessage = userInfo.get("message")
                 if not levelUpMessage: levelUpMessage = '{author} you have leveled up to level {level}, very cool'
-                if xp >= required:				
+                if xp >= required:
+                    with open(moneyDataFilePath, "r+") as j:		
+                        moneyData = json.load(j)
+                        if moneyData.get(str(msg.author.id)):
+                            moneyData[str(msg.author.id)] += int((level + 1) * 2)
+                        else: moneyData[str(msg.author.id)] = int((level + 1) * 2)
+                        clearFile(j)
+                        json.dump(moneyData, j)
                     level += 1; xp //= 2 #gives level; reduces xp
                     if (disp := await formatLevelMessage(msg, levelUpMessage, level)) not in ["none", "None", "null", "Null"]:
                         await msg.channel.send(disp)
@@ -1552,8 +1559,8 @@ async def runCommand(msg, content, cmd, layer=1):
     elif cmd == "shop": content = await shop(msg, content)
     elif cmd in ["buyitem", "buy"]: content = await buyItem(msg, content, cmd=cmd)
     elif cmd in ["inv", "inventory"]: content = await inventory(msg, content, cmd=cmd)
+    elif cmd == "customcmdlist": return await oneLineCmd(msg, "\n".join([f'{x}: {y}' for x, y in CUSTOMCMDS.items()]))
     elif cmd in CUSTOMCMDS.keys(): return await oneLineCmd(msg, CUSTOMCMDS[cmd])
-    elif cmd == "customcmdlist": return await oneLineCmd(msg, "\n".join([(x, y) for x, y in CUSTOMCMDS.items()]))
     elif cmd not in CMDLIST: 
         with open(commandusageFilePath, "r+") as j:
             data = json.load(j)
