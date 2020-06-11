@@ -265,7 +265,7 @@ async def on_message(msg):
                 return await msg.channel.send(f'your reaction time {end - start}')
         elif cmd == "stop":
             if TICDelete(content): await msg.message.delete()
-            Stop = True
+            await stop()
         else: await runCommand(msg, content, cmd)
 
     if playingGuessingGame.get(msg.author.id):

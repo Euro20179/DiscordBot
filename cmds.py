@@ -109,8 +109,10 @@ def isInt(testee : str)->bool:
         return True
     except:	return False
 
-def stop(*args, **kwargs)->None: #similar to how raise StopIteration works, it stops whatever is happening
+async def stop(*args, **kwargs)->None: #similar to how raise StopIteration works, it stops whatever is happening
     global Stop
+    Stop = True
+    await asyncio.sleep(.5)
     Stop = False
     if args: return random.choice(args)
 
@@ -181,7 +183,7 @@ async def spam(msg, messages, message, BlockStop=False):
     global Stop
     for _ in range(int(messages)):
         if Stop and not BlockStop:
-            return await msg.channel.send(stop("Stopped"))
+            return await msg.channel.send(await stop("Stopped"))
         msg = await msg.channel.send(random.choice(message))
         await asyncio.sleep(random.uniform(.7, 1.3))
     return msg
@@ -367,7 +369,7 @@ async def magicBall(msg, content, cmd="8ball"):
 
 async def spamCmd(msg, content, cmd="spam"):
     global Stop
-    if Stop: stop()
+    if Stop: await stop()
     if isBot(msg, client): return "n o"
 
     c = content[len(cmd) + 2:]
@@ -643,7 +645,7 @@ async def rand(msg, content, cmd="rand"):
 
         if isInt(low) and isInt(high):
             while True:
-                if Stop: await msg.channel.send(stop("stopped picking a number"))
+                if Stop: await msg.channel.send(await stop("stopped picking a number"))
                 res = random.randint(int(low), int(high))
                 if Even and res % 2 != 0: continue					
                 if Odd and res % 2 == 0: continue
@@ -875,7 +877,7 @@ async def hexBinOct(msg, content, cmd="hex"):
 
 async def response(msg, content, cmd="response", doFirst=False):
     global Stop
-    if Stop: stop()
+    if Stop: await stop()
     if isBot(msg, client): return "is bot"
     limit = 1000
     mssg = content[len(cmd) + 2:].lower()
@@ -1173,7 +1175,7 @@ async def removeCustomCmd(msg, content, cmd="removecustomcmd"):
 async def deathBattle(msg, users, going, notGoing, responseTime, damageMsgs, healMsgs, embed, first, second):
     global playingDB
     if Stop: 
-        stop("Stopped game")
+        await stop("Stopped game")
         await removeFromList(playingDB, going, notGoing) 
     tempItems = {item["id"]: item["name"].lower() for item in users[going]["items"]} #gets the items + item ids ready
     temp = await msg.channel.send(f"{going.name} attack or heal\nor item (there is no backing out)") #message to say in chat
@@ -1229,7 +1231,7 @@ async def deathBattle(msg, users, going, notGoing, responseTime, damageMsgs, hea
     elif AH == f'stop':
         await removeFromList(playingDB, going, notGoing) 
         await temp.delete()
-        return stop("stopped")
+        return await stop("stopped")
     if not CustomMessage:
         if damage < 0:
             users[going]["health"] -= damage

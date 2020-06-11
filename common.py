@@ -44,3 +44,4 @@ async def reloadCMDSLIST():
         CMDLIST = tuple(cmd for _ in CATS.values() for cmd in _) #gets a list of commands
         CUSTOMCMDS = {cmd["name"]: cmd["desc"] for cmd in CATS["CUSTOM"]}
     return CATS, CMDLIST, CUSTOMCMDS
+
