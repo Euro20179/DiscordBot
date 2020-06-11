@@ -248,14 +248,14 @@ async def cmdUsage(msg, content, cmd="commandusage"):
     top = 10
     if testInContent(content, "-top"):
         top = int(splitContent(content, "-top ")[1].strip())
-        content = splitContent(content, " -top")[0]
+        content = cmd
     if TICDelete(content): 
         await msg.delete()
         content = content.replace(DELETE, "")
     if testInContent(content, "--raw"):
         with open(commandusageFilePath, "rb") as j:
             return await msg.channel.send(file=discord.File(j, commandusageFilePath))
-    with open(commandusageFilePath, "r") as j:
+    with open(commandusageFilePath, "r+") as j:
         data = json.load(j)
         if (split := splitContent(content, cmd, index=1).strip()):
             commandUse = data.get(split)
@@ -265,14 +265,14 @@ async def cmdUsage(msg, content, cmd="commandusage"):
             embed.add_field(name="times", value=commandUse)
             await msg.channel.send(embed=embed)
         else:
-            embed = discord.Embed(title="TOP 10 USED COMMANDS")
             data = {k: v for k, v in sorted(data.items(), key=lambda item: item[1], reverse=True)}
-            n = 1
-            for k in data.keys():
-                if n > top: break
-                embed.add_field(name=n, value=f'{k}: {data[k]}', inline=False)
-                n += 1
-            await msg.channel.send(embed=embed)
+            send = "\n".join([f'{n + 1}: {c[0]}, {c[1]}' for n, c in enumerate(data.items()) if n < top])
+            try:
+                clearFile(j)
+                json.dump(data, j) 
+                return await msg.channel.send(send)
+            except: return await msg.channel.send("too long of a message")
+            
 
 async def iq(msg, content, cmd="iq"):
     iq = random.randint(-3, 200)

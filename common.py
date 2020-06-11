@@ -41,6 +41,6 @@ async def reloadCMDSLIST():
     with open("cmds.json", "r") as cmdsJson:
         data = json.load(cmdsJson)
         CATS = {cat["cat"]: cat["cmds"] for cat in data}
-        CMDLIST = tuple(cmd for cmd in CATS.values()) #gets a list of commands
+        CMDLIST = tuple(cmd for _ in CATS.values() for cmd in _) #gets a list of commands
         CUSTOMCMDS = {cmd["name"]: cmd["desc"] for cmd in CATS["CUSTOM"]}
     return CATS, CMDLIST, CUSTOMCMDS
