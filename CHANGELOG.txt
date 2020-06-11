@@ -1,7 +1,13 @@
-3.7.1
+3.8
 
 ADDITIONS:
 *whohas, gives the members who have a certain role
+*custom cmds
+*help will now send text file if it doesn't fit on embed
+*--file for help will send file, only works for categories
+
+CHANGES:
+*gary types for [covid now
 
 ====================================================================
 3.7 (6/9/2020)

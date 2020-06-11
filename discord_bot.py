@@ -13,7 +13,7 @@ import os
 tracemalloc.start()
 
 DELETE = "--delete"
-VERSION = "3.7"
+VERSION = "3.8"
 Stop = False
 
 playingGuessingGame = {}
@@ -36,6 +36,7 @@ EUROID = 334538784043696130
 with open("cmds.json", "r") as cmdsJson:
     data = json.load(cmdsJson)
     CMDLIST = tuple(cmd for _, i in data.items() for cmd in i.keys() if cmd != "desc") #gets a list of commands
+    CUSTOMCMDS = {name: say for name, say in data["CUSTOM"].items() if name != "desc"}
 
 def isBot(msg, client)->bool:
     return msg.author == client.user or msg.author.bot
@@ -161,6 +162,12 @@ async def hlp(msg, content, cmd="help"):
     cat = splitContent(content, cmd + " ", index=1).upper()
     with open("cmds.json", "r") as j:
         data = json.load(j)
+        SendFile = False
+        print(cat)
+        if testInContent(cat.lower(), "--file"):
+            SendFile = True
+            cat = cat.replace("--FILE", "").strip()
+            print(cat)
         if cat in [c for c in data.keys()] + [""]:
             if not cat: #lists the categories, when none is specified
                 embed = discord.Embed(title="Help (DO HELP CATEGORY TO GET HELP ON THE CATEGORY ITS REALLY NOT THAT HARD PEOPLE)", color=discord.Color(0x00ffe2))
@@ -171,7 +178,19 @@ async def hlp(msg, content, cmd="help"):
                 for command in data[cat].keys():
                     if command == "desc": continue
                     embed.add_field(name=command, value=f'``{command}`` {data[cat][command]["params"]}', inline=False)
-            await msg.channel.send(embed=embed)
+            try: 
+                if SendFile: raise Exception("send file specified")
+                await msg.channel.send(embed=embed)
+                return
+            except:
+                if not cat: cat = "help"
+                with open(f'{cat}.txt', "w") as f:
+                    d = embed.to_dict()
+                    for cmd in d["fields"]:
+                        f.write(f'{cmd["name"]}: {cmd["value"]}\n')
+                with open(f'{cat}.txt', "rb") as f:
+                    await msg.channel.send(file=discord.File(f, f'{cat}.txt'))
+                os.remove(f"whohas{role.name}.txt")
             return cat
 
     with open("cmds.json", "rb") as j:
@@ -775,8 +794,7 @@ async def mostRoles(msg, content, cmd="mostroles"):
 
     sortedKeys = sorted(memberRoles, key=memberRoles.get, reverse=True)
     top = [f'{r}, {memberRoles[r]}' for n, r in enumerate(sortedKeys) if n < top]
-    msg = await msg.channel.send("\n".join(top))
-    return msg
+    return await msg.channel.send("\n".join(top))
 
 async def clear(msg, content, cmd="clear"):
     amnt = int(content[len(cmd) + 2:])
@@ -804,9 +822,7 @@ async def color(msg, content, cmd="color"):
         c = c.replace(DELETE, "")
     if "#" in c:
         color = c.replace("#", "")
-        r = int(color[0:2], 16)
-        g = int(color[2:4], 16)
-        b = int(color[4:], 16)
+        r, g, b = int(color[0:2], 16), int(color[2:4], 16), int(color[4:], 16)
         embed = discord.Embed(title=f'{r} {g} {b}', color=discord.Color(int(color, 16)))
         await msg.channel.send(embed=embed)
     if ", " in c:
@@ -1136,7 +1152,41 @@ async def whoHasRole(msg, content, cmd="hasrole"):
             await msg.channel.send(file=discord.File(f, f'whohas{role.name}.txt'))
         os.remove(f"whohas{role.name}.txt")
 
+async def addCustomCmd(msg, content, cmd="customcmd"):
+    global CMDLIST, CUSTOMCMDS
+    c = splitContent(content, ", ")
+    name = c[0][len(cmd) + 2:].strip()
+    say = c[1]
+    with open("cmds.json", "r+") as j:
+        data = json.load(j)
+        if not data["CUSTOM"].get(name) and name not in CMDLIST:
+            data["CUSTOM"][name] = say
+            await msg.channel.send("added")
+        else: return await msg.channel.send("there is a command with that name already")
+        clearFile(j)
+        json.dump(data, j)
+        CMDLIST = tuple(cmd for _, i in data.items() for cmd in i.keys() if cmd != "desc") #gets a list of commands
+        CUSTOMCMDS = {name: say for name, say in data["CUSTOM"].items() if name != "desc"}
+
+async def removeCustomCmd(msg, content, cmd="removecustomcmd"):
+    global CMDLIST, CUSTOMCMDS
+    perms = msg.author.guild_permissions.manage_messages
+    if not perms:
+        return await msg.channel.send("you cannot do that")
+    name = content[len(cmd) + 2:].strip()
+    with open("cmds.json", "r+") as j:
+        data = json.load(j)
+        if not data["CUSTOM"].get(name):
+            return await msg.channel.send("command not found")
+        del data["CUSTOM"][name]
+        clearFile(j)
+        json.dump(data, j)
+        CMDLIST = tuple(cmd for _, i in data.items() for cmd in i.keys() if cmd != "desc") #gets a list of commands
+        CUSTOMCMDS = {name: say for name, say in data["CUSTOM"].items() if name != "desc"}
+        return await msg.channel.send(f'removed {name}')
+
 async def runCommand(msg, content, cmd, layer=1):
+    global CUSTOMCMDS
     DOFIRST = f"--{layer} "
     if DOFIRST in content:
         c = await runCommand(msg, content.split(DOFIRST)[1], splitContent(content, DOFIRST, index=1).split(" ")[0][1:], layer=layer+1)
@@ -1285,6 +1335,10 @@ async def runCommand(msg, content, cmd, layer=1):
     elif cmd == "covid": content = await covid(msg, content)
     elif cmd == "hypixelpc": content = await hypixelPlayerCount(msg, content)
     elif cmd == "hasrole": content = await whoHasRole(msg, content)
+    elif cmd == "customcmd": content = await addCustomCmd(msg, content)
+    elif cmd in ["removecustomcmd", "delcustomcmd", "dccmd", "rccmd"]: content = await removeCustomCmd(msg, content, cmd=cmd)
+    elif cmd in CUSTOMCMDS.keys():
+            return await oneLineCmd(msg, CUSTOMCMDS[cmd])
     elif cmd not in CMDLIST: 
         with open(commandusageFilePath, "r+") as j:
             data = json.load(j)
@@ -1350,6 +1404,7 @@ async def on_message(msg):
     if content[0] in PREFIX:
 
         cmd = getCmd(content)
+
         if msg.mention_everyone:
             return await msg.channel.send("NO")
 
@@ -1454,5 +1509,5 @@ async def on_voice_state_update(member, before, after):
     elif before.channel and not after.channel:
         role = discord.utils.get(member.guild.roles, name="vc")
         await member.remove_roles(role)
-    
+
 client.run(token)
