@@ -13,7 +13,7 @@ import os
 tracemalloc.start()
 
 DELETE = "--delete"
-VERSION = "3.8"
+VERSION = "4.0"
 Stop = False
 
 playingGuessingGame = {}
@@ -32,15 +32,24 @@ levelingDataFilePath = f"{DISEXT}/levelingData.json"
 commandusageFilePath = f"{DISEXT}/commandusage.json"
 bannedFilePath = f"{DISEXT}/banned.json"
 timersPath = f"{DISEXT}/timers.json"
+moneyDataFilePath = f'{DISEXT}/moneyData.json'
+itemDataFilePath = f'{DISEXT}/itemsData.json'
+itemsFilePath = f'{DISEXT}/items.json'
 EUROID = 334538784043696130
 
-with open("cmds.json", "r") as cmdsJson:
-    data = json.load(cmdsJson)
-    CMDLIST = tuple(cmd for _, i in data.items() for cmd in i.keys() if cmd != "desc") #gets a list of commands
-    CUSTOMCMDS = {name: say for name, say in data["CUSTOM"].items() if name != "desc"}
+async def reloadCMDSLIST():
+    global CATS, CMDLIST, CUSTOMCMDS
+    with open("cmds.json", "r") as cmdsJson:
+        data = json.load(cmdsJson)
+        CATS = {cat["cat"]: cat["cmds"] for cat in data}
+        CMDLIST = tuple(cmd for cmd in CATS.values()) #gets a list of commands
+        CUSTOMCMDS = {cmd["name"]: cmd["desc"] for cmd in CATS["CUSTOM"]}
 
 def isBot(msg, client)->bool:
     return msg.author == client.user or msg.author.bot
+
+async def removeFromList(l, *args):
+    for arg in args: l.remove(arg)
 
 async def formatSeconds(t, layer="seconds", rec=0):
     cases = {"seconds": "minutes", "minutes": "hours", "hours": "days"}
@@ -161,55 +170,49 @@ async def oneLineCmd(msg : discord.Message, say : str, delete=True)->discord.Mes
 
 async def hlp(msg, content, cmd="help"):
     cat = splitContent(content, cmd + " ", index=1).upper()
-    with open("cmds.json", "r") as j:
-        data = json.load(j)
-        SendFile = False
-        print(cat)
-        if testInContent(cat.lower(), "--file"):
-            SendFile = True
-            cat = cat.replace("--FILE", "").strip()
-            print(cat)
-        if cat in [c for c in data.keys()] + [""]:
-            if not cat: #lists the categories, when none is specified
-                embed = discord.Embed(title="Help (DO HELP CATEGORY TO GET HELP ON THE CATEGORY ITS REALLY NOT THAT HARD PEOPLE)", color=discord.Color(0x00ffe2))
-                for category in data.keys():
-                    embed.add_field(name=category, value=data[category].get("desc"))
-            else: #gives the commands for specified category
-                embed = discord.Embed(title=cat, color=discord.Color(0x00ffe2))
-                for command in data[cat].keys():
-                    if command == "desc": continue
-                    embed.add_field(name=command, value=f'``{command}`` {data[cat][command]["params"]}', inline=False)
-            try: 
-                if SendFile: raise Exception("send file specified")
-                await msg.channel.send(embed=embed)
-                return
-            except:
-                if not cat: cat = "help"
-                with open(f'{cat}.txt', "w") as f:
-                    d = embed.to_dict()
-                    for cmd in d["fields"]:
-                        f.write(f'{cmd["name"]}: {cmd["value"]}\n')
-                with open(f'{cat}.txt', "rb") as f:
-                    await msg.channel.send(file=discord.File(f, f'{cat}.txt'))
-                os.remove(f"whohas{role.name}.txt")
-            return cat
+    File = True if testInContent(cat.lower(), "--file") else False
+    if File: cat = cat.replace(" --FILE", "").strip()
+    if not cat and "--file" not in cat.lower():
+        embed = discord.Embed(title="General")
+        with open("cmds.json", "r") as j:
+            data = json.load(j)
+            for cat in data:
+                embed.add_field(name=cat["cat"], value=cat["desc"])
+        await msg.channel.send(embed=embed)
+        return "help"
+    elif cat in CATS:
+        embed = discord.Embed(title=cat, color=discord.Color(0x00ffe2))
+        for cmd in CATS[cat]:
+            embed.add_field(name=f'{cmd["name"]}', value=f'``{cmd["name"]}``  {cmd["params"]}', inline=False)
+        try:
+            if File: raise Exception("file specified") 
+            await msg.channel.send(embed=embed)
+        except:
+            if not cat: cat = "help"
+            with open(f'{cat}.txt', "w") as f:
+                for cmd in CATS[cat]:
+                    f.write(f'{cmd["name"]}  {cmd["params"]}\n\nDescription: {cmd["desc"]}\n\nAliases: {cmd.get("aliases")}\n\n\n\n')
+            with open(f'{cat}.txt', "rb") as f:
+                await msg.channel.send(file=discord.File(f, f'{cat}.txt'))
+            os.remove(f"{cat}.txt")
+        return cat
 
     with open("cmds.json", "rb") as j:
         if testInContent(content, "--all", "--indepth"): #the file
             await msg.channel.send(file=discord.File(j, "cmds.json"))
         else: #by specific commoand
-            data = json.load(j)
             command = splitContent(content, " ", index=1)
             embed = discord.Embed(title=command, color=discord.Color(0x00ffe2))
-            for cat in data.values():
-                if cat == "desc": continue
-                if (cmmd := cat.get(command)):
-                    params = cmmd["params"]
-                    desc = cmmd["desc"]
-                    aliases = cmmd.get("aliases")
-                    text = f'**``{command}``**: ``{params}``\n\n{desc}\n\nALIASES: {aliases}'
-                    break
-            embed.add_field(name="description", value=text)
+            for cmd in CATS.values():
+                for c in cmd:
+                    if c["name"] == command:
+                        params = c["params"]
+                        desc = c["desc"]
+                        aliases = c.get("aliases")
+                        text = f'**``{command}``**: ``{params}``\n\n{desc}\n\nALIASES: {aliases}'
+                        break
+            try: embed.add_field(name="description", value=text)
+            except: return await msg.channel.send('command not found')
             await msg.channel.send(embed=embed)
 
 async def spam(msg, messages, message, BlockStop=False):
@@ -826,6 +829,7 @@ async def color(msg, content, cmd="color"):
         r, g, b = int(color[0:2], 16), int(color[2:4], 16), int(color[4:], 16)
         embed = discord.Embed(title=f'{r} {g} {b}', color=discord.Color(int(color, 16)))
         await msg.channel.send(embed=embed)
+        return ""
     if ", " in c:
         c = c.replace(" ", "")
         color = [int(x) for x in c.split(",")]
@@ -1160,14 +1164,18 @@ async def addCustomCmd(msg, content, cmd="customcmd"):
     say = c[1]
     with open("cmds.json", "r+") as j:
         data = json.load(j)
-        if not data["CUSTOM"].get(name) and name not in CMDLIST:
-            data["CUSTOM"][name] = say
-            await msg.channel.send("added")
-        else: return await msg.channel.send("there is a command with that name already")
+        for cat in data:
+            for cmd in cat["cmds"]:
+                if cmd["name"] == name:
+                    return await msg.channel.send("already a command")
+        for cat in data:
+            if cat["cat"] == "CUSTOM":
+                cat["cmds"].append({"name": name, "desc": say})
+                break
+        await msg.channel.send("added")
         clearFile(j)
         json.dump(data, j)
-        CMDLIST = tuple(cmd for _, i in data.items() for cmd in i.keys() if cmd != "desc") #gets a list of commands
-        CUSTOMCMDS = {name: say for name, say in data["CUSTOM"].items() if name != "desc"}
+    await reloadCMDSLIST()
 
 async def removeCustomCmd(msg, content, cmd="removecustomcmd"):
     global CMDLIST, CUSTOMCMDS
@@ -1177,20 +1185,116 @@ async def removeCustomCmd(msg, content, cmd="removecustomcmd"):
     name = content[len(cmd) + 2:].strip()
     with open("cmds.json", "r+") as j:
         data = json.load(j)
-        if not data["CUSTOM"].get(name):
-            return await msg.channel.send("command not found")
-        del data["CUSTOM"][name]
+        Yes = False
+        for cat in data:
+            for cmd in cat["cmds"]:
+                if cmd["name"] == name:
+                    cat["cmds"].remove(cmd)
+                    Yes = True
+                    break
+            if Yes:
+                break
+        else: return await msg.channel.send("command not found")
         clearFile(j)
         json.dump(data, j)
-        CMDLIST = tuple(cmd for _, i in data.items() for cmd in i.keys() if cmd != "desc") #gets a list of commands
-        CUSTOMCMDS = {name: say for name, say in data["CUSTOM"].items() if name != "desc"}
-        return await msg.channel.send(f'removed {name}')
+    await reloadCMDSLIST()
+    return await msg.channel.send(f'removed {name}')
 
-async def deathBattle(msg, content, cmd="deathbatte"):
+async def deathBattle(msg, users, going, notGoing, responseTime, damageMsgs, healMsgs, embed, first, second):
+    global playingDB
+    if Stop: 
+        stop("Stopped game")
+        await removeFromList(playingDB, going, notGoing) 
+    tempItems = [item["name"].lower() for item in users[going]["items"]]
+    temp = await msg.channel.send(f"{going.name} attack or heal\nor {', '.join(set(tempItems))}")
+    try: 
+        ah = await client.wait_for("message", check=lambda message: message.author.id == going.id and message.content.lower() in ["attack", "a", "h", "heal", "stop"] + tempItems, timeout=responseTime)
+        AH = ah.content.lower()
+    except: 
+        AH = random.choice(["attack", "heal"])
+        await msg.channel.send(f"you waited too long you I picked {AH} for you")
+    CustomMessage = False
+    if AH in tempItems:
+        with open(itemDataFilePath, "r+", encoding="utf-8-sig") as j:
+            data = json.load(j)
+            for item in data[str(going.id)]:
+                if item["name"].lower() == AH.lower():
+                    data[str(going.id)].remove(item)
+            users[going]["items"] = data[str(going.id)]
+            clearFile(j)
+            json.dump(data, j)
+        CustomMessage = True
+        if AH.lower() == "healing":
+            users[going]["health"] += 40
+            damage = -40
+            CustomMessage = f'{going} used healing for 40 health'
+        if AH.lower() == "damage":
+            users[notGoing]["health"] -= 40
+            users[going]["health"] -= 15
+            damage = 40
+            CustomMessage = f'{notGoing} took 40 damage and {going} took 15 damage in the process'
+    if AH in ["attack", "a"]:
+        damage = round(random.gauss(25, 5), 0)
+        await temp.delete()
+    elif AH in ["h", "heal"]: 
+        if users[going]["health"] >= 100:
+            await msg.channel.send("you can't go above the limit\npicking damage")
+            damage = round(random.gauss(25, 5), 0)
+        else:
+            damage = round(random.gauss(-24, 5), 0)
+            await temp.delete()
+    elif AH == f'stop':
+        await removeFromList(playingDB, going, notGoing) 
+        await temp.delete()
+        return stop("stopped")
+    if damage < 0:
+        users[going]["health"] -= damage
+    else:
+        users[notGoing]["health"] -= damage
+    if CustomMessage: move = CustomMessage
+    elif damage > 0: move = random.choice(damageMsgs).replace("{attaker}", going.mention).replace("{aked}", notGoing.mention).replace("{damage}", str(damage))
+    else: move = random.choice(healMsgs).replace("{attaker}", going.mention).replace("{aked}", notGoing.mention).replace("{damage}", str(abs(damage)))
+
+    ED = embed.to_dict()
+    for d in ED["fields"]:
+        if d["name"] == "MOVE":
+            d["value"] = move
+        elif d["name"] == first.name:
+            d["value"] = str(users[first]["health"])
+        elif d["name"] == second.name:
+            d["value"] = str(users[second]["health"])
+    embed = embed.from_dict(ED)
+    await msg.channel.send(embed=embed)
+    if users[second]["health"] <= 0:
+        await removeFromList(playingDB, going, notGoing) 
+        with open(moneyDataFilePath, "r+") as j:
+            data = json.load(j)
+            if data.get(str(first.id)):
+                data[str(first.id)] += abs(users[second]["health"])
+            else: data[str(first.id)] = abs(users[second]["health"])
+            clearFile(j)
+            json.dump(data, j)
+        await msg.channel.send(f'{first.name} has won!\nthey earned {abs(users[second]["health"])}')
+    elif users[first]["health"] <= 0:
+        await removeFromList(playingDB, going, notGoing) 
+        with open(moneyDataFilePath, "r+") as j:
+            data = json.load(j)
+            if data.get(str(second.id)):
+                data[str(second.id)] += abs(users[first]["health"])
+            else: data[str(second.id)] = abs(users[first]["health"])
+            clearFile(j)
+            json.dump(data, j)
+        await msg.channel.send(f'{second.name} has won!\nthey earned {abs(users[first]["health"])}')
+    else:
+        if going == first:
+            await deathBattle(msg, users, second, first, responseTime, damageMsgs, healMsgs, embed, first, second)
+        else: await deathBattle(msg, users, first, second, responseTime, damageMsgs, healMsgs, embed, first, second)
+
+async def INIT_deathBattle(msg, content, cmd="deathbatte"):
     global Stop, playingDB
     if Stop: Stop = False
     embed = discord.Embed(title="BATTLE")
-    responseTime = 8.0
+    responseTime = random.uniform(8, 10)
     if testInContent(content, " -t"):
         responseTime = float(splitContent(content, "-t ", index=1))
         content = splitContent(content, " -t")[0]
@@ -1204,113 +1308,93 @@ async def deathBattle(msg, content, cmd="deathbatte"):
         b1 = data[str(msg.author.id)]["level"] // 3
         if data.get(str(user2.id)):
             b2 = data[str(user2.id)]["level"] // 3
-        else:
-            b2 = 0
+        else: b2 = 0
     first = random.choice([msg.author, user2])
     second = msg.author if first == user2 else user2
     playingDB.append(first)
     playingDB.append(second)
-    users = {msg.author: {"user": msg.author, "health": 100 + b1},
-             user2: {"user": user2, "health": 100 + b2}}
+    with open(itemDataFilePath, "r", encoding="utf-8-sig") as j:
+        data = json.load(j)
+        if (items := data.get(str(msg.author.id))):
+            i1 = items
+        else: i1 = []
+        if (items := data.get(str(user2.id))):
+            i2 = items
+        else: i2 = []
+    users = {msg.author: {"user": msg.author, "health": 100 + b1, "items": i1},
+             user2: {"user": user2, "health": 100 + b2, "items": i2}}
     embed.add_field(name="MOVE", value="START", inline=False)
     for user in users.values():
         embed.add_field(name=user["user"].name, value=user["health"])
-    turn = first
-    Over = False
-    damageMsgs = ["{attaker} punched {aked} for {damage}", "{attaker} fireballed {aked} for {damage}", "{attaker} summoned a meteor and it hit {aked} for {damage}"]
+    damageMsgs = ["{attaker} punched {aked} for {damage}", "{attaker} fireballed {aked} for {damage}", "{attaker} summoned a meteor and it hit {aked} for {damage}", "{aked} was unconsious and a pickle came FLYING at {aked} they took {damage} damage"]
     healMsgs = ["{attaker} was healed for {damage}", "{attaker} was blessed with {damage} extra health"]
     await msg.channel.send(embed=embed)    
-    while True:
-        if Stop: 
-            stop("Stopped game")
-            playingDB.remove(first)
-            playingDB.remove(second)
-            break
-        if turn == first and not Over:
-            temp = await msg.channel.send(f"{first.name} attack or heal")
-            try: 
-                ah = await client.wait_for("message", check=lambda message: message.author.id == first.id or message.content == f'stop', timeout=responseTime)
-                AH = ah.content.lower()
-            except: 
-                AH = random.choice(["attack", "heal"])
-                await msg.channel.send(f"you waited too long you I picked {AH} for you")
-            if AH in ["attack", "a"]:
-                damage = round(random.gauss(25, 5), 0)
-                await temp.delete()
-            elif AH in ["h", "heal"]: 
-                if users[first]["health"] >= 100:
-                    await msg.channel.send("you can't go above the limit\npicking damage")
-                    damage = round(random.gauss(25, 5), 0)
-                else:
-                    damage = round(random.gauss(-26, 5), 0)
-                    await temp.delete()
-            elif AH == f'stop':
-                playingDB.remove(first)
-                playingDB.remove(second)
-                await temp.delete()
-                return stop("stopped")
-            else: pass
-            if damage < 0:
-                users[first]["health"] -= damage
-            else:
-                users[second]["health"] -= damage
-            if damage > 0: move = random.choice(damageMsgs).replace("{attaker}", first.mention).replace("{aked}", second.mention).replace("{damage}", str(damage))
-            else: move = random.choice(healMsgs).replace("{attaker}", first.mention).replace("{aked}", second.mention).replace("{damage}", str(abs(damage)))
-            turn = second
-            Over = True
-        elif turn == second and not Over:
-            temp = await msg.channel.send(f"{second.name} attack or heal")
-            try: 
-                ah = await client.wait_for("message", check=lambda message: message.author == second or message.content == f'stop', timeout=responseTime)
-                AH = ah.content.lower()
-            except: 
-                AH = random.choice(["attack", "heal"])
-                await msg.channel.send(f"you waited too long you I picked {AH} for you")
-            if AH in ["attack", "a"]:
-                damage = round(random.gauss(25, 5), 0)
-                await temp.delete()
-            elif AH in ["h", "heal"]:
-                if users[second]["health"] >= 100:
-                    await msg.channel.send("you can't go above the limit\npicking damage")
-                    damage = round(random.gauss(25, 5), 0)
-                else:
-                    damage = round(random.gauss(-25, 6), 0)
-                    await temp.delete()
-            elif AH == f'stop':
-                playingDB.remove(first)
-                playingDB.remove(second)
-                await temp.delete()
-                return stop("stopped")
-            else: pass
-            if damage < 0:
-                users[second]["health"] -= damage
-            else:
-                users[first]["health"] -= damage
-            turn = first
-            if damage > 0: move = random.choice(damageMsgs).replace("{aked}", second.mention).replace("{attaker}", first.mention).replace("{damage}", str(damage))
-            else: move = random.choice(healMsgs).replace("{aked}", second.mention).replace("{attaker}", first.mention).replace("{damage}", str(abs(damage)))
-            Over = True
-        ED = embed.to_dict()
-        for d in ED["fields"]:
-            if d["name"] == "MOVE":
-                d["value"] = move
-            elif d["name"] == first.name:
-                d["value"] = str(users[first]["health"])
-            elif d["name"] == second.name:
-                d["value"] = str(users[second]["health"])
-        embed = embed.from_dict(ED)
+    await deathBattle(msg, users, first, second, responseTime, damageMsgs, healMsgs, embed, first, second)
+    
+async def mmoney(msg, content, cmd="mmoney"):
+    user = await getUserInContent(msg, content, cmd)
+    with open(moneyDataFilePath, "r") as j:
+        data = json.load(j)
+        return await msg.channel.send(f'{user.name} has €{data.get(str(user.id))}')
+
+async def shop(msg, content, cmd="shop"):
+    with open(itemsFilePath, "r") as j:
+        data = json.load(j)
+        embed = discord.Embed(title="Items", color=discord.Color(0x00ff00))
+        for item in data:
+            embed.add_field(name=item["name"], value=f'Description: {item["desc"]}\nCost: €{item["cost"]}', inline=False)
         await msg.channel.send(embed=embed)
-        if users[second]["health"] <= 0:
-            playingDB.remove(first)
-            playingDB.remove(second)
-            return await msg.channel.send(first.name + " has won!")
-        elif users[first]["health"] <= 0:
-            playingDB.remove(first)
-            playingDB.remove(second)
-            return await msg.channel.send(second.name + " has won!")
-        Over = False
-    playingDB.remove(first)
-    playingDB.remove(second)
+
+async def buyItem(msg, content, cmd="buyitem"):
+    buying = splitContent(content, cmd)[1].strip()
+    with open(moneyDataFilePath, "r") as j:
+        data = json.load(j)
+        money = data.get(str(msg.author.id))
+        if not money: return await msg.channel.send("you have no money")
+    with open(itemsFilePath, "r") as j:
+        data = json.load(j)
+        for item in data:
+            if item["name"].lower() == buying.lower():
+                forPurchase = item
+                break
+        else: return await msg.channel.send("did not find item")
+    if money < forPurchase["cost"]: return await msg.channel.send("you don't have enough money")
+    else:
+        money -= forPurchase["cost"]
+        with open(moneyDataFilePath, "r+") as j:
+            data = json.load(j)
+            data[str(msg.author.id)] = money
+            clearFile(j)
+            json.dump(data, j)
+        with open(itemDataFilePath, "r+", encoding="utf-8-sig") as j2:
+            data = json.load(j2)
+            l = data.get(str(msg.author.id))
+            if l: l.append(forPurchase)
+            else: l = [forPurchase]
+            data[str(msg.author.id)] = l
+            clearFile(j2)
+            json.dump(data, j2)
+        return await msg.channel.send(f'bought {forPurchase["name"]}')
+
+async def inventory(msg, content, cmd="inv"):
+    with open(itemDataFilePath, "r+", encoding="utf-8-sig") as j:
+        data = json.load(j)
+        if (items := data.get(str(msg.author.id))):
+            embed = discord.Embed(name=f"{msg.author.name}'s inventory", color=msg.author.color)
+            s = {item["name"] for item in items}
+            count = {item: 0 for item in s}
+            used = []
+            for item in items: count[item["name"]] += 1
+            for item in items:
+                if item in used:
+                    continue
+                used.append(item)
+                embed.add_field(name=f'{item["name"]} * {count[item["name"]]}', value=f'{item["name"]}: {item["desc"]}',)
+            await msg.channel.send(embed=embed)
+            del used
+            del count
+            del s
+        else: return await msg.channel.send("none")
 
 async def runCommand(msg, content, cmd, layer=1):
     global CUSTOMCMDS
@@ -1400,7 +1484,7 @@ async def runCommand(msg, content, cmd, layer=1):
     elif cmd in ["randomface","randface", "rface"]: content = await randomFace(msg, content, cmd=cmd)
     elif cmd in ["ttc", "thetroycommand"]: content = await oneLineCmd(msg, random.choice(("meow", "7", "**7**", "*7*", "mo", ":TiredPuffle:")))
     elif cmd in ["thepenguincommand", "tpc", "thewavecommand", "twc"]: content = await oneLineCmd(msg, random.choice(("very nice!", "very cool!", ":TiredPuffle:")))
-    elif cmd in ["mmoney", "mymoney"]: content = await oneLineCmd(msg, f'{str(msg.author).split("#")[0]}, you have ${random.randint(0, 1000000)}')
+    elif cmd in ["mmoney", "mymoney", "money", "bal"]: content = await mmoney(msg, content, cmd)
     elif cmd in ["ucodechar", "unicodechar"]: content = await unicodeChar(msg, content, cmd=cmd)
     elif cmd == "serveremote": content = await serverEmote(msg, content)
     elif cmd == "doesnothing": content = await writeRoles(msg, content)
@@ -1464,9 +1548,12 @@ async def runCommand(msg, content, cmd, layer=1):
     elif cmd == "hasrole": content = await whoHasRole(msg, content)
     elif cmd == "customcmd": content = await addCustomCmd(msg, content)
     elif cmd in ["removecustomcmd", "delcustomcmd", "dccmd", "rccmd"]: content = await removeCustomCmd(msg, content, cmd=cmd)
-    elif cmd in ["db", "deathbattle"]: content = await deathBattle(msg, content, cmd=cmd)
-    elif cmd in CUSTOMCMDS.keys():
-            return await oneLineCmd(msg, CUSTOMCMDS[cmd])
+    elif cmd in ["db", "deathbattle"]: content = await INIT_deathBattle(msg, content, cmd=cmd)
+    elif cmd == "shop": content = await shop(msg, content)
+    elif cmd in ["buyitem", "buy"]: content = await buyItem(msg, content, cmd=cmd)
+    elif cmd in ["inv", "inventory"]: content = await inventory(msg, content, cmd=cmd)
+    elif cmd in CUSTOMCMDS.keys(): return await oneLineCmd(msg, CUSTOMCMDS[cmd])
+    elif cmd == "customcmdlist": return await oneLineCmd(msg, "\n".join([(x, y) for x, y in CUSTOMCMDS.items()]))
     elif cmd not in CMDLIST: 
         with open(commandusageFilePath, "r+") as j:
             data = json.load(j)
@@ -1482,6 +1569,7 @@ async def on_ready():
     await client.change_presence(activity=discord.Game(f'version: {VERSION}'))
     blueCheck = discord.utils.get(client.emojis, name="Blue_check")
     neutral = discord.utils.get(client.emojis, name="neutral")
+    await reloadCMDSLIST()
     print(f"ONLINE\nversion: {VERSION}")
 
 @client.event

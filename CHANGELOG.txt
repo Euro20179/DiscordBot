@@ -1,16 +1,31 @@
-3.8
+4.0 (6/11/2020)
 
 ADDITIONS:
 *whohas, gives the members who have a certain role
 *custom cmds
+    *customcmd will add a custom cmd
+    *customcmdslist will list custom cmds
 *help will now send text file if it doesn't fit on embed
 *--file for help will send file, only works for categories
 *deathbattle, fight someone to the DEATH
     *rules: you start with 100 health + your level / 3 rounded
     *each turn you can either attack or heal
+*economy, you get money by winning deathbattles
+*items
+    *you can buy items with money, and the items are used in deathbattles
+    *shop, gives a list of the items available for purchase
+    *buyitem
+    *inv
 
 CHANGES:
 *gary types for [covid now
+*mmoney now actually shows your balance
+
+FIXES:
+*color will no longer say "not a vaild role" when given a hex code
+
+TECHNICAL:
+*complete help overhaul
 
 ====================================================================
 3.7 (6/9/2020)
