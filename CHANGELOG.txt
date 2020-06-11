@@ -5,6 +5,9 @@ ADDITIONS:
 *custom cmds
 *help will now send text file if it doesn't fit on embed
 *--file for help will send file, only works for categories
+*deathbattle, fight someone to the DEATH
+    *rules: you start with 100 health + your level / 3 rounded
+    *each turn you can either attack or heal
 
 CHANGES:
 *gary types for [covid now

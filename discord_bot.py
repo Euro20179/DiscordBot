@@ -19,6 +19,7 @@ Stop = False
 playingGuessingGame = {}
 runningStopwatch = {}
 playingHangman = {}
+playingDB = []
 
 #CONSTS
 PREFIX = "]"
@@ -146,7 +147,7 @@ def userHasRole(msg : discord.Message, *roles)->bool:
     return True if discord.utils.find(lambda r: r.name in roles, msg.author.roles) else False
 
 def findMember(c : str, msg : discord.Message)->discord.Member:
-    return discord.utils.find(lambda m: str(m.id) == c or str(m.display_name.split("#")[0].lower()) == c.lower(), msg.guild.members)
+    return discord.utils.find(lambda m: str(m.id) == c or str(m.display_name.split("#")[0].lower()) == c.lower() or m.name.lower() == c.lower(), msg.guild.members)
 
 def clearFile(f)->None:
     f.seek(0)
@@ -986,7 +987,7 @@ async def typeFor(msg, content, cmd="type"):
         return await msg.channel.send("sorry thats too long")
     async with msg.channel.typing():
         await asyncio.sleep(timeToType)
-    return str(timeToType)
+    return await msg.channel.send(f'slept for {timeToType} seconds')
 
 async def sendBlank(msg, content, cmd="sendblank"):
     amnt = 5
@@ -1185,6 +1186,128 @@ async def removeCustomCmd(msg, content, cmd="removecustomcmd"):
         CUSTOMCMDS = {name: say for name, say in data["CUSTOM"].items() if name != "desc"}
         return await msg.channel.send(f'removed {name}')
 
+async def deathBattle(msg, content, cmd="deathbatte"):
+    global Stop, playingDB
+    if Stop: Stop = False
+    embed = discord.Embed(title="BATTLE")
+    user2 = await getUserInContent(msg, content, cmd)
+    if msg.author in playingDB:
+        return await msg.channel.send(f'{msg.author.name} is in a game')
+    if user2 in playingDB:
+        return await msg.channel.send(f'{user2.name} is in a game')
+    with open(levelingDataFilePath, "r") as j:
+        data = json.load(j)
+        b1 = data[str(msg.author.id)]["level"] // 3
+        if data.get(str(user2.id)):
+            b2 = data[str(user2.id)]["level"] // 3
+        else:
+            b2 = 0
+    first = random.choice([msg.author, user2])
+    second = msg.author if first == user2 else user2
+    playingDB.append(first)
+    playingDB.append(second)
+    users = {msg.author: {"user": msg.author, "health": 100 + b1},
+             user2: {"user": user2, "health": 100 + b2}}
+    embed.add_field(name="MOVE", value="START", inline=False)
+    for user in users.values():
+        embed.add_field(name=user["user"].name, value=user["health"])
+    turn = first
+    Over = False
+    damageMsgs = ["{attaker} punched {aked} for {damage}", "{attaker} fireballed {aked} for {damage}", "{attaker} summoned a meteor and it hit {aked} for {damage}"]
+    healMsgs = ["{attaker} was healed for {damage}", "{attaker} was blessed with {damage} extra health"]
+    await msg.channel.send(embed=embed)    
+    while True:
+        if Stop: 
+            stop("Stopped game")
+            playingDB.remove(first)
+            playingDB.remove(second)
+            break
+        if turn == first and not Over:
+            temp = await msg.channel.send(f"{first.name} attack or heal")
+            try: 
+                ah = await client.wait_for("message", check=lambda message: message.author.id == first.id or message.content == f'stop', timeout=8.0)
+                AH = ah.content.lower()
+            except: 
+                AH = random.choice(["attack", "heal"])
+                await msg.channel.send(f"you waited too long you I picked {AH} for you")
+            if AH in ["attack", "a"]:
+                damage = round(random.gauss(25, 5), 0)
+                await temp.delete()
+            elif AH in ["h", "heal"]: 
+                if users[first]["health"] >= 100:
+                    await msg.channel.send("you can't go above the limit\npicking damage")
+                    damage = round(random.gauss(25, 5), 0)
+                else:
+                    damage = round(random.gauss(-26, 5), 0)
+                    await temp.delete()
+            elif AH == f'stop':
+                playingDB.remove(first)
+                playingDB.remove(second)
+                await temp.delete()
+                return stop("stopped")
+            else: damage = round(random.gauss(25, 5), 0)
+            if damage < 0:
+                users[first]["health"] -= damage
+            else:
+                users[second]["health"] -= damage
+            if damage > 0: move = random.choice(damageMsgs).replace("{attaker}", second.mention).replace("{aked}", first.mention).replace("{damage}", str(damage))
+            else: move = random.choice(healMsgs).replace("{attaker}", second.mention).replace("{aked}", first.mention).replace("{damage}", str(abs(damage)))
+            turn = second
+            Over = True
+        elif turn == second and not Over:
+            temp = await msg.channel.send(f"{second.name} attack or heal")
+            try: 
+                ah = await client.wait_for("message", check=lambda message: message.author == second or message.content == f'stop', timeout=8.0)
+                AH = ah.content.lower()
+            except: 
+                AH = random.choice(["attack", "heal"])
+                await msg.channel.send(f"you waited too long you I picked {AH} for you")
+            if AH in ["attack", "a"]:
+                damage = round(random.gauss(25, 5), 0)
+                await temp.delete()
+            elif AH in ["h", "heal"]:
+                if users[second]["health"] >= 100:
+                    await msg.channel.send("you can't go above the limit\npicking damage")
+                    damage = round(random.gauss(25, 5), 0)
+                else:
+                    damage = round(random.gauss(-25, 6), 0)
+                    await temp.delete()
+            elif AH == f'stop':
+                playingDB.remove(first)
+                playingDB.remove(second)
+                await temp.delete()
+                return stop("stopped")
+            else: damage = round(random.gauss(25, 5), 0)
+            if damage < 0:
+                users[second]["health"] -= damage
+            else:
+                users[first]["health"] -= damage
+            turn = first
+            if damage > 0: move = random.choice(damageMsgs).replace("{aked}", second.mention).replace("{attaker}", first.mention).replace("{damage}", str(damage))
+            else: move = random.choice(healMsgs).replace("{aked}", second.mention).replace("{attaker}", first.mention).replace("{damage}", str(abs(damage)))
+            Over = True
+        ED = embed.to_dict()
+        for d in ED["fields"]:
+            if d["name"] == "MOVE":
+                d["value"] = move
+            elif d["name"] == first.name:
+                d["value"] = str(users[first]["health"])
+            elif d["name"] == second.name:
+                d["value"] = str(users[second]["health"])
+        embed = embed.from_dict(ED)
+        await msg.channel.send(embed=embed)
+        if users[second]["health"] <= 0:
+            playingDB.remove(first)
+            playingDB.remove(second)
+            return await msg.channel.send(first.name + " has won!")
+        elif users[first]["health"] <= 0:
+            playingDB.remove(first)
+            playingDB.remove(second)
+            return await msg.channel.send(second.name + " has won!")
+        Over = False
+    playingDB.remove(first)
+    playingDB.remove(second)
+
 async def runCommand(msg, content, cmd, layer=1):
     global CUSTOMCMDS
     DOFIRST = f"--{layer} "
@@ -1337,6 +1460,7 @@ async def runCommand(msg, content, cmd, layer=1):
     elif cmd == "hasrole": content = await whoHasRole(msg, content)
     elif cmd == "customcmd": content = await addCustomCmd(msg, content)
     elif cmd in ["removecustomcmd", "delcustomcmd", "dccmd", "rccmd"]: content = await removeCustomCmd(msg, content, cmd=cmd)
+    elif cmd in ["db", "deathbattle"]: content = await deathBattle(msg, content, cmd=cmd)
     elif cmd in CUSTOMCMDS.keys():
             return await oneLineCmd(msg, CUSTOMCMDS[cmd])
     elif cmd not in CMDLIST: 
