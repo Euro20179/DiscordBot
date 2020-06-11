@@ -1190,6 +1190,10 @@ async def deathBattle(msg, content, cmd="deathbatte"):
     global Stop, playingDB
     if Stop: Stop = False
     embed = discord.Embed(title="BATTLE")
+    responseTime = 8.0
+    if testInContent(content, " -t"):
+        responseTime = float(splitContent(content, "-t ", index=1))
+        content = splitContent(content, " -t")[0]
     user2 = await getUserInContent(msg, content, cmd)
     if msg.author in playingDB:
         return await msg.channel.send(f'{msg.author.name} is in a game')
@@ -1225,7 +1229,7 @@ async def deathBattle(msg, content, cmd="deathbatte"):
         if turn == first and not Over:
             temp = await msg.channel.send(f"{first.name} attack or heal")
             try: 
-                ah = await client.wait_for("message", check=lambda message: message.author.id == first.id or message.content == f'stop', timeout=8.0)
+                ah = await client.wait_for("message", check=lambda message: message.author.id == first.id or message.content == f'stop', timeout=responseTime)
                 AH = ah.content.lower()
             except: 
                 AH = random.choice(["attack", "heal"])
@@ -1245,19 +1249,19 @@ async def deathBattle(msg, content, cmd="deathbatte"):
                 playingDB.remove(second)
                 await temp.delete()
                 return stop("stopped")
-            else: damage = round(random.gauss(25, 5), 0)
+            else: pass
             if damage < 0:
                 users[first]["health"] -= damage
             else:
                 users[second]["health"] -= damage
-            if damage > 0: move = random.choice(damageMsgs).replace("{attaker}", second.mention).replace("{aked}", first.mention).replace("{damage}", str(damage))
-            else: move = random.choice(healMsgs).replace("{attaker}", second.mention).replace("{aked}", first.mention).replace("{damage}", str(abs(damage)))
+            if damage > 0: move = random.choice(damageMsgs).replace("{attaker}", first.mention).replace("{aked}", second.mention).replace("{damage}", str(damage))
+            else: move = random.choice(healMsgs).replace("{attaker}", first.mention).replace("{aked}", second.mention).replace("{damage}", str(abs(damage)))
             turn = second
             Over = True
         elif turn == second and not Over:
             temp = await msg.channel.send(f"{second.name} attack or heal")
             try: 
-                ah = await client.wait_for("message", check=lambda message: message.author == second or message.content == f'stop', timeout=8.0)
+                ah = await client.wait_for("message", check=lambda message: message.author == second or message.content == f'stop', timeout=responseTime)
                 AH = ah.content.lower()
             except: 
                 AH = random.choice(["attack", "heal"])
@@ -1277,7 +1281,7 @@ async def deathBattle(msg, content, cmd="deathbatte"):
                 playingDB.remove(second)
                 await temp.delete()
                 return stop("stopped")
-            else: damage = round(random.gauss(25, 5), 0)
+            else: pass
             if damage < 0:
                 users[second]["health"] -= damage
             else:
