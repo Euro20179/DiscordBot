@@ -24,6 +24,7 @@ ADDITIONS:
 CHANGES:
 *gary types for [covid now
 *mmoney now actually shows your balance
+*--rawlevels is now just --raw
 
 FIXES:
 *color will no longer say "not a vaild role" when given a hex code
