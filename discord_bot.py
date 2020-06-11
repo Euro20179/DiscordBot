@@ -274,10 +274,15 @@ async def levelMessage(msg, content, cmd="lvlmsg"):
         userData = data[str(msg.author.id)]
         if testInContent(changeTo, "--see", "--get", "--s", "--g"):
             return await msg.channel.send(await formatLevelMessage(msg, userData["message"], userData["level"]))
-        await msg.channel.send("type y to change message, type n to cancel")
-        try: yn = (await client.wait_for('message', check=lambda message: message.author == msg.author, timeout=60.0)).content.lower()
-        except asyncio.TimeoutError: yn = "n"
-        if yn in ("yes", "y"):
+        Yes = testInContent(changeTo, "--y", "--f")
+        if not Yes:
+            await msg.channel.send("type y to change message, type n to cancel")
+            try: yn = (await client.wait_for('message', check=lambda message: message.author == msg.author, timeout=60.0)).content.lower()
+            except asyncio.TimeoutError: yn = "n"
+        else: 
+            changeTo = changeTo.replace(Yes, "")
+            yn = "y"
+        if yn in ("yes", "y") or Yes:
             userData["message"] = changeTo
             clearFile(j)
             json.dump(data, j)

@@ -2,6 +2,7 @@
 
 ADDITIONS:
 *whohas, gives the members who have a certain role
+*--f/--y will skip past the y/n question in [lvlmsg
 *custom cmds
     *customcmd will add a custom cmd
     *customcmdslist will list custom cmds
