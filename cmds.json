@@ -291,7 +291,7 @@
    "BOTINFO": {
         "desc": "like info but only about the bot",
         "commandusage": {
-            "params": "[command] (--delete)",
+            "params": "[command] (-top <top>) (--delete)",
             "desc": "gives the times [command] was used, defaults to the top 10"
         },
         "commandcount": {

@@ -16,7 +16,7 @@ import bs4 as bs
 tracemalloc.start()
 
 DELETE = "--delete"
-VERSION = "3.7"
+VERSION = "3.7.1"
 Stop = False
 
 playingGuessingGame = {}
@@ -258,6 +258,10 @@ async def levelMessage(msg, content, cmd="lvlmsg"):
         else: return await msg.channel.send("CANCELLED")
 
 async def cmdUsage(msg, content, cmd="commandusage"):
+    top = 10
+    if testInContent(content, "-top"):
+        top = int(splitContent(content, "-top ")[1].strip())
+        content = splitContent(content, " -top")[0]
     if TICDelete(content): 
         await msg.delete()
         content = content.replace(DELETE, "")
@@ -275,10 +279,10 @@ async def cmdUsage(msg, content, cmd="commandusage"):
             await msg.channel.send(embed=embed)
         else:
             embed = discord.Embed(title="TOP 10 USED COMMANDS")
-            n = 1
             data = {k: v for k, v in sorted(data.items(), key=lambda item: item[1], reverse=True)}
+            n = 1
             for k in data.keys():
-                if n > 10: break
+                if n > top: break
                 embed.add_field(name=n, value=f'{k}: {data[k]}', inline=False)
                 n += 1
             await msg.channel.send(embed=embed)
