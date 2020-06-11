@@ -1175,34 +1175,47 @@ async def deathBattle(msg, users, going, notGoing, responseTime, damageMsgs, hea
     if Stop: 
         stop("Stopped game")
         await removeFromList(playingDB, going, notGoing) 
-    tempItems = [item["name"].lower() for item in users[going]["items"]]
-    temp = await msg.channel.send(f"{going.name} attack or heal\nor {', '.join(set(tempItems))}")
-    try: 
-        ah = await client.wait_for("message", check=lambda message: message.author.id == going.id and message.content.lower() in ["attack", "a", "h", "heal", "stop"] + tempItems, timeout=responseTime)
+    tempItems = {item["id"]: item["name"].lower() for item in users[going]["items"]} #gets the items + item ids ready
+    temp = await msg.channel.send(f"{going.name} attack or heal\nor item (there is no backing out)") #message to say in chat
+    try: #waiting for option
+        ah = await client.wait_for("message", check=lambda message: message.author.id == going.id and message.content.lower() in ["attack", "a", "h", "heal", "stop", "item"], timeout=responseTime)
         AH = ah.content.lower()
-    except: 
+    except: #didnt' pick in time
         AH = random.choice(["attack", "heal"])
         await msg.channel.send(f"you waited too long you I picked {AH} for you")
     CustomMessage = False
-    if AH in tempItems:
-        with open(itemDataFilePath, "r+", encoding="utf-8-sig") as j:
-            data = json.load(j)
-            for item in data[str(going.id)]:
-                if item["name"].lower() == AH.lower():
-                    data[str(going.id)].remove(item)
-            users[going]["items"] = data[str(going.id)]
-            clearFile(j)
-            json.dump(data, j)
-        CustomMessage = True
-        if AH.lower() == "healing":
-            users[going]["health"] += 40
-            damage = -40
-            CustomMessage = f'{going} used healing for 40 health'
-        if AH.lower() == "damage":
-            users[notGoing]["health"] -= 40
-            users[going]["health"] -= 15
-            damage = 40
-            CustomMessage = f'{notGoing} took 40 damage and {going} took 15 damage in the process'
+    if AH == "item":
+        newLine = "\n"
+        if not users[going]["items"]:
+            await msg.channel.send("you don't have items")
+            AH = "attack"
+        else: 
+            await msg.channel.send(f"which item (say a number)\n{newLine.join([f'{idd}: {name}' for idd, name in tempItems.items()])}") #says list of items user has
+            try:
+                i = await client.wait_for("message", check=lambda message: message.author.id == going.id and message.content.lower().isnumeric()) #waits for pick
+                i = int(i.content.lower())
+            except: #waited too long
+                await msg.channel.send("you waited to long, picking 1")
+                i = 1
+            with open(itemDataFilePath, "r+", encoding="utf-8-sig") as j: #removes from inventory
+                data = json.load(j)
+                for item in data[str(going.id)]:
+                    if item["id"] == i:
+                        AH = item["name"]
+                        data[str(going.id)].remove(item)
+                users[going]["items"] = data[str(going.id)]
+                clearFile(j)
+                json.dump(data, j)
+            CustomMessage = True
+            if AH.lower() == "healing":
+                users[going]["health"] += 40
+                damage = -40
+                CustomMessage = f'{going} used healing for 40 health'
+            if AH.lower() == "duel-edged sword":
+                users[notGoing]["health"] -= 40
+                users[going]["health"] -= 15
+                damage = 40
+                CustomMessage = f'{notGoing} took 40 damage and {going} took 15 damage in the process'
     if AH in ["attack", "a"]:
         damage = round(random.gauss(25, 5), 0)
         await temp.delete()
@@ -1217,10 +1230,11 @@ async def deathBattle(msg, users, going, notGoing, responseTime, damageMsgs, hea
         await removeFromList(playingDB, going, notGoing) 
         await temp.delete()
         return stop("stopped")
-    if damage < 0:
-        users[going]["health"] -= damage
-    else:
-        users[notGoing]["health"] -= damage
+    if not CustomMessage:
+        if damage < 0:
+            users[going]["health"] -= damage
+        else:
+            users[notGoing]["health"] -= damage
     if CustomMessage: move = CustomMessage
     elif damage > 0: move = random.choice(damageMsgs).replace("{attaker}", going.mention).replace("{aked}", notGoing.mention).replace("{damage}", str(damage))
     else: move = random.choice(healMsgs).replace("{attaker}", going.mention).replace("{aked}", notGoing.mention).replace("{damage}", str(abs(damage)))
@@ -1235,6 +1249,9 @@ async def deathBattle(msg, users, going, notGoing, responseTime, damageMsgs, hea
             d["value"] = str(users[second]["health"])
     embed = embed.from_dict(ED)
     await msg.channel.send(embed=embed)
+    if users[second]["health"] <= 0 and users[first]["health"] <= 0:
+        await removeFromList(playingDB, going, notGoing)
+        return await msg.channel.send("ITS A DRAW!")
     if users[second]["health"] <= 0:
         await removeFromList(playingDB, going, notGoing) 
         with open(moneyDataFilePath, "r+") as j:
@@ -1244,7 +1261,7 @@ async def deathBattle(msg, users, going, notGoing, responseTime, damageMsgs, hea
             else: data[str(first.id)] = abs(users[second]["health"])
             clearFile(j)
             json.dump(data, j)
-        await msg.channel.send(f'{first.name} has won!\nthey earned {abs(users[second]["health"])}')
+        return await msg.channel.send(f'{first.name} has won!\nthey earned {abs(users[second]["health"])}')
     elif users[first]["health"] <= 0:
         await removeFromList(playingDB, going, notGoing) 
         with open(moneyDataFilePath, "r+") as j:
@@ -1254,7 +1271,7 @@ async def deathBattle(msg, users, going, notGoing, responseTime, damageMsgs, hea
             else: data[str(second.id)] = abs(users[first]["health"])
             clearFile(j)
             json.dump(data, j)
-        await msg.channel.send(f'{second.name} has won!\nthey earned {abs(users[first]["health"])}')
+        return await msg.channel.send(f'{second.name} has won!\nthey earned {abs(users[first]["health"])}')
     else:
         if going == first:
             await deathBattle(msg, users, second, first, responseTime, damageMsgs, healMsgs, embed, first, second)
@@ -1312,39 +1329,44 @@ async def shop(msg, content, cmd="shop"):
         data = json.load(j)
         embed = discord.Embed(title="Items", color=discord.Color(0x00ff00))
         for item in data:
-            embed.add_field(name=item["name"], value=f'Description: {item["desc"]}\nCost: €{item["cost"]}', inline=False)
+            embed.add_field(name=f'{item["id"]}: {item["name"]}', value=f'Description: {item["desc"]}\nCost: €{item["cost"]}', inline=False)
         await msg.channel.send(embed=embed)
 
 async def buyItem(msg, content, cmd="buyitem"):
     buying = splitContent(content, cmd)[1].strip()
-    with open(moneyDataFilePath, "r") as j:
-        data = json.load(j)
-        money = data.get(str(msg.author.id))
-        if not money: return await msg.channel.send("you have no money")
-    with open(itemsFilePath, "r") as j:
-        data = json.load(j)
-        for item in data:
-            if item["name"].lower() == buying.lower():
-                forPurchase = item
-                break
-        else: return await msg.channel.send("did not find item")
-    if money < forPurchase["cost"]: return await msg.channel.send("you don't have enough money")
-    else:
-        money -= forPurchase["cost"]
-        with open(moneyDataFilePath, "r+") as j:
+    if testInContent(content, ", "):
+        split = splitContent(buying, ", ")
+        amnt = int(split[1])
+        buying = split[0]
+    else: amnt = 1
+    for _ in range(amnt):
+        with open(moneyDataFilePath, "r") as j:
             data = json.load(j)
-            data[str(msg.author.id)] = money
-            clearFile(j)
-            json.dump(data, j)
-        with open(itemDataFilePath, "r+", encoding="utf-8-sig") as j2:
-            data = json.load(j2)
-            l = data.get(str(msg.author.id))
-            if l: l.append(forPurchase)
-            else: l = [forPurchase]
-            data[str(msg.author.id)] = l
-            clearFile(j2)
-            json.dump(data, j2)
-        return await msg.channel.send(f'bought {forPurchase["name"]}')
+            money = data.get(str(msg.author.id))
+            if not money: return await msg.channel.send("you have no money")
+        with open(itemsFilePath, "r") as j:
+            data = json.load(j)
+            for item in data:
+                if item["name"].lower() == buying.lower() or item["id"] == int(buying):
+                    forPurchase = item; break
+            else: return await msg.channel.send("did not find item")
+        if money < forPurchase["cost"]: return await msg.channel.send("you don't have enough money")
+        else:
+            money -= forPurchase["cost"]
+            with open(moneyDataFilePath, "r+") as j:
+                data = json.load(j)
+                data[str(msg.author.id)] = money
+                clearFile(j)
+                json.dump(data, j)
+            with open(itemDataFilePath, "r+", encoding="utf-8-sig") as j2:
+                data = json.load(j2)
+                l = data.get(str(msg.author.id))
+                if l: l.append(forPurchase)
+                else: l = [forPurchase]
+                data[str(msg.author.id)] = l
+                clearFile(j2)
+                json.dump(data, j2)
+    await msg.channel.send(f'bought {forPurchase["name"]}')
 
 async def inventory(msg, content, cmd="inv"):
     with open(itemDataFilePath, "r+", encoding="utf-8-sig") as j:
