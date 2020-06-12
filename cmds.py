@@ -1164,6 +1164,11 @@ async def deathBattle(msg, users, going, notGoing, responseTime, damageMsgs, hea
                 users[going]["health"] += 40
                 damage = -40
                 CustomMessage = f'{going} used healing for 40 health'
+            if AH.lower() == "RANDOM HEAL!!":
+                add = random.randint(0, 100)
+                users[going]["health"] += add
+                damage = -add
+                CustomMessage = f'{going} RANOMLY HEALED and got {add} more health!!!!11!1!1'
             if AH.lower() == "duel-edged sword":
                 users[notGoing]["health"] -= 40
                 users[going]["health"] -= 15
