@@ -495,7 +495,8 @@
       {
         "name": "customcmd",
         "params": "<cmd name>, <say>",
-        "desc": "when [<cmd name> is typed it'll say <say>"
+        "desc": "when [<cmd name> is typed it'll say <say>\n{content} will replace with the message of who did cmd",
+        "aliases": ["accmd", "customcommand"]
       },
       {
         "name": "alphabet",
