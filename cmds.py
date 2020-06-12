@@ -574,6 +574,14 @@ async def coin(msg, content, cmd="coin"):
         if bet == "t": bet = "tails"
         if bet == "h": bet = "heads"
         color, title = (0x00ff00, "YOU WIN") if res == bet else (0xff0000, "YOU LOSE")
+        if res == bet: 
+            add = random.randint(1, 3)
+            title += f"\nYOU WON {add}"
+            await addMoney(msg.author, add)
+        else: 
+            add = random.randint(-3, -1)
+            title += f'\nYOU LOSE {abs(add)}'
+            await addMoney(msg.author, add)
     else:  color = 0xff00ff if res == "heads" else 0x0000ff
     
     embed = discord.Embed(title=title, color=color)

@@ -1,3 +1,9 @@
+4.0.5 (6/13/2020)
+
+ADDITIONS:
+*betting on coin gives you 1-3 if you win and takes away 1-3 if you lose
+
+====================================================================
 4.0.4.1 (6/13/2020)
 
 FIXES:
