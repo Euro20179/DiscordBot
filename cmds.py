@@ -1096,7 +1096,10 @@ async def addCustomCmd(msg, content, cmd="customcmd"):
         for cmd in data:
             if cmd["name"] == name:
                 return await msg.channel.send("already a command")
-        data.append({"name": name, "desc": say, "params": None})
+        params = ""
+        if "{content}" in say:
+            params += " <message>"
+        data.append({"name": name, "desc": say, "params": params})
         await msg.channel.send("added")
         clearFile(j)
         json.dump(data, j)

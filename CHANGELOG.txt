@@ -1,4 +1,11 @@
-4.1 (6/12/2020)
+4.0.2 (6/13/2020)
+
+ADDITIONS:
+*customcmds now have formatting
+    *{content} will replace {content} with a paramater
+
+====================================================================
+4.0.1 (6/12/2020)
 
 ADDITIONS:
 *life or death
