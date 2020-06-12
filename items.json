@@ -3,12 +3,12 @@
         "id": 1,
         "name": "healing",
         "desc": "heals you for 40 health",
-        "cost": 50
+        "cost": 90
     },
     {
         "id": 2,
         "name": "Duel-Edged Sword",
         "desc": "deals 40 damage to the opponent, and 15 to you",
-        "cost": 80
+        "cost": 180
     }
 ]
