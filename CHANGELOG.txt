@@ -1,3 +1,13 @@
+4.0-rc3 (6/11/2020)
+
+CHANGES:
+*custom cmds are on their own file
+
+FIXES:
+*help custom
+*help --file
+
+====================================================================
 4.0-rc2 (6/11/2020)
 
 FIXES:

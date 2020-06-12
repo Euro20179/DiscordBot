@@ -141,7 +141,8 @@ async def hlp(msg, content, cmd="help"):
     CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
     cat = splitContent(content, cmd + " ", index=1).upper()
     File = True if testInContent(cat.lower(), "--file") else False
-    if File: cat = cat.replace(" --FILE", "").strip()
+    if File: 
+        cat = cat.replace(" --FILE", "").strip()
     if not cat and "--file" not in cat.lower():
         embed = discord.Embed(title="General")
         with open("cmds.json", "r") as j:
@@ -152,8 +153,12 @@ async def hlp(msg, content, cmd="help"):
         return "help"
     elif cat in CATS:
         embed = discord.Embed(title=cat, color=discord.Color(0x00ffe2))
-        for cmd in CATS[cat]:
-            embed.add_field(name=f'{cmd["name"]}', value=f'``{cmd["name"]}``  {cmd["params"]}', inline=False)
+        if cat == "CUSTOM":
+            for cmd in CATS[cat]:
+                embed.add_field(name=f'{cmd["name"]}', value=f'``{cmd["name"]}``  {cmd["desc"]}')
+        else:
+            for cmd in CATS[cat]:
+                embed.add_field(name=f'{cmd["name"]}', value=f'``{cmd["name"]}``  {cmd["params"]}', inline=False)
         try:
             if File: raise Exception("file specified") 
             await msg.channel.send(embed=embed)
@@ -1086,16 +1091,12 @@ async def addCustomCmd(msg, content, cmd="customcmd"):
     c = splitContent(content, ", ")
     name = c[0][len(cmd) + 2:].strip()
     say = c[1]
-    with open("cmds.json", "r+") as j:
+    with open(customcmdsFilePath, "r+") as j:
         data = json.load(j)
-        for cat in data:
-            for cmd in cat["cmds"]:
-                if cmd["name"] == name:
-                    return await msg.channel.send("already a command")
-        for cat in data:
-            if cat["cat"] == "CUSTOM":
-                cat["cmds"].append({"name": name, "desc": say})
-                break
+        for cmd in data:
+            if cmd["name"] == name:
+                return await msg.channel.send("already a command")
+        data.append({"name": name, "desc": say, "params": None})
         await msg.channel.send("added")
         clearFile(j)
         json.dump(data, j)
@@ -1107,15 +1108,14 @@ async def removeCustomCmd(msg, content, cmd="removecustomcmd"):
     if not perms:
         return await msg.channel.send("you cannot do that")
     name = content[len(cmd) + 2:].strip()
-    with open("cmds.json", "r+") as j:
+    with open(customcmdsFilePath, "r+") as j:
         data = json.load(j)
         Yes = False
-        for cat in data:
-            for cmd in cat["cmds"]:
-                if cmd["name"] == name:
-                    cat["cmds"].remove(cmd)
-                    Yes = True
-                    break
+        for cmd in data:
+            if cmd["name"] == name:
+                data.remove(cmd)
+                Yes = True
+                break
             if Yes: break
         else: return await msg.channel.send("command not found")
         clearFile(j)

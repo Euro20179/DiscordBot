@@ -11,7 +11,7 @@ import bs4 as bs
 import os
 
 DELETE = "--delete"
-VERSION = "4.0-rc2"
+VERSION = "4.0-rc3"
 Stop = False
 
 playingGuessingGame = {}
@@ -27,6 +27,7 @@ BASICINFO = {"level": 1, "xp": 0, "required": 1000, "lastTalked": 0, "message": 
 mballresponseFilePath = f"{DISEXT}/mballresponse.txt"
 levelingDataFilePath = f"{DISEXT}/levelingData.json"
 commandusageFilePath = f"{DISEXT}/commandusage.json"
+customcmdsFilePath = f'{DISEXT}/customcmds.json'
 bannedFilePath = f"{DISEXT}/banned.json"
 timersPath = f"{DISEXT}/timers.json"
 moneyDataFilePath = f'{DISEXT}/moneyData.json'
@@ -40,7 +41,13 @@ tracemalloc.start()
 async def reloadCMDSLIST():
     with open("cmds.json", "r") as cmdsJson:
         data = json.load(cmdsJson)
+        with open(customcmdsFilePath, "r") as customJson:
+            foo = json.load(customJson)
+            for cat in data:
+                if cat["cat"] == "CUSTOM":
+                    cat["cmds"] = foo
         CATS = {cat["cat"]: cat["cmds"] for cat in data}
         CMDLIST = tuple(cmd for _ in CATS.values() for cmd in _) #gets a list of commands
         CUSTOMCMDS = {cmd["name"]: cmd["desc"] for cmd in CATS["CUSTOM"]}
+        print(CUSTOMCMDS)
     return CATS, CMDLIST, CUSTOMCMDS
