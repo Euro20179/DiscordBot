@@ -256,6 +256,7 @@ async def on_message(msg):
         if cmd == "guessinggame":
             c = splitContent(content, cmd)[1]
             low, high, lives = 1, 100, 5
+            Bet = True if testInContent(content, "--bet") else False
             if len(c) > 0:
                 c = c.split(" ")
                 c.pop(0)
@@ -263,7 +264,7 @@ async def on_message(msg):
                 high = int(c[1])
                 if len(c) >= 3: lives = int(c[2])
             ans = random.randint(low, high)
-            playingGuessingGame[msg.author.id] = {"ans": ans, "lives": lives, "startLives": lives}
+            playingGuessingGame[msg.author.id] = {"ans": ans, "lives": lives, "startLives": lives, "bet": Bet}
             return await msg.channel.send("guess")
 
         elif cmd == "reactiontime":
@@ -290,6 +291,7 @@ async def on_message(msg):
         ans = playingGuessingGame[msg.author.id]["ans"]
         lives = playingGuessingGame[msg.author.id]["lives"]
         startLives = playingGuessingGame[msg.author.id]["startLives"]
+        Bet = playingGuessingGame[msg.author.id]["bet"]
         if c in ["stop", "giveup", "cancel"]:
             await msg.channel.send(embed=discord.Embed(title=f'{msg.author.display_name} YOU LOSE\nTHE ANSWER WAS {ans}', color=discord.Color.from_rgb(100, 0, 0)))
             del playingGuessingGame[msg.author.id]
@@ -297,12 +299,15 @@ async def on_message(msg):
             lives -= 1
             if lives <= 0:
                 if int(content) == ans: await msg.channel.send(embed=discord.Embed(title=f'{msg.author.display_name} ITS A DRAW', color=discord.Color.from_rgb(155, 155, 155)))
-                else: await msg.channel.send(embed=discord.Embed(title=f'{msg.author.display_name} YOU LOSE\nTHE ANSWER WAS {ans}\nYOU LOOSE {(int(ans) // startLives) // 2}', color=discord.Color.from_rgb(255, 0, 0)))
+                else: 
+                    say = f"YOU LOSE\nTHE ANSWER WAS {ans}" if not Bet else f'YOU LOSE\nTHE ANSWER WAS {ans}\nYOU LOSE {(int(ans) // startLives) // 2}'
+                    await msg.channel.send(embed=discord.Embed(title=say, color=discord.Color.from_rgb(255, 0, 0)))
                 del playingGuessingGame[msg.author.id]
                 await addMoney(msg.author, (int(ans) // startLives) // 2)
                 return str(ans)
             elif int(content) == ans:
-                await msg.channel.send(embed=discord.Embed(title=f"{msg.author.display_name} YOU WIN\nWITH {lives} LIVES LEFT\nYou earned {(int(ans) // startLives)}", color=discord.Color.from_rgb(0, 255, 0)))
+                say = f"YOU WIN\nWITH {lives} LIVES LEFT" if not Bet else f'YOU WIN\nWITH {lives} LIVES LEFT\nYou earned {(int(ans) // startLives)}'
+                await msg.channel.send(embed=discord.Embed(title=say, color=discord.Color.from_rgb(0, 255, 0)))
                 del playingGuessingGame[msg.author.id]
                 await addMoney(msg.author, (int(ans) // startLives))
                 return str(ans)

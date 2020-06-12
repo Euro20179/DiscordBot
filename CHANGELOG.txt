@@ -1,3 +1,9 @@
+4.0.8
+
+CHANGES:
+*you have to specify wheter or not you want to bet in guesinggame with --bet
+
+====================================================================
 4.0.7
 
 CHANGES:

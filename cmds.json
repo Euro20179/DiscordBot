@@ -235,7 +235,7 @@
     "cmds": [
       {
         "name": "guessinggame",
-        "params": "[low <high>] [lives]",
+        "params": "[low <high>] [lives] (--bet)",
         "desc": "you have to guess the random number from low to high, defaults to 1 through 100"
       },
       {
