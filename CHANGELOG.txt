@@ -1,8 +1,18 @@
+4.0 (6/12/2020)
+
+ADDITIONS:
+*random heal item, heals a random amount from 0 to 100
+
+CHANGES:
+*healing is now 70 instead of 90 coins
+
+EVERYING IN 4.0-rc1 through 4.0-rc5
+
+====================================================================
 4.0-rc5 (6/11/2020)
 
 CHANGES:
 *shop items are much more expensive
-
 
 ====================================================================
 4.0-rc4 (6/11/2020)
