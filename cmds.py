@@ -524,10 +524,10 @@ async def startRPS(msg, content, cmd="rps"):
 
     if resp1 in opps.keys() and resp2 in opps.keys():
         if opps[resp2] == resp1:
-            if user2.mention != user1.mention: await addMoney(user2, random.randint(1, 10))
+            if user2.mention != user1.mention: await addMoney(user2, random.randint(1, 5))
             return await msg.channel.send(f'{user2.mention} WINS')
         elif opps[resp1] == resp2:
-            if user2.mention != user1.mention: await addMoney(user1, random.randint(1, 10))
+            if user2.mention != user1.mention: await addMoney(user1, random.randint(1, 5))
             return await msg.channel.send(f'{user1.mention} WINS')
         else: await msg.channel.send("ITS A DRAW")
     else: await msg.channel.send("either someone spelled something wrong, or someone isn't playing by the rules")

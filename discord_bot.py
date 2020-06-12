@@ -297,8 +297,9 @@ async def on_message(msg):
             lives -= 1
             if lives <= 0:
                 if int(content) == ans: await msg.channel.send(embed=discord.Embed(title=f'{msg.author.display_name} ITS A DRAW', color=discord.Color.from_rgb(155, 155, 155)))
-                else: await msg.channel.send(embed=discord.Embed(title=f'{msg.author.display_name} YOU LOSE\nTHE ANSWER WAS {ans}', color=discord.Color.from_rgb(255, 0, 0)))
+                else: await msg.channel.send(embed=discord.Embed(title=f'{msg.author.display_name} YOU LOSE\nTHE ANSWER WAS {ans}\nYOU LOOSE {(int(ans) // startLives) // 2}', color=discord.Color.from_rgb(255, 0, 0)))
                 del playingGuessingGame[msg.author.id]
+                await addMoney(msg.author, (int(ans) // startLives) // 2)
                 return str(ans)
             elif int(content) == ans:
                 await msg.channel.send(embed=discord.Embed(title=f"{msg.author.display_name} YOU WIN\nWITH {lives} LIVES LEFT\nYou earned {(int(ans) // startLives)}", color=discord.Color.from_rgb(0, 255, 0)))
