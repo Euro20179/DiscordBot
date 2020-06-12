@@ -263,7 +263,7 @@ async def on_message(msg):
                 high = int(c[1])
                 if len(c) >= 3: lives = int(c[2])
             ans = random.randint(low, high)
-            playingGuessingGame[msg.author.id] = {"ans": ans, "lives": lives}
+            playingGuessingGame[msg.author.id] = {"ans": ans, "lives": lives, "startLives": lives}
             return await msg.channel.send("guess")
 
         elif cmd == "reactiontime":
@@ -288,6 +288,7 @@ async def on_message(msg):
         c = msg.content
         ans = playingGuessingGame[msg.author.id]["ans"]
         lives = playingGuessingGame[msg.author.id]["lives"]
+        startLives = playingGuessingGame[msg.author.id]["startLives"]
         if c in ["stop", "giveup", "cancel"]:
             await msg.channel.send(embed=discord.Embed(title=f'{msg.author.display_name} YOU LOSE\nTHE ANSWER WAS {ans}', color=discord.Color.from_rgb(100, 0, 0)))
             del playingGuessingGame[msg.author.id]
@@ -297,11 +298,13 @@ async def on_message(msg):
                 if int(content) == ans: await msg.channel.send(embed=discord.Embed(title=f'{msg.author.display_name} ITS A DRAW', color=discord.Color.from_rgb(155, 155, 155)))
                 else: await msg.channel.send(embed=discord.Embed(title=f'{msg.author.display_name} YOU LOSE\nTHE ANSWER WAS {ans}', color=discord.Color.from_rgb(255, 0, 0)))
                 del playingGuessingGame[msg.author.id]
+                return str(ans)
             elif int(content) == ans:
-                await msg.channel.send(embed=discord.Embed(title=f"{msg.author.display_name} YOU WIN\nWITH {lives} LIVES LEFT", color=discord.Color.from_rgb(0, 255, 0)))
+                await msg.channel.send(embed=discord.Embed(title=f"{msg.author.display_name} YOU WIN\nWITH {lives} LIVES LEFT\nYou earned {(int(ans) // lives)}", color=discord.Color.from_rgb(0, 255, 0)))
                 del playingGuessingGame[msg.author.id]
-                return ""
-            await msg.channel.send("too high" if int(c) > ans else "too low")
+                if ans <= 100 and startLives <= 7: await addMoney(msg.author, int(ans))
+                return str(ans)
+            await msg.channel.send(f"{msg.author.mention} too high" if int(c) > ans else f"{msg.author.mention} too low")
         else: await msg.channel.send("NaN")
         playingGuessingGame[msg.author.id]["lives"] = lives
         await msg.channel.send(f"guess\nyou have {lives} lives left")

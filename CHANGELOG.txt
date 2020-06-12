@@ -2,6 +2,8 @@
 
 ADDITIONS:
 *duplicator, duplicates the message you give it
+*you get money from rps now (only if you don't play yourself)
+*you get money from guessinggame (only if it's from 1-100 and you start with 7 or less lives)
 
 ====================================================================
 4.0.3 (6/12/2020)

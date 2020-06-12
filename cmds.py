@@ -136,6 +136,15 @@ def clearFile(f)->None:
 async def oneLineCmd(msg : discord.Message, say : str, delete=True)->discord.Message:
     return await msg.channel.send(say)
 
+async def addMoney(member, amnt):
+    with open(moneyDataFilePath, "r+") as j:
+        data = json.load(j)
+        if (d := data.get(str(member.id))):
+            d += amnt
+        else: data[str(member.id)] = amnt
+        clearFile(j)
+        json.dump(data, j)
+
 async def hlp(msg, content, cmd="help"):
     global CATS, CMDLIST, CUSTOMCMDS
     CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
@@ -511,8 +520,10 @@ async def startRPS(msg, content, cmd="rps"):
 
     if resp1 in opps.keys() and resp2 in opps.keys():
         if opps[resp2] == resp1:
+            if user2.mention != user1.mention: await addMoney(user2, random.randint(1, 10))
             return await msg.channel.send(f'{user2.mention} WINS')
         elif opps[resp1] == resp2:
+            if user2.mention != user1.mention: await addMoney(user1, random.randint(1, 10))
             return await msg.channel.send(f'{user1.mention} WINS')
         else: await msg.channel.send("ITS A DRAW")
     else: await msg.channel.send("either someone spelled something wrong, or someone isn't playing by the rules")
@@ -1219,23 +1230,11 @@ async def deathBattle(msg, users, going, notGoing, responseTime, damageMsgs, hea
         return await msg.channel.send("ITS A DRAW!")
     if users[second]["health"] <= 0:
         await removeFromList(playingDB, going, notGoing) 
-        with open(moneyDataFilePath, "r+") as j:
-            data = json.load(j)
-            if data.get(str(first.id)):
-                data[str(first.id)] += abs(users[second]["health"])
-            else: data[str(first.id)] = abs(users[second]["health"])
-            clearFile(j)
-            json.dump(data, j)
+        await addMoney(first, abs(users[second]["health"]))
         return await msg.channel.send(f'{first.name} has won!\nthey earned {abs(users[second]["health"])}')
     elif users[first]["health"] <= 0:
         await removeFromList(playingDB, going, notGoing) 
-        with open(moneyDataFilePath, "r+") as j:
-            data = json.load(j)
-            if data.get(str(second.id)):
-                data[str(second.id)] += abs(users[first]["health"])
-            else: data[str(second.id)] = abs(users[first]["health"])
-            clearFile(j)
-            json.dump(data, j)
+        await addMoney(second, abs(users[first]["health"]))
         return await msg.channel.send(f'{second.name} has won!\nthey earned {abs(users[first]["health"])}')
     else:
         if going == first:
