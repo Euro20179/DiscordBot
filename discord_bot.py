@@ -3,11 +3,13 @@ from cmds import *
 
 async def runCommand(msg, content, cmd, layer=1):
     global CUSTOMCMDS, CATS, CMDLIST
-    DOFIRST = f"--{layer} "
+    DOFIRST = f'--{layer} '
     if DOFIRST in content:
-        c = await runCommand(msg, content.split(DOFIRST)[1], splitContent(content, DOFIRST, index=1).split(" ")[0][1:], layer=layer+1)
+        c = await runCommand(msg, content.split(DOFIRST)[1], splitContent(content, DOFIRST, index=1).split(" ")[0][1:], layer=layer + 1)
         content = f'{content.split(f" {DOFIRST}")[0]} {c.content}'
+        msg = c
         await c.delete()
+        layer += 1
 
     with open(commandusageFilePath, "r+") as j:
         data = json.load(j)
@@ -18,7 +20,7 @@ async def runCommand(msg, content, cmd, layer=1):
         
     if cmd == "timeit":
         start = time.time()
-        await runCommand(msg, content.replace('[timeit ', ""), splitContent(content, "timeit ", index=1).split(" ")[0][1:])
+        await runCommand(msg, content.replace(f'{PREFIX}timeit ', ""), splitContent(content, "timeit ", index=1).split(" ")[0][1:])
         return await msg.channel.send(time.time() - start)
 
     elif cmd == "ENDPLS" and msg.author.id == EUROID:
@@ -160,6 +162,7 @@ async def runCommand(msg, content, cmd, layer=1):
     elif cmd == "shop": content = await shop(msg, content)
     elif cmd in ["buyitem", "buy"]: content = await buyItem(msg, content, cmd=cmd)
     elif cmd in ["inv", "inventory"]: content = await inventory(msg, content, cmd=cmd)
+    elif cmd == "fortnite": content = await oneLineCmd(msg, "play minecraft instead")
     elif cmd == "customcmdlist": 
         CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
         content = await oneLineCmd(msg, "\n".join([f'{x}: {y}' for x, y in CUSTOMCMDS.items()]))
@@ -230,6 +233,15 @@ async def on_message(msg):
     if content[0] in PREFIX:
 
         cmd = getCmd(content)
+        WriteToFile = False
+
+        if TICDelete(content): 
+            content = content.replace(" --delete", "")
+            await msg.delete()
+
+        if testInContent(content, ">>> "):
+            WriteToFile = splitContent(content, ">>> ")[1]
+            content = content.replace(f">>> {WriteToFile}", "")
 
         if msg.mention_everyone:
             return await msg.channel.send("NO")
@@ -266,7 +278,10 @@ async def on_message(msg):
         elif cmd == "stop":
             if TICDelete(content): await msg.message.delete()
             await stop()
-        else: await runCommand(msg, content, cmd)
+        else: 
+            content = await runCommand(msg, content, cmd)
+            if WriteToFile:
+                await writeToFile(msg, content.content, WriteToFile)
 
     if playingGuessingGame.get(msg.author.id):
         c = msg.content

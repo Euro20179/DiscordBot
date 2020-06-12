@@ -21,19 +21,25 @@ ADDITIONS:
     *buyitem
     *inv
 *commandusage will now also sort the file
+*fortnite cmd
+*>> writes the "answer" of the command to a file
+*a few more cmds work with >> and --1
 
 CHANGES:
 *gary types for [covid now
 *mmoney now actually shows your balance
 *--rawlevels is now just --raw
 *semi-fixed -top for commandusage
+*xp degrade starts after 2 weeks
 
 FIXES:
 *color will no longer say "not a vaild role" when given a hex code
 *commandusage now says the correct "top <top> commands"
+*--1
 
 TECHNICAL:
 *complete help overhaul
+*seperated files
 
 ====================================================================
 3.7.1 (6/11/2020):

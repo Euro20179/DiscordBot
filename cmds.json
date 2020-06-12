@@ -35,6 +35,21 @@
     ]
   },
   {
+    "cat": "MOSTCMDS",
+    "desc": "works for most if not all commands",
+    "cmds": [
+      {"name": "--delete",
+      "params": null,
+      "desc": "deletes the message"
+      },
+      {
+        "name": ">>>",
+        "params": "<filename>",
+        "desc": "writes the answer to <filename>"
+      }
+    ]
+  },
+  {
     "cat": "HELP",
     "desc": "help",
     "cmds": [
@@ -60,7 +75,7 @@
       },
       {
         "name": "top",
-        "params": "[top] (--delete)",
+        "params": "[top] ",
         "desc": "gives the top 10 on the leveling leaderboard\nif to is specified gives the top [top]",
         "aliases": [
           "leaderboard",
@@ -89,12 +104,12 @@
       },
       {
         "name": "sendblank",
-        "params": "[amount], (--delete)",
+        "params": "[amount], ",
         "desc": "sends a [amount] lines of blank messages, defaults to 5"
       },
       {
         "name": "echo",
-        "params": "<message> (--e) (--delete)",
+        "params": "<message> (--e) ",
         "desc": "sends <message> and deletes your message\n--e embeds it\n--delete doesn't delete your message"
       },
       {
@@ -107,12 +122,12 @@
       },
       {
         "name": "spam",
-        "params": "<amount> <message> (--delete) OR (-random <op1> <op2>)",
+        "params": "<amount> <message>  OR (-random <op1> <op2>)",
         "desc": "spams <message> <amount> times\n-random sends op1 or op2 randomly each time"
       },
       {
         "name": "randomface",
-        "params": "(--delete) (--1)",
+        "params": " (--1)",
         "desc": "sends a random face ie: :]",
         "aliases": [
           "rface"
@@ -120,7 +135,7 @@
       },
       {
         "name": "thewavecommand",
-        "params": "(--delete)",
+        "params": null,
         "desc": "says something wave would",
         "aliases": [
           "twc",
@@ -130,7 +145,7 @@
       },
       {
         "name": "thetroycommand",
-        "params": "(--delete)",
+        "params": null,
         "desc": "says something troy would say",
         "aliases": [
           "ttc"
@@ -138,7 +153,7 @@
       },
       {
         "name": "unicodechar",
-        "params": "[amount] (--delete) (--1) (-sep)",
+        "params": "[amount]  (--1) (-sep)",
         "desc": "sends [amount] of unicode chars, defaults to 1",
         "aliases": [
           "ucodechar"
@@ -156,7 +171,7 @@
       },
       {
         "name": "upperlower",
-        "params": "<message> (--delete) (--1)",
+        "params": "<message>  (--1)",
         "desc": "sends <message> BuT lIkE tHiS",
         "aliases": [
           "ul"
@@ -164,12 +179,12 @@
       },
       {
         "name": "flush",
-        "params": "<message> (--delete)",
+        "params": "<message> ",
         "desc": "flushes <message> down the toilet"
       },
       {
         "name": "longmessage",
-        "params": "(--delete)",
+        "params": null,
         "desc": "sends a long message"
       },
       {
@@ -184,17 +199,17 @@
       },
       {
         "name": "sanity",
-        "params": "<message> (--delete) (-r) (--1)",
+        "params": "<message>  (-r) (--1)",
         "desc": "gives the sanity of <message>\n-r rounds the decimal"
       },
       {
         "name": "family",
-        "params": "(--delete)",
+        "params": null,
         "desc": "sends a family tree"
       },
       {
         "name": "reverse",
-        "params": "<message> (--delete)",
+        "params": "<message> ",
         "desc": "reverses <message>"
       },
       {
@@ -204,7 +219,7 @@
       },
       {
         "name": "iq",
-        "params": "[message] (--1) (--delete)",
+        "params": "[message] (--1) ",
         "desc": "gives the iq of message, if not message, you"
       }
     ]
@@ -254,7 +269,7 @@
       },
       {
         "name": "bal",
-        "params": "[user] (--delete)",
+        "params": "[user] ",
         "desc": "your money",
         "aliases": [
           "mmoney",
@@ -293,12 +308,12 @@
       },
       {
         "name": "coin",
-        "params": "(-bet <h/t>) (--delete)",
+        "params": "(-bet <h/t>) ",
         "desc": "flips a coin, if bet is specified it'll say if you won or lost"
       },
       {
         "name": "rand",
-        "params": "<low> <high> [round] (--even) (-odd) (--delete) (--1)",
+        "params": "<low> <high> [round] (--even) (-odd)  (--1)",
         "desc": "picks a random number from <low> to <high>\nif either is a decimal it'll give a decimal rounded to [round] defaults to no round\nif --odd or --even it'll be an odd or even number"
       }
     ]
@@ -314,7 +329,7 @@
       },
       {
         "name": "calc",
-        "params": "<equation> (--delete)",
+        "params": "<equation> ",
         "desc": "gives the answer to <equation>\nsome things will not work as intended ie:\n ** is power instead of ^"
       },
       {
@@ -345,7 +360,7 @@
     "cmds": [
       {
         "name": "customcmdlist",
-        "params": "(--delete)",
+        "params": null,
         "desc": "sends a list of the custom cmds"
       },
       {
@@ -365,27 +380,27 @@
       },
       {
         "name": "messageinfo",
-        "params": "[message id] [channel where mesage is] (--delete)",
+        "params": "[message id] [channel where mesage is] ",
         "desc": "gets mesage info on the message you just sent, or on message id\nif the message id isn't in the current channel specify which chanenl the message is from"
       },
       {
         "name": "userinfo",
-        "params": "[user] (--delete)",
+        "params": "[user] ",
         "desc": "gets info on user"
       },
       {
         "name": "serverinfo",
-        "params": "(--delete)",
+        "params": null,
         "desc": "gets info on the server"
       },
       {
         "name": "roleinfo",
-        "params": "[role] (--delete)",
+        "params": "[role] ",
         "desc": "gets info on <role>"
       },
       {
         "name": "rolecount",
-        "params": "[member] (--delete) (--showroles)",
+        "params": "[member]  (--showroles)",
         "desc": "gives the role count of [member] defaults to you\n--showroles shows the roles"
       },
       {
@@ -398,7 +413,7 @@
       },
       {
         "name": "8brlist",
-        "params": "(--delete)",
+        "params": null,
         "desc": "sends the text file with all 8ball responses",
         "aliases": [
           "mballreplylist",
@@ -413,7 +428,7 @@
       },
       {
         "name": "color",
-        "params": "[role] OR [color <r, g, b>] (--delete)",
+        "params": "[role] OR [color <r, g, b>] ",
         "desc": "gives the color of [role], or the hex color of <r, g, b>"
       },
       {
@@ -443,22 +458,22 @@
     "cmds": [
       {
         "name": "commandusage",
-        "params": "[command] (--delete)",
+        "params": "[command] ",
         "desc": "gives the times [command] was used, defaults to the top 10"
       },
       {
         "name": "commandcount",
-        "params": "(--delete)",
+        "params": null,
         "desc": "gives the total number of commands"
       },
       {
         "name": "changes",
-        "params": "[version] (--nlatest) (--dms) (--delete)",
+        "params": "[version] (--nlatest) (--dms) ",
         "desc": "gives the latest changes, if version is specified it gives that version's changes\n-nlatest gives the text file\n--dms sends to dms"
       },
       {
         "name": "version",
-        "params": "(--delete)",
+        "params": null,
         "desc": "gives the bot version"
       }
     ]
@@ -469,8 +484,13 @@
     "cmds": [
       {
         "name": "ping",
-        "params": "(--delete)",
+        "params": null,
         "desc": "gives the bots ping to discord (I think)"
+      },
+      {
+          "name": "fortnite",
+          "params": null,
+          "desc": "gives the bot's insight on the game fortnite"
       },
       {
         "name": "customcmd",
@@ -479,7 +499,7 @@
       },
       {
         "name": "alphabet",
-        "params": "(--delete) (--vowels) (--consonants) (--1)",
+        "params": "(--vowels) (--consonants) (--1)",
         "desc": "gives the alphabet\n--vowels only vowels\nconsonants only consonants",
         "aliases": [
           "alpha"
@@ -487,12 +507,12 @@
       },
       {
         "name": "doesnothing",
-        "params": "<filename> (--delete)",
+        "params": "<filename> ",
         "desc": "gives a file of every member and their roles"
       },
       {
         "name": "stop",
-        "params": "(--delete)",
+        "params": null,
         "desc": "stops commands like spam"
       },
       {
@@ -502,7 +522,7 @@
       },
       {
         "name": "stopwatch",
-        "params": "(--delete) (--stop)",
+        "params": " (--stop)",
         "desc": "starts a stopwatch",
         "aliases": [
           "timer"
@@ -515,7 +535,7 @@
       },
       {
         "name": "wiki",
-        "params": "<query> (--delete)",
+        "params": "<query> ",
         "desc": "gives link to wikipedia/query",
         "aliases": [
           "wikipedia"
@@ -533,7 +553,7 @@
       },
       {
         "name": "servericon",
-        "params": "(--delete)",
+        "params": null,
         "desc": "gets the server icon"
       },
       {
@@ -580,7 +600,7 @@
       },
       {
         "name": "slowdown",
-        "params": "(--delete)",
+        "params": null,
         "desc": "**Slow Down** :snail:"
       },
       {
@@ -590,12 +610,12 @@
       },
       {
         "name": "daily",
-        "params": "(--delete)",
+        "params": null,
         "desc": "daily coin money time"
       },
       {
         "name": "doihavecovid",
-        "params": "(--delete)",
+        "params": null,
         "desc": "gives an accurate reading if you have COVID--19 or not"
       }
     ]

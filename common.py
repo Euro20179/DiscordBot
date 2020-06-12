@@ -31,7 +31,7 @@ bannedFilePath = f"{DISEXT}/banned.json"
 timersPath = f"{DISEXT}/timers.json"
 moneyDataFilePath = f'{DISEXT}/moneyData.json'
 itemDataFilePath = f'{DISEXT}/itemsData.json'
-itemsFilePath = f'{DISEXT}/items.json'
+itemsFilePath = f'items.json'
 EUROID = 334538784043696130
 client = commands.Bot(command_prefix=PREFIX)
 
@@ -44,4 +44,3 @@ async def reloadCMDSLIST():
         CMDLIST = tuple(cmd for _ in CATS.values() for cmd in _) #gets a list of commands
         CUSTOMCMDS = {cmd["name"]: cmd["desc"] for cmd in CATS["CUSTOM"]}
     return CATS, CMDLIST, CUSTOMCMDS
-
