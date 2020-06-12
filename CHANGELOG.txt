@@ -1,3 +1,10 @@
+4.0.7
+
+CHANGES:
+*you now lose money for losing guessinggame
+*rps gives less money
+
+====================================================================
 4.0.6 (6/13/2020)
 
 ADDITIONS:
