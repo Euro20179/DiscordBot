@@ -1160,11 +1160,15 @@ async def deathBattle(msg, users, going, notGoing, responseTime, damageMsgs, hea
                 clearFile(j)
                 json.dump(data, j)
             CustomMessage = True
+            if AH.lower() == "life or death":
+                die = random.choice([going, notGoing])
+                users[die]["health"] -= (users[die]["health"] + random.randint(0, 70))
+                CustomMessage = f'{die} has just died\nRIP'
             if AH.lower() == "healing":
                 users[going]["health"] += 40
                 damage = -40
                 CustomMessage = f'{going} used healing for 40 health'
-            if AH.lower() == "RANDOM HEAL!!":
+            if AH.upper() == "RANDOM HEAL!!":
                 add = random.randint(0, 100)
                 users[going]["health"] += add
                 damage = -add
@@ -1268,6 +1272,7 @@ async def INIT_deathBattle(msg, content, cmd="deathbatte"):
         else: i2 = []
     users = {msg.author: {"user": msg.author, "health": 100 + b1, "items": i1},
              user2: {"user": user2, "health": 100 + b2, "items": i2}}
+    users[second]["health"] += 15
     embed.add_field(name="MOVE", value="START", inline=False)
     for user in users.values():
         embed.add_field(name=user["user"].name, value=user["health"])

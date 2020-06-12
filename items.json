@@ -16,5 +16,11 @@
         "name": "RANDOM HEAL!!",
         "desc": "heals a random amount from 0 to 100",
         "cost": 140
+    }, 
+    {
+        "id": 4,
+        "name": "life or death",
+        "desc": "50% chance to kill you or the other player",
+        "cost": 70
     }
 ]
