@@ -11,7 +11,7 @@ import bs4 as bs
 import os
 
 DELETE = "--delete"
-VERSION = "4.0.9"
+VERSION = "4.1"
 Stop = False
 
 playingGuessingGame = {}
@@ -182,8 +182,11 @@ def clearFile(f)->None:
     f.seek(0)
     f.truncate()
 
-async def oneLineCmd(msg : discord.Message, say : str, delete=True)->discord.Message:
-    return await msg.channel.send(say)
+async def oneLineCmd(msg : discord.Message, say : str, delete=True, sendMsg=True)->discord.Message:
+    if sendMsg: return await msg.channel.send(say)
+    else:
+        msg.content = say
+        return msg
 
 async def addMoney(member, amnt):
     with open(moneyDataFilePath, "r+") as j:

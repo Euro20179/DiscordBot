@@ -7,7 +7,7 @@ async def stop(*args, **kwargs)->None: #similar to how raise StopIteration works
     Stop = False
     if args: return random.choice(args)
 
-async def hlp(msg, content, cmd="help"):
+async def hlp(msg, content, cmd="help", sendMsg=True):
     global CATS, CMDLIST, CUSTOMCMDS
     CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
     cat = splitContent(content, cmd + " ", index=1).upper()
@@ -61,7 +61,7 @@ async def hlp(msg, content, cmd="help"):
             except: return await msg.channel.send('command not found')
             await msg.channel.send(embed=embed)
 
-async def spam(msg, messages, message, BlockStop=False):
+async def spam(msg, messages, message, BlockStop=False, sendMsg=True):
     global Stop
     for _ in range(int(messages)):
         if Stop and not BlockStop:
@@ -70,7 +70,7 @@ async def spam(msg, messages, message, BlockStop=False):
         await asyncio.sleep(random.uniform(.7, 1.3))
     return msg
 
-async def ping(msg, content, cmd="ping"):
+async def ping(msg, content, cmd="ping", sendMsg=True):
     if random.random() >= .95:
         await msg.author.send("upupdowndownleftrightleftright")
         await asyncio.sleep(5)
@@ -84,7 +84,7 @@ async def ping(msg, content, cmd="ping"):
         return await msg.channel.send("LOL GET PRANKD THIS DOES NOTHING ROFL XD XD XD XD XD")
     else: return await msg.channel.send(f':ping_pong: {round(client.latency * 1000)}ms')	
 
-async def echo(msg, content, cmd="echo"):
+async def echo(msg, content, cmd="echo", sendMsg=True):
     content = content[len(cmd) + 2:]
     try: await msg.delete()
     except: pass
@@ -96,7 +96,7 @@ async def echo(msg, content, cmd="echo"):
     if random.random() > .99: await msg.author.send("the secret message dm euro for a doubley secret role, if you tell anyone how you got this the role will be taken away\nif you already have the role, you may choose to dm a screenshot of this message to someone, and they have the chance to get the role")	
     return await msg.channel.send(content)
 
-async def timers(msg, content, cmd="timers"):
+async def timers(msg, content, cmd="timers", sendMsg=True):
     embed = discord.Embed(title="Timers")
     with open(timersPath, "r") as tJ:
         data = json.load(tJ)
@@ -105,7 +105,7 @@ async def timers(msg, content, cmd="timers"):
         await msg.chanel.send(embed=embed)
         return f'{user}: {round(time.time() - t, 2)}'
 
-async def levelMessage(msg, content, cmd="lvlmsg"):
+async def levelMessage(msg, content, cmd="lvlmsg", sendMsg=True):
     if isBot(msg, client): return await msg.channel.send(await formatLevelMessage(msg, "I AM GREAT I AM LEVEL {level}", 9999999))
     with open(levelingDataFilePath, "r+") as j:
         data = json.load(j)
@@ -128,7 +128,7 @@ async def levelMessage(msg, content, cmd="lvlmsg"):
             return await msg.channel.send(f"changed to {changeTo}")
         else: return await msg.channel.send("CANCELLED")
 
-async def cmdUsage(msg, content, cmd="commandusage"):
+async def cmdUsage(msg, content, cmd="commandusage", sendMsg=True):
     top = 10
     if testInContent(content, "-top"):
         top = int(splitContent(content, "-top ")[1].strip())
@@ -155,7 +155,7 @@ async def cmdUsage(msg, content, cmd="commandusage"):
             except: return await msg.channel.send("too long of a message")
             
 
-async def iq(msg, content, cmd="iq"):
+async def iq(msg, content, cmd="iq", sendMsg=True):
     iq = random.randint(-3, 200)
     c = msg.author.mention if not splitContent(content, f'{cmd} ', index=1) else content[len(cmd) + 2:]
     await msg.channel.send(f'{c}\'s iq is *DRUMROLL*...')
@@ -167,7 +167,7 @@ async def iq(msg, content, cmd="iq"):
             iq <= 50 and iq >= 0: f"you good there mate, your iq is {iq}",
             iq < 0: f"you literally don't have a brain you somehow have a negative iq idek\nIQ: {iq}"}.get(True))
 
-async def shrug(msg, content, cmd="shrug"):
+async def shrug(msg, content, cmd="shrug", sendMsg=True):
     msg = await msg.channel.send(content=r"¯\_(ツ)_/¯")
     await asyncio.sleep(.3)
     await msg.edit(content=r"¯\\-(ツ)-/¯")
@@ -175,12 +175,12 @@ async def shrug(msg, content, cmd="shrug"):
     await msg.edit(content=r"¯\_(ツ)_/¯")
     return msg
 
-async def getUserData(user):
+async def getUserData(user, sendMsg=True):
     with open(levelingDataFilePath, "r") as f:
         data = json.load(f)
         return data.get(str(user))
 
-async def level(msg, content, cmd="level"):
+async def level(msg, content, cmd="level", sendMsg=True):
     user = await getUserInContent(msg, content, cmd)
     if len(splitContent(content, " ")) > 1:
         user = discord.utils.get(msg.guild.members, id=user.id)
@@ -205,7 +205,7 @@ async def level(msg, content, cmd="level"):
     await msg.channel.send(embed=embed)
     return f'level: {level}\nxp: {xp}\nrequired: {required}\npos: {pos}\nxp needed: {required - xp}\napprox minutes: {round((required - xp) / 57.5)}\nlevel up message: {await formatLevelMessage(msg, message, level)}'
 
-async def leaderboard(msg, content, cmd="top"):
+async def leaderboard(msg, content, cmd="top", sendMsg=True):
     if testInContent(content, "--raw"):
         with open(levelingDataFilePath, "rb") as f:
             await msg.channel.send(file=discord.File(f, levelingDataFilePath))
@@ -232,7 +232,7 @@ async def leaderboard(msg, content, cmd="top"):
             await users[0][0].add_roles(firstPlaceRole)
         await msg.channel.send(embed=embed)
 
-async def magicBall(msg, content, cmd="8ball"):
+async def magicBall(msg, content, cmd="8ball", sendMsg=True):
     with open(mballresponseFilePath, "r") as f:
         responses = f.read().split("\n")
 
@@ -240,7 +240,7 @@ async def magicBall(msg, content, cmd="8ball"):
         await msg.channel.send(embed=discord.Embed(title=random.choice(responses)))
     else: return await msg.channel.send(f'Answer: {random.choice(responses)}')
 
-async def spamCmd(msg, content, cmd="spam"):
+async def spamCmd(msg, content, cmd="spam", sendMsg=True):
     global Stop
     if Stop: await stop()
 
@@ -265,14 +265,14 @@ async def spamCmd(msg, content, cmd="spam"):
     if random.random() >= .99: await msg.channel.send("You found an easter egg hehe")
     else: return await msg.channel.send(random.choice(("done", "Done")))
 
-async def randomFace(msg, content, cmd="randomface"):
+async def randomFace(msg, content, cmd="randomface", sendMsg=True):
     EYES = (":", ";")
     MOUTHS = (")", "(", "{", "}", "[", "]", "p", "P", "d", "l", "C", "c")
     if random.random() >= .995:
         return await msg.channel.send("()-()\n ___")
     return await oneLineCmd(msg, f'{random.choice(EYES)}{random.choice(MOUTHS)}' if random.random() >= .5 else f'{random.choice(MOUTHS)}{random.choice(EYES)}')
 
-async def alphabet(msg, content, cmd="alphabet"):
+async def alphabet(msg, content, cmd="alphabet", sendMsg=True):
     send = string.ascii_lowercase
     if testInContent(content, "--vowels"): send = "aeiou(y)"
     if testInContent(content, "--consonants"):
@@ -280,7 +280,7 @@ async def alphabet(msg, content, cmd="alphabet"):
     if random.random() > .98: send = "zyxwvutsrqponmlkjihgfedcba"
     return await oneLineCmd(msg, send)
 
-async def unicodeChar(msg, content, cmd="unicodechar"):
+async def unicodeChar(msg, content, cmd="unicodechar", sendMsg=True):
     amount = 1
     
     sep = splitContent(content, "-sep ", index=1) if testInContent(content, "-sep ") else "\n"
@@ -293,16 +293,16 @@ async def unicodeChar(msg, content, cmd="unicodechar"):
     
     return await msg.channel.send(sep.join(chars))
 
-async def serverEmote(msg, content, cmd="serveremote"):
+async def serverEmote(msg, content, cmd="serveremote", sendMsg=True):
     amount = 1
     sep = "\n"
     if testInContent(content, "-sep"):
         sep = content.split("-sep ")[1]
     if isInt(splitContent(content.lower(), " ", index=1)): amount = int(splitContent(content.lower(), " ", index=1))
     sendE = [str(random.choice(client.emojis)) for _ in range(amount)]
-    return await oneLineCmd(msg, sep.join(sendE))
+    return await oneLineCmd(msg, sep.join(sendE), sendMsg=sendMsg)
 
-async def writeRoles(msg, content, cmd="doesnothing"):
+async def writeRoles(msg, content, cmd="doesnothing", sendMsg=True):
     filename = splitContent(content.lower(), cmd, index=1)
 
     with open(f".\\roles\\{filename}.txt", "w") as f:
@@ -316,7 +316,7 @@ async def writeRoles(msg, content, cmd="doesnothing"):
     with open(f'.\\roles\\{filename}.txt', "rb") as f:
         await msg.channel.send(file=discord.File(f, f'{filename}.txt'))
 
-async def spacer(msg, content, cmd="spacer"):
+async def spacer(msg, content, cmd="spacer", sendMsg=True):
     try: await msg.delete()
     except: pass
     sep = " "
@@ -333,7 +333,7 @@ async def spacer(msg, content, cmd="spacer"):
     word = add.join(c)
     return await oneLineCmd(msg, word)
 
-async def upperLower(msg, content, cmd="upperlower"):
+async def upperLower(msg, content, cmd="upperlower", sendMsg=True):
     mssg = content[len(cmd) + 2:]
     try: await msg.delete()
     except: pass
@@ -351,7 +351,7 @@ async def upperLower(msg, content, cmd="upperlower"):
 
     return await msg.channel.send("".join(newPhrase))
 
-async def startRPS(msg, content, cmd="rps"):
+async def startRPS(msg, content, cmd="rps", sendMsg=True):
     opps = {"rock": "scissors", "paper": "rock", "scissors": "paper"}
     setTo = {"r": "rock", "p": "paper", "scissors": "scissors"}
     t = 15
@@ -390,7 +390,7 @@ async def startRPS(msg, content, cmd="rps"):
         else: await msg.channel.send("ITS A DRAW")
     else: await msg.channel.send("either someone spelled something wrong, or someone isn't playing by the rules")
 
-async def complexMessage(msg, content, cmd="complexmessage"):
+async def complexMessage(msg, content, cmd="complexmessage", sendMsg=True):
     c = splitContent(content.lower(), cmd, index=1).split(", ")
     try: await msg.delete()
     except: pass
@@ -411,7 +411,7 @@ async def complexMessage(msg, content, cmd="complexmessage"):
         if send: await msg.channel.send(file=discord.File(f, filename))
         if dm:await msg.author.send(file=discord.File(f, filename))
 
-async def sanity(msg, content, cmd="sanity"):
+async def sanity(msg, content, cmd="sanity", sendMsg=True):
     c = content.split(cmd)[1]
 
     if testInContent(c, "-r "):
@@ -429,7 +429,7 @@ async def sanity(msg, content, cmd="sanity"):
     else: msg = await msg.channel.send(f'{c} has {san}% sanity')
     return msg
 
-async def coin(msg, content, cmd="coin"):
+async def coin(msg, content, cmd="coin", sendMsg=True):
     title = res = "heads" if random.random() >= .5 else "tails"
     if testInContent(content, "-bet"):
         bet = splitContent(content, "-bet")[1].strip()
@@ -449,7 +449,7 @@ async def coin(msg, content, cmd="coin"):
     embed = discord.Embed(title=title, color=color)
     await msg.channel.send(embed=embed)
 
-async def roleInfo(msg, content, cmd="roleinfo"):
+async def roleInfo(msg, content, cmd="roleinfo", sendMsg=True):
     if not splitContent(content, cmd + " "):
         rolename = msg.author.top_role.name
     else: rolename = splitContent(content, cmd + " ")[1]
@@ -466,7 +466,7 @@ async def roleInfo(msg, content, cmd="roleinfo"):
     except AttributeError:
         return await msg.channel.send("role not found")
 
-async def roleCount(msg, content, cmd="rolecount"):
+async def roleCount(msg, content, cmd="rolecount", sendMsg=True):
     c = str(content.split(cmd)[1].strip())
     Showroles = False
     if "--showroles" in c:
@@ -486,7 +486,7 @@ async def roleCount(msg, content, cmd="rolecount"):
     else: msg = await msg.channel.send("User not found")
     return msg
 
-async def rand(msg, content, cmd="rand"):
+async def rand(msg, content, cmd="rand", sendMsg=True):
     if len(splitContent(content, cmd + " ")) > 1:
         c = content.split(" ")[1:]
         EVEN, ODD = "--even", "--odd"
@@ -515,7 +515,7 @@ async def rand(msg, content, cmd="rand"):
     else: res = random.randint(1, 10)
     return await msg.channel.send(res)
 
-async def compareRoles(msg, content, cmd="compareroles"):
+async def compareRoles(msg, content, cmd="compareroles", sendMsg=True):
     embed = discord.Embed(name="Role Comparison")
     c = content.split(testInContent(content, "comproles", "compareroles"))[1].split(" ")
     user1 = str(c[1].strip()) 
@@ -535,7 +535,7 @@ async def compareRoles(msg, content, cmd="compareroles"):
         await msg.channel.send(embed=embed)
     else: await msg.channel.send("invalid name(s)")
 
-async def family(msg, content, cmd="family"):
+async def family(msg, content, cmd="family", sendMsg=True):
     with open("family.txt", "r") as f: await oneLineCmd(msg, f.read())
 
 async def mballreply(msg, content, cmd="mballreply"):
@@ -546,7 +546,7 @@ async def mballreply(msg, content, cmd="mballreply"):
         return await msg.channel.send("message added")				
     else: return await msg.channel.send("you don't have perms")
 
-async def mballDel(msg, content, cmd="8brdel"):
+async def mballDel(msg, content, cmd="8brdel", sendMsg=True):
     reply = content.split(f"{cmd} ")[1]
     if userHasRole(msg, "mballresponseadder"):
         with open(mballresponseFilePath, "r+") as f:
@@ -559,7 +559,7 @@ async def mballDel(msg, content, cmd="8brdel"):
             else: await msg.channel.send("not a message")
     else: await msg.channel.send("you don't have perms")
 
-async def count(msg, content, cmd="count"):
+async def count(msg, content, cmd="count", sendMsg=True):
     try: await msg.delete()
     except: pass
     channel = discord.utils.get(msg.guild.channels, name="counting")
@@ -588,7 +588,7 @@ async def count(msg, content, cmd="count"):
             await channel.send(embed=discord.Embed(title=f'.{highest}.', color=discord.Color(color)))
     else: await channel.send(f'.{highest}.')
 
-async def choose(msg, content, cmd="choose"):
+async def choose(msg, content, cmd="choose", sendMsg=True):
     options = splitContent(content, f'{cmd} ')[1].split(", ")
     PICKS = "-picks "
     picks = 1
@@ -599,11 +599,11 @@ async def choose(msg, content, cmd="choose"):
             break
     return await msg.channel.send("\n".join([random.choice(options) for _ in range(int(picks))]))
 
-async def mball(msg, content, cmd="8ball"):
+async def mball(msg, content, cmd="8ball", sendMsg=True):
     with open(mballresponseFilePath, "rb") as f:
         await msg.channel.send(file=discord.File(f, "mballresponse.txt"))
 
-async def pigLatin(msg, content, cmd="piglatin"):
+async def pigLatin(msg, content, cmd="piglatin", sendMsg=True):
     CASE = " --kc"
     content = content.replace(CASE, "") if testInContent(content, CASE) else content.lower()
 
@@ -623,7 +623,7 @@ async def pigLatin(msg, content, cmd="piglatin"):
     msg = await msg.channel.send(" ".join(m))
     return msg
 
-async def mostRoles(msg, content, cmd="mostroles"):
+async def mostRoles(msg, content, cmd="mostroles", sendMsg=True):
     top = int(splitContent(content, " ", index=1)) if splitContent(content, " ", index=1) else 5
 
     memberRoles = {member.display_name.split("#")[0]: len(member.roles) - 1 for member in msg.guild.members}
@@ -632,7 +632,7 @@ async def mostRoles(msg, content, cmd="mostroles"):
     top = [f'{r}, {memberRoles[r]}' for n, r in enumerate(sortedKeys) if n < top]
     return await msg.channel.send("\n".join(top))
 
-async def clear(msg, content, cmd="clear"):
+async def clear(msg, content, cmd="clear", sendMsg=True):
     amnt = int(content[len(cmd) + 2:])
     perms = msg.author.guild_permissions.manage_messages
     if perms and msg.author.id != 579117856994623498:
@@ -642,7 +642,7 @@ async def clear(msg, content, cmd="clear"):
         for _ in range(random.randint(10, 15)):
             await msg.author.send("you cannot do that, don't do it again")
 
-async def ridInvites(msg, content, cmd="clearinvites"):
+async def ridInvites(msg, content, cmd="clearinvites", sendMsg=True):
     perms = msg.author.guild_permissions.create_instant_invite
     if perms:
         invites = await msg.guild.invites()
@@ -651,7 +651,7 @@ async def ridInvites(msg, content, cmd="clearinvites"):
         return await msg.channel.send("invites cleared")
     else: return await msg.channel.send("you don't have perms")
 
-async def color(msg, content, cmd="color"):
+async def color(msg, content, cmd="color", sendMsg=True):
     c = splitContent(content, f'{cmd}')[1].strip()
     if "#" in c:
         color = c.replace("#", "")
@@ -673,12 +673,12 @@ async def color(msg, content, cmd="color"):
         await msg.channel.send(embed=embed)					
     else: await msg.channel.send("not a valid role")	
 
-async def serverIcon(msg, content, cmd="servericon"):
+async def serverIcon(msg, content, cmd="servericon", sendMsg=True):
     embed = discord.Embed(title="Server icon", color=discord.Colour.from_rgb(180, 70, 180))
     embed.set_image(url=msg.guild.icon_url)
     await msg.channel.send(embed=embed)
 
-async def channelInfo(msg, content, cmd="cc"):
+async def channelInfo(msg, content, cmd="cc", sendMsg=True):
     channel = msg.channel
     embed = discord.Embed(title=channel.name)
     if splitContent(content, cmd)[1]:
@@ -698,7 +698,7 @@ async def channelInfo(msg, content, cmd="cc"):
     embed.add_field(name="mention", value=channel.mention)
     await msg.channel.send(embed=embed)
 
-async def changes(msg, content, cmd="changes"):
+async def changes(msg, content, cmd="changes", sendMsg=True):
     ver = splitContent(content, " ")[1].strip() if testInContent(content, " ") else None
     if ver or not testInContent(content, "--nlatest"):
         with open("CHANGELOG.txt", "r") as f:
@@ -719,14 +719,14 @@ async def changes(msg, content, cmd="changes"):
         if testInContent(content, "--dms"): return await msg.author.send("\n".join(c)) if c else msg.author.send(file=discord.File(f, "changes.txt"))
         else: return await msg.channel.send("\n".join(c)) if c else await msg.channel.send(file=discord.File(f, "changes.txt")) 
 
-async def hexBinOct(msg, content, cmd="hex"):
+async def hexBinOct(msg, content, cmd="hex", sendMsg=True):
     content = splitContent(content, cmd + " ")[1]
     num = list(map(lambda n: int(n), content.split(", "))) if ", " in content else [int(content)]
     repWith = {"hex": "0x", "bin": "0b", "oct": "0o"}[cmd]
     ans = list(map(lambda n: str(hex(n)).replace(repWith, ""), num))
     return await msg.channel.send(", ".join(ans))
 
-async def response(msg, content, cmd="response", doFirst=False):
+async def response(msg, content, cmd="response", doFirst=False, sendMsg=True):
     global Stop
     if Stop: await stop()
     if isBot(msg, client): return "is bot"
@@ -744,7 +744,7 @@ async def response(msg, content, cmd="response", doFirst=False):
         else: msg = await msg.channel.send(f'did not find {mssg} in the past {limit} messages in this channel')
         return msg
 
-async def stopwatch(msg, content, cmd="stopwatch"):
+async def stopwatch(msg, content, cmd="stopwatch", sendMsg=True):
     with open(timersPath, "r+") as tJ:
         data = json.load(tJ)
         Running = data.get(str(msg.author.id))
@@ -762,7 +762,7 @@ async def stopwatch(msg, content, cmd="stopwatch"):
         json.dump(data, tJ)
         
 
-async def emoteInfo(msg, content, cmd="emoteinfo"):
+async def emoteInfo(msg, content, cmd="emoteinfo", sendMsg=True):
     emote = await msg.guild.fetch_emoji(int(content.split(":")[2][:-1]))
     embed = discord.Embed(title=emote.name)
     embed.add_field(name="Animated", value=emote.animated)
@@ -771,7 +771,7 @@ async def emoteInfo(msg, content, cmd="emoteinfo"):
     embed.add_field(name="id", value=emote.id)
     await msg.channel.send(embed=embed)
 
-async def messageInfo(msg, content, cmd="messageinfo"):
+async def messageInfo(msg, content, cmd="messageinfo", sendMsg=True):
     sendTo = msg.channel
     content = splitContent(content, f'{cmd} ', index=1).strip()
     fetchFrom = msg.channel
@@ -802,7 +802,7 @@ async def messageInfo(msg, content, cmd="messageinfo"):
 
     await sendTo.send(embed=embed)
 
-async def typeFor(msg, content, cmd="type"):
+async def typeFor(msg, content, cmd="type", sendMsg=True):
     timeToType = 5
     if (split := splitContent(content, " ")):
         timeToType = int(split[1])
@@ -812,14 +812,14 @@ async def typeFor(msg, content, cmd="type"):
         await asyncio.sleep(timeToType)
     return await msg.channel.send(f'slept for {timeToType} seconds')
 
-async def sendBlank(msg, content, cmd="sendblank"):
+async def sendBlank(msg, content, cmd="sendblank", sendMsg=True):
     amnt = 5
     if (split := splitContent(content, f"{cmd} ", index=1)):
         amnt = int(split)
     send = "_" + ("\n" * amnt) + "_"
     return await msg.channel.send(send)
 
-async def hangman(msg, content, cmd="hangman"):
+async def hangman(msg, content, cmd="hangman", sendMsg=True):
     user = (await getUserInContent(msg, content, cmd))
     content = content[len(cmd) + 2:]
     if user.id in playingHangman.keys():
@@ -840,7 +840,7 @@ async def hangman(msg, content, cmd="hangman"):
     except: return await msg.channel.send("user did not respond in 1.5 minutes")
     else: return mssg
 
-async def serverInfo(msg, content, cmd="serverinfo"):
+async def serverInfo(msg, content, cmd="serverinfo", sendMsg=True):
     roles = msg.guild.roles
     creation = msg.guild.created_at
     t = datetime.datetime.now()
@@ -866,7 +866,7 @@ async def serverInfo(msg, content, cmd="serverinfo"):
     embed.add_field(name="age", value=t - creation)
     await msg.channel.send(embed=embed)
 
-async def userInfo(msg, content, cmd="userinfo"):
+async def userInfo(msg, content, cmd="userinfo", sendMsg=True):
     user = (await getUserInContent(msg, content, cmd))
     embed = discord.Embed(title=user.name, color=user.color)
     embed.add_field(name="Join date", value=await formatDateTime(user.joined_at))
@@ -882,12 +882,12 @@ async def userInfo(msg, content, cmd="userinfo"):
     embed.set_thumbnail(url=user.avatar_url)
     await msg.channel.send(embed=embed)
 
-async def fetchRole(msg, content, cmd="fetchrole"):
+async def fetchRole(msg, content, cmd="fetchrole", sendMsg=True):
     roleId = int(content[len(cmd) + 2:])
     role = msg.guild.get_role(roleId)
     return await msg.channel.send(role.name)
 
-async def categoryInfo(msg, content, cmd="categoryinfo"):
+async def categoryInfo(msg, content, cmd="categoryinfo", sendMsg=True):
     content = content[len(cmd) + 2:]
     cat = discord.utils.find(lambda x: x.name.lower() == content.lower(), msg.guild.categories)
     embed = discord.Embed(title=cat.name)
@@ -899,17 +899,17 @@ async def categoryInfo(msg, content, cmd="categoryinfo"):
     embed.add_field(name="created at", value=await formatDateTime(cat.created_at))
     await msg.channel.send(embed=embed)
 
-async def spamStop(msg, content, cmd="spamstop"):
+async def spamStop(msg, content, cmd="spamstop", sendMsg=True):
     for _ in range(10):
         await msg.channel.send(f'{PREFIX}stop')
         await asyncio.sleep(random.uniform(.3, 1.2))
 
-async def calc(msg, content, cmd="calc"):
+async def calc(msg, content, cmd="calc", sendMsg=True):
     if "help" in content or "quit" in content or "exit" in content or "os." in content:
         return await msg.channel.send('nice try')
     else: return await msg.channel.send(eval(splitContent(content, cmd + " ", index=1)))
 
-async def covid(msg, content, cmd="covid"):
+async def covid(msg, content, cmd="covid", sendMsg=True):
     async with msg.channel.typing():
         request = requests.get("https://www.worldometers.info/coronavirus/")
         embed = discord.Embed(title="Covid Stats", color=discord.Color(0xff0000))
@@ -921,7 +921,7 @@ async def covid(msg, content, cmd="covid"):
             if n == 2: embed.add_field(name="RECOVERED TOTAL", value=div.text.strip("\n").strip(), inline=False)
         await msg.channel.send(embed=embed)
 
-async def pokemon(msg, content, cmd="pokemon"):
+async def pokemon(msg, content, cmd="pokemon", sendMsg=True):
     pokemon = splitContent(content, " ", index=1)
     try:
         request = requests.get(f"https://www.pokemon.com/us/pokedex/{pokemon}")
@@ -944,13 +944,13 @@ async def pokemon(msg, content, cmd="pokemon"):
         print(e)
         return await msg.channel.send("smth went wrong")
 
-async def hypixelPlayerCount(msg, content, cmd="hypixelpc"):
+async def hypixelPlayerCount(msg, content, cmd="hypixelpc", sendMsg=True):
     request = requests.get("https://hypixel.net/")
     soup = bs.BeautifulSoup(request.text, features="html.parser")
     pc = soup.find("div", {"class": "p-header-playNow-count"}).find("b").text
     return await msg.channel.send(pc)
     
-async def whoHasRole(msg, content, cmd="hasrole"):
+async def whoHasRole(msg, content, cmd="hasrole", sendMsg=True):
     role = splitContent(content, cmd + " ")[1]
     role = discord.utils.find(lambda r: r.name.lower() == role.lower(), msg.channel.guild.roles)
     embed = discord.Embed(title="has")
@@ -967,11 +967,12 @@ async def whoHasRole(msg, content, cmd="hasrole"):
             await msg.channel.send(file=discord.File(f, f'whohas{role.name}.txt'))
         os.remove(f"whohas{role.name}.txt")
 
-async def addCustomCmd(msg, content, cmd="customcmd"):
+async def addCustomCmd(msg, content, cmd="customcmd", sendMsg=True):
     global CATS, CMDLIST, CUSTOMCMDS
     c = splitContent(content, ", ")
     name = c[0][len(cmd) + 2:].strip()
-    say = c[1]
+    c.pop(0)
+    say = ", ".join(c)
     with open(customcmdsFilePath, "r+") as j:
         data = json.load(j)
         for cmd in data:
@@ -986,7 +987,7 @@ async def addCustomCmd(msg, content, cmd="customcmd"):
         json.dump(data, j)
     CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
 
-async def removeCustomCmd(msg, content, cmd="removecustomcmd"):
+async def removeCustomCmd(msg, content, cmd="removecustomcmd", sendMsg=True):
     global CATS, CMDLIST, CUSTOMCMDS
     perms = msg.author.guild_permissions.manage_messages
     if not perms:
@@ -1111,7 +1112,7 @@ async def deathBattle(msg, users, going, notGoing, responseTime, damageMsgs, hea
             await deathBattle(msg, users, second, first, responseTime, damageMsgs, healMsgs, embed, first, second)
         else: await deathBattle(msg, users, first, second, responseTime, damageMsgs, healMsgs, embed, first, second)
 
-async def INIT_deathBattle(msg, content, cmd="deathbatte"):
+async def INIT_deathBattle(msg, content, cmd="deathbatte", sendMsg=True):
     global Stop, playingDB
     if Stop: Stop = False
     embed = discord.Embed(title="BATTLE")
@@ -1153,7 +1154,7 @@ async def INIT_deathBattle(msg, content, cmd="deathbatte"):
     await msg.channel.send(embed=embed)    
     await deathBattle(msg, users, first, second, responseTime, damageMsgs, healMsgs, embed, first, second)
     
-async def mmoney(msg, content, cmd="mmoney"):
+async def mmoney(msg, content, cmd="mmoney", sendMsg=True):
     user = await getUserInContent(msg, content, cmd)
     if testInContent(content, "--raw"):
         with open(moneyDataFilePath, "rb") as f:
@@ -1162,7 +1163,7 @@ async def mmoney(msg, content, cmd="mmoney"):
         data = json.load(j)
         return await msg.channel.send(f'{user.name} has €{data.get(str(user.id))}')
 
-async def shop(msg, content, cmd="shop"):
+async def shop(msg, content, cmd="shop", sendMsg=True):
     with open(itemsFilePath, "r") as j:
         data = json.load(j)
         embed = discord.Embed(title="Items", color=discord.Color(0x00ff00))
@@ -1170,7 +1171,7 @@ async def shop(msg, content, cmd="shop"):
             embed.add_field(name=f'{item["id"]}: {item["name"]}', value=f'Description: {item["desc"]}\nCost: €{item["cost"]}', inline=False)
         await msg.channel.send(embed=embed)
 
-async def buyItem(msg, content, cmd="buyitem"):
+async def buyItem(msg, content, cmd="buyitem", sendMsg=True):
     buying = splitContent(content, cmd)[1].strip()
     if testInContent(content, ", "):
         split = splitContent(buying, ", ")
@@ -1206,7 +1207,7 @@ async def buyItem(msg, content, cmd="buyitem"):
                 json.dump(data, j2)
     await msg.channel.send(f'bought {forPurchase["name"]}')
 
-async def inventory(msg, content, cmd="inv"):
+async def inventory(msg, content, cmd="inv", sendMsg=True):
     with open(itemDataFilePath, "r+", encoding="utf-8-sig") as j:
         data = json.load(j)
         if (items := data.get(str(msg.author.id))):
@@ -1226,7 +1227,7 @@ async def inventory(msg, content, cmd="inv"):
             del s
         else: return await msg.channel.send("none")
 
-async def duplicator(msg, content, cmd="duplicator"):
+async def duplicator(msg, content, cmd="duplicator", sendMsg=True):
     times = 2
     if (t := splitContent(content, " ")[1]).isnumeric():
         times = int(t)

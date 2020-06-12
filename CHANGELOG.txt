@@ -1,3 +1,12 @@
+4.1
+
+ADDTIONS:
+*{version} for customcmd
+*{author} mentions author
+*{} can now be interpreted as a command
+    *example: i am {choose good, bad}
+
+====================================================================
 4.0.9
 
 ADDITIONS:
