@@ -255,8 +255,11 @@ async def on_message(msg):
         #ongoing events			
         if cmd == "guessinggame":
             c = splitContent(content, cmd)[1]
+            if testInContent(content, "--bet"):
+                Bet = True
+                c = c.replace(" --bet", "")
+            else: Bet = False
             low, high, lives = 1, 100, 5
-            Bet = True if testInContent(content, "--bet") else False
             if len(c) > 0:
                 c = c.split(" ")
                 c.pop(0)
@@ -303,13 +306,13 @@ async def on_message(msg):
                     say = f"YOU LOSE\nTHE ANSWER WAS {ans}" if not Bet else f'YOU LOSE\nTHE ANSWER WAS {ans}\nYOU LOSE {(int(ans) // startLives) // 2}'
                     await msg.channel.send(embed=discord.Embed(title=say, color=discord.Color.from_rgb(255, 0, 0)))
                 del playingGuessingGame[msg.author.id]
-                await addMoney(msg.author, (int(ans) // startLives) // 2)
+                if Bet: await addMoney(msg.author, -((int(ans) // startLives) // 2))
                 return str(ans)
             elif int(content) == ans:
                 say = f"YOU WIN\nWITH {lives} LIVES LEFT" if not Bet else f'YOU WIN\nWITH {lives} LIVES LEFT\nYou earned {(int(ans) // startLives)}'
                 await msg.channel.send(embed=discord.Embed(title=say, color=discord.Color.from_rgb(0, 255, 0)))
                 del playingGuessingGame[msg.author.id]
-                await addMoney(msg.author, (int(ans) // startLives))
+                if Bet: await addMoney(msg.author, (int(ans) // startLives))
                 return str(ans)
             await msg.channel.send(f"{msg.author.mention} too high" if int(c) > ans else f"{msg.author.mention} too low")
         else: await msg.channel.send("NaN")
