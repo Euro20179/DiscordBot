@@ -369,9 +369,12 @@
         "desc": "gets info on pokemon"
       },
       {
-        "name": "whohas",
+        "name": "hasrole",
         "params": "<role>",
-        "desc": "gives a list of the users with role"
+        "desc": "gives a list of the users with role",
+        "aliases": [
+          "whohas"
+        ]
       },
       {
         "name": "categoryinfo",

@@ -1070,7 +1070,7 @@ async def hypixelPlayerCount(msg, content, cmd="hypixelpc"):
     return await msg.channel.send(pc)
     
 async def whoHasRole(msg, content, cmd="hasrole"):
-    role = splitContent(content, " ", index=1)
+    role = splitContent(content, cmd + " ")[1]
     role = discord.utils.find(lambda r: r.name.lower() == role.lower(), msg.channel.guild.roles)
     embed = discord.Embed(title="has")
     try: 
