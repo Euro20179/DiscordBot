@@ -1,3 +1,12 @@
+4.1 (6/12/2020)
+
+ADDITIONS:
+*life or death
+
+CHANGES:
+*player 2 gets 15 extra health at the start
+
+====================================================================
 4.0 (6/12/2020)
 
 ADDITIONS:
