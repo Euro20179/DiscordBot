@@ -137,6 +137,8 @@ async def oneLineCmd(msg : discord.Message, say : str, delete=True)->discord.Mes
     return await msg.channel.send(say)
 
 async def hlp(msg, content, cmd="help"):
+    global CATS, CMDLIST, CUSTOMCMDS
+    CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
     cat = splitContent(content, cmd + " ", index=1).upper()
     File = True if testInContent(cat.lower(), "--file") else False
     if File: cat = cat.replace(" --FILE", "").strip()
