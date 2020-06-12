@@ -151,7 +151,7 @@ async def runCommand(msg, content, cmd, layer=1):
     elif cmd == "doihavecovid": content = await oneLineCmd(msg, "yes" if random.random() < .995 else "no")
     elif cmd == "covid": content = await covid(msg, content)
     elif cmd == "hypixelpc": content = await hypixelPlayerCount(msg, content)
-    elif cmd == "hasrole": content = await whoHasRole(msg, content)
+    elif cmd in ["hasrole", "whohas"]: content = await whoHasRole(msg, content, cmd=cmd)
     elif cmd in ["customcmd", "accmd", "customcommand"]: 
         content = await addCustomCmd(msg, content, cmd=cmd)
         CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
