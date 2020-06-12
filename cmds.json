@@ -1,414 +1,628 @@
-{
-   "KEY": {
-       "desc": "<> required parameter, [] optional parameter, () option, (--1) lets you do\n[serveremote 10 -sep --1 [serveremote"
-   },
-   "ANYMESSAGE": {
-       "desc": "can be applied to any message",
-       "--chkx": {"params": null, "desc": "reacts with check neutral and x on your message", "aliases": ["--p", "--v", "--reactchkx"]},
-       "---delete": {"params": null, "desc": "deletes your message"},
-       "--rw": {"params": "*<emote> (sep with ,)", "desc": "reacts"},
-       "--delin": {
-           "params": "<time>",
-           "desc": "deletes your message in time seconds"
-       }
-   },
-   "HELP": {
-       "help": {
-           "params": "[cmd/category] (--all)",
-           "desc": "sends a help message\nif command is specified it will show the help for that command only\nif --all it sends the file"
-       },
-       "desc": "help"
-   },
-   "LEVELS": {
-        "desc": "anything that has to do with leveling",
-        "level": {
-            "params": "[user]",
-            "desc": "sends your level, xp, and required xp until the next level\nif [user] is provided it'll send that user's stats\nyou get 1--100 xp every minute if you talk\nif yo'ure innactive for 12 hours, youll lose 1xp per message until you talk aagin",
-            "aliases": [
-                "lvl",
-                "rank"
-            ]
-        },
-        "top": {
-            "params": "[top] (--delete)",
-            "desc": "gives the top 10 on the leveling leaderboard\nif to is specified gives the top [top]",
-            "aliases": [
-                "leaderboard",
-                "levels"
-            ]
-        },
-        "lvlmsg": {
-            "params": "<message> (--see/--get/--s/--g) SPECIAL WORDS: {author}, {channel}, {emote}, {level}",
-            "desc": "sets your level up message to <message>\n{author}: pings you\n{channel}: the current channel\n{emote} randoms server emote\n{level} the level you leveld up to\nif see or get, shows your level up message\nif message is none it wont say when you level up"
-        }
-   },
-   "FUN": {
-       "desc": "fun commands",
-       "ship": {
-           "params": "<name1>, <name2> (sep with commas)",
-           "desc": "takes the first half of name1 and combines it with the second half of name2",
-           "aliases": [
-               "boat",
-               "boip"
-           ]
-       },
-       "sendblank": {
-           "params": "[amount], (--delete)",
-           "desc": "sends a [amount] lines of blank messages, defaults to 5"
-       },
-       "echo": {
-           "params": "<message> (--e) (--delete)",
-           "desc": "sends <message> and deletes your message\n--e embeds it\n--delete doesn't delete your message"
-       },
-       "8ball": {
-           "params": "[question], (--1)",
-           "desc": "the magic 8 ball ooooo spooky",
-           "aliases": [
-               "magicball"
-           ]
-       },
-       "spam": {
-           "params": "<amount> <message> (--delete) OR (-random <op1> <op2>)",
-            "desc": "spams <message> <amount> times\n-random sends op1 or op2 randomly each time"
-       },
-       "randomface": {
-            "params": "(--delete) (--1)",
-            "desc": "sends a random face ie: :]",
-            "aliases": [
-                "rface"
-            ]
-       },
-       "thewavecommand": {
-            "params": "(--delete)",
-            "desc": "says something wave would",
-            "aliases": [
-                "twc",
-                "thepenguincommand",
-                "tpc"
-            ]
-       },
-       "thetroycommand": {
-           "params": "(--delete)",
-           "desc": "says something troy would say",
-           "aliases": [
-               "ttc"
-           ]
-       },
-       "unicodechar": {
-           "params": "[amount] (--delete) (--1) (-sep)",
-           "desc": "sends [amount] of unicode chars, defaults to 1",
-           "aliases": [
-               "ucodechar"
-           ]
-       },
-       "spacer": {
-           "params": "<spaces> <message> (-sep <sepby>)",
-           "desc": "sends <message> with <spaces> amount of spaces in between each letter\nif -sep is specified it'll seperate with that instead of spaces\nif sep is \\n it'll seperate by a new line"
-       },
-       "serveremote": {
-           "params": "[amount] (-sep <sepby>) (--1)",
-           "desc": "sends [amount] of random server emotes, defaults to 1"
-       },
-       "upperlower": {
-           "params": "<message> (--delete) (--1)",
-           "desc": "sends <message> BuT lIkE tHiS",
-           "aliases": [
-               "ul"
-           ]
-       },
-       "flush": {
-           "params": "<message> (--delete)",
-           "desc": "flushes <message> down the toilet"
-       },
-       "longmessage": {
-           "params": "(--delete)",
-           "desc": "sends a long message"
-       },
-       "complexmessage": {
-           "params": "<send>, <filename.ext>, <content>",
-           "desc": "sends <filename.ext> with <content> inside the file to <send>\n<send> can either be yes (to send to chat) or dm (to send to your dms)"
-       },
-       "mesage": {
-           "params": "<send>, <filename>.txt, <content>",
-           "desc": "sends <filename>.txt withe <content> to <send> (send is same as complexmessage)"
-       },
-       "sanity": {
-           "params": "<message> (--delete) (-r) (--1)",
-           "desc": "gives the sanity of <message>\n-r rounds the decimal"
-       },
-       "family": {
-           "params": "(--delete)",
-           "desc": "sends a family tree"
-       },
-       "reverse": {
-           "params": "<message> (--delete)",
-           "desc": "reverses <message>"
-       },
-       "piglatin": {
-           "params": "<message> (--kc) (--1)",
-           "desc": "onvertscay essagemay intoay igpay atinlay\n--kc eppskay asecay"
-       },
-       "iq": {
-           "params": "[message] (--1) (--delete)",
-           "desc": "gives the iq of message, if not message, you"
-       }
-   },
-   "GAMES": {
-       "desc": "games",
-       "guessinggame": {
-           "params": "[low <high>] [lives]",
-           "desc": "you have to guess the random number from low to high, defaults to 1 through 100"
-       },
-       "rps": {
-           "params": "@<member> (-time)",
-           "desc": "you play rock paper scissors with member",
-           "aliases": [
-               "rockpaperscissors"
-           ]
-       },
-       "reactiontime": {
-           "params": null,
-           "desc": "says GO and you have to send a message as fast as possible"
-       },
-       "hangman": {
-           "params": "<user>",
-           "desc": "you have 15 seconds to dm the bot the word <user> will be guessing\n<user> will guess letters indevidually in chat\nif you're the player say STOP to stop the game"
-       }
-   },
-   "RANDOM": {
-       "desc": "random number generator stuff",
-       "choose": {
-           "params": "*<from> (sep with commas) (-picks <amount>) (--1)",
-           "desc": "chooses -picks amount of <from>, defaults to 1 pick"
-       },
-       "coin": {
-           "params": "(-bet <h/t>) (--delete)",
-           "desc": "flips a coin, if bet is specified it'll say if you won or lost"
-       },
-       "rand": {
-           "params": "<low> <high> [round] (--even) (-odd) (--delete) (--1)",
-           "desc": "picks a random number from <low> to <high>\nif either is a decimal it'll give a decimal rounded to [round] defaults to no round\nif --odd or --even it'll be an odd or even number"
-       }
-   },
-   "MATHY": {
-       "desc": "stuff like a calculator",
-       "bin": {
-           "params": "*<num> (sep with commas) (--1)",
-           "desc": "gives the binary form of each <num> (base 2)"
-       },
-       "calc": {
-           "params": "<equation> (--delete)",
-           "desc": "gives the answer to <equation>\nsome things will not work as intended ie:\n ** is power instead of ^"
-       },
-       "hex": {
-           "params": "*<num> (sep with commas) (--1)",
-           "desc": "gives the hexidecimal form of each <num> (base 16)"
-       },
-       "oct": {
-           "params": "*<num> (sep with commas) (--1)",
-           "desc": "gives the oct form of each <num> (base 8)"
-       },
-       "toc": {
-           "params": "<temp (fahrenheit)> (--1)",
-           "desc": "gives the celcius temp of <temp>"
-       },
-       "tof": {
-           "params": "<temp (celcius)> (--1)",
-           "desc": "gives the fahrenheit temp of <temp>"
-       }
-   },
-   "INFO":{
-       "desc": "commands that give info",
-       "pokemon": {
-           "params": "<pokemon pokedex #/name>",
-           "desc": "gets info on pokemon"
-       },
-       "categoryinfo": {
-            "params": "<category>",
-            "desc": "gets info on the category"
-       },
-       "messageinfo": {
-            "params": "[message id] [channel where mesage is] (--delete)",
-            "desc": "gets mesage info on the message you just sent, or on message id\nif the message id isn't in the current channel specify which chanenl the message is from"  
-       },
-       "userinfo": {
-            "params": "[user] (--delete)",
-            "desc": "gets info on user"
-       },
-        "serverinfo": {
-            "params": "(--delete)",
-            "desc": "gets info on the server"
-        },
-        "roleinfo": {
-            "params": "[role] (--delete)",
-            "desc": "gets info on <role>"
-        },
-        "rolecount": {
-            "params": "[member] (--delete) (--showroles)",
-            "desc": "gives the role count of [member] defaults to you\n--showroles shows the roles"
-        },
-        "comproles": {
-            "params": "<member1> <member2>",
-            "desc": "compares the roles of both members",
-            "aliases": [
-                "compareroles"
-            ]
-        },
-        "8brlist": {
-            "params": "(--delete)",
-            "desc": "sends the text file with all 8ball responses",
-            "aliases": [
-                "mballreplylist",
-                "8ballreplylist",
-                "8breplylist"
-            ]
-        },
-        "mostroles": {
-            "params": "[top] (--1)",
-            "desc": "sends the top top members by role count, defaults to top 5"
-        },
-        "color": {
-            "params": "[role] OR [color <r, g, b>] (--delete)",
-            "desc": "gives the color of [role], or the hex color of <r, g, b>"
-        },
-        "cc": {
-            "params": "[channel]",
-            "desc": "gives info about [channel] defaults to current channel",
-            "aliases": [
-                "channlinfo",
-                "ci"
-            ]
-        },    
-        "emoteinfo": {
-            "params": null,
-            "desc": "gives info about a server emote"
-        },
-		"hypixelpc": {
-			"params": "--delete",
-			"desc": "gives hypixel's current player count"
-		}
-   },
-   "BOTINFO": {
-        "desc": "like info but only about the bot",
-        "commandusage": {
-            "params": "[command] (-top <top>) (--delete)",
-            "desc": "gives the times [command] was used, defaults to the top 10"
-        },
-        "commandcount": {
-            "params": "(--delete)",
-            "desc": "gives the total number of commands"
-        },
-        "changes": {
-            "params": "[version] (--nlatest) (--dms) (--delete)",
-            "desc": "gives the latest changes, if version is specified it gives that version's changes\n-nlatest gives the text file\n--dms sends to dms"
-        },
-        "version": {
-            "params": "(--delete)",
-            "desc": "gives the bot version"
-        }
-   },
-   "MISC": {
-        "desc": "random commands idk",
-        "ping": {
-            "params": "(--delete)",
-            "desc": "gives the bots ping to discord (I think)"
-        },
-        "mymoney": {
-            "params": "(--delete)",
-            "desc": "your money"
-        },
-        "alphabet": {
-            "params": "(--delete) (--vowels) (--consonants) (--1)",
-            "desc": "gives the alphabet\n--vowels only vowels\nconsonants only consonants",
-            "aliases": [
-                "alpha"
-            ]
-        },
-        "doesnothing": {
-            "params": "<filename> (--delete)",
-            "desc": "gives a file of every member and their roles"
-        },
-        "stop": {
-            "params": "(--delete)",
-            "desc": "stops commands like spam"
-        },
-        "mballreply": {
-            "params": "<reply> (only available to those who write good replies)",
-            "desc": "adds <reply> to the list of 8ball replies"
-        },
-        "stopwatch": {
-            "params": "(--delete) (--stop)",
-            "desc": "starts a stopwatch",
-            "aliases": ["timer"]
-        },
-        "response": {
-            "params": "<message> (-lim) (--1)",
-            "desc": "finds the message (response) after <message> in chat with a limit of lim defaults to 1000"
-        },
-        "wiki": {
-            "params": "<query> (--delete)",
-            "desc": "gives link to wikipedia/query",
-            "aliases": [
-                "wikipedia"
-            ]
-        },
-        "timeit": {
-            "params": "<command <> [] ()>",
-            "desc": "times how long a command takes"
-        },
-        "avatar": {
-            "params": "[user]",
-            "desc": "gets the avatar of user, defaults to you"
-        },
-        "servericon": {
-            "params": "(--delete)",
-            "desc": "gets the server icon"
-        },
-        "count": {
-            "params": "(--i) (--b) (--ib) (--e (-c <color>)) (--u) (--ui) (--all)",
-            "desc": "counts in #counting\n--i makes *italic*\n--b makes **bold**\n--ib makes ***italic and bold***\n--e makes embeded, if -c must be a hex code like 00ffe2\n--u makes underlined\n--ui makes underlined + italic\n-all sends __***number***__"
-        },
-        "fetchuser": {
-            "params": "<userid>",
-            "desc": "says the nick_name of <userid> (must be an id)"
-        },
-        "fetchrole": {
-            "params": "<role id>",
-            "desc": "says the name of <role id> (must be an id)"
-        }
-   },
-   "STAFF": {
-       "desc": "commands only available to staff",
-       "clearinvites": {
-           "params": null,
-           "desc": "clears the invites"
-       },
-       "clear": {
-           "params": "<amount>",
-           "desc": "clears <amount> of messages in chat"
-       }
-   },
-   "INTERESTING": {
-       "desc": "it's ok...",
-       "imscared": {
-           "params": null,
-           "desc": "don't be scared :)"
-       },
-       "slowdown": {
-           "params": "(--delete)",
-           "desc": "**Slow Down** :snail:"
-       },
-       "typefor": {
-           "params": "[time]",
-           "desc": "types for [time] defaults to 5 seconds"
-       },
-       "daily": {
-            "params": "(--delete)",
-            "desc": "daily coin money time"
-       },
-       "doihavecovid": {
-           "params": "(--delete)",
-           "desc": "gives an accurate reading if you have COVID--19 or not"
-       }
-   }
-}
+[
+  {
+    "cat": "KEY",
+    "desc": "<> required parameter, [] optional parameter, () option, (--1) lets you do\n[serveremote 10 -sep --1 [serveremote",
+    "cmds": []
+  },
+  {
+    "cat": "ANYMESSAGE",
+    "desc": "can be applied to any message",
+    "cmds": [
+      {
+        "name": "--chkx",
+        "params": null,
+        "aliases": [
+          "--p",
+          "--v",
+          "--reactchkx"
+        ]
+      },
+      {
+        "name": "---delete",
+        "params": null,
+        "desc": "deletes your message"
+      },
+      {
+        "name": "--rw",
+        "params": "*<emote> (sep with ,)",
+        "desc": "reacts"
+      },
+      {
+        "name": "--delin",
+        "params": "<time>",
+        "desc": "deletes your message in time seconds"
+      }
+    ]
+  },
+  {
+    "cat": "MOSTCMDS",
+    "desc": "works for most if not all commands",
+    "cmds": [
+      {"name": "--delete",
+      "params": null,
+      "desc": "deletes the message"
+      },
+      {
+        "name": ">>>",
+        "params": "<filename>",
+        "desc": "writes the answer to <filename>"
+      }
+    ]
+  },
+  {
+    "cat": "HELP",
+    "desc": "help",
+    "cmds": [
+      {
+        "name": "help",
+        "params": "[cmd/category] (--all) (--file (only for categories))",
+        "desc": "sends a help message\nif command is specified it will show the help for that command only\nif --all it sends the file"
+      }
+    ]
+  },
+  {
+    "cat": "LEVELS",
+    "desc": "anything that has to do with leveling",
+    "cmds": [
+      {
+        "name": "level",
+        "params": "[user] (--raw)",
+        "desc": "sends your level, xp, and required xp until the next level\nif [user] is provided it'll send that user's stats\nyou get 1--100 xp every minute if you talk\nif yo'ure innactive for 12 hours, youll lose 1xp per message until you talk aagin",
+        "aliases": [
+          "lvl",
+          "rank"
+        ]
+      },
+      {
+        "name": "top",
+        "params": "[top] ",
+        "desc": "gives the top 10 on the leveling leaderboard\nif to is specified gives the top [top]",
+        "aliases": [
+          "leaderboard",
+          "levels"
+        ]
+      },
+      {
+        "name": "lvlmsg",
+        "params": "<message> (--see/--get/--s/--g) (--f/--y) SPECIAL WORDS: {author}, {channel}, {emote}, {level}",
+        "desc": "sets your level up message to <message>\n--see shows the message\n--f auto confirms\n{author}: pings you\n{channel}: the current channel\n{emote} randoms server emote\n{level} the level you leveld up to\nif see or get, shows your level up message\nif message is none it wont say when you level up"
+      }
+    ]
+  },
+  {
+    "cat": "FUN",
+    "desc": "fun commands",
+    "cmds": [
+      {
+        "name": "ship",
+        "params": "<name1>, <name2> (sep with commas)",
+        "desc": "takes the first half of name1 and combines it with the second half of name2",
+        "aliases": [
+          "boat",
+          "boip"
+        ]
+      },
+      {
+        "name": "sendblank",
+        "params": "[amount], ",
+        "desc": "sends a [amount] lines of blank messages, defaults to 5"
+      },
+      {
+        "name": "echo",
+        "params": "<message> (--e) ",
+        "desc": "sends <message> and deletes your message\n--e embeds it\n--delete doesn't delete your message"
+      },
+      {
+        "name": "8ball",
+        "params": "[question], (--1)",
+        "desc": "the magic 8 ball ooooo spooky",
+        "aliases": [
+          "magicball"
+        ]
+      },
+      {
+        "name": "spam",
+        "params": "<amount> <message>  OR (-random <op1> <op2>)",
+        "desc": "spams <message> <amount> times\n-random sends op1 or op2 randomly each time"
+      },
+      {
+        "name": "randomface",
+        "params": " (--1)",
+        "desc": "sends a random face ie: :]",
+        "aliases": [
+          "rface"
+        ]
+      },
+      {
+        "name": "thewavecommand",
+        "params": null,
+        "desc": "says something wave would",
+        "aliases": [
+          "twc",
+          "thepenguincommand",
+          "tpc"
+        ]
+      },
+      {
+        "name": "thetroycommand",
+        "params": null,
+        "desc": "says something troy would say",
+        "aliases": [
+          "ttc"
+        ]
+      },
+      {
+        "name": "unicodechar",
+        "params": "[amount]  (--1) (-sep)",
+        "desc": "sends [amount] of unicode chars, defaults to 1",
+        "aliases": [
+          "ucodechar"
+        ]
+      },
+      {
+        "name": "spacer",
+        "params": "<spaces> <message> (-sep <sepby>)",
+        "desc": "sends <message> with <spaces> amount of spaces in between each letter\nif -sep is specified it'll seperate with that instead of spaces\nif sep is \\n it'll seperate by a new line"
+      },
+      {
+        "name": "serveremote",
+        "params": "[amount] (-sep <sepby>) (--1)",
+        "desc": "sends [amount] of random server emotes, defaults to 1"
+      },
+      {
+        "name": "upperlower",
+        "params": "<message>  (--1)",
+        "desc": "sends <message> BuT lIkE tHiS",
+        "aliases": [
+          "ul"
+        ]
+      },
+      {
+        "name": "flush",
+        "params": "<message> ",
+        "desc": "flushes <message> down the toilet"
+      },
+      {
+        "name": "longmessage",
+        "params": null,
+        "desc": "sends a long message"
+      },
+      {
+        "name": "complexmessage",
+        "params": "<send>, <filename.ext>, <content>",
+        "desc": "sends <filename.ext> with <content> inside the file to <send>\n<send> can either be yes (to send to chat) or dm (to send to your dms)"
+      },
+      {
+        "name": "mesage",
+        "params": "<send>, <filename>.txt, <content>",
+        "desc": "sends <filename>.txt withe <content> to <send> (send is same as complexmessage)"
+      },
+      {
+        "name": "sanity",
+        "params": "<message>  (-r) (--1)",
+        "desc": "gives the sanity of <message>\n-r rounds the decimal"
+      },
+      {
+        "name": "family",
+        "params": null,
+        "desc": "sends a family tree"
+      },
+      {
+        "name": "reverse",
+        "params": "<message> ",
+        "desc": "reverses <message>"
+      },
+      {
+        "name": "piglatin",
+        "params": "<message> (--kc) (--1)",
+        "desc": "onvertscay essagemay intoay igpay atinlay\n--kc eppskay asecay"
+      },
+      {
+        "name": "iq",
+        "params": "[message] (--1) ",
+        "desc": "gives the iq of message, if not message, you"
+      }
+    ]
+  },
+  {
+    "cat": "GAMES",
+    "desc": "games",
+    "cmds": [
+      {
+        "name": "guessinggame",
+        "params": "[low <high>] [lives]",
+        "desc": "you have to guess the random number from low to high, defaults to 1 through 100"
+      },
+      {
+        "name": "rps",
+        "params": "@<member> (-time)",
+        "desc": "you play rock paper scissors with member",
+        "aliases": [
+          "rockpaperscissors"
+        ]
+      },
+      {
+        "name": "reactiontime",
+        "params": null,
+        "desc": "says GO and you have to send a message as fast as possible"
+      },
+      {
+        "name": "hangman",
+        "params": "<user>",
+        "desc": "you have 15 seconds to dm the bot the word <user> will be guessing\n<user> will guess letters indevidually in chat\nif you're the player say STOP to stop the game"
+      },
+      {
+        "name": "deathbattle",
+        "params": "<user>",
+        "desc": "battle <user> TO THE DEATH! DA DA DAAAAAAAAAA"
+      }
+    ]
+  },
+  {
+    "cat": "DEATHBATTLE",
+    "desc": "commands relating to deathbattle",
+    "cmds": [
+      {
+        "name": "deathbattle",
+        "params": "<user>",
+        "desc": "battle <user> TO THE DEATH! DA DA DAAAAAAAAAAA"
+      },
+      {
+        "name": "bal",
+        "params": "[user] ",
+        "desc": "your money",
+        "aliases": [
+          "mmoney",
+          "mymoney",
+          "money"
+        ]
+      },
+      {
+        "name": "shop",
+        "params": null,
+        "desc": "lists the items available for purchase in the shop"
+      },
+      {
+        "name": "inv",
+        "params": null,
+        "desc": "lists the items in your inventory"
+      },
+      {
+        "name": "buyitem",
+        "params": "<item>, [amount]",
+        "desc": "buys an item",
+        "aliases": [
+          "buy"
+        ]
+      }
+    ]
+  },
+  {
+    "cat": "RANDOM",
+    "desc": "random number generator stuff",
+    "cmds": [
+      {
+        "name": "choose",
+        "params": "*<from> (sep with commas) (-picks <amount>) (--1)",
+        "desc": "chooses -picks amount of <from>, defaults to 1 pick"
+      },
+      {
+        "name": "coin",
+        "params": "(-bet <h/t>) ",
+        "desc": "flips a coin, if bet is specified it'll say if you won or lost"
+      },
+      {
+        "name": "rand",
+        "params": "<low> <high> [round] (--even) (-odd)  (--1)",
+        "desc": "picks a random number from <low> to <high>\nif either is a decimal it'll give a decimal rounded to [round] defaults to no round\nif --odd or --even it'll be an odd or even number"
+      }
+    ]
+  },
+  {
+    "cat": "MATHY",
+    "desc": "stuff like a calculator",
+    "cmds": [
+      {
+        "name": "bin",
+        "params": "*<num> (sep with commas) (--1)",
+        "desc": "gives the binary form of each <num> (base 2)"
+      },
+      {
+        "name": "calc",
+        "params": "<equation> ",
+        "desc": "gives the answer to <equation>\nsome things will not work as intended ie:\n ** is power instead of ^"
+      },
+      {
+        "name": "hex",
+        "params": "*<num> (sep with commas) (--1)",
+        "desc": "gives the hexidecimal form of each <num> (base 16)"
+      },
+      {
+        "name": "oct",
+        "params": "*<num> (sep with commas) (--1)",
+        "desc": "gives the oct form of each <num> (base 8)"
+      },
+      {
+        "name": "toc",
+        "params": "<temp (fahrenheit)> (--1)",
+        "desc": "gives the celcius temp of <temp>"
+      },
+      {
+        "name": "tof",
+        "params": "<temp (celcius)> (--1)",
+        "desc": "gives the fahrenheit temp of <temp>"
+      }
+    ]
+  },
+  {
+    "cat": "INFO",
+    "desc": "commands that give info",
+    "cmds": [
+      {
+        "name": "customcmdlist",
+        "params": null,
+        "desc": "sends a list of the custom cmds"
+      },
+      {
+        "name": "pokemon",
+        "params": "<pokemon pokedex #/name>",
+        "desc": "gets info on pokemon"
+      },
+      {
+        "name": "whohas",
+        "params": "<role>",
+        "desc": "gives a list of the users with role"
+      },
+      {
+        "name": "categoryinfo",
+        "params": "<category>",
+        "desc": "gets info on the category"
+      },
+      {
+        "name": "messageinfo",
+        "params": "[message id] [channel where mesage is] ",
+        "desc": "gets mesage info on the message you just sent, or on message id\nif the message id isn't in the current channel specify which chanenl the message is from"
+      },
+      {
+        "name": "userinfo",
+        "params": "[user] ",
+        "desc": "gets info on user"
+      },
+      {
+        "name": "serverinfo",
+        "params": null,
+        "desc": "gets info on the server"
+      },
+      {
+        "name": "roleinfo",
+        "params": "[role] ",
+        "desc": "gets info on <role>"
+      },
+      {
+        "name": "rolecount",
+        "params": "[member]  (--showroles)",
+        "desc": "gives the role count of [member] defaults to you\n--showroles shows the roles"
+      },
+      {
+        "name": "comproles",
+        "params": "<member1> <member2>",
+        "desc": "compares the roles of both members",
+        "aliases": [
+          "compareroles"
+        ]
+      },
+      {
+        "name": "8brlist",
+        "params": null,
+        "desc": "sends the text file with all 8ball responses",
+        "aliases": [
+          "mballreplylist",
+          "8ballreplylist",
+          "8breplylist"
+        ]
+      },
+      {
+        "name": "mostroles",
+        "params": "[top] (--1)",
+        "desc": "sends the top top members by role count, defaults to top 5"
+      },
+      {
+        "name": "color",
+        "params": "[role] OR [color <r, g, b>] ",
+        "desc": "gives the color of [role], or the hex color of <r, g, b>"
+      },
+      {
+        "name": "cc",
+        "params": "[channel]",
+        "desc": "gives info about [channel] defaults to current channel",
+        "aliases": [
+          "channlinfo",
+          "ci"
+        ]
+      },
+      {
+        "name": "emoteinfo",
+        "params": null,
+        "desc": "gives info about a server emote"
+      },
+      {
+        "name": "hypixelpc",
+        "params": "--delete",
+        "desc": "gives hypixel's current player count"
+      }
+    ]
+  },
+  {
+    "cat": "BOTINFO",
+    "desc": "like info but only about the bot",
+    "cmds": [
+      {
+        "name": "commandusage",
+        "params": "[command] ",
+        "desc": "gives the times [command] was used, defaults to the top 10"
+      },
+      {
+        "name": "commandcount",
+        "params": null,
+        "desc": "gives the total number of commands"
+      },
+      {
+        "name": "changes",
+        "params": "[version] (--nlatest) (--dms) ",
+        "desc": "gives the latest changes, if version is specified it gives that version's changes\n-nlatest gives the text file\n--dms sends to dms"
+      },
+      {
+        "name": "version",
+        "params": null,
+        "desc": "gives the bot version"
+      }
+    ]
+  },
+  {
+    "cat": "MISC",
+    "desc": "random commands idk",
+    "cmds": [
+      {
+        "name": "ping",
+        "params": null,
+        "desc": "gives the bots ping to discord (I think)"
+      },
+      {
+          "name": "fortnite",
+          "params": null,
+          "desc": "gives the bot's insight on the game fortnite"
+      },
+      {
+        "name": "customcmd",
+        "params": "<cmd name>, <say>",
+        "desc": "when [<cmd name> is typed it'll say <say>"
+      },
+      {
+        "name": "alphabet",
+        "params": "(--vowels) (--consonants) (--1)",
+        "desc": "gives the alphabet\n--vowels only vowels\nconsonants only consonants",
+        "aliases": [
+          "alpha"
+        ]
+      },
+      {
+        "name": "doesnothing",
+        "params": "<filename> ",
+        "desc": "gives a file of every member and their roles"
+      },
+      {
+        "name": "stop",
+        "params": null,
+        "desc": "stops commands like spam"
+      },
+      {
+        "name": "mballreply",
+        "params": "<reply> (only available to those who write good replies)",
+        "desc": "adds <reply> to the list of 8ball replies"
+      },
+      {
+        "name": "stopwatch",
+        "params": " (--stop)",
+        "desc": "starts a stopwatch",
+        "aliases": [
+          "timer"
+        ]
+      },
+      {
+        "name": "response",
+        "params": "<message> (-lim) (--1)",
+        "desc": "finds the message (response) after <message> in chat with a limit of lim defaults to 1000"
+      },
+      {
+        "name": "wiki",
+        "params": "<query> ",
+        "desc": "gives link to wikipedia/query",
+        "aliases": [
+          "wikipedia"
+        ]
+      },
+      {
+        "name": "timeit",
+        "params": "<command <> [] ()>",
+        "desc": "times how long a command takes"
+      },
+      {
+        "name": "avatar",
+        "params": "[user]",
+        "desc": "gets the avatar of user, defaults to you"
+      },
+      {
+        "name": "servericon",
+        "params": null,
+        "desc": "gets the server icon"
+      },
+      {
+        "name": "count",
+        "params": "(--i) (--b) (--ib) (--e (-c <color>)) (--u) (--ui) (--all)",
+        "desc": "counts in #counting\n--i makes *italic*\n--b makes **bold**\n--ib makes ***italic and bold***\n--e makes embeded, if -c must be a hex code like 00ffe2\n--u makes underlined\n--ui makes underlined + italic\n-all sends __***number***__"
+      },
+      {
+        "name": "fetchuser",
+        "params": "<userid>",
+        "desc": "says the nick_name of <userid> (must be an id)"
+      },
+      {
+        "name": "fetchrole",
+        "params": "<role id>",
+        "desc": "says the name of <role id> (must be an id)"
+      }
+    ]
+  },
+  {
+    "cat": "STAFF",
+    "desc": "commands only available to staff",
+    "cmds": [
+      {
+        "name": "clearinvites",
+        "params": null,
+        "desc": "clears the invites"
+      },
+      {
+        "name": "clear",
+        "params": "<amount>",
+        "desc": "clears <amount> of messages in chat"
+      }
+    ]
+  },
+  {
+    "cat": "INTERESTING",
+    "desc": "it's ok...",
+    "cmds": [
+      {
+        "name": "imscared",
+        "params": null,
+        "desc": "don't be scared :)"
+      },
+      {
+        "name": "slowdown",
+        "params": null,
+        "desc": "**Slow Down** :snail:"
+      },
+      {
+        "name": "typefor",
+        "params": "[time]",
+        "desc": "types for [time] defaults to 5 seconds"
+      },
+      {
+        "name": "daily",
+        "params": null,
+        "desc": "daily coin money time"
+      },
+      {
+        "name": "doihavecovid",
+        "params": null,
+        "desc": "gives an accurate reading if you have COVID--19 or not"
+      }
+    ]
+  },
+  {
+    "cat": "CUSTOM",
+    "desc": "custom cmds",
+    "cmds": []
+  }
+]
