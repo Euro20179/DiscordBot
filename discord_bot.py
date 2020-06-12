@@ -303,10 +303,10 @@ async def on_message(msg):
             if lives <= 0:
                 if int(content) == ans: await msg.channel.send(embed=discord.Embed(title=f'{msg.author.display_name} ITS A DRAW', color=discord.Color.from_rgb(155, 155, 155)))
                 else: 
-                    say = f"YOU LOSE\nTHE ANSWER WAS {ans}" if not Bet else f'YOU LOSE\nTHE ANSWER WAS {ans}\nYOU LOSE {(int(ans) // startLives) // 2}'
+                    say = f"YOU LOSE\nTHE ANSWER WAS {ans}" if not Bet else f'YOU LOSE\nTHE ANSWER WAS {ans}\nYOU LOSE {(int(ans) // startLives)}'
                     await msg.channel.send(embed=discord.Embed(title=say, color=discord.Color.from_rgb(255, 0, 0)))
                 del playingGuessingGame[msg.author.id]
-                if Bet: await addMoney(msg.author, -((int(ans) // startLives) // 2))
+                if Bet: await addMoney(msg.author, -(int(ans) // startLives))
                 return str(ans)
             elif int(content) == ans:
                 say = f"YOU WIN\nWITH {lives} LIVES LEFT" if not Bet else f'YOU WIN\nWITH {lives} LIVES LEFT\nYou earned {(int(ans) // startLives)}'
