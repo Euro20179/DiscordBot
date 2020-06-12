@@ -20,7 +20,7 @@ playingHangman = {}
 playingDB = []
 
 #CONSTS
-PREFIX = "["
+PREFIX = "]"
 token = "NjQxNzk1NjU2Mzc3MTcyMDAw.XcNk8g.HEvnaXjuXFQhN1iilaaffbiPcoo"
 DISEXT = "../disbot_ext"
 BASICINFO = {"level": 1, "xp": 0, "required": 1000, "lastTalked": 0, "message": '{author} you have leveled up to level {level}, very cool'}
