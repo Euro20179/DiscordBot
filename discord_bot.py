@@ -166,7 +166,7 @@ async def runCommand(msg, content, cmd, layer=1):
     elif cmd == "customcmdlist": 
         CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
         content = await oneLineCmd(msg, "\n".join([f'{x}: {y}' for x, y in CUSTOMCMDS.items()]))
-    elif cmd in CUSTOMCMDS.keys(): content = await oneLineCmd(msg, CUSTOMCMDS[cmd])
+    elif cmd in CUSTOMCMDS.keys(): content = await oneLineCmd(msg, CUSTOMCMDS[cmd].format("{content}", content[len(cmd) + 2:]))
     elif cmd not in CMDLIST: 
         with open(commandusageFilePath, "r+") as j:
             data = json.load(j)
