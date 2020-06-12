@@ -4,11 +4,15 @@ def isBot(msg, client)->bool:
     return msg.author == client.user or msg.author.bot
 
 async def writeToFile(msg, content, F):
-    with open(f"{F}.txt", "w") as f:
+    if "." in F: 
+        ext = F.split(".")[1]
+        F = F.replace(f".{ext}", "")
+    else: ext = "txt"
+    with open(f"{F}.{ext}", "w") as f:
         f.write(content)
-    with open(f"{F}.txt", "rb") as f:
-        await msg.channel.send(file=discord.File(f, f"{F}.txt"))
-    os.remove(f'{F}.txt')
+    with open(f"{F}.{ext}", "rb") as f:
+        await msg.channel.send(file=discord.File(f, f"{F}.{ext}"))
+    os.remove(f'{F}.{ext}')
 
 async def removeFromList(l, *args):
     for arg in args: l.remove(arg)

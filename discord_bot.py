@@ -283,6 +283,7 @@ async def on_message(msg):
             content = await runCommand(msg, content, cmd)
             if WriteToFile:
                 await writeToFile(msg, content.content, WriteToFile)
+                await content.delete()
 
     if playingGuessingGame.get(msg.author.id):
         c = msg.content
