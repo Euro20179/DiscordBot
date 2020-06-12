@@ -1,4 +1,4 @@
-4.0 (6/11/2020) (biggest update as of update)
+4.0-rc1 (6/11/2020) (biggest update as of update)
 
 ADDITIONS:
 *whohas, gives the members who have a certain role
