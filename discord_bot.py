@@ -75,17 +75,18 @@ async def runCommand(msg, content, cmd, layer=1):
     elif cmd == "upupdowndownleftrightleftright":
         return await msg.channel.send("what do you think this is some arcade machine with secret codes, lol")
 
-    elif cmd == "timers": content = await timers(msg, content)
     elif cmd == "echo": content = await echo(msg, content)
+    elif cmd == "iq": content = await iq(msg, content)
+    elif cmd in ["magicball", "8ball", "7ball"]: content = await magicBall(msg, content, cmd=cmd)
+    elif cmd in ["level", "rank", "lvl"]: content = await level(msg, content, cmd=cmd)
+    elif cmd in ["top", "leaderboard", "levels", "lb"]: content = await leaderboard(msg, content)
+    elif cmd in ["ship", "boat", "boip"]: content = await oneLineCmd(msg, "DISCLAIMER: I DO NOT SUPPORT SHIPPING PEOPLE IN ANY WAY, HOWEVER MY MASTER SEEMS TO HAVE OTHER PLANS" if random.random() >= .985 else f'{splitContent(content, ", ")[0].replace("[" + cmd + " ", "")[0:len(splitContent(content, ", ")[0].replace("[" + cmd + " ", "")) // 2]}{splitContent(content, ", ")[1][len(splitContent(content, ", ")[1]) // 2:]}')
+    elif cmd == "timers": content = await timers(msg, content)
     elif cmd == "ping": content = await ping(msg, content)
     elif cmd == "help": content = await hlp(msg, content)
     elif cmd in ["commandusage", "cmduse", "cmdusage", "commanduse"]: content = await cmdUsage(msg, content, cmd=cmd)
     elif cmd in ["findans", "equation", "result", "eval", "calc"]: content = await calc(msg, content, cmd=cmd)
-    elif cmd == "iq": content = await iq(msg, content)
     elif cmd == "shrug": content = await shrug(msg, content)
-    elif cmd in ["level", "rank", "lvl"]: content = await level(msg, content, cmd=cmd)
-    elif cmd in ["top", "leaderboard", "levels", "lb"]: content = await leaderboard(msg, content)
-    elif cmd in ["magicball", "8ball", "7ball"]: content = await magicBall(msg, content, cmd=cmd)
     elif cmd == "spam": content = await spamCmd(msg, content)
     elif cmd in ["randomface","randface", "rface"]: content = await randomFace(msg, content, cmd=cmd)
     elif cmd in ["ttc", "thetroycommand"]: content = await oneLineCmd(msg, random.choice(("meow", "7", "**7**", "*7*", "mo", ":TiredPuffle:")))
@@ -106,7 +107,6 @@ async def runCommand(msg, content, cmd, layer=1):
     elif cmd == "roleinfo": content = await roleInfo(msg, content)
     elif cmd == "rand": content = await rand(msg, content)
     elif cmd == "rolecount": content = await roleCount(msg, content)
-    elif cmd in ["ship", "boat", "boip"]: content = await oneLineCmd(msg, "DISCLAIMER: I DO NOT SUPPORT SHIPPING PEOPLE IN ANY WAY, HOWEVER MY MASTER SEEMS TO HAVE OTHER PLANS" if random.random() >= .985 else f'{splitContent(content, ", ")[0].replace("[" + cmd + " ", "")[0:len(splitContent(content, ", ")[0].replace("[" + cmd + " ", "")) // 2]}{splitContent(content, ", ")[1][len(splitContent(content, ", ")[1]) // 2:]}')
     elif cmd in ["comproles", "compareroles"]: content = await compareRoles(msg, content, cmd=cmd)
     elif cmd == "family": content = await family(msg, content)
     elif cmd == "mballreply": content = await mballreply(msg, content)
@@ -166,6 +166,7 @@ async def runCommand(msg, content, cmd, layer=1):
     elif cmd == "customcmdlist": 
         CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
         content = await oneLineCmd(msg, "\n".join([f'{x}: {y}' for x, y in CUSTOMCMDS.items()]))
+    elif cmd == "duplicator": content = await duplicator(msg, content)
     elif cmd in CUSTOMCMDS.keys(): content = await oneLineCmd(msg, CUSTOMCMDS[cmd].replace("{content}", content[len(cmd) + 2:]))
     elif cmd not in CMDLIST: 
         with open(commandusageFilePath, "r+") as j:

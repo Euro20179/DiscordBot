@@ -1353,3 +1353,10 @@ async def inventory(msg, content, cmd="inv"):
             del count
             del s
         else: return await msg.channel.send("none")
+
+async def duplicator(msg, content, cmd="duplicator"):
+    times = 2
+    if (t := splitContent(content, " ")[1]).isnumeric():
+        times = int(t)
+        content = content.replace(f' {str(times)}', "")
+    return await msg.channel.send(f'{content[len(cmd) + 2:]} '*times)
