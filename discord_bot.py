@@ -300,9 +300,9 @@ async def on_message(msg):
                 del playingGuessingGame[msg.author.id]
                 return str(ans)
             elif int(content) == ans:
-                await msg.channel.send(embed=discord.Embed(title=f"{msg.author.display_name} YOU WIN\nWITH {lives} LIVES LEFT\nYou earned {(int(ans) // lives)}", color=discord.Color.from_rgb(0, 255, 0)))
+                await msg.channel.send(embed=discord.Embed(title=f"{msg.author.display_name} YOU WIN\nWITH {lives} LIVES LEFT\nYou earned {(int(ans) // startLives)}", color=discord.Color.from_rgb(0, 255, 0)))
                 del playingGuessingGame[msg.author.id]
-                if ans <= 100 and startLives <= 7: await addMoney(msg.author, int(ans))
+                await addMoney(msg.author, (int(ans) // startLives))
                 return str(ans)
             await msg.channel.send(f"{msg.author.mention} too high" if int(c) > ans else f"{msg.author.mention} too low")
         else: await msg.channel.send("NaN")
