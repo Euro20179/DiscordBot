@@ -1,3 +1,10 @@
+4.0.9
+
+ADDITIONS:
+*--raw to mmoney
+    *if you wanna know who has the most money, you have to sort the json file and be able to read it :) gl lol
+
+====================================================================
 4.0.8.1
 
 CHANGES:

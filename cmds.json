@@ -274,8 +274,8 @@
       },
       {
         "name": "bal",
-        "params": "[user] ",
-        "desc": "your money",
+        "params": "[user] (--raw)",
+        "desc": "your money\n--raw gives the json",
         "aliases": [
           "mmoney",
           "mymoney",

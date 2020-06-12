@@ -1297,6 +1297,9 @@ async def INIT_deathBattle(msg, content, cmd="deathbatte"):
     
 async def mmoney(msg, content, cmd="mmoney"):
     user = await getUserInContent(msg, content, cmd)
+    if testInContent(content, "--raw"):
+        with open(moneyDataFilePath, "rb") as f:
+            await msg.channel.send(file=discord.File(f, "money.json"))
     with open(moneyDataFilePath, "r") as j:
         data = json.load(j)
         return await msg.channel.send(f'{user.name} has €{data.get(str(user.id))}')
