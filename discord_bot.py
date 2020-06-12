@@ -75,17 +75,18 @@ async def runCommand(msg, content, cmd, layer=1):
     elif cmd == "upupdowndownleftrightleftright":
         return await msg.channel.send("what do you think this is some arcade machine with secret codes, lol")
 
-    elif cmd == "timers": content = await timers(msg, content)
     elif cmd == "echo": content = await echo(msg, content)
+    elif cmd == "iq": content = await iq(msg, content)
+    elif cmd in ["magicball", "8ball", "7ball"]: content = await magicBall(msg, content, cmd=cmd)
+    elif cmd in ["level", "rank", "lvl"]: content = await level(msg, content, cmd=cmd)
+    elif cmd in ["top", "leaderboard", "levels", "lb"]: content = await leaderboard(msg, content)
+    elif cmd in ["ship", "boat", "boip"]: content = await oneLineCmd(msg, "DISCLAIMER: I DO NOT SUPPORT SHIPPING PEOPLE IN ANY WAY, HOWEVER MY MASTER SEEMS TO HAVE OTHER PLANS" if random.random() >= .985 else f'{splitContent(content, ", ")[0].replace("[" + cmd + " ", "")[0:len(splitContent(content, ", ")[0].replace("[" + cmd + " ", "")) // 2]}{splitContent(content, ", ")[1][len(splitContent(content, ", ")[1]) // 2:]}')
+    elif cmd == "timers": content = await timers(msg, content)
     elif cmd == "ping": content = await ping(msg, content)
     elif cmd == "help": content = await hlp(msg, content)
     elif cmd in ["commandusage", "cmduse", "cmdusage", "commanduse"]: content = await cmdUsage(msg, content, cmd=cmd)
     elif cmd in ["findans", "equation", "result", "eval", "calc"]: content = await calc(msg, content, cmd=cmd)
-    elif cmd == "iq": content = await iq(msg, content)
     elif cmd == "shrug": content = await shrug(msg, content)
-    elif cmd in ["level", "rank", "lvl"]: content = await level(msg, content, cmd=cmd)
-    elif cmd in ["top", "leaderboard", "levels", "lb"]: content = await leaderboard(msg, content)
-    elif cmd in ["magicball", "8ball", "7ball"]: content = await magicBall(msg, content, cmd=cmd)
     elif cmd == "spam": content = await spamCmd(msg, content)
     elif cmd in ["randomface","randface", "rface"]: content = await randomFace(msg, content, cmd=cmd)
     elif cmd in ["ttc", "thetroycommand"]: content = await oneLineCmd(msg, random.choice(("meow", "7", "**7**", "*7*", "mo", ":TiredPuffle:")))
@@ -106,7 +107,6 @@ async def runCommand(msg, content, cmd, layer=1):
     elif cmd == "roleinfo": content = await roleInfo(msg, content)
     elif cmd == "rand": content = await rand(msg, content)
     elif cmd == "rolecount": content = await roleCount(msg, content)
-    elif cmd in ["ship", "boat", "boip"]: content = await oneLineCmd(msg, "DISCLAIMER: I DO NOT SUPPORT SHIPPING PEOPLE IN ANY WAY, HOWEVER MY MASTER SEEMS TO HAVE OTHER PLANS" if random.random() >= .985 else f'{splitContent(content, ", ")[0].replace("[" + cmd + " ", "")[0:len(splitContent(content, ", ")[0].replace("[" + cmd + " ", "")) // 2]}{splitContent(content, ", ")[1][len(splitContent(content, ", ")[1]) // 2:]}')
     elif cmd in ["comproles", "compareroles"]: content = await compareRoles(msg, content, cmd=cmd)
     elif cmd == "family": content = await family(msg, content)
     elif cmd == "mballreply": content = await mballreply(msg, content)
@@ -166,6 +166,7 @@ async def runCommand(msg, content, cmd, layer=1):
     elif cmd == "customcmdlist": 
         CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
         content = await oneLineCmd(msg, "\n".join([f'{x}: {y}' for x, y in CUSTOMCMDS.items()]))
+    elif cmd == "duplicator": content = await duplicator(msg, content)
     elif cmd in CUSTOMCMDS.keys(): content = await oneLineCmd(msg, CUSTOMCMDS[cmd].replace("{content}", content[len(cmd) + 2:]))
     elif cmd not in CMDLIST: 
         with open(commandusageFilePath, "r+") as j:
@@ -262,7 +263,7 @@ async def on_message(msg):
                 high = int(c[1])
                 if len(c) >= 3: lives = int(c[2])
             ans = random.randint(low, high)
-            playingGuessingGame[msg.author.id] = {"ans": ans, "lives": lives}
+            playingGuessingGame[msg.author.id] = {"ans": ans, "lives": lives, "startLives": lives}
             return await msg.channel.send("guess")
 
         elif cmd == "reactiontime":
@@ -287,6 +288,7 @@ async def on_message(msg):
         c = msg.content
         ans = playingGuessingGame[msg.author.id]["ans"]
         lives = playingGuessingGame[msg.author.id]["lives"]
+        startLives = playingGuessingGame[msg.author.id]["startLives"]
         if c in ["stop", "giveup", "cancel"]:
             await msg.channel.send(embed=discord.Embed(title=f'{msg.author.display_name} YOU LOSE\nTHE ANSWER WAS {ans}', color=discord.Color.from_rgb(100, 0, 0)))
             del playingGuessingGame[msg.author.id]
@@ -296,11 +298,13 @@ async def on_message(msg):
                 if int(content) == ans: await msg.channel.send(embed=discord.Embed(title=f'{msg.author.display_name} ITS A DRAW', color=discord.Color.from_rgb(155, 155, 155)))
                 else: await msg.channel.send(embed=discord.Embed(title=f'{msg.author.display_name} YOU LOSE\nTHE ANSWER WAS {ans}', color=discord.Color.from_rgb(255, 0, 0)))
                 del playingGuessingGame[msg.author.id]
+                return str(ans)
             elif int(content) == ans:
-                await msg.channel.send(embed=discord.Embed(title=f"{msg.author.display_name} YOU WIN\nWITH {lives} LIVES LEFT", color=discord.Color.from_rgb(0, 255, 0)))
+                await msg.channel.send(embed=discord.Embed(title=f"{msg.author.display_name} YOU WIN\nWITH {lives} LIVES LEFT\nYou earned {(int(ans) // lives)}", color=discord.Color.from_rgb(0, 255, 0)))
                 del playingGuessingGame[msg.author.id]
-                return ""
-            await msg.channel.send("too high" if int(c) > ans else "too low")
+                if ans <= 100 and startLives <= 7: await addMoney(msg.author, int(ans))
+                return str(ans)
+            await msg.channel.send(f"{msg.author.mention} too high" if int(c) > ans else f"{msg.author.mention} too low")
         else: await msg.channel.send("NaN")
         playingGuessingGame[msg.author.id]["lives"] = lives
         await msg.channel.send(f"guess\nyou have {lives} lives left")

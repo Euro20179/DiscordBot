@@ -94,6 +94,11 @@
     "desc": "fun commands",
     "cmds": [
       {
+        "name": "duplicator",
+        "params": "[times] <message>",
+        "desc": "duplicates your <message> [times] times defaults to 2"
+      },
+      {
         "name": "ship",
         "params": "<name1>, <name2> (sep with commas)",
         "desc": "takes the first half of name1 and combines it with the second half of name2",
