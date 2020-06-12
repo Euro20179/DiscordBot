@@ -139,8 +139,8 @@ async def oneLineCmd(msg : discord.Message, say : str, delete=True)->discord.Mes
 async def addMoney(member, amnt):
     with open(moneyDataFilePath, "r+") as j:
         data = json.load(j)
-        if (d := data.get(str(member.id))):
-            d += amnt
+        if data.get(str(member.id)):
+            data[str(member.id)] += amnt
         else: data[str(member.id)] = amnt
         clearFile(j)
         json.dump(data, j)
