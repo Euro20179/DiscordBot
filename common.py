@@ -49,7 +49,6 @@ async def reloadCMDSLIST():
         CATS = {cat["cat"]: cat["cmds"] for cat in data}
         CMDLIST = tuple(cmd for _ in CATS.values() for cmd in _) #gets a list of commands
         CUSTOMCMDS = {cmd["name"]: cmd["desc"] for cmd in CATS["CUSTOM"]}
-        print(CUSTOMCMDS)
     return CATS, CMDLIST, CUSTOMCMDS
 
 def isBot(msg, client)->bool:

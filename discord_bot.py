@@ -12,17 +12,31 @@ async def on_ready():
 
 async def runCommand(msg, content, cmd, layer=1):
     global CUSTOMCMDS, CATS, CMDLIST
-    if r"/{" in content: 
-        temp = content.split(r"/{")
+    DOFIRST = f'--{layer} '
+    if DOFIRST in content:
+        c = await runCommand(msg, content.split(DOFIRST)[1], splitContent(content, DOFIRST, index=1).split(" ")[0][1:], layer=layer + 1)
+        content = f'{content.split(f" {DOFIRST}")[0]} {c.content}'
+        msg = c
+        await c.delete()
+        layer += 1
+
+    if "/{" in content:
+        temp = list(reversed(content.split("/{")))
         tempCMDSLIST = tuple(x["name"] for x in CMDLIST)
-        for line in temp:
-            if (cmd := line.split("}")[0].split(" ")[0].strip()) in tempCMDSLIST:
-                foo = line.split("}")[0]
-                mssg = await runCommand(msg, foo, cmd=cmd.strip())
-                temp[temp.index(line)] = mssg.content + line.split("}")[1]
-                await mssg.delete()
-        content = "".join(temp)
-        return await runCommand(msg, content, cmd=content.split(" ")[0][1:])
+        print(temp)
+        for n, line in enumerate(temp):
+            if n + 1 == len(temp): break
+            foo = line.split("}")[0]
+            mssg = await runCommand(msg, foo, cmd=line.split("}")[0].split(" ")[0].strip())
+            temp[temp.index(line) + 1] += mssg.content
+            if line.split("}")[1]:
+                temp[-1] += line.split("}")[1]
+            await mssg.delete()
+        print(temp)
+        content = temp[-1]
+        print(content)
+        return await runCommand(msg, f'{content}', content.split(" ")[0][1:])
+
     with open(commandusageFilePath, "r+") as j:
         data = json.load(j)
         try: data[cmd] += 1
@@ -170,7 +184,6 @@ async def runCommand(msg, content, cmd, layer=1):
     elif cmd in ["inv", "inventory"]: content = await inventory(msg, content, cmd=cmd)
     elif cmd == "fortnite": content = await oneLineCmd(msg, "play minecraft instead")
     elif cmd == "duplicator": content = await duplicator(msg, content)
-    elif cmd == "stop": await stop()
     elif cmd in ["customcmd", "accmd", "customcommand"]: 
         content = await addCustomCmd(msg, content, cmd=cmd)
         CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
@@ -293,6 +306,9 @@ async def on_message(msg):
             else: 
                 end = time.time()
                 return await msg.channel.send(f'your reaction time {end - start}')
+        elif cmd == "stop":
+            if TICDelete(content): await msg.message.delete()
+            await stop()
         else: 
             content = await runCommand(msg, content, cmd)
             if WriteToFile:

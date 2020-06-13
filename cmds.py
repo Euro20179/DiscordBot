@@ -242,7 +242,7 @@ async def magicBall(msg, content, cmd="8ball"):
 async def spamCmd(msg, content, cmd="spam"):
     global Stop
     if Stop: Stop = False
-
+    print(content)
     c = content[len(cmd) + 2:]
 
     try: messages = int(c[:c.find(" ")])
