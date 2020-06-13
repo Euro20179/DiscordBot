@@ -10,15 +10,19 @@ async def on_ready():
     CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
     print(f"ONLINE\nversion: {VERSION}")
 
-async def runCommand(msg, content, cmd, layer=1, sendMsg=True):
+async def runCommand(msg, content, cmd, layer=1):
     global CUSTOMCMDS, CATS, CMDLIST
-    DOFIRST = f'--{layer} '
-    if DOFIRST in content:
-        c = await runCommand(msg, content.split(DOFIRST)[1], splitContent(content, DOFIRST, index=1).split(" ")[0][1:], layer=layer + 1, sendMsg=False)
-        content = f'{content.split(f" {DOFIRST}")[0]} {c.content}'
-        msg = c
-        layer += 1
-
+    if r"/{" in content: 
+        temp = content.split(r"/{")
+        tempCMDSLIST = tuple(x["name"] for x in CMDLIST)
+        for line in temp:
+            if (cmd := line.split("}")[0].split(" ")[0].strip()) in tempCMDSLIST:
+                foo = line.split("}")[0]
+                mssg = await runCommand(msg, foo, cmd=cmd.strip())
+                temp[temp.index(line)] = mssg.content + line.split("}")[1]
+                await mssg.delete()
+        content = "".join(temp)
+        return await runCommand(msg, content, cmd=content.split(" ")[0][1:])
     with open(commandusageFilePath, "r+") as j:
         data = json.load(j)
         try: data[cmd] += 1
@@ -83,15 +87,15 @@ async def runCommand(msg, content, cmd, layer=1, sendMsg=True):
     elif cmd == "upupdowndownleftrightleftright":
         return await msg.channel.send("what do you think this is some arcade machine with secret codes, lol")
 
-    elif cmd == "echo": content = await echo(msg, content, sendMsg=sendMsg)
-    elif cmd == "iq": content = await iq(msg, content, sendMsg=sendMsg)
-    elif cmd in ["magicball", "8ball", "7ball"]: content = await magicBall(msg, content, cmd=cmd, sendMsg=sendMsg)
-    elif cmd in ["level", "rank", "lvl"]: content = await level(msg, content, cmd=cmd, sendMsg=sendMsg)
-    elif cmd in ["top", "leaderboard", "levels", "lb"]: content = await leaderboard(msg, content, sendMsg=sendMsg)
-    elif cmd in ["ship", "boat", "boip"]: content = await oneLineCmd(msg, "DISCLAIMER: I DO NOT SUPPORT SHIPPING PEOPLE IN ANY WAY, HOWEVER MY MASTER SEEMS TO HAVE OTHER PLANS" if random.random() >= .985 else f'{splitContent(content, ", ")[0].replace("[" + cmd + " ", "")[0:len(splitContent(content, ", ")[0].replace("[" + cmd + " ", "")) // 2]}{splitContent(content, ", ")[1][len(splitContent(content, ", ")[1]) // 2:]}', sendMsg=sendMsg)
-    elif cmd == "timers": content = await timers(msg, content, sendMsg=sendMsg)
-    elif cmd == "ping": content = await ping(msg, content, sendMsg=sendMsg)
-    elif cmd == "help": content = await hlp(msg, content, sendMsg=sendMsg)
+    elif cmd == "echo": content = await echo(msg, content)
+    elif cmd == "iq": content = await iq(msg, content)
+    elif cmd in ["magicball", "8ball", "7ball"]: content = await magicBall(msg, content, cmd=cmd)
+    elif cmd in ["level", "rank", "lvl"]: content = await level(msg, content, cmd=cmd)
+    elif cmd in ["top", "leaderboard", "levels", "lb"]: content = await leaderboard(msg, content)
+    elif cmd in ["ship", "boat", "boip"]: content = await oneLineCmd(msg, "DISCLAIMER: I DO NOT SUPPORT SHIPPING PEOPLE IN ANY WAY, HOWEVER MY MASTER SEEMS TO HAVE OTHER PLANS" if random.random() >= .985 else f'{splitContent(content, ", ")[0].replace("[" + cmd + " ", "")[0:len(splitContent(content, ", ")[0].replace("[" + cmd + " ", "")) // 2]}{splitContent(content, ", ")[1][len(splitContent(content, ", ")[1]) // 2:]}')
+    elif cmd == "timers": content = await timers(msg, content)
+    elif cmd == "ping": content = await ping(msg, content)
+    elif cmd == "help": content = await hlp(msg, content)
     elif cmd in ["commandusage", "cmduse", "cmdusage", "commanduse"]: content = await cmdUsage(msg, content, cmd=cmd)
     elif cmd in ["findans", "equation", "result", "eval", "calc"]: content = await calc(msg, content, cmd=cmd)
     elif cmd == "shrug": content = await shrug(msg, content)
@@ -101,7 +105,7 @@ async def runCommand(msg, content, cmd, layer=1, sendMsg=True):
     elif cmd in ["thepenguincommand", "tpc", "thewavecommand", "twc"]: content = await oneLineCmd(msg, random.choice(("very nice!", "very cool!", ":TiredPuffle:")))
     elif cmd in ["mmoney", "mymoney", "money", "bal"]: content = await mmoney(msg, content, cmd)
     elif cmd in ["ucodechar", "unicodechar"]: content = await unicodeChar(msg, content, cmd=cmd)
-    elif cmd == "serveremote": content = await serverEmote(msg, content, sendMsg=sendMsg)
+    elif cmd == "serveremote": content = await serverEmote(msg, content)
     elif cmd == "doesnothing": content = await writeRoles(msg, content)
     elif cmd == "spacer": content = await spacer(msg, content)
     elif cmd == "version": content = await oneLineCmd(msg, VERSION)
@@ -160,21 +164,20 @@ async def runCommand(msg, content, cmd, layer=1, sendMsg=True):
     elif cmd == "covid": content = await covid(msg, content)
     elif cmd == "hypixelpc": content = await hypixelPlayerCount(msg, content)
     elif cmd in ["hasrole", "whohas"]: content = await whoHasRole(msg, content, cmd=cmd)
+    elif cmd in ["db", "deathbattle"]: content = await INIT_deathBattle(msg, content, cmd=cmd)
+    elif cmd == "shop": content = await shop(msg, content)
+    elif cmd in ["buyitem", "buy"]: content = await buyItem(msg, content, cmd=cmd)
+    elif cmd in ["inv", "inventory"]: content = await inventory(msg, content, cmd=cmd)
+    elif cmd == "fortnite": content = await oneLineCmd(msg, "play minecraft instead")
+    elif cmd == "duplicator": content = await duplicator(msg, content)
+    elif cmd == "stop": await stop()
     elif cmd in ["customcmd", "accmd", "customcommand"]: 
         content = await addCustomCmd(msg, content, cmd=cmd)
         CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
     elif cmd in ["removecustomcmd", "delcustomcmd", "dccmd", "rccmd"]: 
         content = await removeCustomCmd(msg, content, cmd=cmd)
         CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
-    elif cmd in ["db", "deathbattle"]: content = await INIT_deathBattle(msg, content, cmd=cmd)
-    elif cmd == "shop": content = await shop(msg, content)
-    elif cmd in ["buyitem", "buy"]: content = await buyItem(msg, content, cmd=cmd)
-    elif cmd in ["inv", "inventory"]: content = await inventory(msg, content, cmd=cmd)
-    elif cmd == "fortnite": content = await oneLineCmd(msg, "play minecraft instead")
-    elif cmd == "customcmdlist": 
-        CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
-        content = await oneLineCmd(msg, "\n".join([f'{x}: {y}' for x, y in CUSTOMCMDS.items()]))
-    elif cmd == "duplicator": content = await duplicator(msg, content)
+    elif cmd == "customcmdlist": await customCmdList(msg, content, cmd=cmd)
     elif cmd in CUSTOMCMDS.keys(): 
         say = CUSTOMCMDS[cmd].replace("{content}", content[len(cmd) + 2:]).replace("{version}", VERSION).replace("{author}", msg.author.mention)
         temp = say.split("{")
@@ -182,7 +185,7 @@ async def runCommand(msg, content, cmd, layer=1, sendMsg=True):
         for line in temp:
             if (cmd := line.split("}")[0].split(" ")[0].strip()) in tempCMDSLIST:
                 foo = line.split("}")[0]
-                mssg = await runCommand(msg, foo, cmd=cmd, sendMsg=False)
+                mssg = await runCommand(msg, foo, cmd=cmd)
                 temp[temp.index(line)] = mssg.content + line.split("}")[1]
                 await mssg.delete()
         say = "".join(temp)
@@ -290,9 +293,6 @@ async def on_message(msg):
             else: 
                 end = time.time()
                 return await msg.channel.send(f'your reaction time {end - start}')
-        elif cmd == "stop":
-            if TICDelete(content): await msg.message.delete()
-            await stop()
         else: 
             content = await runCommand(msg, content, cmd)
             if WriteToFile:
@@ -325,7 +325,6 @@ async def on_message(msg):
                 if Bet: await addMoney(msg.author, (int(ans) // startLives))
                 return str(ans)
             await msg.channel.send(f"{msg.author.mention} too high" if int(c) > ans else f"{msg.author.mention} too low")
-        else: await msg.channel.send("NaN")
         playingGuessingGame[msg.author.id]["lives"] = lives
         await msg.channel.send(f"guess\nyou have {lives} lives left")
 

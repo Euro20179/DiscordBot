@@ -1,7 +1,7 @@
 [
   {
     "cat": "KEY",
-    "desc": "<> required parameter, [] optional parameter, () option, (--1) lets you do\n[serveremote 10 -sep --1 [serveremote",
+    "desc": "<> required parameter, [] optional parameter, () option, lets you do\n[serveremote 10 -sep --1 [serveremote",
     "cmds": []
   },
   {
@@ -46,6 +46,11 @@
         "name": ">>>",
         "params": "<filename>",
         "desc": "writes the answer to <filename>"
+      },
+      {
+        "name": "/{}",
+        "params": "cmd <> [] ()",
+        "desc": "does the cmd inside of {} first\nask euro"  
       }
     ]
   },
@@ -119,7 +124,7 @@
       },
       {
         "name": "8ball",
-        "params": "[question], (--1)",
+        "params": "[question]",
         "desc": "the magic 8 ball ooooo spooky",
         "aliases": [
           "magicball"
@@ -132,7 +137,7 @@
       },
       {
         "name": "randomface",
-        "params": " (--1)",
+        "params": "",
         "desc": "sends a random face ie: :]",
         "aliases": [
           "rface"
@@ -158,7 +163,7 @@
       },
       {
         "name": "unicodechar",
-        "params": "[amount]  (--1) (-sep)",
+        "params": "[amount]  (-sep)",
         "desc": "sends [amount] of unicode chars, defaults to 1",
         "aliases": [
           "ucodechar"
@@ -171,12 +176,12 @@
       },
       {
         "name": "serveremote",
-        "params": "[amount] (-sep <sepby>) (--1)",
+        "params": "[amount] (-sep <sepby>)",
         "desc": "sends [amount] of random server emotes, defaults to 1"
       },
       {
         "name": "upperlower",
-        "params": "<message>  (--1)",
+        "params": "<message> ",
         "desc": "sends <message> BuT lIkE tHiS",
         "aliases": [
           "ul"
@@ -204,7 +209,7 @@
       },
       {
         "name": "sanity",
-        "params": "<message>  (-r) (--1)",
+        "params": "<message>  (-r)",
         "desc": "gives the sanity of <message>\n-r rounds the decimal"
       },
       {
@@ -219,12 +224,12 @@
       },
       {
         "name": "piglatin",
-        "params": "<message> (--kc) (--1)",
+        "params": "<message> (--kc)",
         "desc": "onvertscay essagemay intoay igpay atinlay\n--kc eppskay asecay"
       },
       {
         "name": "iq",
-        "params": "[message] (--1) ",
+        "params": "[message] ",
         "desc": "gives the iq of message, if not message, you"
       }
     ]
@@ -308,7 +313,7 @@
     "cmds": [
       {
         "name": "choose",
-        "params": "*<from> (sep with commas) (-picks <amount>) (--1)",
+        "params": "*<from> (sep with commas) (-picks <amount>)",
         "desc": "chooses -picks amount of <from>, defaults to 1 pick"
       },
       {
@@ -318,7 +323,7 @@
       },
       {
         "name": "rand",
-        "params": "<low> <high> [round] (--even) (-odd)  (--1)",
+        "params": "<low> <high> [round] (--even) (-odd) ",
         "desc": "picks a random number from <low> to <high>\nif either is a decimal it'll give a decimal rounded to [round] defaults to no round\nif --odd or --even it'll be an odd or even number"
       }
     ]
@@ -329,7 +334,7 @@
     "cmds": [
       {
         "name": "bin",
-        "params": "*<num> (sep with commas) (--1)",
+        "params": "*<num> (sep with commas)",
         "desc": "gives the binary form of each <num> (base 2)"
       },
       {
@@ -339,22 +344,22 @@
       },
       {
         "name": "hex",
-        "params": "*<num> (sep with commas) (--1)",
+        "params": "*<num> (sep with commas)",
         "desc": "gives the hexidecimal form of each <num> (base 16)"
       },
       {
         "name": "oct",
-        "params": "*<num> (sep with commas) (--1)",
+        "params": "*<num> (sep with commas)",
         "desc": "gives the oct form of each <num> (base 8)"
       },
       {
         "name": "toc",
-        "params": "<temp (fahrenheit)> (--1)",
+        "params": "<temp (fahrenheit)>",
         "desc": "gives the celcius temp of <temp>"
       },
       {
         "name": "tof",
-        "params": "<temp (celcius)> (--1)",
+        "params": "<temp (celcius)>",
         "desc": "gives the fahrenheit temp of <temp>"
       }
     ]
@@ -431,7 +436,7 @@
       },
       {
         "name": "mostroles",
-        "params": "[top] (--1)",
+        "params": "[top]",
         "desc": "sends the top top members by role count, defaults to top 5"
       },
       {
@@ -508,7 +513,7 @@
       },
       {
         "name": "alphabet",
-        "params": "(--vowels) (--consonants) (--1)",
+        "params": "(--vowels) (--consonants)",
         "desc": "gives the alphabet\n--vowels only vowels\nconsonants only consonants",
         "aliases": [
           "alpha"
@@ -539,7 +544,7 @@
       },
       {
         "name": "response",
-        "params": "<message> (-lim) (--1)",
+        "params": "<message> (-lim)",
         "desc": "finds the message (response) after <message> in chat with a limit of lim defaults to 1000"
       },
       {
