@@ -1,4 +1,10 @@
-4.1
+4.1.0.1 (6/13/2020)
+
+BACK:
+*--1 and /{} live together now
+
+====================================================================
+4.1 (6/13/2020)
 
 ADDTIONS:
 *{version} for customcmd
@@ -8,32 +14,32 @@ ADDTIONS:
 
 CHANGES:
 *guesinggame no longer says NaN when you don't type a number
-*--1 now instead is --{cmd <> [] ()}
+*--1 now instead is /{cmd <> [] ()}
 
 FIXES:
 *spam works better
 
 ====================================================================
-4.0.9
+4.0.9 (6/13/2020)
 
 ADDITIONS:
 *--raw to mmoney
     *if you wanna know who has the most money, you have to sort the json file and be able to read it :) gl lol
 
 ====================================================================
-4.0.8.1
+4.0.8.1 (6/13/2020)
 
 CHANGES:
 *losing in guessinggame subs the same amount as if you won instead of half
 
 ====================================================================
-4.0.8
+4.0.8 (6/13/2020)
 
 CHANGES:
 *you have to specify wheter or not you want to bet in guesinggame with --bet
 
 ====================================================================
-4.0.7
+4.0.7 (6/13/2020)
 
 CHANGES:
 *you now lose money for losing guessinggame

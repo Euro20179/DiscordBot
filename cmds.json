@@ -51,6 +51,11 @@
         "name": "/{}",
         "params": "cmd <> [] ()",
         "desc": "does the cmd inside of {} first\nask euro"  
+      },
+      {
+        "name": "--1",
+        "params": "cmd <> [] ()",
+        "desc": "similar to /{} ask euro"
       }
     ]
   },
