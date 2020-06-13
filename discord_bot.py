@@ -23,18 +23,16 @@ async def runCommand(msg, content, cmd, layer=1):
     if "/{" in content:
         temp = list(reversed(content.split("/{")))
         tempCMDSLIST = tuple(x["name"] for x in CMDLIST)
-        print(temp)
         for n, line in enumerate(temp):
             if n + 1 == len(temp): break
             foo = line.split("}")[0]
-            mssg = await runCommand(msg, foo, cmd=line.split("}")[0].split(" ")[0].strip())
+            print(foo)
+            mssg = await runCommand(msg, f'{PREFIX}{foo}', cmd=line.split("}")[0].split(" ")[0].strip())
             temp[temp.index(line) + 1] += mssg.content
             if line.split("}")[1]:
                 temp[-1] += line.split("}")[1]
             await mssg.delete()
-        print(temp)
         content = temp[-1]
-        print(content)
         return await runCommand(msg, f'{content}', content.split(" ")[0][1:])
 
     with open(commandusageFilePath, "r+") as j:
@@ -194,6 +192,7 @@ async def runCommand(msg, content, cmd, layer=1):
     elif cmd in CUSTOMCMDS.keys(): 
         say = CUSTOMCMDS[cmd].replace("{content}", content[len(cmd) + 2:]).replace("{version}", VERSION).replace("{author}", msg.author.mention)
         temp = say.split("{")
+        print(say)
         tempCMDSLIST = tuple(x["name"] for x in CMDLIST)
         for line in temp:
             if (cmd := line.split("}")[0].split(" ")[0].strip()) in tempCMDSLIST:
@@ -202,6 +201,7 @@ async def runCommand(msg, content, cmd, layer=1):
                 temp[temp.index(line)] = mssg.content + line.split("}")[1]
                 await mssg.delete()
         say = "".join(temp)
+        print(say)
         content = await oneLineCmd(msg, say)
     elif cmd not in CMDLIST: 
         with open(commandusageFilePath, "r+") as j:
