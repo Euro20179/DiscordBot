@@ -3,24 +3,36 @@
         "id": 1,
         "name": "healing",
         "desc": "heals you for 40 health",
-        "cost": 70
+        "cost": 50
     },
     {
         "id": 2,
         "name": "Duel-Edged Sword",
         "desc": "deals 40 damage to the opponent, and 15 to you",
-        "cost": 180
+        "cost": 150
     },
     {
         "id": 3,
         "name": "RANDOM HEAL!!",
         "desc": "heals a random amount from 0 to 100",
-        "cost": 140
+        "cost": 120
     }, 
     {
         "id": 4,
         "name": "life or death",
         "desc": "50% chance to kill you or the other player",
-        "cost": 70
+        "cost": 50
+    },
+    {
+        "id": 5,
+        "name": "Even Match",
+        "desc": "sets each players health to 100",
+        "cost": 60
+    },
+    {
+        "id": 6,
+        "name": "Swap",
+        "desc": "swaps each plaery's health",
+        "cost": 120
     }
 ]

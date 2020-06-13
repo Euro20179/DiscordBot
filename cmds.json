@@ -240,6 +240,29 @@
     ]
   },
   {
+    "cat": "CUSTOMCMDS",
+    "desc": "cmds relating to custom cmds",
+    "cmds": [
+      {
+        "name": "customcmd",
+        "params": "<cmd name>, <say>",
+        "desc": "when [<cmd name> is typed it'll say <say>\n{content} will replace with the message of who did cmd\n{version} will replace with the bot's version",
+        "aliases": ["accmd", "customcommand"]
+      },
+      {
+        "name": "customcmdlist",
+        "params": null,
+        "desc": "lists the custom cmds"
+      },
+      {
+        "name": "dccmd",
+        "params": "<cmd name>",
+        "desc": "removes <cmd name> (must have message perms to use this)",
+        "aliases": ["removecustomcmd", "delcustomcmd", "rccmd"]
+      }
+    ]
+  },
+  {
     "cat": "GAMES",
     "desc": "games",
     "cmds": [
@@ -374,11 +397,6 @@
     "desc": "commands that give info",
     "cmds": [
       {
-        "name": "customcmdlist",
-        "params": null,
-        "desc": "sends a list of the custom cmds"
-      },
-      {
         "name": "pokemon",
         "params": "<pokemon pokedex #/name>",
         "desc": "gets info on pokemon"
@@ -509,12 +527,6 @@
           "name": "fortnite",
           "params": null,
           "desc": "gives the bot's insight on the game fortnite"
-      },
-      {
-        "name": "customcmd",
-        "params": "<cmd name>, <say>",
-        "desc": "when [<cmd name> is typed it'll say <say>\n{content} will replace with the message of who did cmd\n{version} will replace with the bot's version",
-        "aliases": ["accmd", "customcommand"]
       },
       {
         "name": "alphabet",

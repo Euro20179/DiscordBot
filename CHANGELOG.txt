@@ -1,3 +1,16 @@
+4.1.1
+
+ADDITIONS:
+*eccmd, edits a custom command
+*customcmd section in help
+*even match item
+*swap item
+
+CHANGES:
+*the main help menu is now blue
+*life or death has been reduced from 50 to 70 coins
+
+====================================================================
 4.1.0.2 (6/13/2020)
 
 FIXES:
