@@ -1,3 +1,19 @@
+4.1
+
+ADDTIONS:
+*{version} for customcmd
+*{author} mentions author
+*{} can now be interpreted as a command
+    *example: i am {choose good, bad}
+
+CHANGES:
+*guesinggame no longer says NaN when you don't type a number
+*--1 now instead is --{cmd <> [] ()}
+
+FIXES:
+*spam works better
+
+====================================================================
 4.0.9
 
 ADDITIONS:

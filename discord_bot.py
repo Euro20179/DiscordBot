@@ -1,16 +1,28 @@
 from common import *
 from cmds import *
 
+@client.event
+async def on_ready():
+    global blueCheck, neutral, CATS, CMDLIST, CUSTOMCMDS
+    await client.change_presence(activity=discord.Game(f'version: {VERSION}'))
+    blueCheck = discord.utils.get(client.emojis, name="Blue_check")
+    neutral = discord.utils.get(client.emojis, name="neutral")
+    CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
+    print(f"ONLINE\nversion: {VERSION}")
+
 async def runCommand(msg, content, cmd, layer=1):
     global CUSTOMCMDS, CATS, CMDLIST
-    DOFIRST = f'--{layer} '
-    if DOFIRST in content:
-        c = await runCommand(msg, content.split(DOFIRST)[1], splitContent(content, DOFIRST, index=1).split(" ")[0][1:], layer=layer + 1)
-        content = f'{content.split(f" {DOFIRST}")[0]} {c.content}'
-        msg = c
-        await c.delete()
-        layer += 1
-
+    if r"/{" in content: 
+        temp = content.split(r"/{")
+        tempCMDSLIST = tuple(x["name"] for x in CMDLIST)
+        for line in temp:
+            if (cmd := line.split("}")[0].split(" ")[0].strip()) in tempCMDSLIST:
+                foo = line.split("}")[0]
+                mssg = await runCommand(msg, foo, cmd=cmd.strip())
+                temp[temp.index(line)] = mssg.content + line.split("}")[1]
+                await mssg.delete()
+        content = "".join(temp)
+        return await runCommand(msg, content, cmd=content.split(" ")[0][1:])
     with open(commandusageFilePath, "r+") as j:
         data = json.load(j)
         try: data[cmd] += 1
@@ -152,22 +164,32 @@ async def runCommand(msg, content, cmd, layer=1):
     elif cmd == "covid": content = await covid(msg, content)
     elif cmd == "hypixelpc": content = await hypixelPlayerCount(msg, content)
     elif cmd in ["hasrole", "whohas"]: content = await whoHasRole(msg, content, cmd=cmd)
+    elif cmd in ["db", "deathbattle"]: content = await INIT_deathBattle(msg, content, cmd=cmd)
+    elif cmd == "shop": content = await shop(msg, content)
+    elif cmd in ["buyitem", "buy"]: content = await buyItem(msg, content, cmd=cmd)
+    elif cmd in ["inv", "inventory"]: content = await inventory(msg, content, cmd=cmd)
+    elif cmd == "fortnite": content = await oneLineCmd(msg, "play minecraft instead")
+    elif cmd == "duplicator": content = await duplicator(msg, content)
+    elif cmd == "stop": await stop()
     elif cmd in ["customcmd", "accmd", "customcommand"]: 
         content = await addCustomCmd(msg, content, cmd=cmd)
         CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
     elif cmd in ["removecustomcmd", "delcustomcmd", "dccmd", "rccmd"]: 
         content = await removeCustomCmd(msg, content, cmd=cmd)
         CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
-    elif cmd in ["db", "deathbattle"]: content = await INIT_deathBattle(msg, content, cmd=cmd)
-    elif cmd == "shop": content = await shop(msg, content)
-    elif cmd in ["buyitem", "buy"]: content = await buyItem(msg, content, cmd=cmd)
-    elif cmd in ["inv", "inventory"]: content = await inventory(msg, content, cmd=cmd)
-    elif cmd == "fortnite": content = await oneLineCmd(msg, "play minecraft instead")
-    elif cmd == "customcmdlist": 
-        CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
-        content = await oneLineCmd(msg, "\n".join([f'{x}: {y}' for x, y in CUSTOMCMDS.items()]))
-    elif cmd == "duplicator": content = await duplicator(msg, content)
-    elif cmd in CUSTOMCMDS.keys(): content = await oneLineCmd(msg, CUSTOMCMDS[cmd].replace("{content}", content[len(cmd) + 2:]))
+    elif cmd == "customcmdlist": await customCmdList(msg, content, cmd=cmd)
+    elif cmd in CUSTOMCMDS.keys(): 
+        say = CUSTOMCMDS[cmd].replace("{content}", content[len(cmd) + 2:]).replace("{version}", VERSION).replace("{author}", msg.author.mention)
+        temp = say.split("{")
+        tempCMDSLIST = tuple(x["name"] for x in CMDLIST)
+        for line in temp:
+            if (cmd := line.split("}")[0].split(" ")[0].strip()) in tempCMDSLIST:
+                foo = line.split("}")[0]
+                mssg = await runCommand(msg, foo, cmd=cmd)
+                temp[temp.index(line)] = mssg.content + line.split("}")[1]
+                await mssg.delete()
+        say = "".join(temp)
+        content = await oneLineCmd(msg, say)
     elif cmd not in CMDLIST: 
         with open(commandusageFilePath, "r+") as j:
             data = json.load(j)
@@ -176,15 +198,6 @@ async def runCommand(msg, content, cmd, layer=1):
             json.dump(data, j)
         content = await msg.channel.send(f'{cmd} {random.choice(("is not a thing", "does not exist"))}')
     return content
-
-@client.event
-async def on_ready():
-    global blueCheck, neutral, CATS, CMDLIST, CUSTOMCMDS
-    await client.change_presence(activity=discord.Game(f'version: {VERSION}'))
-    blueCheck = discord.utils.get(client.emojis, name="Blue_check")
-    neutral = discord.utils.get(client.emojis, name="neutral")
-    CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
-    print(f"ONLINE\nversion: {VERSION}")
 
 @client.event
 async def on_message(msg):
@@ -280,9 +293,6 @@ async def on_message(msg):
             else: 
                 end = time.time()
                 return await msg.channel.send(f'your reaction time {end - start}')
-        elif cmd == "stop":
-            if TICDelete(content): await msg.message.delete()
-            await stop()
         else: 
             content = await runCommand(msg, content, cmd)
             if WriteToFile:
@@ -315,7 +325,6 @@ async def on_message(msg):
                 if Bet: await addMoney(msg.author, (int(ans) // startLives))
                 return str(ans)
             await msg.channel.send(f"{msg.author.mention} too high" if int(c) > ans else f"{msg.author.mention} too low")
-        else: await msg.channel.send("NaN")
         playingGuessingGame[msg.author.id]["lives"] = lives
         await msg.channel.send(f"guess\nyou have {lives} lives left")
 
