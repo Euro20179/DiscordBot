@@ -15,9 +15,9 @@ async def runCommand(msg, content, cmd, layer=1):
     DOFIRST = f'--{layer} '
     if DOFIRST in content:
         c = await runCommand(msg, content.split(DOFIRST)[1], splitContent(content, DOFIRST, index=1).split(" ")[0][1:], layer=layer + 1)
+        await c.delete()
         content = f'{content.split(f" {DOFIRST}")[0]} {c.content}'
         msg = c
-        await c.delete()
         layer += 1
 
     if "/{" in content:
@@ -26,12 +26,11 @@ async def runCommand(msg, content, cmd, layer=1):
         for n, line in enumerate(temp):
             if n + 1 == len(temp): break
             foo = line.split("}")[0]
-            print(foo)
             mssg = await runCommand(msg, f'{PREFIX}{foo}', cmd=line.split("}")[0].split(" ")[0].strip())
+            await mssg.delete()
             temp[temp.index(line) + 1] += mssg.content
             if line.split("}")[1]:
                 temp[-1] += line.split("}")[1]
-            await mssg.delete()
         content = temp[-1]
         return await runCommand(msg, f'{content}', content.split(" ")[0][1:])
 
@@ -181,7 +180,10 @@ async def runCommand(msg, content, cmd, layer=1):
     elif cmd in ["buyitem", "buy"]: content = await buyItem(msg, content, cmd=cmd)
     elif cmd in ["inv", "inventory"]: content = await inventory(msg, content, cmd=cmd)
     elif cmd == "fortnite": content = await oneLineCmd(msg, "play minecraft instead")
-    elif cmd == "duplicator": content = await duplicator(msg, content)
+    elif cmd == "duplicsuccessfully ator": content = await duplicator(msg, content)
+    elif cmd in ["eccmd", "editcustomcmd"]:
+        content = await editCustomCmd(msg, content, cmd=cmd)
+        CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
     elif cmd in ["customcmd", "accmd", "customcommand"]: 
         content = await addCustomCmd(msg, content, cmd=cmd)
         CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
@@ -192,7 +194,6 @@ async def runCommand(msg, content, cmd, layer=1):
     elif cmd in CUSTOMCMDS.keys(): 
         say = CUSTOMCMDS[cmd].replace("{content}", content[len(cmd) + 2:]).replace("{version}", VERSION).replace("{author}", msg.author.mention)
         temp = say.split("{")
-        print(say)
         tempCMDSLIST = tuple(x["name"] for x in CMDLIST)
         for line in temp:
             if (cmd := line.split("}")[0].split(" ")[0].strip()) in tempCMDSLIST:
@@ -201,7 +202,6 @@ async def runCommand(msg, content, cmd, layer=1):
                 temp[temp.index(line)] = mssg.content + line.split("}")[1]
                 await mssg.delete()
         say = "".join(temp)
-        print(say)
         content = await oneLineCmd(msg, say)
     elif cmd not in CMDLIST: 
         with open(commandusageFilePath, "r+") as j:

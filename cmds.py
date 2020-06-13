@@ -13,7 +13,7 @@ async def hlp(msg, content, cmd="help"):
     if File: 
         cat = cat.replace(" --FILE", "").strip()
     if not cat and "--file" not in cat.lower():
-        embed = discord.Embed(title="General")
+        embed = discord.Embed(title="General", color=discord.Color(0x0000ff))
         with open("cmds.json", "r") as j:
             data = json.load(j)
             for cat in data:
@@ -1046,6 +1046,15 @@ async def deathBattle(msg, users, going, notGoing, responseTime, damageMsgs, hea
                 clearFile(j)
                 json.dump(data, j)
             CustomMessage = True
+            if AH.title() == "Even Match":
+                users[going]["health"] = 100
+                users[notGoing]["health"] = 100
+                CustomMessage = f'both players have been set to 100 hp'
+            if AH.title() == "Swap":
+                t1 = users[going]["health"]
+                t2 = users[notGoing]["health"]
+                users[going]["health"] = t2
+                users[notGoing]["health"] = t1
             if AH.lower() == "life or death":
                 die = random.choice([going, notGoing])
                 users[die]["health"] -= (users[die]["health"] + random.randint(0, 70))
@@ -1240,3 +1249,15 @@ async def customCmdList(msg, content, cmd="customcmdlist"):
     if testInContent(content, "--raw"):
         with open(customcmdsFilePath, "rb") as f: await msg.channel.send(file=discord.File(f, "customCmds.json"))
     else: content = await oneLineCmd(msg, "\n".join([f'{x}: {y}' for x, y in CUSTOMCMDS.items()]))
+
+async def editCustomCmd(msg, content, cmd="eccmd"):
+    lookFor = content.split(", ")[0][len(cmd) + 2:].strip()
+    changeTo = content.split(", ")[1]
+    with open(customcmdsFilePath, "r+") as j:
+        data = json.load(j)
+        for command in data:
+            if command["name"] == lookFor:
+                command["desc"] = changeTo
+        clearFile(j)
+        json.dump(data, j)
+    return await msg.channel.send("changed successfully")
