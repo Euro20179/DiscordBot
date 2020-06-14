@@ -499,7 +499,7 @@
     "cmds": [
       {
         "name": "commandusage",
-        "params": "[command] ",
+        "params": "[command] (-top <amount>)",
         "desc": "gives the times [command] was used, defaults to the top 10"
       },
       {
@@ -566,7 +566,7 @@
       },
       {
         "name": "response",
-        "params": "<message> (-lim)",
+        "params": "<message> (-lim <lim>)",
         "desc": "finds the message (response) after <message> in chat with a limit of lim defaults to 1000"
       },
       {

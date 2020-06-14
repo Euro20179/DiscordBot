@@ -98,89 +98,95 @@ async def runCommand(msg, content, cmd, layer=1):
     elif cmd == "upupdowndownleftrightleftright":
         return await msg.channel.send("what do you think this is some arcade machine with secret codes, lol")
 
-    elif cmd == "echo": content = await echo(msg, content)
-    elif cmd == "iq": content = await iq(msg, content)
-    elif cmd in ["magicball", "8ball", "7ball"]: content = await magicBall(msg, content, cmd=cmd)
-    elif cmd in ["level", "rank", "lvl"]: content = await level(msg, content, cmd=cmd)
-    elif cmd in ["top", "leaderboard", "levels", "lb"]: content = await leaderboard(msg, content)
-    elif cmd in ["ship", "boat", "boip"]: content = await oneLineCmd(msg, "DISCLAIMER: I DO NOT SUPPORT SHIPPING PEOPLE IN ANY WAY, HOWEVER MY MASTER SEEMS TO HAVE OTHER PLANS" if random.random() >= .985 else f'{splitContent(content, ", ")[0].replace("[" + cmd + " ", "")[0:len(splitContent(content, ", ")[0].replace("[" + cmd + " ", "")) // 2]}{splitContent(content, ", ")[1][len(splitContent(content, ", ")[1]) // 2:]}')
-    elif cmd == "timers": content = await timers(msg, content)
-    elif cmd == "ping": content = await ping(msg, content)
-    elif cmd == "help": content = await hlp(msg, content)
-    elif cmd in ["commandusage", "cmduse", "cmdusage", "commanduse"]: content = await cmdUsage(msg, content, cmd=cmd)
-    elif cmd in ["findans", "equation", "result", "eval", "calc"]: content = await calc(msg, content, cmd=cmd)
-    elif cmd == "shrug": content = await shrug(msg, content)
-    elif cmd == "spam": content = await spamCmd(msg, content)
-    elif cmd in ["randomface","randface", "rface"]: content = await randomFace(msg, content, cmd=cmd)
-    elif cmd in ["ttc", "thetroycommand"]: content = await oneLineCmd(msg, random.choice(("meow", "7", "**7**", "*7*", "mo", ":TiredPuffle:")))
-    elif cmd in ["thepenguincommand", "tpc", "thewavecommand", "twc"]: content = await oneLineCmd(msg, random.choice(("very nice!", "very cool!", ":TiredPuffle:")))
-    elif cmd in ["mmoney", "mymoney", "money", "bal"]: content = await mmoney(msg, content, cmd)
-    elif cmd in ["ucodechar", "unicodechar"]: content = await unicodeChar(msg, content, cmd=cmd)
-    elif cmd == "serveremote": content = await serverEmote(msg, content)
-    elif cmd == "doesnothing": content = await writeRoles(msg, content)
-    elif cmd == "spacer": content = await spacer(msg, content)
-    elif cmd == "version": content = await oneLineCmd(msg, VERSION)
-    elif cmd in ["upperlower", "ul"]: content = await upperLower(msg, content, cmd=cmd)
-    elif cmd == "longmessage": content = await oneLineCmd(msg, "```````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````hI```````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````")
-    elif cmd in ["rps", "rockpaperscissors"]: await startRPS(msg, content, cmd=cmd)
-    elif cmd == "flush": content = await oneLineCmd(msg, f"{splitContent(content.lower(), f'{cmd} ')[1]} has been flushed down the toilet :toilet::toilet::toilet::toilet::toilet::toilet::toilet::toilet:")
-    elif cmd in ["complexmessage", "message"]: content = await complexMessage(msg, content, cmd=cmd)
-    elif cmd == "sanity": content = await sanity(msg, content)
-    elif cmd == "coin": content = await coin(msg, content)
-    elif cmd == "roleinfo": content = await roleInfo(msg, content)
-    elif cmd == "rand": content = await rand(msg, content)
-    elif cmd == "rolecount": content = await roleCount(msg, content)
-    elif cmd in ["comproles", "compareroles"]: content = await compareRoles(msg, content, cmd=cmd)
-    elif cmd == "family": content = await family(msg, content)
-    elif cmd == "mballreply": content = await mballreply(msg, content)
-    elif cmd == "8brdel": content = await mballDel(msg, content)			
-    elif cmd == "count": content = await count(msg, content)
-    elif cmd == "choose": content = await choose(msg, content)
-    elif cmd in ["mballreplylist", "8ballreplylist", "8breplylist", "8brlist"]: content = await mball(msg, content, cmd=cmd)
-    elif cmd == "reverse": content = await oneLineCmd(msg, splitContent(content, f'{cmd} ')[1][::-1])
-    elif cmd in ["piglatin", "igpayatinlay"]: content = await pigLatin(msg, content, cmd=cmd)
-    elif cmd == "mostroles": content = await mostRoles(msg, content)
-    elif cmd == "imscared": content = await oneLineCmd(msg, random.choice(("don't be :smiling_imp:", "oh it's ok :)))))))))))))))))", "just don't pay attention of the sounds coming from your attic.....\nit's ok", "it's ok... he's comming :)")))
-    elif cmd == "clear": content = await clear(msg, content)
-    elif cmd == "color": content = await color(msg, content)
-    elif cmd == "servericon": content = await serverIcon(msg, content)
-    elif cmd in ["cc", "channelcreated", "channelinfo", "ci"]: content = await channelInfo(msg, content, cmd=cmd)
-    elif cmd == "changes": content = await changes(msg, content)					
-    elif cmd in ["wiki", "wikipedia"]: content = await oneLineCmd(msg, f'https://en.wikipedia.org/wiki/Special:Search?search={content[len(cmd) + 2:].replace(" ", "_")}')
-    elif cmd == "commandcount": content = await oneLineCmd(msg, (len(CMDLIST)))
-    elif cmd in ["hex", "bin", "oct"]: content = await hexBinOct(msg, content, cmd=cmd)
-    elif cmd == "tof": content = await oneLineCmd(msg, 9 / 5 * float(splitContent(content, cmd + " ", index=1)) + 32)
-    elif cmd == "toc": content = await oneLineCmd(msg, 5 / 9 * (float(splitContent(content, cmd + " ", index=1)) - 32))
-    elif cmd == "response": content = await response(msg, content)
-    elif cmd in ["stopwatch", "timer"]: content = await stopwatch(msg, content, cmd=cmd)
-    elif cmd == "lvlmsg": content = await levelMessage(msg, content)
-    elif cmd == "emoteinfo": content = await emoteInfo(msg, content)
-    elif cmd == "avatar": content = await msg.channel.send((await getUserInContent(msg, content, cmd)).avatar_url)
-    elif cmd == "slowdown": content = await oneLineCmd(msg, " **Slow Down** 🐌")
-    elif cmd == "fetchuser": content = await msg.channel.send((await client.fetch_user(int(splitContent(content, f'{cmd} ', index=1)))).name)
-    elif cmd == "clearinvites": content = await ridInvites(msg, content)
-    elif cmd == "typefor": content = await typeFor(msg, content)
-    elif cmd == "hangman": content = await hangman(msg, content)
-    elif cmd == "sendblank": content = await sendBlank(msg, content)
-    elif cmd == "daily": content = await oneLineCmd(msg, f"you earned ${random.randint(0, 1000000)} you can use this command once a day!")
-    elif cmd == "serverinfo": content = await serverInfo(msg, content)
-    elif cmd == "pokemon": content = await pokemon(msg, content)
-    elif cmd == "userinfo": content = await userInfo(msg, content)
-    elif cmd in ["msginfo", "messageinfo"]: content = await messageInfo(msg, content, cmd=cmd)
-    elif cmd == "fetchrole": content = await fetchRole(msg, content)
-    elif cmd == "categoryinfo": content = await categoryInfo(msg, content)
-    elif cmd in ["alphabet", "alpha", "beta", "gamma", "delta", "epsilon", "zeta", "eta", "theta", "iota", "kappa", "lambda", "mu", "nu", "xi", "omicron", "pi", "rho", "sigma", "tau", "upsilon", "phi", "chi", "psi", "omega"]: content = await alphabet(msg, content, cmd=cmd)
-    elif cmd == "spamstop": content = await spamStop(msg, content)
-    elif cmd == "doihavecovid": content = await oneLineCmd(msg, "yes" if random.random() < .995 else "no")
-    elif cmd == "covid": content = await covid(msg, content)
-    elif cmd == "hypixelpc": content = await hypixelPlayerCount(msg, content)
-    elif cmd in ["hasrole", "whohas"]: content = await whoHasRole(msg, content, cmd=cmd)
-    elif cmd in ["db", "deathbattle"]: content = await INIT_deathBattle(msg, content, cmd=cmd)
-    elif cmd == "shop": content = await shop(msg, content)
-    elif cmd in ["buyitem", "buy"]: content = await buyItem(msg, content, cmd=cmd)
-    elif cmd in ["inv", "inventory"]: content = await inventory(msg, content, cmd=cmd)
-    elif cmd == "fortnite": content = await oneLineCmd(msg, "play minecraft instead")
-    elif cmd == "duplicsuccessfully ator": content = await duplicator(msg, content)
+    cmds = {
+        cmd == "echo": echo,
+        cmd == "iq": iq, 
+        cmd in ["magicball", "8ball", "7ball"]: magicBall, 
+        cmd in ["level", "rank", "lvl"]: level, 
+        cmd in ["top", "leaderboard", "levels", "lb"]: leaderboard, 
+        cmd == "timers": timers, 
+        cmd == "ping": ping, 
+        cmd == "help": hlp, 
+        cmd in ["commandusage", "cmduse", "cmdusage", "commanduse"]: cmdUsage, 
+        cmd in ["findans", "equation", "result", "eval", "calc"]: calc, 
+        cmd == "shrug": shrug, 
+        cmd == "spam": spamCmd, 
+        cmd in ["randomface","randface", "rface"]: randomFace, 
+        cmd in ["mmoney", "mymoney", "money", "bal"]: mmoney, 
+        cmd in ["ucodechar", "unicodechar"]: unicodeChar, 
+        cmd == "serveremote": serverEmote, 
+        cmd == "doesnothing": writeRoles, 
+        cmd == "spacer": spacer, 
+        cmd in ["upperlower", "ul"]: upperLower, 
+        cmd in ["rps", "rockpaperscissors"]: startRPS, 
+        cmd in ["complexmessage", "message"]: complexMessage, 
+        cmd == "sanity": sanity, 
+        cmd == "coin": coin, 
+        cmd == "roleinfo": roleInfo, 
+        cmd == "rand": rand, 
+        cmd == "rolecount": roleCount, 
+        cmd in ["comproles", "compareroles"]: compareRoles, 
+        cmd == "family": family, 
+        cmd == "mballreply": mballreply, 
+        cmd == "8brdel": mballDel, 			
+        cmd == "count": count, 
+        cmd == "choose": choose, 
+        cmd in ["mballreplylist", "8ballreplylist", "8breplylist", "8brlist"]: mball, 
+        cmd in ["piglatin", "igpayatinlay"]: pigLatin, 
+        cmd == "mostroles": mostRoles, 
+        cmd == "clear": clear, 
+        cmd == "color": color, 
+        cmd == "servericon": serverIcon, 
+        cmd in ["cc", "channelcreated", "channelinfo", "ci"]: channelInfo, 
+        cmd == "changes": changes, 					
+        cmd in ["hex", "bin", "oct"]: hexBinOct, 
+        cmd == "response": response, 
+        cmd in ["stopwatch", "timer"]: stopwatch, 
+        cmd == "lvlmsg": levelMessage, 
+        cmd == "emoteinfo": emoteInfo, 
+        cmd == "clearinvites": ridInvites, 
+        cmd == "typefor": typeFor, 
+        cmd == "hangman": hangman, 
+        cmd == "sendblank": sendBlank, 
+        cmd == "serverinfo": serverInfo, 
+        cmd == "pokemon": pokemon, 
+        cmd == "userinfo": userInfo, 
+        cmd in ["msginfo", "messageinfo"]: messageInfo, 
+        cmd == "fetchrole": fetchRole, 
+        cmd == "categoryinfo": categoryInfo, 
+        cmd in ["alphabet", "alpha", "beta", "gamma", "delta", "epsilon", "zeta", "eta", "theta", "iota", "kappa", "lambda", "mu", "nu", "xi", "omicron", "pi", "rho", "sigma", "tau", "upsilon", "phi", "chi", "psi", "omega"]: alphabet, 
+        cmd == "spamstop": spamStop, 
+        cmd == "covid": covid, 
+        cmd == "hypixelpc": hypixelPlayerCount, 
+        cmd in ["hasrole", "whohas"]: whoHasRole, 
+        cmd in ["db", "deathbattle"]: INIT_deathBattle, 
+        cmd == "shop": shop, 
+        cmd in ["buyitem", "buy"]: buyItem, 
+        cmd in ["inv", "inventory"]: inventory, 
+        cmd == "duplicsuccessfully ator": duplicator
+    }
+    if (case := cmds.get(True)):
+        content = await case(msg, content, cmd=cmd)
+
+    elif cmd == "tof": oneLineCmd(msg, 9 / 5 * float(splitContent(content, cmd + " ", index=1)) + 32)
+    elif cmd == "avatar": oneLineCmd(msg, await getUserInContent(msg, content, cmd)).avatar_url
+    elif cmd == "fetchuser": oneLineCmd(msg, await client.fetch_user(int(splitContent(content, f'{cmd} ', index=1))).name)
+    elif cmd == "toc": oneLineCmd(msg, 5 / 9 * (float(splitContent(content, cmd + " ", index=1)) - 32))
+    elif cmd in ["thepenguincommand", "tpc", "thewavecommand", "twc"]: oneLineCmd(msg, random.choice(("very nice!", "very cool!", ":TiredPuffle:")))
+    elif cmd == "daily": oneLineCmd(msg, f"you earned ${random.randint(0, 1000000)} you can use this command once a day!")
+    elif cmd == "reverse": oneLineCmd(msg, splitContent(content, f'{cmd} ')[1][::-1])
+    elif cmd == "imscared": oneLineCmd(msg, random.choice(("don't be :smiling_imp:", "oh it's ok :)))))))))))))))))", "just don't pay attention of the sounds coming from your attic.....\nit's ok", "it's ok... he's comming :)")))
+    elif cmd == "doihavecovid": oneLineCmd(msg, "yes" if random.random() < .995 else "no")
+    elif cmd in ["ship", "boat", "boip"]: oneLineCmd(msg, "DISCLAIMER: I DO NOT SUPPORT SHIPPING PEOPLE IN ANY WAY, HOWEVER MY MASTER SEEMS TO HAVE OTHER PLANS" if random.random() >= .985 else f'{splitContent(content, ", ")[0].replace("[" + cmd + " ", "")[0:len(splitContent(content, ", ")[0].replace("[" + cmd + " ", "")) // 2]}{splitContent(content, ", ")[1][len(splitContent(content, ", ")[1]) // 2:]}')
+    elif cmd == "version": oneLineCmd(msg, VERSION)
+    elif cmd in ["ttc", "thetroycommand"]: oneLineCmd(msg, random.choice(("meow", "7", "**7**", "*7*", "mo", ":TiredPuffle:")))
+    elif cmd == "flush": oneLineCmd(msg, f"{splitContent(content.lower(), f'{cmd} ')[1]} has been flushed down the toilet :toilet::toilet::toilet::toilet::toilet::toilet::toilet::toilet:")
+    elif cmd == "longmessage": oneLineCmd(msg, "```````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````hI```````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````")
+    elif cmd in ["wiki", "wikipedia"]: oneLineCmd(msg, f'https://en.wikipedia.org/wiki/Special:Search?search={content[len(cmd) + 2:].replace(" ", "_")}')
+    elif cmd == "commandcount": oneLineCmd(msg, (len(CMDLIST)))
+    elif cmd == "fortnite": oneLineCmd(msg, "play minecraft instead")
+    elif cmd == "slowdown": oneLineCmd(msg, " **Slow Down** 🐌")
+
     elif cmd in ["eccmd", "editcustomcmd"]:
         content = await editCustomCmd(msg, content, cmd=cmd)
         CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
