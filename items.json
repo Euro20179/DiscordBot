@@ -32,7 +32,7 @@
     {
         "id": 6,
         "name": "Swap",
-        "desc": "swaps each plaery's health",
+        "desc": "swaps each player's health",
         "cost": 120
     }
 ]

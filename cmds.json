@@ -259,6 +259,11 @@
         "params": "<cmd name>",
         "desc": "removes <cmd name> (must have message perms to use this)",
         "aliases": ["removecustomcmd", "delcustomcmd", "rccmd"]
+      },
+      {
+        "name": "eccmd",
+        "params": "<cmd name>, <say>",
+        "desc": "edits <cmd> to say <say>"
       }
     ]
   },
