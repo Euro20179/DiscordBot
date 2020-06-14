@@ -46,7 +46,7 @@ async def runCommand(msg, content, cmd, layer=1):
         await runCommand(msg, content.replace(f'{PREFIX}timeit ', ""), splitContent(content, "timeit ", index=1).split(" ")[0][1:])
         return await msg.channel.send(time.time() - start)
 
-    elif cmd == "ENDPLS" and msg.author.id == EUROID:
+    elif cmd == "ENDPLS" and msg.author.id in [EUROID, 412365502112071681]:
         await msg.channel.send("Logging out")
         await client.logout()
 
@@ -59,7 +59,7 @@ async def runCommand(msg, content, cmd, layer=1):
         with open(bannedFilePath, "rb") as bannedJ:
             await msg.channel.send(file=discord.File(bannedJ, "bans.json"))
 
-    elif cmd == "BAN" and msg.author.id == EUROID:
+    elif cmd == "BAN" and msg.author.id in [EUROID, 412365502112071681]:
         user = await getUserInContent(msg, " ".join(content.split(" ")[0:2]), cmd)
         banFrom = splitContent(content, " ", index=2)
         with open(bannedFilePath, "r+") as bannedJ:
@@ -71,7 +71,7 @@ async def runCommand(msg, content, cmd, layer=1):
             await msg.channel.send(f'banned {user.name} from {banFrom}')
             json.dump(data, bannedJ)
 
-    elif cmd == "UNBAN" and msg.author.id == EUROID:
+    elif cmd == "UNBAN" and msg.author.id in [EUROID, 412365502112071681]:
         user = await getUserInContent(msg, " ".join(content.split(" ")[0:2]), cmd)
         unbanFrom = splitContent(content, " ", index=2)
         with open(bannedFilePath, "r+") as bannedJ:
