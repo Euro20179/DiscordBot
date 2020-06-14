@@ -181,7 +181,7 @@ def clearFile(f)->None:
     f.seek(0)
     f.truncate()
 
-async def oneLineCmd(msg : discord.Message, say : str, delete=True, sendMsg=True)->discord.Message:
+async def oneLineCmd(msg : discord.Message, say : str, delete=True, sendMsg=True, cmd=None)->discord.Message:
     if sendMsg: return await msg.channel.send(say)
     else:
         msg.content = say

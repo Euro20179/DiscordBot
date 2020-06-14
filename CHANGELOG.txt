@@ -1,3 +1,12 @@
+4.2
+
+FIXES:
+*added some stuff to help
+
+TECHNICAL:
+*completely changed how commands are executed
+
+====================================================================
 4.1.1.1
 
 FIXES:
