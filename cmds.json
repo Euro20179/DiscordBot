@@ -9,26 +9,25 @@
     "desc": "can be applied to any message",
     "cmds": [
       {
-        "name": "--chkx",
+        "name": "[chkx",
         "params": null,
         "aliases": [
-          "--p",
-          "--v",
-          "--reactchkx"
+          "[p",
+          "[reactchkx"
         ]
       },
       {
-        "name": "---delete",
+        "name": "[delete",
         "params": null,
         "desc": "deletes your message"
       },
       {
-        "name": "--rw",
+        "name": "[rw",
         "params": "*<emote> (sep with ,)",
         "desc": "reacts"
       },
       {
-        "name": "--delin",
+        "name": "[delin",
         "params": "<time>",
         "desc": "deletes your message in time seconds"
       }
@@ -137,8 +136,8 @@
       },
       {
         "name": "spam",
-        "params": "<amount> <message>  OR (-random <op1> <op2>)",
-        "desc": "spams <message> <amount> times\n-random sends op1 or op2 randomly each time"
+        "params": "<amount> <message> (--c/--count)  OR (-random <op1> <op2>)",
+        "desc": "spams <message> <amount> times\n--c counts\n-random sends op1 or op2 randomly each time"
       },
       {
         "name": "randomface",

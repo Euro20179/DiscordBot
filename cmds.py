@@ -125,7 +125,7 @@ async def levelMessage(msg, content, cmd="lvlmsg"):
             clearFile(j)
             json.dump(data, j)
             return await msg.channel.send(f"changed to {changeTo}")
-        else: return await msg.channel.send("CANCELLED")
+        return await msg.channel.send("CANCELLED")
 
 async def cmdUsage(msg, content, cmd="commandusage"):
     top = 10
@@ -194,9 +194,9 @@ async def level(msg, content, cmd="level"):
     message = userData["message"]
     pos = users.index((user.id, level)) + 1
     embed = discord.Embed(title=user.display_name, color=user.color)
-    embed.add_field(name="level", value=level)
-    embed.add_field(name="xp", value=xp)
-    embed.add_field(name="required", value=required)
+    for k, i in userData.items():
+        if k == "lastTalked": break
+        embed.add_field(name=k, value=i)
     embed.add_field(name="rank #", value=pos)
     embed.add_field(name="xp needed", value=required - xp)
     embed.add_field(name="approx minutes", value=round((required - xp) / 57.5)) #TODO format this
@@ -236,13 +236,13 @@ async def magicBall(msg, content, cmd="8ball"):
         responses = f.read().split("\n")
 
     if testInContent(content, "--embed", "--e"):
-        await msg.channel.send(embed=discord.Embed(title=random.choice(responses)))
-    else: return await msg.channel.send(f'Answer: {random.choice(responses)}')
+        return await msg.channel.send(embed=discord.Embed(title=random.choice(responses)))
+    return await msg.channel.send(f'Answer: {random.choice(responses)}')
 
 async def spamCmd(msg, content, cmd="spam"):
     global Stop
     if Stop: Stop = False
-    print(content)
+
     c = content[len(cmd) + 2:]
 
     try: messages = int(c[:c.find(" ")])
@@ -399,8 +399,8 @@ async def complexMessage(msg, content, cmd="complexmessage"):
         mssg = c[2]
     except: await msg.channel.send("make sure you give and seperate each paremeter with a ','")
 
-    dm = True if send == "dm" else False
-    send = False if send == "dm" else True
+    dm = (send == "dm")
+    send = dm^True
 
     if cmd == "message": filename = f'{filename}.txt'
 
@@ -424,9 +424,7 @@ async def sanity(msg, content, cmd="sanity"):
                 san >=49.5 and san <= 50.5: f'{c} is perfectly balanced between sane and insane',
                 san < 0: f'how is {c} even alive'}
                 
-    if (case := cases.get(True)): msg = await msg.channel.send(case)
-    else: msg = await msg.channel.send(f'{c} has {san}% sanity')
-    return msg
+    return await msg.channel.send(cases.get(True)) if cases.get(True) else await msg.channel.send(f'{c} has {san}% sanity')
 
 async def coin(msg, content, cmd="coin"):
     title = res = "heads" if random.random() >= .5 else "tails"
@@ -621,8 +619,7 @@ async def pigLatin(msg, content, cmd="piglatin"):
             moveToEnd = [None if letter.lower() in "aeiou" else letter for letter in word] 
             moveToEnd = moveToEnd[:moveToEnd.index(None)] #all the letters until the first vowel represented by None
             m[n] = f'{word[len(moveToEnd):]}{"".join(moveToEnd)}ay'
-    msg = await msg.channel.send(" ".join(m))
-    return msg
+    return await msg.channel.send(" ".join(m))
 
 async def mostRoles(msg, content, cmd="mostroles"):
     top = int(splitContent(content, " ", index=1)) if splitContent(content, " ", index=1) else 5
@@ -658,21 +655,19 @@ async def color(msg, content, cmd="color"):
         color = c.replace("#", "")
         r, g, b = int(color[0:2], 16), int(color[2:4], 16), int(color[4:], 16)
         embed = discord.Embed(title=f'{r} {g} {b}', color=discord.Color(int(color, 16)))
-        await msg.channel.send(embed=embed)
-        return ""
+        return await msg.channel.send(embed=embed)
     if ", " in c:
         c = c.replace(" ", "")
         color = [int(x) for x in c.split(",")]
         hexColor = [str(hex(x))[2:] for x in color]
         hexColor = list(map(lambda x: f'0{x}' if len(x) == 1 else x, hexColor))
-        await msg.channel.send(embed=discord.Embed(title=f'#{"".join(hexColor)}', color=discord.Color.from_rgb(color[0], color[1], color[2])))			
-        return ""
+        return await msg.channel.send(embed=discord.Embed(title=f'#{"".join(hexColor)}', color=discord.Color.from_rgb(color[0], color[1], color[2])))			
     if not c: c = str(msg.author.top_role)
     m = discord.utils.find(lambda r: r.name.lower() == c.lower(), msg.guild.roles)
     if m:
         embed = discord.Embed(title=str(m.color), color=m.color)
-        await msg.channel.send(embed=embed)					
-    else: await msg.channel.send("not a valid role")	
+        return await msg.channel.send(embed=embed)					
+    else: return await msg.channel.send("not a valid role")	
 
 async def serverIcon(msg, content, cmd="servericon"):
     embed = discord.Embed(title="Server icon", color=discord.Colour.from_rgb(180, 70, 180))
