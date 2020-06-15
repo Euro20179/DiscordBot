@@ -1,3 +1,9 @@
+4.2.3
+
+CHANGES:
+*when betting on guessinggame, you can no longer change the lives, high or low
+
+====================================================================
 4.2.2
 
 CHANGES:

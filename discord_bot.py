@@ -293,7 +293,7 @@ async def on_message(msg):
                 c = c.replace(" --bet", "")
             else: Bet = False
             low, high, lives = 1, 100, 5
-            if len(c) > 0:
+            if len(c) > 0 and not Bet:
                 c = c.split(" ")
                 c.pop(0)
                 low = int(c[0])
