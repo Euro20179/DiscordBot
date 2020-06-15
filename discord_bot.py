@@ -227,14 +227,14 @@ async def on_message(msg):
     content = msg.content
 
     if not content: return
-    if testInContent(content, "---delete") or (msg.author.id == 311621977339068418 and msg.channel.id not in (715043261110288415, 658815060646297659)): await msg.delete() #deletes message if requested or myustiak sent it
-    if testInContent(content, "--delin "):
-        t = splitContent(content, "--delin", index=1).strip()
+    if testInContent(content, "[delete") or (msg.author.id == 311621977339068418 and msg.channel.id not in (715043261110288415, 658815060646297659)): await msg.delete() #deletes message if requested or myustiak sent it
+    if testInContent(content, "[delin "):
+        t = splitContent(content, "[delin", index=1).strip()
         try: await asyncio.sleep(int(t))
         except: return await msg.channel.send("NaN")
         await msg.delete()
 
-    if (s := testInContent(content, "--rw", "--reactwith")):
+    if (s := testInContent(content, "[rw", "[reactwith")):
         c = splitContent(content, s, index=1).strip()
         if testInContent(c, ", "):
             c = c.replace(" ", "")
@@ -246,7 +246,7 @@ async def on_message(msg):
             e = discord.utils.get(client.emojis, id=int(c.split(":")[2][:-1])) if c in client.emojis else c
             await msg.add_reaction(e)
         
-    if msg.channel.id == 427973752647712768 or testInContent(content, "--chkx", "--reactchkx", "--p"):
+    if msg.channel.id == 427973752647712768 or testInContent(content, "[chkx", "[reactchkx", "[p"):
         await msg.add_reaction(blueCheck)
         await msg.add_reaction(neutral)
         await msg.add_reaction("❌")
