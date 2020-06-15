@@ -200,13 +200,14 @@ async def runCommand(msg, content, cmd, layer=1):
     elif cmd in CUSTOMCMDS.keys(): 
         say = CUSTOMCMDS[cmd].replace("{content}", content[len(cmd) + 2:]).replace("{version}", VERSION).replace("{author}", msg.author.mention)
         temp = say.split("{")
-        tempCMDSLIST = tuple(x["name"] for x in CMDLIST)
-        for line in temp:
-            if (cmd := line.split("}")[0].split(" ")[0].strip()) in tempCMDSLIST:
-                foo = line.split("}")[0]
-                mssg = await runCommand(msg, foo, cmd=cmd)
-                temp[temp.index(line)] = mssg.content + line.split("}")[1]
-                await mssg.delete()
+        if len(temp) > 1:
+            tempCMDSLIST = tuple(x["name"] for x in CMDLIST)
+            for line in temp:
+                if (cmd := line.split("}")[0].split(" ")[0].strip()) in tempCMDSLIST:
+                    foo = line.split("}")[0]
+                    mssg = await runCommand(msg, foo, cmd=cmd)
+                    temp[temp.index(line)] = mssg.content + line.split("}")[1]
+                    await mssg.delete()
         say = "".join(temp)
         content = await oneLineCmd(msg, say)
     elif cmd not in CMDLIST: 
