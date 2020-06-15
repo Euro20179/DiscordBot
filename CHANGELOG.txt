@@ -1,3 +1,10 @@
+4.2.1
+
+FIXES:
+*when you had a custom command in the content of a message  where you called a command, it'd call the custom one too
+    *this could sometimes lead in an infinite loop
+
+====================================================================
 4.2
 
 FIXES:
