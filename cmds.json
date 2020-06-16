@@ -268,7 +268,7 @@
     "cmds": [
       {
         "name": "guessinggame",
-        "params": "[low <high>] [lives] (--bet)",
+        "params": "[high] [lives] (--bet)",
         "desc": "you have to guess the random number from low to high, defaults to 1 through 100"
       },
       {
@@ -292,7 +292,8 @@
       {
         "name": "deathbattle",
         "params": "<user>",
-        "desc": "battle <user> TO THE DEATH! DA DA DAAAAAAAAAA"
+        "desc": "battle <user> TO THE DEATH! DA DA DAAAAAAAAAA",
+        "aliases": ["db"]
       }
     ]
   },
@@ -329,11 +330,11 @@
         ]
       },
       {
-        "name": "buyitem",
+        "name": "buy",
         "params": "<item>, [amount]",
         "desc": "buys an item",
         "aliases": [
-          "buy"
+          "buyitem"
         ]
       }
     ]
@@ -556,7 +557,7 @@
       },
       {
         "name": "stopwatch",
-        "params": " (--stop)",
+        "params": " (--stop) (-seconds [round])",
         "desc": "starts a stopwatch",
         "aliases": [
           "timer"

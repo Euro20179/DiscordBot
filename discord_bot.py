@@ -74,33 +74,6 @@ async def runCommand(msg, content, cmd, layer=1):
             await msg.channel.send(f'banned {user.name} from {banFrom}')
             json.dump(data, bannedJ)
 
-    elif cmd == "UNBAN" and msg.author.id in [EUROID, 412365502112071681]:
-        user = await getUserInContent(msg, " ".join(content.split(" ")[0:2]), cmd)
-        unbanFrom = splitContent(content, " ", index=2)
-        with open(bannedFilePath, "r+") as bannedJ:
-            data = json.load(bannedJ)
-            if data.get(str(user.id)):
-                data[str(user.id)].remove(unbanFrom)
-            else: return await msg.channel.send("did not find user")
-            clearFile(bannedJ)
-            await msg.channel.send(f'unbanned {user.name} from {unbanFrom}')
-            json.dump(data, bannedJ)
-
-    elif cmd == "secretcommand": await msg.channel.send("you have found a SECRET COMMAND do secretcommand + 10 for another command (10 doesn't equal 10 ;) )")
-    elif cmd == "secretcommand2": await msg.channel.send("the final clue... save - e + 3")
-    elif cmd == "sav3":
-        await msg.channel.send("i have been lost for 15 years")
-        await asyncio.sleep(1.2)
-        await msg.channel.send("and now finally...")
-        await asyncio.sleep(.6)
-        await msg.channel.send("you have followed the secret clues and awoken me")
-        await asyncio.sleep(1.5)
-        await msg.channel.send("congratulations to anyone whitnessing this event, you earn a secret role a very epic secret role :) as my gift for saving me")
-        return await msg.channel.send("<!@334538784043696130> give them the role smh")
-
-    elif cmd == "upupdowndownleftrightleftright":
-        return await msg.channel.send("what do you think this is some arcade machine with secret codes, lol")
-
     cmds = {
         cmd == "echo": echo,
         cmd == "iq": iq, 
@@ -213,6 +186,34 @@ async def runCommand(msg, content, cmd, layer=1):
                     await mssg.delete()
         say = "".join(temp)
         content = await oneLineCmd(msg, say)
+        
+    elif cmd == "UNBAN" and msg.author.id in [EUROID, 412365502112071681]:
+        user = await getUserInContent(msg, " ".join(content.split(" ")[0:2]), cmd)
+        unbanFrom = splitContent(content, " ", index=2)
+        with open(bannedFilePath, "r+") as bannedJ:
+            data = json.load(bannedJ)
+            if data.get(str(user.id)):
+                data[str(user.id)].remove(unbanFrom)
+            else: return await msg.channel.send("did not find user")
+            clearFile(bannedJ)
+            await msg.channel.send(f'unbanned {user.name} from {unbanFrom}')
+            json.dump(data, bannedJ)
+
+    elif cmd == "secretcommand": await msg.channel.send("you have found a SECRET COMMAND do secretcommand + 10 for another command (10 doesn't equal 10 ;) )")
+    elif cmd == "secretcommand2": await msg.channel.send("the final clue... save - e + 3")
+    elif cmd == "sav3":
+        await msg.channel.send("i have been lost for 15 years")
+        await asyncio.sleep(1.2)
+        await msg.channel.send("and now finally...")
+        await asyncio.sleep(.6)
+        await msg.channel.send("you have followed the secret clues and awoken me")
+        await asyncio.sleep(1.5)
+        await msg.channel.send("congratulations to anyone whitnessing this event, you earn a secret role a very epic secret role :) as my gift for saving me")
+        return await msg.channel.send("<!@334538784043696130> give them the role smh")
+
+    elif cmd == "upupdowndownleftrightleftright":
+        return await msg.channel.send("what do you think this is some arcade machine with secret codes, lol")
+
     elif cmd not in CMDLIST: 
         with open(commandusageFilePath, "r+") as j:
             data = json.load(j)
@@ -283,10 +284,12 @@ async def on_message(msg):
         if msg.mention_everyone:
             return await msg.channel.send("NO")
 
-        with open(bannedFilePath, "r") as bannedJ:
-            data = json.load(bannedJ)
-            if cmd in str(data.get(str(msg.author.id))):
-                return await msg.channel.send(f"You cannot use {cmd}")
+        if msg.author.id != EUROID:
+            with open(bannedFilePath, "r") as bannedJ:
+                data = json.load(bannedJ)
+                userData =str(data.get(str(msg.author.id)))
+                if cmd in userData or "ALL" in userData:
+                    return await msg.channel.send(f"You cannot use {cmd}")
 
         #ongoing events			
         if cmd == "guessinggame":
@@ -296,12 +299,11 @@ async def on_message(msg):
                 c = c.replace(" --bet", "")
             else: Bet = False
             low, high, lives = 1, 100, 5
-            if len(c) > 0 and not Bet:
+            if len(c) > 0:
                 c = c.split(" ")
                 c.pop(0)
-                low = int(c[0])
-                high = int(c[1])
-                if len(c) >= 3: lives = int(c[2])
+                high = int(c[0])
+                if len(c) >= 2: lives = int(c[1])
             ans = random.randint(low, high)
             playingGuessingGame[msg.author.id] = {"ans": ans, "lives": lives, "startLives": lives, "bet": Bet}
             return await msg.channel.send("guess")
@@ -336,19 +338,17 @@ async def on_message(msg):
             del playingGuessingGame[msg.author.id]
         elif isInt(c):
             lives -= 1
-            if lives <= 0:
-                if int(content) == ans: await msg.channel.send(embed=discord.Embed(title=f'{msg.author.display_name} ITS A DRAW', color=discord.Color.from_rgb(155, 155, 155)))
-                else: 
-                    say = f"YOU LOSE\nTHE ANSWER WAS {ans}" if not Bet else f'YOU LOSE\nTHE ANSWER WAS {ans}\nYOU LOSE {(int(ans) // startLives)}'
-                    await msg.channel.send(embed=discord.Embed(title=say, color=discord.Color.from_rgb(255, 0, 0)))
-                del playingGuessingGame[msg.author.id]
-                if Bet: await addMoney(msg.author, -(int(ans) // startLives))
-                return str(ans)
-            elif int(content) == ans:
+            if int(content) == ans:
                 say = f"YOU WIN\nWITH {lives} LIVES LEFT" if not Bet else f'YOU WIN\nWITH {lives} LIVES LEFT\nYou earned {(int(ans) // startLives)}'
                 await msg.channel.send(embed=discord.Embed(title=say, color=discord.Color.from_rgb(0, 255, 0)))
                 del playingGuessingGame[msg.author.id]
                 if Bet: await addMoney(msg.author, (int(ans) // startLives))
+                return str(ans)
+            elif lives <= 0:
+                say = f"YOU LOSE\nTHE ANSWER WAS {ans}" if not Bet else f'YOU LOSE\nTHE ANSWER WAS {ans}\nYOU LOSE {(int(ans) // startLives)}'
+                await msg.channel.send(embed=discord.Embed(title=say, color=discord.Color.from_rgb(255, 0, 0)))
+                del playingGuessingGame[msg.author.id]
+                if Bet: await addMoney(msg.author, -(int(ans) // startLives))
                 return str(ans)
             await msg.channel.send(f"{msg.author.mention} too high" if int(c) > ans else f"{msg.author.mention} too low")
         playingGuessingGame[msg.author.id]["lives"] = lives

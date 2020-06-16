@@ -1,10 +1,26 @@
-4.2.4.1
+4.2.5 (6/16/2020)
+
+ADDITIONS:
+*-seconds [round], for timer which will give you the seconds that have passed
+
+CHANGES
+*you can change the max + lives when betting
+
+FIXES:
+*you can now get help on a command from an alias
+*buying multiple items now doesn't take an eternity
+
+REMOVED:
+*you are no longer able to specify the low in guessinggame
+
+====================================================================
+4.2.4.1 (6/16/2020)
 
 CHANGES:
 *you must now do [chckx for poll
 
 ====================================================================
-4.2.4
+4.2.4 (6/16/2020)
 
 CHANGES:
 *each item in the shop doesn't have it's own line
@@ -14,26 +30,26 @@ FIXES:
 *rockhopper gets deleted in not bot cmds and pokemon spam
 
 ====================================================================
-4.2.3
+4.2.3 (6/15/2020)
 
 CHANGES:
 *when betting on guessinggame, you can no longer change the lives, high or low
 
 ====================================================================
-4.2.2
+4.2.2 (6/14/2020)
 
 CHANGES:
 *anymsg cmds now use the [ instead of -- or ---
 
 ====================================================================
-4.2.1
+4.2.1 (6/14/2020)
 
 FIXES:
 *when you had a custom command in the content of a message  where you called a command, it'd call the custom one too
     *this could sometimes lead in an infinite loop
 
 ====================================================================
-4.2
+4.2 (6/14/2020)
 
 FIXES:
 *added some stuff to help
@@ -42,14 +58,14 @@ TECHNICAL:
 *completely changed how commands are executed
 
 ====================================================================
-4.1.1.1
+4.1.1.1 (6/14/2020)
 
 FIXES:
 *eccmd is now listed as cmd
 *plaery's -> player's
 
 ====================================================================
-4.1.1
+4.1.1 (6/13/2020)
 
 ADDITIONS:
 *eccmd, edits a custom command
