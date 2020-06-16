@@ -10,11 +10,7 @@
     "cmds": [
       {
         "name": "[chkx",
-        "params": null,
-        "aliases": [
-          "[p",
-          "[reactchkx"
-        ]
+        "params": null
       },
       {
         "name": "[delete",
