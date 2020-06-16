@@ -229,8 +229,8 @@ async def on_message(msg):
 
     content = msg.content
 
+    if testInContent(content, "[delete") or (msg.author.id == 311621977339068418 and msg.channel.id not in (658815060646297659, 715043261110288415)): await msg.delete() #deletes message if requested or myustiak sent it
     if not content: return
-    if testInContent(content, "[delete") or (msg.author.id == 311621977339068418 and msg.channel.id not in (715043261110288415, 658815060646297659)): await msg.delete() #deletes message if requested or myustiak sent it
     if testInContent(content, "[delin "):
         t = splitContent(content, "[delin", index=1).strip()
         try: await asyncio.sleep(int(t))
