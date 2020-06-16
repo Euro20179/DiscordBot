@@ -1,3 +1,12 @@
+4.2.4
+
+CHANGES:
+*each item in the shop doesn't have it's own line
+
+FIXES:
+*some help stuff
+
+====================================================================
 4.2.3
 
 CHANGES:

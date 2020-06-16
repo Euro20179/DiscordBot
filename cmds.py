@@ -1173,7 +1173,7 @@ async def shop(msg, content, cmd="shop"):
         data = json.load(j)
         embed = discord.Embed(title="Items", color=discord.Color(0x00ff00))
         for item in data:
-            embed.add_field(name=f'{item["id"]}: {item["name"]}', value=f'Description: {item["desc"]}\nCost: €{item["cost"]}', inline=False)
+            embed.add_field(name=f'{item["id"]}: {item["name"]}', value=f'Description: {item["desc"]}\nCost: €{item["cost"]}')
         await msg.channel.send(embed=embed)
 
 async def buyItem(msg, content, cmd="buyitem"):

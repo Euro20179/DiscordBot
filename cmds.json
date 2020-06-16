@@ -301,7 +301,7 @@
     ]
   },
   {
-    "cat": "DEATHBATTLE",
+    "cat": "DEATHBATTLECMDS",
     "desc": "commands relating to deathbattle",
     "cmds": [
       {
@@ -327,7 +327,10 @@
       {
         "name": "inv",
         "params": null,
-        "desc": "lists the items in your inventory"
+        "desc": "lists the items in your inventory",
+        "aliases": [
+          "inventory"
+        ]
       },
       {
         "name": "buyitem",

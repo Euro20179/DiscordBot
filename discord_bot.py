@@ -5,6 +5,9 @@ from cmds import *
 async def on_ready():
     global blueCheck, neutral, CATS, CMDLIST, CUSTOMCMDS
     await client.change_presence(activity=discord.Game(f'version: {VERSION}'))
+    foo = await client.fetch_user(334538784043696130)
+    await foo.send(f"ONLINE\nversion: {VERSION}")
+    del foo
     blueCheck = discord.utils.get(client.emojis, name="Blue_check")
     neutral = discord.utils.get(client.emojis, name="neutral")
     CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
