@@ -1,4 +1,4 @@
-4.2.5.1
+4.2.5.1 (6/16/2020)
 
 FIXES:
 *covid should on average take about half the time it normally did
