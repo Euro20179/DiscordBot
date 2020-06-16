@@ -919,10 +919,13 @@ async def covid(msg, content, cmd="covid"):
         embed = discord.Embed(title="Covid Stats", color=discord.Color(0xff0000))
         embed.set_footer(text="source: https://www.worldometers.info/coronavirus/")
         soup = bs.BeautifulSoup(request.text, features="html.parser")
-        for n, div in enumerate(soup.find_all("div", {"class": "maincounter-number"})):
-            if n == 0: embed.add_field(name="CASES TOTAL", value=div.text.strip("\n").strip(), inline=False)
-            if n == 1: embed.add_field(name="DEATHS TOTAL", value=div.text.strip("\n").strip(), inline=False)
-            if n == 2: embed.add_field(name="RECOVERED TOTAL", value=div.text.strip("\n").strip(), inline=False)
+        divs = soup.find_all("div", {"class": "maincounter-number"})
+        embed.add_field(name="CASES TOTAL", value=divs[0].text.strip("\n").strip(), inline=False)
+        embed.add_field(name="DEATHS TOTAL", value=divs[1].text.strip("\n").strip(), inline=False)
+        embed.add_field(name="RECOVERED TOTAL", value=divs[2].text.strip("\n").strip(), inline=False)
+        del request
+        del soup
+        del divs
         await msg.channel.send(embed=embed)
 
 async def pokemon(msg, content, cmd="pokemon"):
