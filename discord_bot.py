@@ -249,7 +249,7 @@ async def on_message(msg):
             e = discord.utils.get(client.emojis, id=int(c.split(":")[2][:-1])) if c in client.emojis else c
             await msg.add_reaction(e)
         
-    if msg.channel.id == 427973752647712768 or testInContent(content, "[chkx", "[reactchkx", "[p"):
+    if msg.channel.id == 427973752647712768 or testInContent(content, "[chkx"):
         await msg.add_reaction(blueCheck)
         await msg.add_reaction(neutral)
         await msg.add_reaction("❌")
