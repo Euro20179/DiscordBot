@@ -49,11 +49,15 @@ async def hlp(msg, content, cmd="help"):
             embed = discord.Embed(title=command, color=discord.Color(0x00ffe2))
             for cmd in CATS.values():
                 for c in cmd:
-                    if c["name"] == command:
+                    if (al := c.get("aliases")):
+                        if command in al: isCmd = True
+                    else: isCmd = False
+                    if c["name"] == command or isCmd:
                         params = c["params"]
                         desc = c["desc"]
                         aliases = c.get("aliases")
-                        text = f'**``{command}``**: ``{params}``\n\n{desc}\n\nALIASES: {aliases}'
+                        if aliases: aliases = ",\n".join(f'``{x}``' for x in aliases)
+                        text = f'**``{command}``**: ``{params}``\n\n{desc}\n\n__Aliases__:\n{aliases}'
                         break
             try: embed.add_field(name="description", value=text)
             except: return await msg.channel.send('command not found')
@@ -751,6 +755,10 @@ async def stopwatch(msg, content, cmd="stopwatch"):
             t = await formatSeconds(time.time() - Running)
             await msg.channel.send(embed=discord.Embed(title=str(round(t[0], 2)) + f' {t[1]}'))
             del data[str(msg.author.id)]
+        elif Running and testInContent(content, "-seconds"):
+            r = 0 if not splitContent(content, "-seconds ") else int(splitContent(content, "-seconds ")[1])
+            t = round(time.time() - Running, r)
+            await msg.channel.send(embed=discord.Embed(title=str(t)))
         elif Running:
             t = await formatSeconds(time.time() - Running)
             await msg.channel.send(embed=discord.Embed(title=str(round(t[0], 2)) + f' {t[1]}'))
@@ -1183,33 +1191,37 @@ async def buyItem(msg, content, cmd="buyitem"):
         amnt = int(split[1])
         buying = split[0]
     else: amnt = 1
+    with open(moneyDataFilePath, "r") as j:
+        data = json.load(j)
+        money = data.get(str(msg.author.id))
+        if not money: return await msg.channel.send("you have no money")
+    with open(itemsFilePath, "r") as j:
+        data = json.load(j)
+        for item in data:
+            if item["name"].lower() == buying.lower() or item["id"] == int(buying):
+                forPurchase = item; break
+        else: return await msg.channel.send("did not find item")
+    amountBought = 0
     for _ in range(amnt):
-        with open(moneyDataFilePath, "r") as j:
-            data = json.load(j)
-            money = data.get(str(msg.author.id))
-            if not money: return await msg.channel.send("you have no money")
-        with open(itemsFilePath, "r") as j:
-            data = json.load(j)
-            for item in data:
-                if item["name"].lower() == buying.lower() or item["id"] == int(buying):
-                    forPurchase = item; break
-            else: return await msg.channel.send("did not find item")
         if money < forPurchase["cost"]: return await msg.channel.send("you don't have enough money")
         else:
             money -= forPurchase["cost"]
-            with open(moneyDataFilePath, "r+") as j:
-                data = json.load(j)
-                data[str(msg.author.id)] = money
-                clearFile(j)
-                json.dump(data, j)
-            with open(itemDataFilePath, "r+", encoding="utf-8-sig") as j2:
-                data = json.load(j2)
-                l = data.get(str(msg.author.id))
-                if l: l.append(forPurchase)
-                else: l = [forPurchase]
-                data[str(msg.author.id)] = l
-                clearFile(j2)
-                json.dump(data, j2)
+            amountBought += 1
+    with open(itemDataFilePath, "r+", encoding="utf-8-sig") as j2:
+        data = json.load(j2)
+        l = data.get(str(msg.author.id))
+        if l: 
+            for _ in range(amountBought):
+                l.append(forPurchase)
+        else: l = [forPurchase] * amountBought
+        data[str(msg.author.id)] = l
+        clearFile(j2)
+        json.dump(data, j2)
+    with open(moneyDataFilePath, "r+") as j:
+        data = json.load(j)
+        data[str(msg.author.id)] = money
+        clearFile(j)
+        json.dump(data, j)
     await msg.channel.send(f'bought {forPurchase["name"]}')
 
 async def inventory(msg, content, cmd="inv"):
