@@ -5,6 +5,7 @@ CHANGES:
 
 FIXES:
 *some help stuff
+*rockhopper gets deleted in not bot cmds and pokemon spam
 
 ====================================================================
 4.2.3
