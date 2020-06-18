@@ -139,7 +139,7 @@ async def runCommand(msg, content, cmd, layer=1):
         cmd == "shop": shop, 
         cmd in ["buyitem", "buy"]: buyItem, 
         cmd in ["inv", "inventory"]: inventory, 
-        cmd == "duplicsuccessfully ator": duplicator
+        cmd in ["duplicator", "duplicate"]: duplicator
     }
     if (case := cmds.get(True)):
         content = await case(msg, content, cmd=cmd)
