@@ -179,6 +179,7 @@ async def runCommand(msg, content, cmd, layer=1):
         if len(temp) > 1:
             tempCMDSLIST = tuple(x["name"] for x in CMDLIST)
             for line in temp:
+                print(line)
                 if (cmd := line.split("}")[0].split(" ")[0].strip()) in tempCMDSLIST:
                     foo = line.split("}")[0]
                     mssg = await runCommand(msg, f'{PREFIX}{foo}', cmd=cmd)
