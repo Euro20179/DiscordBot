@@ -290,8 +290,9 @@ async def on_message(msg):
                 data = json.load(bannedJ)
                 userData =data.get(str(msg.author.id))
                 print(userData)
-                if cmd in userData or "ALL" in userData and userData:
-                    return await msg.channel.send(f"You cannot use {cmd}")
+                if userData:
+                    if cmd in userData or "ALL" in userData:
+                        return await msg.channel.send(f"You cannot use {cmd}")
 
         #ongoing events			
         if cmd == "guessinggame":
