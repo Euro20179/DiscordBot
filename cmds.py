@@ -88,6 +88,7 @@ async def ping(msg, content, cmd="ping"):
     else: return await msg.channel.send(f':ping_pong: {round(client.latency * 1000)}ms')	
 
 async def echo(msg, content, cmd="echo"):
+    print(content, cmd)
     content = content[len(cmd) + 2:]
     try: await msg.delete()
     except: pass
