@@ -1,4 +1,10 @@
-4.2.5.5
+4.2.5.6 (6/18/2020)
+
+FIXES:
+*some custom commands wouldn't work due to how banning works
+
+====================================================================
+4.2.5.5 (6/18/2020)
 
 CHANGES:
 *customcmdlist will now send file if can't send in chat

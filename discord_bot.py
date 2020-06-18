@@ -285,11 +285,12 @@ async def on_message(msg):
         if msg.mention_everyone:
             return await msg.channel.send("NO")
 
-        if msg.author.id != EUROID:
+        if msg.author.id:
             with open(bannedFilePath, "r") as bannedJ:
                 data = json.load(bannedJ)
-                userData =str(data.get(str(msg.author.id)))
-                if cmd in userData or "ALL" in userData:
+                userData =data.get(str(msg.author.id))
+                print(userData)
+                if cmd in userData or "ALL" in userData and userData:
                     return await msg.channel.send(f"You cannot use {cmd}")
 
         #ongoing events			
