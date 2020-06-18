@@ -101,7 +101,8 @@
       {
         "name": "duplicator",
         "params": "[times] <message>",
-        "desc": "duplicates your <message> [times] times defaults to 2"
+        "desc": "duplicates your <message> [times] times defaults to 2",
+        "aliases":["duplicate"]
       },
       {
         "name": "ship",
