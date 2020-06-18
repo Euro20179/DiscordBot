@@ -181,7 +181,7 @@ async def runCommand(msg, content, cmd, layer=1):
             for line in temp:
                 if (cmd := line.split("}")[0].split(" ")[0].strip()) in tempCMDSLIST:
                     foo = line.split("}")[0]
-                    mssg = await runCommand(msg, foo, cmd=cmd)
+                    mssg = await runCommand(msg, f'{PREFIX}{foo}', cmd=cmd)
                     temp[temp.index(line)] = mssg.content + line.split("}")[1]
                     await mssg.delete()
         say = "".join(temp)
