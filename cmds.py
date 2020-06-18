@@ -1269,7 +1269,7 @@ async def customCmdList(msg, content, cmd="customcmdlist"):
 async def editCustomCmd(msg, content, cmd="eccmd"):
     lookFor = content.split(", ")[0][len(cmd) + 2:].strip()
     changeTo = content.split(", ")[1:]
-    changeTo = ", ".join(ChangeTo)
+    changeTo = ", ".join(changeTo)
     with open(customcmdsFilePath, "r+") as j:
         data = json.load(j)
         for command in data:
