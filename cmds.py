@@ -1260,11 +1260,15 @@ async def customCmdList(msg, content, cmd="customcmdlist"):
     CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
     if testInContent(content, "--raw"):
         with open(customcmdsFilePath, "rb") as f: await msg.channel.send(file=discord.File(f, "customCmds.json"))
-    else: content = await oneLineCmd(msg, "\n".join([f'{x}: {y}' for x, y in CUSTOMCMDS.items()]))
+    else: 
+        try:
+            content = await oneLineCmd(msg, "\n".join([f'{x}: {y}' for x, y in CUSTOMCMDS.items()]))
+        except:
+            with open(customcmdsFilePath, "rb") as f: await msg.channel.send(file=discord.File(f, "customCmds.json"))
 
 async def editCustomCmd(msg, content, cmd="eccmd"):
     lookFor = content.split(", ")[0][len(cmd) + 2:].strip()
-    changeTo = content.split(", ")[1]
+    changeTo = content.split(", ")[1:]
     with open(customcmdsFilePath, "r+") as j:
         data = json.load(j)
         for command in data:
