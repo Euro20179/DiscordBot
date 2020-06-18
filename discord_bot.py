@@ -162,7 +162,7 @@ async def runCommand(msg, content, cmd, layer=1):
     elif cmd == "commandcount": await oneLineCmd(msg, (len(CMDLIST)))
     elif cmd == "fortnite": await oneLineCmd(msg, "play minecraft instead")
     elif cmd == "slowdown": await oneLineCmd(msg, " **Slow Down** 🐌")
-
+    
     elif cmd in ["eccmd", "editcustomcmd"]:
         content = await editCustomCmd(msg, content, cmd=cmd)
         CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()

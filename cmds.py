@@ -637,6 +637,7 @@ async def mostRoles(msg, content, cmd="mostroles"):
 
 async def clear(msg, content, cmd="clear"):
     amnt = int(content[len(cmd) + 2:])
+    if isBot(msg, client): return msg.channel.send("nope")
     perms = msg.author.guild_permissions.manage_messages
     if perms and msg.author.id != 579117856994623498:
         await msg.channel.purge(limit=amnt)
