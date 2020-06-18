@@ -11,7 +11,7 @@ import bs4 as bs
 import os
 
 DELETE = "--delete"
-VERSION = "4.2.5.1"
+VERSION = "4.2.5.3"
 Stop = False
 
 playingGuessingGame = {}

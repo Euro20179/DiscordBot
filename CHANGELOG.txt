@@ -1,3 +1,9 @@
+4.2.5.3 (6/18/2020)
+
+ADDITIONS:
+*duplicator now says when the message is too long
+
+====================================================================
 4.2.5.2 (6/18/2020)
 
 ADDITIONS:
