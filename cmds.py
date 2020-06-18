@@ -1252,7 +1252,8 @@ async def duplicator(msg, content, cmd="duplicator"):
     if (t := splitContent(content, " ")[1]).isnumeric():
         times = int(t)
         content = content.replace(f' {str(times)}', "")
-    return await msg.channel.send(f'{content[len(cmd) + 2:]} '*times)
+    try: return await msg.channel.send(f'{content[len(cmd) + 2:]} '*times)
+    except: return await msg.channel.send("message too long, try reducing the number of duplications")
 
 async def customCmdList(msg, content, cmd="customcmdlist"):
     CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
