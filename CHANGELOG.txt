@@ -1,5 +1,8 @@
 4.2.5.5
 
+CHANGES:
+*customcmdlist will now send file if can't send in chat
+
 FIXES:
 *some issues relating to commas in customcmds
 
