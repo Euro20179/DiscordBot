@@ -1,3 +1,12 @@
+4.2.6
+
+ADDITIONS:
+*you can remove multiple commands at once
+
+FIXES:
+*can no longer have spaces in command names
+
+====================================================================
 4.2.5.6 (6/18/2020)
 
 FIXES:

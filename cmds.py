@@ -980,6 +980,7 @@ async def addCustomCmd(msg, content, cmd="customcmd"):
     c = splitContent(content, ", ")
     name = c[0][len(cmd) + 2:].strip()
     c.pop(0)
+    if " " in name: return await msg.channel.send("no spaces in command names")
     say = ", ".join(c)
     with open(customcmdsFilePath, "r+") as j:
         data = json.load(j)
@@ -1000,21 +1001,22 @@ async def removeCustomCmd(msg, content, cmd="removecustomcmd"):
     perms = msg.author.guild_permissions.manage_messages
     if not perms:
         return await msg.channel.send("you cannot do that")
-    name = content[len(cmd) + 2:].strip()
+    name = content[len(cmd) + 2:].split()
     with open(customcmdsFilePath, "r+") as j:
         data = json.load(j)
-        Yes = False
-        for cmd in data:
-            if cmd["name"] == name:
-                data.remove(cmd)
-                Yes = True
-                break
-            if Yes: break
-        else: return await msg.channel.send("command not found")
+        for n in name:
+            Yes = False
+            for cmd in data:
+                if cmd["name"] == n:
+                    data.remove(cmd)
+                    Yes = True
+                    break
+                if Yes: break
+            else: return await msg.channel.send(f"{n} not found")
         clearFile(j)
         json.dump(data, j)
     CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
-    return await msg.channel.send(f'removed {name}')
+    return await msg.channel.send(f'removed {" ".join(name)}')
 
 async def deathBattle(msg, users, going, notGoing, responseTime, damageMsgs, healMsgs, embed, first, second):
     global playingDB, Stop
