@@ -146,7 +146,7 @@ async def runCommand(msg, content, cmd, layer=1):
 
     elif cmd == "tof": await oneLineCmd(msg, 9 / 5 * float(splitContent(content, cmd + " ", index=1)) + 32)
     elif cmd == "avatar": await oneLineCmd(msg, await getUserInContent(msg, content, cmd)).avatar_url
-    elif cmd == "fetchuser": await oneLineCmd(msg, await client.fetch_user(int(splitContent(content, f'{cmd} ', index=1))).name)
+    elif cmd == "fetchuser": await oneLineCmd(msg, (await client.fetch_user(int(splitContent(content, f'{cmd} ', index=1)))).name)
     elif cmd == "toc": await oneLineCmd(msg, 5 / 9 * (float(splitContent(content, cmd + " ", index=1)) - 32))
     elif cmd in ["thepenguincommand", "tpc", "thewavecommand", "twc"]: await oneLineCmd(msg, random.choice(("very nice!", "very cool!", ":TiredPuffle:")))
     elif cmd == "daily": await oneLineCmd(msg, f"you earned ${random.randint(0, 1000000)} you can use this command once a day!")
