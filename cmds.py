@@ -637,7 +637,7 @@ async def mostRoles(msg, content, cmd="mostroles"):
 
 async def clear(msg, content, cmd="clear"):
     amnt = int(content[len(cmd) + 2:])
-    if isBot(msg, client): return msg.channel.send("nope")
+    if isBot(msg, client): return await msg.channel.send("nope")
     perms = msg.author.guild_permissions.manage_messages
     if perms and msg.author.id != 579117856994623498:
         await msg.channel.purge(limit=amnt)
@@ -960,10 +960,15 @@ async def hypixelPlayerCount(msg, content, cmd="hypixelpc"):
     return await msg.channel.send(pc)
     
 async def whoHasRole(msg, content, cmd="hasrole"):
+    Raw = False
+    if testInContent(content, "--raw"):
+        content = content.replace(" --raw", "")
+        Raw = True
     role = splitContent(content, cmd + " ")[1]
     role = discord.utils.find(lambda r: r.name.lower() == role.lower(), msg.channel.guild.roles)
     embed = discord.Embed(title="has")
     try: 
+        if Raw: raise Exception("wanted raw file")
         has = [user.mention for user in msg.channel.guild.members if role in user.roles]
         embed.add_field(name="has", value="\n".join(has))
         await msg.channel.send(embed=embed)

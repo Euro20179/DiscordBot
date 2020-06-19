@@ -408,8 +408,8 @@
       },
       {
         "name": "hasrole",
-        "params": "<role>",
-        "desc": "gives a list of the users with role",
+        "params": "<role>, (--raw)",
+        "desc": "gives a list of the users with role\n--raw gets a file",
         "aliases": [
           "whohas"
         ]
