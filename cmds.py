@@ -966,13 +966,17 @@ async def whoHasRole(msg, content, cmd="hasrole"):
         Raw = True
     role = splitContent(content, cmd + " ")[1]
     role = discord.utils.find(lambda r: r.name.lower() == role.lower(), msg.channel.guild.roles)
-    embed = discord.Embed(title="has")
     try: 
+        embed = discord.Embed(title=role.name, color=role.color)   
         if Raw: raise Exception("wanted raw file")
         has = [user.mention for user in msg.channel.guild.members if role in user.roles]
         embed.add_field(name="has", value="\n".join(has))
         await msg.channel.send(embed=embed)
     except:
+        if not role:
+            return await msg.channel.send("role not found")
+        if not has:
+            return await msg.channel.send(f'no one has {role.name}')
         await msg.channel.send("too many chars, here's a text file")
         has = [user.name for user in msg.channel.guild.members if role in user.roles]
         with open(f"whohas{role.name}.txt", "w") as f:
@@ -1010,15 +1014,11 @@ async def removeCustomCmd(msg, content, cmd="removecustomcmd"):
     name = content[len(cmd) + 2:].split()
     with open(customcmdsFilePath, "r+") as j:
         data = json.load(j)
-        for n in name:
-            Yes = False
-            for cmd in data:
-                if cmd["name"] == n:
-                    data.remove(cmd)
-                    Yes = True
-                    break
-                if Yes: break
-            else: return await msg.channel.send(f"{n} not found")
+        for cmd in data:
+            if cmd["name"] in name:
+                data.remove(cmd)
+                name.remove(cmd["name"])
+        else: return await msg.channel.send(f"{', '.join(name)} not found")
         clearFile(j)
         json.dump(data, j)
     CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
@@ -1286,3 +1286,17 @@ async def editCustomCmd(msg, content, cmd="eccmd"):
         clearFile(j)
         json.dump(data, j)
     return await msg.channel.send("changed successfully")
+
+async def luckynumber(msg, content, cmd="luckynumber"):
+    who = msg.author.mention
+    if testInContent(content, " "):
+        who = splitContent(content, " ")[1]
+    content = content[len(cmd) + 2:]
+    count = 3
+    if testInContent(content, "-c"):
+        c = splitContent(content, " -c")[1]
+        try: count = int(c)
+        except: return await msg.channel.send("amount of numbers must be an integer")
+        content = content.replace(f" -c {count}", "")
+    nums = " ".join([str(random.randint(1, 10)) for _ in range(count)])
+    return await msg.channel.send(f"{who}'s lucky numbers are {nums}")

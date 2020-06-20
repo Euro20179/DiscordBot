@@ -99,6 +99,11 @@
     "desc": "fun commands",
     "cmds": [
       {
+        "name": "luckynumber",
+        "params": "[message] (-c <numbers>)",
+        "desc": "gives author's/[messages]'s luckynumbers (defaults to 3)"
+      },
+      {
         "name": "duplicator",
         "params": "[times] <message>",
         "desc": "duplicates your <message> [times] times defaults to 2",

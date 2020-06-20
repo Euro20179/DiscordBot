@@ -1,3 +1,14 @@
+4.2.8 (6/19/2020)
+
+ADDITIONS:
+*luckynumber (initially added as a custom command by firesanti)
+
+CHANGES:
+*the color of the whohas embed, is the color of the role
+*the name of the embed is the name of the role
+*whohas has better error messages
+
+====================================================================
 4.2.7 (6/18/2020)
 
 ADDITIONS:
