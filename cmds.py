@@ -1289,14 +1289,15 @@ async def editCustomCmd(msg, content, cmd="eccmd"):
 
 async def luckynumber(msg, content, cmd="luckynumber"):
     who = msg.author.mention
-    if testInContent(content, " "):
-        who = splitContent(content, " ")[1]
     content = content[len(cmd) + 2:]
     count = 3
+    print(content)
     if testInContent(content, "-c"):
-        c = splitContent(content, " -c")[1]
+        c = splitContent(content, "-c ")[1]
         try: count = int(c)
         except: return await msg.channel.send("amount of numbers must be an integer")
-        content = content.replace(f" -c {count}", "")
+        content = content.replace(f"-c {count}", "")
+    if testInContent(content, " "):
+        who = splitContent(content, " ")[1]
     nums = " ".join([str(random.randint(1, 10)) for _ in range(count)])
     return await msg.channel.send(f"{who}'s lucky numbers are {nums}")
