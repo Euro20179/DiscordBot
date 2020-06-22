@@ -357,7 +357,7 @@ async def upperLower(msg, content, cmd="upperlower"):
 
 async def startRPS(msg, content, cmd="rps"):
     opps = {"rock": "scissors", "paper": "rock", "scissors": "paper"}
-    setTo = {"r": "rock", "p": "paper", "scissors": "scissors"}
+    setTo = {"r": "rock", "p": "paper", "s": "scissors"}
     t = 15
     if testInContent(content, "-time"):
         t = int(splitContent(content, "-time ", index=1).strip())
