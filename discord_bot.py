@@ -133,7 +133,8 @@ async def runCommand(msg, content, cmd, layer=1):
         cmd in ["alphabet", "alpha", "beta", "gamma", "delta", "epsilon", "zeta", "eta", "theta", "iota", "kappa", "lambda", "mu", "nu", "xi", "omicron", "pi", "rho", "sigma", "tau", "upsilon", "phi", "chi", "psi", "omega"]: alphabet, 
         cmd == "spamstop": spamStop, 
         cmd == "covid": covid, 
-        cmd == "hypixelpc": hypixelPlayerCount, 
+        cmd in ["hypixelpc", "hppc"]: hypixelPlayerCount, 
+        cmd in ["hypixelbans", "hpbans"]: hypixelBanStats,
         cmd in ["hasrole", "whohas"]: whoHasRole, 
         cmd in ["db", "deathbattle"]: INIT_deathBattle, 
         cmd == "shop": shop, 
@@ -180,7 +181,6 @@ async def runCommand(msg, content, cmd, layer=1):
         if len(temp) > 1:
             tempCMDSLIST = tuple(x["name"] for x in CMDLIST)
             for line in temp:
-                print(line)
                 if (cmd := line.split("}")[0].split(" ")[0].strip()) in tempCMDSLIST:
                     foo = line.split("}")[0]
                     mssg = await runCommand(msg, f'{PREFIX}{foo}', cmd=cmd)
@@ -290,7 +290,6 @@ async def on_message(msg):
             with open(bannedFilePath, "r") as bannedJ:
                 data = json.load(bannedJ)
                 userData =data.get(str(msg.author.id))
-                print(userData)
                 if userData:
                     if cmd in userData or "ALL" in userData:
                         return await msg.channel.send(f"You cannot use {cmd}")

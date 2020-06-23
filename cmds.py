@@ -657,6 +657,12 @@ async def ridInvites(msg, content, cmd="clearinvites"):
 
 async def color(msg, content, cmd="color"):
     c = splitContent(content, f'{cmd}')[1].strip()
+    if "--rand" in c:
+        ns = "0123456789abcdef"
+        c = "#"
+        for x in range(6):
+            c += random.choice(ns)
+
     if "#" in c:
         color = c.replace("#", "")
         r, g, b = int(color[0:2], 16), int(color[2:4], 16), int(color[4:], 16)
@@ -954,11 +960,28 @@ async def pokemon(msg, content, cmd="pokemon"):
         return await msg.channel.send("smth went wrong")
 
 async def hypixelPlayerCount(msg, content, cmd="hypixelpc"):
-    request = requests.get("https://hypixel.net/")
-    soup = bs.BeautifulSoup(request.text, features="html.parser")
-    pc = soup.find("div", {"class": "p-header-playNow-count"}).find("b").text
-    return await msg.channel.send(pc)
-    
+    if testInContent(content, " "):
+        game = splitContent(content, " ", index=1)
+        data = requests.get(f"https://api.hypixel.net/gameCounts?key={HPKEY}").json()
+        if game == "list":
+            return await msg.channel.send(", ".join(list(x.lower() for x in data["games"].keys())))
+        if (gameData := data["games"].get(game.upper())):
+            embed = discord.Embed(title=game, color=discord.Color(0xffff00))
+            embed.add_field(name=game, value=gameData["players"])
+            if (modes := gameData.get("modes")):
+                for mode in modes.items():
+                    embed.add_field(name=mode[0], value=mode[1])
+            return await msg.channel.send(embed=embed)
+    return await msg.channel.send(requests.get(f"https://api.hypixel.net/playercount?key={HPKEY}").json()["playerCount"])
+
+async def hypixelBanStats(msg, content, cmd="hypixelban"):
+    data = requests.get(f"https://api.hypixel.net/watchdogstats?key={HPKEY}").json()
+    embed = discord.Embed(title="ban stats", color=discord.Color(0xffff00))
+    for k, v, in data.items():
+        if k == "success": continue
+        else: embed.add_field(name=k, value=v)
+    return await msg.channel.send(embed=embed)
+
 async def whoHasRole(msg, content, cmd="hasrole"):
     Raw = False
     if testInContent(content, "--raw"):
@@ -1018,7 +1041,7 @@ async def removeCustomCmd(msg, content, cmd="removecustomcmd"):
             if cmd["name"] in name:
                 data.remove(cmd)
                 name.remove(cmd["name"])
-        else: return await msg.channel.send(f"{', '.join(name)} not found")
+        if name: return await msg.channel.send(f"{', '.join(name)} not found")
         clearFile(j)
         json.dump(data, j)
     CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()

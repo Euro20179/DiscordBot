@@ -1,3 +1,17 @@
+4.3 (6/22/2020)
+
+ADDITIONS:
+*--rand to color cmd
+*hypixelpc now takes a [game] argument, and gives the pc for that game and all it's modes
+*hypixelbans, gives ban stats for hypixel
+
+CHANGES:
+*changes, hypixelpc is faster, (it uses the hypixel api instead of web scraping)
+
+FIXES:
+*dccmd should work
+
+====================================================================
 4.2.8.2 (6/21/2020)
 
 FIXES:
@@ -333,7 +347,7 @@ ADDITIONS:
     *inv
 *commandusage will now also sort the file
 *fortnite cmd
-*>> writes the "answer" of the command to a file
+*>>> writes the "answer" of the command to a file
 *a few more cmds work with >> and --1
 
 CHANGES:

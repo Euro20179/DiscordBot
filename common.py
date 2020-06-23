@@ -11,7 +11,7 @@ import bs4 as bs
 import os
 
 DELETE = "--delete"
-VERSION = "4.2.8.2"
+VERSION = "4.3"
 Stop = False
 
 playingGuessingGame = {}
@@ -22,6 +22,7 @@ playingDB = []
 #CONSTS
 PREFIX = "]"
 token = "NjQxNzk1NjU2Mzc3MTcyMDAw.XcNk8g.HEvnaXjuXFQhN1iilaaffbiPcoo"
+HPKEY = "544fcd57-1cb1-4d8a-8613-c156d7e8f4ed"
 DISEXT = "../disbot_ext"
 BASICINFO = {"level": 1, "xp": 0, "required": 1000, "lastTalked": 0, "message": '{author} you have leveled up to level {level}, very cool'}
 mballresponseFilePath = f"{DISEXT}/mballresponse.txt"
