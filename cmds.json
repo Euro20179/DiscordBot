@@ -169,7 +169,7 @@
       },
       {
         "name": "unicodechar",
-        "params": "[amount]  (-sep)",
+        "params": "[amount]  (-sep <sepby>)",
         "desc": "sends [amount] of unicode chars, defaults to 1",
         "aliases": [
           "ucodechar"
@@ -215,7 +215,7 @@
       },
       {
         "name": "sanity",
-        "params": "<message>  (-r)",
+        "params": "<message>  (-r <round to>)",
         "desc": "gives the sanity of <message>\n-r rounds the decimal"
       },
       {
@@ -279,7 +279,7 @@
       },
       {
         "name": "rps",
-        "params": "@<member> (-time)",
+        "params": "@<member> (-time <time>)",
         "desc": "you play rock paper scissors with member",
         "aliases": [
           "rockpaperscissors"
@@ -361,7 +361,7 @@
       },
       {
         "name": "rand",
-        "params": "<low> <high> [round] (--even) (-odd) ",
+        "params": "<low> <high> [round] (--even) (--odd) ",
         "desc": "picks a random number from <low> to <high>\nif either is a decimal it'll give a decimal rounded to [round] defaults to no round\nif --odd or --even it'll be an odd or even number"
       }
     ]
@@ -474,8 +474,8 @@
       },
       {
         "name": "color",
-        "params": "[role] OR [color <r, g, b>] ",
-        "desc": "gives the color of [role], or the hex color of <r, g, b>"
+        "params": "[role] OR [color <r, g, b>] (--rand)",
+        "desc": "gives the color of [role], or the hex color of <r, g, b>\n--rand gives a random color"
       },
       {
         "name": "cc",
@@ -493,8 +493,19 @@
       },
       {
         "name": "hypixelpc",
-        "params": "--delete",
-        "desc": "gives hypixel's current player count"
+        "params": "[game]",
+        "desc": "gives hypixel's current player count\nor the playercount of [game]",
+        "aliases": [
+          "hppc"
+        ]
+      },
+      {
+        "name": "hypixelbans",
+        "params": null,
+        "desc": "gives the hypixel ban stats",
+        "aliases": [
+          "hpbans"
+        ]
       }
     ]
   },
