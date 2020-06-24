@@ -1032,7 +1032,7 @@ async def addCustomCmd(msg, content, cmd="customcmd"):
 async def removeCustomCmd(msg, content, cmd="removecustomcmd"):
     global CATS, CMDLIST, CUSTOMCMDS
     perms = msg.author.guild_permissions.manage_messages
-    if not perms:
+    if not perms and not userHasRole(msg, "mballresponseadder"):
         return await msg.channel.send("you cannot do that")
     name = content[len(cmd) + 2:].split()
     with open(customcmdsFilePath, "r+") as j:
