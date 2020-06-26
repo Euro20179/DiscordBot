@@ -125,12 +125,12 @@
       },
       {
         "name": "echo",
-        "params": "<message> (--e (-c <color>)) ",
-        "desc": "sends <message> and deletes your message\n--e embeds it\n--delete doesn't delete your message"
+        "params": "<message> (-e [color]) ",
+        "desc": "sends <message> and deletes your message\n-e embeds it\n--delete doesn't delete your message"
       },
       {
         "name": "8ball",
-        "params": "[question]",
+        "params": "[question] (-e [color])",
         "desc": "the magic 8 ball ooooo spooky",
         "aliases": [
           "magicball"
