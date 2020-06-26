@@ -94,7 +94,11 @@ async def echo(msg, content, cmd="echo"):
     except: pass
     if "--e" in content:
         c = content.replace(" --e", "")
-        embed = discord.Embed(title=c)
+        if "-c" in c:
+            color = int(c.split("-c ")[1], 16)
+            c = c.replace(f" -c {c.split('-c ')[1]}", "")
+        else: color = 0x000000
+        embed = discord.Embed(title=c, color=discord.Color(color))
         await msg.channel.send(embed=embed)			
         return c
     if random.random() > .99: await msg.author.send("the secret message dm euro for a doubley secret role, if you tell anyone how you got this the role will be taken away\nif you already have the role, you may choose to dm a screenshot of this message to someone, and they have the chance to get the role")	
@@ -755,20 +759,22 @@ async def response(msg, content, cmd="response", doFirst=False):
 async def stopwatch(msg, content, cmd="stopwatch"):
     with open(timersPath, "r+") as tJ:
         data = json.load(tJ)
-        Running = data.get(str(msg.author.id))
-        if not Running:
+        running = data.get(str(msg.author.id))
+        if not running:
             data[msg.author.id] = time.time()
             await msg.channel.send(f'{msg.author.mention} stopwatch started')
-        elif Running and testInContent(content, "--stop"):
-            t = await formatSeconds(time.time() - Running)
+        elif running and testInContent(content, "--stop"):
+            t = await formatSeconds(time.time() - running)
             await msg.channel.send(embed=discord.Embed(title=str(round(t[0], 2)) + f' {t[1]}'))
             del data[str(msg.author.id)]
-        elif Running and testInContent(content, "-seconds"):
-            r = 0 if not splitContent(content, "-seconds ") else int(splitContent(content, "-seconds ")[1])
-            t = round(time.time() - Running, r)
-            await msg.channel.send(embed=discord.Embed(title=str(t)))
-        elif Running:
-            t = await formatSeconds(time.time() - Running)
+        elif (stopAt := {x for x in content.split(" ")} & {"seconds", "minutes", "hours", "days", "weeks"}):
+            stopAt = list(stopAt)[0]
+            t, layer = await formatSeconds(time.time() - running, stopAt=stopAt)
+            r = 15 if not splitContent(content, stopAt + " ") else int(splitContent(content, f'{stopAt} ')[1])
+            t = round(t, r)
+            await msg.channel.send(embed=discord.Embed(title=f'{t} {layer}'))
+        elif running:
+            t = await formatSeconds(time.time() - running)
             await msg.channel.send(embed=discord.Embed(title=str(round(t[0], 2)) + f' {t[1]}'))
         clearFile(tJ)
         json.dump(data, tJ)
@@ -920,18 +926,6 @@ async def calc(msg, content, cmd="calc"):
     if "help" in content or "quit" in content or "exit" in content or "os." in content:
         return await msg.channel.send('nice try')
     else: return await msg.channel.send(eval(splitContent(content, cmd + " ", index=1)))
-
-async def covid(msg, content, cmd="covid"):
-    async with msg.channel.typing():
-        request = requests.get("https://www.worldometers.info/coronavirus/")
-        embed = discord.Embed(title="Covid Stats", color=discord.Color(0xff0000))
-        embed.set_footer(text="source: https://www.worldometers.info/coronavirus/")
-        soup = bs.BeautifulSoup(request.text, features="html.parser")
-        divs = soup.find_all("div", {"class": "maincounter-number"})
-        embed.add_field(name="CASES TOTAL", value=divs[0].text.strip("\n").strip(), inline=False)
-        embed.add_field(name="DEATHS TOTAL", value=divs[1].text.strip("\n").strip(), inline=False)
-        embed.add_field(name="RECOVERED TOTAL", value=divs[2].text.strip("\n").strip(), inline=False)
-        await msg.channel.send(embed=embed)
 
 async def pokemon(msg, content, cmd="pokemon"):
     pokemon = splitContent(content, " ", index=1)
@@ -1311,7 +1305,6 @@ async def luckynumber(msg, content, cmd="luckynumber"):
     who = msg.author.mention
     content = content[len(cmd) + 2:]
     count = 3
-    print(content)
     if testInContent(content, "-c"):
         c = splitContent(content, "-c ")[1]
         try: count = int(c)
@@ -1321,3 +1314,13 @@ async def luckynumber(msg, content, cmd="luckynumber"):
         who = splitContent(content, " ")[1]
     nums = " ".join([str(random.randint(1, 10)) for _ in range(count)])
     return await msg.channel.send(f"{who}'s lucky numbers are {nums}")
+
+async def uptime(msg, content, cmd="uptime"):
+    if (stopAt := {x for x in content.split(" ")} & {"seconds", "minutes", "hours", "days", "weeks"}):
+            stopAt = list(stopAt)[0]
+            t, layer = await formatSeconds(time.time() - UPTIME, stopAt=stopAt)
+            r = 15 if not splitContent(content, stopAt + " ") else int(splitContent(content, f'{stopAt} ')[1])
+            await msg.channel.send(f'{round(t, r)} {layer}')
+    else:
+        t, layer = await formatSeconds(time.time() - UPTIME) 
+        return await msg.channel.send(f'{str(t)} {layer}')
