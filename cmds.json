@@ -545,11 +545,6 @@
         "desc": "gives the bots ping to discord (I think)"
       },
       {
-          "name": "fortnite",
-          "params": null,
-          "desc": "gives the bot's insight on the game fortnite"
-      },
-      {
         "name": "alphabet",
         "params": "(--vowels) (--consonants)",
         "desc": "gives the alphabet\n--vowels only vowels\nconsonants only consonants",

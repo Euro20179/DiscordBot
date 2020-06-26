@@ -11,7 +11,7 @@ import bs4 as bs
 import os
 
 DELETE = "--delete"
-VERSION = "4.3.0.1"
+VERSION = "4.3.1"
 Stop = False
 
 playingGuessingGame = {}
@@ -70,12 +70,14 @@ async def removeFromList(l, *args):
     for arg in args: l.remove(arg)
 
 async def formatSeconds(t, layer="seconds", rec=0):
-    cases = {"seconds": "minutes", "minutes": "hours", "hours": "days"}
-    if t > 60:
-        if layer == "days": return t, layer
-        else: 
-            t /= 60
-            t, layer = await formatSeconds(t, layer=cases[layer], rec=rec + 1)
+    cases = {"seconds": ("minutes", 60),
+             "minutes": ("hours", 60), 
+             "hours": ("days", 24), 
+             "days": ("weeks", 7)}
+    if layer == "weeks": return t, layer
+    if t >= cases[layer][1]:
+        t /= cases[layer][1]
+        t, layer = await formatSeconds(t, layer=cases[layer][0], rec=rec + 1)
     return t, layer
 
 async def formatLevelMessage(msg, message, level): #gives the levelmessage with the keywords replaced
@@ -135,7 +137,7 @@ async def reduceXP(msg : discord.Message)->None:
         data = json.load(f)
         for user in data.keys():
             if time.time() - data[user]["lastTalked"] >= 1209600:
-                if data[user]["xp"] > 0:
+                if data[user]["xp"] > 1:
                     data[user]["xp"] -= random.randint(0, 1)
                 if data[user]["xp"] <= (data[user]["level"] * 1000) // 2 and data[user]["level"] > 0:
                     data[user]["level"] -= 1

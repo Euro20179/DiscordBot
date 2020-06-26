@@ -214,7 +214,7 @@ async def leaderboard(msg, content, cmd="top"):
         with open(levelingDataFilePath, "rb") as f:
             await msg.channel.send(file=discord.File(f, levelingDataFilePath))
             return "FILE"
-    top = 12
+    top = 10
     if testInContent(content, " "):
         t = splitContent(content, " ", index=1)
         try: top = int(t)
@@ -222,7 +222,7 @@ async def leaderboard(msg, content, cmd="top"):
     with open(levelingDataFilePath, "r") as f:
         data = json.load(f)
         users = [(discord.utils.get(msg.guild.members, id=int(user)), int(data[user]["level"]), int(data[user]["xp"])) for user in data.keys()]
-        users.sort(key=lambda x: (x[1] * 1000) + (x[2] / 1000), reverse=True)
+        users.sort(key=lambda x: (x[1] ** 10) + (x[2] / 1000), reverse=True)
         embed = discord.Embed(title=f"Top {top}", color=users[0][0].color)
         firstPlaceRole = discord.utils.get(msg.guild.roles, id=713979970287829033)
         for n, user in enumerate(users):
@@ -931,9 +931,6 @@ async def covid(msg, content, cmd="covid"):
         embed.add_field(name="CASES TOTAL", value=divs[0].text.strip("\n").strip(), inline=False)
         embed.add_field(name="DEATHS TOTAL", value=divs[1].text.strip("\n").strip(), inline=False)
         embed.add_field(name="RECOVERED TOTAL", value=divs[2].text.strip("\n").strip(), inline=False)
-        del request
-        del soup
-        del divs
         await msg.channel.send(embed=embed)
 
 async def pokemon(msg, content, cmd="pokemon"):
