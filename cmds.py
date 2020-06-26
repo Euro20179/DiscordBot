@@ -94,7 +94,7 @@ async def echo(msg, content, cmd="echo"):
     except: pass
     if "-e" in content:
         c = content.replace(" -e", "")
-        if " " in c:
+        if " " in c.split(" ")[-1]:
             color = int(c.split(" ")[-1], 16)
             print(color)
             c = c.replace(f"{c.split(' ')[-1]}", "")
