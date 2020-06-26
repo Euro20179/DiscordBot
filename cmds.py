@@ -88,17 +88,17 @@ async def ping(msg, content, cmd="ping"):
     else: return await msg.channel.send(f':ping_pong: {round(client.latency * 1000)}ms')	
 
 async def echo(msg, content, cmd="echo"):
-    print(content, cmd)
     content = content[len(cmd) + 2:]
     try: await msg.delete()
     except: pass
     if "-e" in content:
-        c = content.replace(" -e", "")
-        if " " in c.split(" ")[-1]:
-            color = int(c.split(" ")[-1], 16)
-            print(color)
-            c = c.replace(f"{c.split(' ')[-1]}", "")
-        else: color = 0x000000
+        print(content)
+        if " " in content.split(" -e")[-1]:
+            color = int(content.split(" -e")[-1], 16)
+            c = content.replace(f"-e{content.split(' -e')[-1]}", "")
+        else: 
+            color = 0x000000
+            c = content.replace(" -e", "")
         embed = discord.Embed(title=c, color=discord.Color(color))
         await msg.channel.send(embed=embed)			
         return c
