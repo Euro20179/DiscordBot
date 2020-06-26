@@ -106,7 +106,7 @@ async def timers(msg, content, cmd="timers"):
         data = json.load(tJ)
         for user, t in data.items():
             embed.add_field(name=user, value=round(time.time() - t, 2))
-        await msg.chanel.send(embed=embed)
+        await msg.channel.send(embed=embed)
         return f'{user}: {round(time.time() - t, 2)}'
 
 async def levelMessage(msg, content, cmd="lvlmsg"):
