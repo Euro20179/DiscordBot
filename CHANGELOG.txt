@@ -1,8 +1,29 @@
+4.3.1
+
+ADDITIONS:
+*time now goes up to weeks instead of days
+
+CHANGES:
+*improved? commands in commands
+*some cmds were moved to custom commands instead of builtin:
+    *slowdown is now a custom cmd instead of a builtin one
+    *commandcount
+    *flush
+    *version
+*top now defaults to 10 instead of 12
+
+FIXES:
+*if the time was in days, it wouldn't say the right amount of days
+*it should no longer be possible to go to level 0
+
+REMOVED:
+*fortnite cmd
+
+====================================================================
 4.3.0.1
 
 CHANGES:
 *mballresponseadders can use dccmd
-
 
 ====================================================================
 4.3 (6/22/2020)

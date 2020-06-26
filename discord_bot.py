@@ -24,17 +24,14 @@ async def runCommand(msg, content, cmd, layer=1):
         layer += 1
 
     if "/{" in content:
-        temp = list(reversed(content.split("/{")))
-        tempCMDSLIST = tuple(x["name"] for x in CMDLIST)
-        for n, line in enumerate(temp):
-            if n + 1 == len(temp): break
-            foo = line.split("}")[0]
-            mssg = await runCommand(msg, f'{PREFIX}{foo}', cmd=line.split("}")[0].split(" ")[0].strip())
+        cmds = [x.split("}")[0] for x in content.split("/{")]
+        cmds.reverse()
+        cmds = cmds[:-1]
+        for cmd in cmds:
+            mssg = await runCommand(msg, f'{PREFIX}{cmd}', cmd=cmd.split(" ")[0].strip())
             await mssg.delete()
-            temp[temp.index(line) + 1] += mssg.content
-            if line.split("}")[1]:
-                temp[-1] += line.split("}")[1]
-        content = temp[-1]
+            content = content.replace("/{" + cmd + "}", mssg.content)
+            if cmd == cmds[-1]: break
         return await runCommand(msg, f'{content}', content.split(" ")[0][1:])
 
     with open(commandusageFilePath, "r+") as j:
@@ -156,14 +153,9 @@ async def runCommand(msg, content, cmd, layer=1):
     elif cmd == "imscared": await oneLineCmd(msg, random.choice(("don't be :smiling_imp:", "oh it's ok :)))))))))))))))))", "just don't pay attention of the sounds coming from your attic.....\nit's ok", "it's ok... he's comming :)")))
     elif cmd == "doihavecovid": await oneLineCmd(msg, "yes" if random.random() < .995 else "no")
     elif cmd in ["ship", "boat", "boip"]: await oneLineCmd(msg, "DISCLAIMER: I DO NOT SUPPORT SHIPPING PEOPLE IN ANY WAY, HOWEVER MY MASTER SEEMS TO HAVE OTHER PLANS" if random.random() >= .985 else f'{splitContent(content, ", ")[0].replace("[" + cmd + " ", "")[0:len(splitContent(content, ", ")[0].replace("[" + cmd + " ", "")) // 2]}{splitContent(content, ", ")[1][len(splitContent(content, ", ")[1]) // 2:]}')
-    elif cmd == "version": await oneLineCmd(msg, VERSION)
     elif cmd in ["ttc", "thetroycommand"]: await oneLineCmd(msg, random.choice(("meow", "7", "**7**", "*7*", "mo", ":TiredPuffle:")))
-    elif cmd == "flush": await oneLineCmd(msg, f"{splitContent(content.lower(), f'{cmd} ')[1]} has been flushed down the toilet :toilet::toilet::toilet::toilet::toilet::toilet::toilet::toilet:")
     elif cmd == "longmessage": await oneLineCmd(msg, "```````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````hI```````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````")
     elif cmd in ["wiki", "wikipedia"]: await oneLineCmd(msg, f'https://en.wikipedia.org/wiki/Special:Search?search={content[len(cmd) + 2:].replace(" ", "_")}')
-    elif cmd == "commandcount": await oneLineCmd(msg, (len(CMDLIST)))
-    elif cmd == "fortnite": await oneLineCmd(msg, "play minecraft instead")
-    elif cmd == "slowdown": await oneLineCmd(msg, " **Slow Down** 🐌")
     
     elif cmd in ["eccmd", "editcustomcmd"]:
         content = await editCustomCmd(msg, content, cmd=cmd)
@@ -289,12 +281,15 @@ async def on_message(msg):
         if msg.author.id:
             with open(bannedFilePath, "r") as bannedJ:
                 data = json.load(bannedJ)
-                userData =data.get(str(msg.author.id))
-                if userData:
+                if (userData := data.get(str(msg.author.id))):
                     if cmd in userData or "ALL" in userData:
                         return await msg.channel.send(f"You cannot use {cmd}")
 
         #ongoing events			
+        if cmd == "stop":
+            if TICDelete(content): await msg.message.delete()
+            await stop()
+
         if cmd == "guessinggame":
             c = splitContent(content, cmd)[1]
             if testInContent(content, "--bet"):
@@ -321,9 +316,6 @@ async def on_message(msg):
             else: 
                 end = time.time()
                 return await msg.channel.send(f'your reaction time {end - start}')
-        elif cmd == "stop":
-            if TICDelete(content): await msg.message.delete()
-            await stop()
         else: 
             content = await runCommand(msg, content, cmd)
             if WriteToFile:
