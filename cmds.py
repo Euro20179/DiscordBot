@@ -95,8 +95,9 @@ async def echo(msg, content, cmd="echo"):
     if "-e" in content:
         c = content.replace(" -e", "")
         if " " in c:
-            color = int(c.split(" ")[1], 16)
-            c = c.replace(f" {c.split(' ')[1]}", "")
+            color = int(c.split(" ")[-1], 16)
+            print(color)
+            c = c.replace(f"{c.split(' ')[-1]}", "")
         else: color = 0x000000
         embed = discord.Embed(title=c, color=discord.Color(color))
         await msg.channel.send(embed=embed)			
