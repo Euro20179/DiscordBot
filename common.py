@@ -11,7 +11,7 @@ import bs4 as bs
 import os
 
 DELETE = "--delete"
-VERSION = "4.3.1.1"
+VERSION = "4.4"
 Stop = False
 
 playingGuessingGame = {}
@@ -21,6 +21,7 @@ playingDB = []
 
 #CONSTS
 PREFIX = "]"
+UPTIME = time.time()
 token = "NjQxNzk1NjU2Mzc3MTcyMDAw.XcNk8g.HEvnaXjuXFQhN1iilaaffbiPcoo"
 HPKEY = "544fcd57-1cb1-4d8a-8613-c156d7e8f4ed"
 DISEXT = "../disbot_ext"
@@ -69,15 +70,16 @@ async def writeToFile(msg, content, F):
 async def removeFromList(l, *args):
     for arg in args: l.remove(arg)
 
-async def formatSeconds(t, layer="seconds", rec=0):
+async def formatSeconds(t, layer="seconds", stopAt=None, rec=0):
     cases = {"seconds": ("minutes", 60),
              "minutes": ("hours", 60), 
              "hours": ("days", 24), 
-             "days": ("weeks", 7)}
-    if layer == "weeks": return t, layer
-    if t >= cases[layer][1]:
+             "days": ("weeks", 7)
+             }
+    if layer == "weeks" or layer == stopAt: return t, layer
+    if t >= cases[layer][1] or (layer != stopAt and stopAt):
         t /= cases[layer][1]
-        t, layer = await formatSeconds(t, layer=cases[layer][0], rec=rec + 1)
+        t, layer = await formatSeconds(t, layer=cases[layer][0], stopAt=stopAt, rec=rec + 1)
     return t, layer
 
 async def formatLevelMessage(msg, message, level): #gives the levelmessage with the keywords replaced

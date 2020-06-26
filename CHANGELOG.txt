@@ -1,10 +1,33 @@
-4.3.1.1
+4.4
+
+ADDITIONS:
+*{uptime} for custom cmds
+*uptime cmd, gives the uptime of the bot
+*timer now uses [interval [round]] instead of (-seconds [round]) meaning you could specify seconds, minutes, hours, etc...
+*you can now specify minutes/hours etc. even if the time is less than a minute/hour etc.
+*echo now has --e -c <color> to specify what color the embed should be
+
+CHANGES:
+*timer no longer rounds by default when using specified unit of time
+
+FIXES:
+*/{} works a lot better now
+*/{}/--1 wouldn't work with some commands where it should have worked
+
+REMOVED:
+*covid, was too slow
+
+DEPRECATED:
+*--1
+
+====================================================================
+4.3.1.1 (6/25/2020)
 
 FIXES:
 *timers
 
 ====================================================================
-4.3.1
+4.3.1 (6/25/2020)
 
 ADDITIONS:
 *time now goes up to weeks instead of days

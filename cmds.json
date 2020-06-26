@@ -45,12 +45,12 @@
       {
         "name": "/{}",
         "params": "cmd <> [] ()",
-        "desc": "does the cmd inside of {} first\nask euro"  
+        "desc": "does the cmd inside of /{} first\nask euro"  
       },
       {
-        "name": "--1",
+        "name": "--1 (DEPRECATED)",
         "params": "cmd <> [] ()",
-        "desc": "similar to /{} ask euro"
+        "desc": "similar to /{}\nask euro"
       }
     ]
   },
@@ -125,7 +125,7 @@
       },
       {
         "name": "echo",
-        "params": "<message> (--e) ",
+        "params": "<message> (--e (-c <color>)) ",
         "desc": "sends <message> and deletes your message\n--e embeds it\n--delete doesn't delete your message"
       },
       {
@@ -247,7 +247,7 @@
       {
         "name": "customcmd",
         "params": "<cmd name>, <say>",
-        "desc": "when [<cmd name> is typed it'll say <say>\n{content} will replace with the message of who did cmd\n{version} will replace with the bot's version",
+        "desc": "when [<cmd name> is typed it'll say <say>\n{content} will replace with the message of who did cmd\n{version} will replace with the bot's version\n{uptime} will replace with the bot's uptime",
         "aliases": ["accmd", "customcommand"]
       },
       {
@@ -258,7 +258,7 @@
       {
         "name": "dccmd",
         "params": "<cmd name>",
-        "desc": "removes <cmd name> (must have message perms to use this)",
+        "desc": "removes <cmd name> (must have message perms or mballresponseadder to use this)",
         "aliases": ["removecustomcmd", "delcustomcmd", "rccmd"]
       },
       {
@@ -532,6 +532,11 @@
         "name": "version",
         "params": null,
         "desc": "gives the bot version"
+      },
+      {
+        "name": "uptime",
+        "params": "(--s)",
+        "desc": "says the uptime of the bot"
       }
     ]
   },
@@ -569,8 +574,8 @@
       },
       {
         "name": "stopwatch",
-        "params": " (--stop) (-seconds [round])",
-        "desc": "starts a stopwatch",
+        "params": "[interval [round]] (--stop)",
+        "desc": "starts a stopwatch\ninterval can be seconds, minutes, days, hours, or weeks",
         "aliases": [
           "timer"
         ]
