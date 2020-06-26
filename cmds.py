@@ -245,8 +245,8 @@ async def magicBall(msg, content, cmd="8ball"):
         responses = f.read().split("\n")
 
     if testInContent(content, "-embed", "-e"):
-        if testInContent(content, " "):
-            color = int(splitContent(content, " ", index=1), 16)
+        if testInContent(content.split("-e")[1], " "):
+            color = int(content.split("-e ")[1], 16)
         else: color = 0x000000
         return await msg.channel.send(embed=discord.Embed(title=random.choice(responses), color=color))
     return await msg.channel.send(f'Answer: {random.choice(responses)}')
