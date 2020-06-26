@@ -92,11 +92,11 @@ async def echo(msg, content, cmd="echo"):
     content = content[len(cmd) + 2:]
     try: await msg.delete()
     except: pass
-    if "--e" in content:
-        c = content.replace(" --e", "")
-        if "-c" in c:
-            color = int(c.split("-c ")[1], 16)
-            c = c.replace(f" -c {c.split('-c ')[1]}", "")
+    if "-e" in content:
+        c = content.replace(" -e", "")
+        if " " in c:
+            color = int(c.split(" ")[1], 16)
+            c = c.replace(f" {c.split(' ')[1]}", "")
         else: color = 0x000000
         embed = discord.Embed(title=c, color=discord.Color(color))
         await msg.channel.send(embed=embed)			
@@ -244,8 +244,11 @@ async def magicBall(msg, content, cmd="8ball"):
     with open(mballresponseFilePath, "r") as f:
         responses = f.read().split("\n")
 
-    if testInContent(content, "--embed", "--e"):
-        return await msg.channel.send(embed=discord.Embed(title=random.choice(responses)))
+    if testInContent(content, "-embed", "-e"):
+        if testInContent(content, " "):
+            color = int(splitContent(content, " ", index=1), 16)
+        else: color = 0x000000
+        return await msg.channel.send(embed=discord.Embed(title=random.choice(responses), color=color))
     return await msg.channel.send(f'Answer: {random.choice(responses)}')
 
 async def spamCmd(msg, content, cmd="spam"):

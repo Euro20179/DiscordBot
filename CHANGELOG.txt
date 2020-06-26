@@ -1,3 +1,15 @@
+4.4.1
+
+ADDITIONS:
+*color option for 8ball added for
+
+CHANGES:
+*it's -e instead of --e for embeds
+    *except for the [count command
+*-c is no longer needed to specify color, just do the color
+    *except for the [count command
+
+====================================================================
 4.4.0.1
 
 FIXES:
