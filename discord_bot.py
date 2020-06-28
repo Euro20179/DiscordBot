@@ -79,12 +79,15 @@ async def runCommand(msg, content, cmd, layer=1):
         user = await getUserInContent(msg, content, cmd)
         with open(levelingDataFilePath, "r+") as j:
             data = json.load(j)
-            changeTo = content[len(cmd) + 2:].split(" ")[1]
+            try:
+                await msg.channel.send("to what?") 
+                changeTo = await client.wait_for("message", timeout=60.0)
+            except: return await msg.channel.send("failed")
             userData = data[str(user.id)]
-            userData["message"] = changeTo
+            userData["message"] = changeTo.content
             clearFile(j)
             json.dump(data, j)
-            return
+            return await msg.channel.send("changed")
 
     cmds = {
         cmd == "echo": echo,
