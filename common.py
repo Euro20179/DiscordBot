@@ -92,6 +92,7 @@ async def formatDateTime(createdAt : datetime.datetime)->str:
     return f'{createdAt.month}/{createdAt.day}/{createdAt.year}\nat {createdAt.hour}:{createdAt.minute}:{createdAt.second}'
 
 async def getUserInContent(msg : discord.Message, c : str, cmd : str)->discord.User: #gets user by id, name, etc
+    print(c)
     c = str(c.split(cmd)[1].strip())
     c = c.replace("!", "")[2:-1] if "<@" in c else c
     if not c: c = str(msg.author.id)
