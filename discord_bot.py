@@ -16,6 +16,7 @@ async def on_ready():
 async def runCommand(msg, content, cmd, layer=1):
     global CUSTOMCMDS, CATS, CMDLIST
 
+    
     DOFIRST = f'--{layer} ' #DEPRICATED
     if DOFIRST in content: #DEPRICATED
         c = await runCommand(msg, content.split(DOFIRST)[1], splitContent(content, DOFIRST, index=1).split(" ")[0][1:], layer=layer + 1) #DEPRICATED
@@ -35,7 +36,6 @@ async def runCommand(msg, content, cmd, layer=1):
             mssg = await runCommand(msg, f'{PREFIX}{cmd}', cmd=cmd.split(" ")[0].strip())
             await mssg.delete()
             content = content.replace("/{" + cmd + "}", mssg.content)
-            cmds.remove(cmd)
         return await runCommand(msg, f'{content}', content.split(" ")[0][1:])
 
     with open(commandusageFilePath, "r+") as j:
@@ -74,6 +74,17 @@ async def runCommand(msg, content, cmd, layer=1):
             clearFile(bannedJ)
             await msg.channel.send(f'banned {user.name} from {banFrom}')
             json.dump(data, bannedJ)
+
+    elif cmd == "changelvlmsg" and msg.author.id == EUROID:
+        user = await getUserInContent(msg, content, cmd)
+        with open(levelingDataFilePath, "r+") as j:
+            data = json.load(j)
+            changeTo = content[len(cmd) + 2:].split(" ")[1]
+            userData = data[str(user.id)]
+            userData["message"] = changeTo
+            clearFile(j)
+            json.dump(data, j)
+            return
 
     cmds = {
         cmd == "echo": echo,
@@ -144,6 +155,7 @@ async def runCommand(msg, content, cmd, layer=1):
         cmd == "luckynumber": luckynumber,
         cmd == "uptime": uptime
     }
+
     if (case := cmds.get(True)):
         content = await case(msg, content, cmd=cmd)
 
@@ -281,6 +293,7 @@ async def on_message(msg):
         if cmd == "stop":
             if TICDelete(content): await msg.message.delete()
             await stop()
+            return
 
         if cmd == "guessinggame":
             c = splitContent(content, cmd)[1]
