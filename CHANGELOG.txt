@@ -1,3 +1,9 @@
+4.4.1.2
+
+FIXES:
+*useing only an anymessage command without a message will no longer say <cmd> does not exist
+
+====================================================================
 4.4.1.1
 
 CHANGES:
