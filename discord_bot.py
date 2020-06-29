@@ -13,10 +13,9 @@ async def on_ready():
     CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
     print(f"ONLINE\nversion: {VERSION}")
 
-async def runCommand(msg, content, cmd, layer=1):
+async def runCommand(msg, content, cmd, layer=1, Iscmd=False):
     global CUSTOMCMDS, CATS, CMDLIST
 
-    
     DOFIRST = f'--{layer} ' #DEPRICATED
     if DOFIRST in content: #DEPRICATED
         c = await runCommand(msg, content.split(DOFIRST)[1], splitContent(content, DOFIRST, index=1).split(" ")[0][1:], layer=layer + 1) #DEPRICATED
@@ -215,7 +214,7 @@ async def runCommand(msg, content, cmd, layer=1):
     elif cmd == "upupdowndownleftrightleftright":
         return await msg.channel.send("what do you think this is some arcade machine with secret codes, lol")
 
-    elif cmd not in CMDLIST: 
+    elif cmd not in CMDLIST and not Iscmd: 
         with open(commandusageFilePath, "r+") as j:
             data = json.load(j)
             del data[cmd]
@@ -230,7 +229,7 @@ async def on_message(msg):
     global blueCheck, neutral
 
     content = msg.content
-
+    Iscmd = False
     if testInContent(content, "[delete") or (msg.author.id == 311621977339068418 and msg.channel.id not in (658815060646297659, 715043261110288415)): await msg.delete() #deletes message if requested or myustiak sent it
     if not content: return
     if testInContent(content, "[delin "):
@@ -238,6 +237,7 @@ async def on_message(msg):
         try: await asyncio.sleep(float(t))
         except: return await msg.channel.send("NaN")
         await msg.delete()
+        Iscmd = True
 
     if (s := testInContent(content, "[rw", "[reactwith")):
         c = splitContent(content, s, index=1).strip()
@@ -250,11 +250,13 @@ async def on_message(msg):
         else:
             e = discord.utils.get(client.emojis, id=int(c.split(":")[2][:-1])) if c in client.emojis else c
             await msg.add_reaction(e)
+        Iscmd = True
         
-    if msg.channel.id == 427973752647712768 or testInContent(content, "[chkx"):
+    if msg.channel.id == 427973752647712768 or testInContent(content, f"{PREFIX}chkx"):
         await msg.add_reaction(blueCheck)
         await msg.add_reaction(neutral)
         await msg.add_reaction("❌")
+        Iscmd = True
 
     if random.random() >= .9995: 
         if isBot(msg, client): return
@@ -325,7 +327,7 @@ async def on_message(msg):
                 end = time.time()
                 return await msg.channel.send(f'your reaction time {end - start}')
         else: 
-            content = await runCommand(msg, content, cmd)
+            content = await runCommand(msg, content, cmd, Iscmd=Iscmd)
             if WriteToFile:
                 await writeToFile(msg, content.content, WriteToFile)
                 await content.delete()
