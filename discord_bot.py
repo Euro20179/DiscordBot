@@ -235,7 +235,7 @@ async def on_message(msg):
     if not content: return
     if testInContent(content, "[delin "):
         t = splitContent(content, "[delin", index=1).strip()
-        try: await asyncio.sleep(int(t))
+        try: await asyncio.sleep(float(t))
         except: return await msg.channel.send("NaN")
         await msg.delete()
 
