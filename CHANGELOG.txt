@@ -1,3 +1,11 @@
+4.5.1
+
+ADDITIONS:
+*botmods, they are bot mods
+    *have access to BAN, UNBAN, changelvlmsg
+
+
+====================================================================
 4.5
 
 ADDITIONS:
