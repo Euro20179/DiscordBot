@@ -11,11 +11,10 @@ import bs4 as bs
 import os
 
 DELETE = "--delete"
-VERSION = "4.4.1.2"
+VERSION = "4.5"
 Stop = False
 
 playingGuessingGame = {}
-runningStopwatch = {}
 playingHangman = {}
 playingDB = []
 
@@ -55,6 +54,16 @@ async def reloadCMDSLIST():
 
 def isBot(msg, client)->bool:
     return msg.author == client.user or msg.author.bot
+
+async def embedToReadableDict(msg, embed):
+    d = embed.to_dict()
+    msg.content = d["title"] + "\n"
+    for k in d.keys():
+        if k == "color" or k == "type": continue
+        if k == "fields":
+            for field in d[k]:
+                msg.content += f'{field["name"]}: {field["value"]}\n'
+    return msg
 
 async def writeToFile(msg, content, F):
     if "." in F: 

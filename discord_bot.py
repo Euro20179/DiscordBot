@@ -155,7 +155,9 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False):
         cmd in ["inv", "inventory"]: inventory, 
         cmd in ["duplicator", "duplicate"]: duplicator,
         cmd == "luckynumber": luckynumber,
-        cmd == "uptime": uptime
+        cmd == "uptime": uptime,
+        cmd == "weightedcoin": weightedCoin,
+        cmd == "edit": editCmd
     }
 
     if (case := cmds.get(True)):

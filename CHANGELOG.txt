@@ -1,3 +1,27 @@
+4.5
+
+ADDITIONS:
+*color now supports getting the color of a user
+*weightedcoin
+*edit
+
+CHANGES:
+*color --rand now also gives rgb
+*a few more things now work with /{}
+    *color
+    *servericon
+    *whohas (doesn't mention user)
+    *roleinfo
+    *categoryinfo
+    *messageinfo
+    *(i will not add it for userinfo and serverinfo due to pinging)
+    *pokemon
+    *lvl
+
+FIXES:
+*whohas --raw
+
+====================================================================
 4.4.1.2
 
 FIXES:

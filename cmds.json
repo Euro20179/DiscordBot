@@ -104,6 +104,11 @@
         "desc": "gives author's/[messages]'s luckynumbers (defaults to 3)"
       },
       {
+        "name": "edit",
+        "params": "*<message> (-t <time>) (sep with | (spaces on either side will be registered as spaces))\n(use +,-,<<,and * to add subtract, insert at the begging, and multiply words, defaults to add)",
+        "desc": "-t is the time in between edits, defaults to .7 seconds\nexample: [edit hi,*2\nhi->hihi\nexample 2: [edit :,),),)\n:->:)->:))->:)))"
+      },
+      {
         "name": "duplicator",
         "params": "[times] <message>",
         "desc": "duplicates your <message> [times] times defaults to 2",
@@ -350,6 +355,11 @@
     "desc": "random number generator stuff",
     "cmds": [
       {
+        "name": "weightedcoin",
+        "params": "<heads odds> (-picks <amount>)",
+        "desc": "flips a weighted coin -picks times (tails odds is 1 - heads odds)"
+      },
+      {
         "name": "choose",
         "params": "*<from> (sep with commas) (-picks <amount>)",
         "desc": "chooses -picks amount of <from>, defaults to 1 pick"
@@ -479,7 +489,7 @@
       },
       {
         "name": "color",
-        "params": "[role] OR [color <r, g, b>] (--rand)",
+        "params": "[role] OR [color <r, g, b> OR #<hex color>] OR [user] (--rand)",
         "desc": "gives the color of [role], or the hex color of <r, g, b>\n--rand gives a random color"
       },
       {
