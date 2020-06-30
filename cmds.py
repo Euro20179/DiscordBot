@@ -212,7 +212,7 @@ async def level(msg, content, cmd="level"):
     embed.add_field(name="approx minutes", value=round((required - xp) / 57.5)) #TODO format this
     embed.add_field(name="level up mesage", value=await formatLevelMessage(msg, message, level), inline=False)
     await msg.channel.send(embed=embed)
-    return f'level: {level}\nxp: {xp}\nrequired: {required}\npos: {pos}\nxp needed: {required - xp}\napprox minutes: {round((required - xp) / 57.5)}\nlevel up message: {await formatLevelMessage(msg, message, level)}'
+    return await embedToReadableDict(msg, embed) 
 
 async def leaderboard(msg, content, cmd="top"):
     if testInContent(content, "--raw"):
@@ -459,6 +459,19 @@ async def coin(msg, content, cmd="coin"):
     embed = discord.Embed(title=title, color=color)
     await msg.channel.send(embed=embed)
 
+async def weightedCoin(msg, content, cmd="weightedcoin"):
+    content = content[len(cmd) + 2:].split(" ")
+    headsOdds = content[0]
+    try: headsOdds = float(headsOdds)
+    except: return await msg.channel.send("not a number")
+    if headsOdds > 1 or headsOdds < 0:
+        return await msg.channel.send("odds must be less than 1 and greater than 0")
+    ans = "heads" if random.random() <= headsOdds else "tails"
+    embed = discord.Embed(title=ans, color=0xff00ff if ans == "heads" else 0x0000ff)
+    await msg.channel.send(embed=embed)
+    msg.content = ans
+    return msg
+
 async def roleInfo(msg, content, cmd="roleinfo"):
     if not splitContent(content, cmd + " "):
         rolename = msg.author.top_role.name
@@ -473,6 +486,7 @@ async def roleInfo(msg, content, cmd="roleinfo"):
         embed.add_field(name="members with role", value=len(role.members))
         embed.add_field(name="Created at", value=await formatDateTime(role.created_at))
         await msg.channel.send(embed=embed)
+        return await embedToReadableDict(msg, embed)
     except AttributeError:
         return await msg.channel.send("role not found")
 
@@ -664,35 +678,59 @@ async def ridInvites(msg, content, cmd="clearinvites"):
     else: return await msg.channel.send("you don't have perms")
 
 async def color(msg, content, cmd="color"):
+    if (user := await getUserInContent(msg, content, cmd)) != msg.author:
+        color = user.color
+        tempColor = str(color)[1:]
+        r, g, b = int(tempColor[0:2], 16), int(tempColor[2:4], 16), int(tempColor[4:], 16)
+        embed = discord.Embed(title=f'Hex: {str(color)}\nRGB: {r}, {g}, {b}', color=color)
+        await msg.channel.send(embed=embed)
+        msg.content = f'{r}, {g}, {b}'
+        return msg
+
     c = splitContent(content, f'{cmd}')[1].strip()
     if "--rand" in c:
         ns = "0123456789abcdef"
         c = "#"
-        for x in range(6):
+        for _ in range(6):
             c += random.choice(ns)
+        tempC = c[1:]
+        r, g, b = int(tempC[0:2], 16), int(tempC[2:4], 16), int(tempC[4:], 16)
+        embed = discord.Embed(title=f'Hex: {c}\nRGB: {r}, {g}, {b}', color=discord.Color.from_rgb(r, g, b))
+        await msg.channel.send(embed=embed)
+        msg.content = c
+        return msg
 
     if "#" in c:
         color = c.replace("#", "")
         r, g, b = int(color[0:2], 16), int(color[2:4], 16), int(color[4:], 16)
         embed = discord.Embed(title=f'{r} {g} {b}', color=discord.Color(int(color, 16)))
-        return await msg.channel.send(embed=embed)
+        await msg.channel.send(embed=embed)
+        msg.content = color
+        return msg
+
     if ", " in c:
         c = c.replace(" ", "")
         color = [int(x) for x in c.split(",")]
         hexColor = [str(hex(x))[2:] for x in color]
         hexColor = list(map(lambda x: f'0{x}' if len(x) == 1 else x, hexColor))
-        return await msg.channel.send(embed=discord.Embed(title=f'#{"".join(hexColor)}', color=discord.Color.from_rgb(color[0], color[1], color[2])))			
+        await msg.channel.send(embed=discord.Embed(title=f'#{"".join(hexColor)}', color=discord.Color.from_rgb(color[0], color[1], color[2])))	
+        msg.content = ", ".join(color)
+        return msg
+
     if not c: c = str(msg.author.top_role)
     m = discord.utils.find(lambda r: r.name.lower() == c.lower(), msg.guild.roles)
     if m:
         embed = discord.Embed(title=str(m.color), color=m.color)
-        return await msg.channel.send(embed=embed)					
+        await msg.channel.send(embed=embed)			
+        msg.content = str(m.color)
+        return msg		
     else: return await msg.channel.send("not a valid role")	
 
 async def serverIcon(msg, content, cmd="servericon"):
     embed = discord.Embed(title="Server icon", color=discord.Colour.from_rgb(180, 70, 180))
     embed.set_image(url=msg.guild.icon_url)
     await msg.channel.send(embed=embed)
+    return msg.guild.icon_url
 
 async def channelInfo(msg, content, cmd="cc"):
     channel = msg.channel
@@ -738,7 +776,7 @@ async def changes(msg, content, cmd="changes"):
 async def hexBinOct(msg, content, cmd="hex"):
     content = splitContent(content, cmd + " ")[1]
     num = list(map(lambda n: int(n), content.split(", "))) if ", " in content else [int(content)]
-    repWith = {"hex": "0x", "bin": "0b", "oct": "0o"}[cmd]
+    repWith = {"hex": "0x", "bin": "0b", "oct": "0o", "tobase": ""}[cmd]
     ans = list(map(lambda n: str(hex(n)).replace(repWith, ""), num))
     return await msg.channel.send(", ".join(ans))
 
@@ -823,6 +861,7 @@ async def messageInfo(msg, content, cmd="messageinfo"):
     embed.add_field(name="jump to link", value=msg.jump_url)
 
     await sendTo.send(embed=embed)
+    return await embedToReadableDict(msg, embed)
 
 async def typeFor(msg, content, cmd="type"):
     timeToType = 5
@@ -920,6 +959,7 @@ async def categoryInfo(msg, content, cmd="categoryinfo"):
     embed.add_field(name="voice channels", value=len(cat.voice_channels))
     embed.add_field(name="created at", value=await formatDateTime(cat.created_at))
     await msg.channel.send(embed=embed)
+    return await embedToReadableDict(msg, embed)
 
 async def spamStop(msg, content, cmd="spamstop"):
     for _ in range(10):
@@ -950,6 +990,7 @@ async def pokemon(msg, content, cmd="pokemon"):
         embed.set_thumbnail(url=img)
         embed.set_footer(text=f'source: https://www.pokemon.com/us/pokedex/{pokemon}')
         await msg.channel.send(embed=embed)
+        return await embedToReadableDict(msg, embed)
     except Exception as e: 
         print(e)
         return await msg.channel.send("smth went wrong")
@@ -984,15 +1025,16 @@ async def whoHasRole(msg, content, cmd="hasrole"):
         Raw = True
     role = splitContent(content, cmd + " ")[1]
     role = discord.utils.find(lambda r: r.name.lower() == role.lower(), msg.channel.guild.roles)
+    if not role: return await msg.channel.send("role not found")
+    has = [user.mention for user in msg.channel.guild.members if role in user.roles]
     try: 
         embed = discord.Embed(title=role.name, color=role.color)   
         if Raw: raise Exception("wanted raw file")
-        has = [user.mention for user in msg.channel.guild.members if role in user.roles]
         embed.add_field(name="has", value="\n".join(has))
         await msg.channel.send(embed=embed)
+        msg.content = "\n".join([user.name for user in msg.channel.guild.members if role in user.roles])
+        return msg
     except:
-        if not role:
-            return await msg.channel.send("role not found")
         if not has:
             return await msg.channel.send(f'no one has {role.name}')
         await msg.channel.send("too many chars, here's a text file")
@@ -1328,3 +1370,39 @@ async def uptime(msg, content, cmd="uptime"):
     else:
         t, layer = await formatSeconds(time.time() - UPTIME) 
         return await msg.channel.send(f'{str(t)} {layer}')
+
+async def editCmd(msg, content, cmd="edit"):
+    if testInContent(content, "-t"):
+        if content.split("-t ")[1] == "instant":
+            content = content.replace(f'-t instant', "")
+            sleepFor = 0
+        else:
+            sleepFor = float(content.split("-t ")[1])
+            if sleepFor < 0:
+                return await msg.channel.send("must be greater than 0")
+            if sleepFor >= 1:
+                content = content.replace(f'-t {str(sleepFor).replace(".0", "")}', "")
+            else:
+                content = content.replace(f'-t {str(sleepFor).replace("0", "")}', "")
+    else: sleepFor = .7
+    edits = content[len(cmd) + 2:].split("|")
+    editable = await msg.channel.send(edits[0])
+    while edits:
+        edits.pop(0)
+        if not edits: break
+        await asyncio.sleep(sleepFor)
+        if edits[0][0] == "+":
+            add = "add"
+        elif edits[0][0] == "-":
+            add = False
+        elif edits[0][0] == "*":
+            add = "multiply"
+        elif edits[0][0] == "<" and edits[0][1] == "<":
+            add = "insertBeggining"
+        else: add = "add"
+        if add == "add": await editable.edit(content=editable.content + edits[0])
+        elif add == "multiply": await editable.edit(content=editable.content*int(edits[0][1:]))
+        elif add == "insertBeggining": 
+            await editable.edit(content=f'{edits[0][2:]}' + editable.content)
+        else: await editable.edit(content=editable.content.replace(edits[0][1:], ""))
+    return editable
