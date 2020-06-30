@@ -33,11 +33,19 @@ bannedFilePath = f"{DISEXT}/banned.json"
 timersPath = f"{DISEXT}/timers.json"
 moneyDataFilePath = f'{DISEXT}/moneyData.json'
 itemDataFilePath = f'{DISEXT}/itemsData.json'
+botModsFilePath = f'{DISEXT}/botMods.txt'
 itemsFilePath = f'items.json'
 EUROID = 334538784043696130
 client = commands.Bot(command_prefix=PREFIX)
 
 tracemalloc.start()
+
+def reloadBOTMODS():
+    with open(botModsFilePath, "r") as f:
+        BOTMODS = f.read().split("\n")
+    return BOTMODS
+
+BOTMODS = reloadBOTMODS()
 
 async def reloadCMDSLIST():
     with open("cmds.json", "r") as cmdsJson:
@@ -95,7 +103,7 @@ async def formatLevelMessage(msg, message, level): #gives the levelmessage with 
     if "{emote}" in message:
         new = [x if x != "{emote}" else str(random.choice(client.emojis)) for x in message.split(" ")]
         message = " ".join(new)
-    return message.replace("{author}", msg.author.mention).replace("{level}", str(level)).replace("{channel}", msg.channel.name)
+    return message.replace("{author}", msg.author.mention).replace("{level}", str(level)).replace("{channel}", msg.channel.mention)
 
 async def formatDateTime(createdAt : datetime.datetime)->str:
     return f'{createdAt.month}/{createdAt.day}/{createdAt.year}\nat {createdAt.hour}:{createdAt.minute}:{createdAt.second}'

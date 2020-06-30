@@ -14,7 +14,7 @@ async def on_ready():
     print(f"ONLINE\nversion: {VERSION}")
 
 async def runCommand(msg, content, cmd, layer=1, Iscmd=False):
-    global CUSTOMCMDS, CATS, CMDLIST
+    global CUSTOMCMDS, CATS, CMDLIST, BOTMODS
 
     DOFIRST = f'--{layer} ' #DEPRICATED
     if DOFIRST in content: #DEPRICATED
@@ -49,7 +49,29 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False):
         await runCommand(msg, content.replace(f'{PREFIX}timeit ', ""), splitContent(content, "timeit ", index=1).split(" ")[0][1:])
         return await msg.channel.send(time.time() - start)
 
-    elif cmd == "ENDPLS" and msg.author.id in [EUROID, 412365502112071681]:
+    elif cmd == "ADDBOTMOD" and msg.author.id == EUROID:
+        user = await getUserInContent(msg, content, cmd)
+        with open(botModsFilePath, "r+") as f:
+            if f.read():
+                MODS = f.read().split("\n")
+                if user.id in MODS:
+                    return await msg.channel.send(f'{user.name} already a mod')
+            f.write(f'{user.id}\n')
+        BOTMODS = reloadBOTMODS()
+        return await msg.channel.send(f'added {user.name} as a bot mod')
+
+    elif cmd == "REMOVEBOTMOD" and msg.author.id == EUROID:
+        user = await getUserInContent(msg, content, cmd)
+        with open(botModsFilePath, "r+") as f:
+            MODS = f.read().split("\n")
+            try: MODS.remove(str(user.id))
+            except: return await msg.channel.send(f'{user.name} not a mod')
+            clearFile(f)
+            f.write("\n".join(MODS))
+        BOTMODS = reloadBOTMODS()
+        return await msg.channel.send(f'removed {user.name} from bot mod')
+
+    elif cmd == "ENDPLS" and msg.author.id == EUROID:
         await msg.channel.send("Logging out")
         await client.logout()
 
@@ -62,7 +84,7 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False):
         with open(bannedFilePath, "rb") as bannedJ:
             await msg.channel.send(file=discord.File(bannedJ, "bans.json"))
 
-    elif cmd == "BAN" and msg.author.id in [EUROID, 412365502112071681]:
+    elif cmd == "BAN" and msg.author.id in BOTMODS:
         user = await getUserInContent(msg, " ".join(content.split(" ")[0:2]), cmd)
         banFrom = splitContent(content, " ", index=2)
         with open(bannedFilePath, "r+") as bannedJ:
@@ -74,13 +96,13 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False):
             await msg.channel.send(f'banned {user.name} from {banFrom}')
             json.dump(data, bannedJ)
 
-    elif cmd == "changelvlmsg" and msg.author.id == EUROID:
+    elif cmd == "changelvlmsg" and msg.author.id in BOTMODS:
         user = await getUserInContent(msg, content, cmd)
         with open(levelingDataFilePath, "r+") as j:
             data = json.load(j)
             try:
                 await msg.channel.send("to what?") 
-                changeTo = await client.wait_for("message", timeout=60.0)
+                changeTo = await client.wait_for("message", check=lambda message: message.author.id in msg.author.id, timeout=60.0)
             except: return await msg.channel.send("failed")
             userData = data[str(user.id)]
             userData["message"] = changeTo.content
@@ -163,6 +185,9 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False):
     if (case := cmds.get(True)):
         content = await case(msg, content, cmd=cmd)
 
+    elif cmd == "botmods": 
+        BOTMODS = reloadBOTMODS()
+        content = await oneLineCmd(msg, "\n".join([(await getUserInContent(msg, f'ok {i}', "ok")).name for i in BOTMODS[:-1]]))
     elif cmd == "tof": content = await oneLineCmd(msg, 9 / 5 * float(splitContent(content, cmd + " ", index=1)) + 32)
     elif cmd == "avatar": content = await oneLineCmd(msg, await getUserInContent(msg, content, cmd)).avatar_url
     elif cmd == "fetchuser": content = await oneLineCmd(msg, (await client.fetch_user(int(splitContent(content, f'{cmd} ', index=1)))).name)
@@ -201,7 +226,7 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False):
         say = "".join(temp)
         content = await oneLineCmd(msg, say)
         
-    elif cmd == "UNBAN" and msg.author.id in [EUROID, 412365502112071681]:
+    elif cmd == "UNBAN" and msg.author.id in BOTMODS:
         user = await getUserInContent(msg, " ".join(content.split(" ")[0:2]), cmd)
         unbanFrom = splitContent(content, " ", index=2)
         with open(bannedFilePath, "r+") as bannedJ:
