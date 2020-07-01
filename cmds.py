@@ -393,10 +393,14 @@ async def startRPS(msg, content, cmd="rps"):
 
     if resp1 in opps.keys() and resp2 in opps.keys():
         if opps[resp2] == resp1:
-            if user2.mention != user1.mention: await addMoney(user2, random.randint(1, 5))
+            if user2.mention != user1.mention: 
+                await addMoney(user2, random.randint(1, 5))
+                await addMoney(user1, random.randint(-5, -1))
             return await msg.channel.send(f'{user2.mention} WINS')
         elif opps[resp1] == resp2:
-            if user2.mention != user1.mention: await addMoney(user1, random.randint(1, 5))
+            if user2.mention != user1.mention: 
+                await addMoney(user2, random.randint(-5, -1))
+                await addMoney(user1, random.randint(1, 5))
             return await msg.channel.send(f'{user1.mention} WINS')
         else: await msg.channel.send("ITS A DRAW")
     else: await msg.channel.send("either someone spelled something wrong, or someone isn't playing by the rules")
@@ -1158,7 +1162,7 @@ async def deathBattle(msg, users, going, notGoing, responseTime, damageMsgs, hea
             damage = round(random.gauss(-24, 5), 0)
             await temp.delete()
     elif AH == 'stop':
-        await addMoney(going, -5)
+        await addMoney(going, -20)
         await removeFromList(playingDB, going, notGoing) 
         await temp.delete()
         return await stop("stopped")
@@ -1187,10 +1191,12 @@ async def deathBattle(msg, users, going, notGoing, responseTime, damageMsgs, hea
     if users[second]["health"] <= 0:
         await removeFromList(playingDB, going, notGoing) 
         await addMoney(first, abs(users[second]["health"]))
+        await addMoney(second, users[second]["health"])
         return await msg.channel.send(f'{first.name} has won!\nthey earned {abs(users[second]["health"])}')
     elif users[first]["health"] <= 0:
         await removeFromList(playingDB, going, notGoing) 
         await addMoney(second, abs(users[first]["health"]))
+        await addMoney(first, users[first]["health"])
         return await msg.channel.send(f'{second.name} has won!\nthey earned {abs(users[first]["health"])}')
     else:
         if going == first:
@@ -1408,20 +1414,3 @@ async def editCmd(msg, content, cmd="edit"):
             await editable.edit(content=f'{edits[0][2:]}' + editable.content)
         else: await editable.edit(content=editable.content.replace(edits[0][1:], ""))
     return editable
-
-async def rob(msg, content, cmd="rob"):
-    if isBot(msg, client) and random.random() < .999: return await msg.channel.send("i cannot rob")
-    user = await getUserInContent(msg, content, cmd)
-    add = random.randint(10, 20)
-    with open(moneyDataFilePath, "r") as j:
-        data = json.load(j)
-        if data[str(msg.author.id)] <= 0:
-            return await msg.channel.send(f'you cannot rob because you have debt')
-    if random.random() >= .5:
-        await addMoney(user, add)
-        await addMoney(msg.author, -add)
-        return await msg.channel.send(f'{msg.author.mention} has lost {add} and {user.name} has gained {add}')
-    else:
-        await addMoney(user, -add)
-        await addMoney(msg.author, add)
-        return await msg.channel.send(f'{user.name} has lost {add} and {msg.author.mention} has gained {add}')

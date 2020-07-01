@@ -1,3 +1,14 @@
+4.5.3
+
+CHANGES:
+*losing in deathbattle will make you lose money
+*losing in rps will make you lose money
+*quitting now loses 20 instead of 5
+
+REMOVED:
+*rob
+
+====================================================================
 4.5.2.1
 
 CHANGES:
