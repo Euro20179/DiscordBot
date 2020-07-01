@@ -68,6 +68,7 @@ async def hlp(msg, content, cmd="help"):
                         date = c.get("date")
                         Locked = c.get("Locked")
                         addedBy = c.get("addedby")
+                        editedBy = c.get("editedby")
                         if aliases: aliases = ",\n".join(f'``{x}``' for x in aliases)
             try: 
                 print(params)
@@ -75,9 +76,12 @@ async def hlp(msg, content, cmd="help"):
                 embed.add_field(name="description", value=f'``{desc}``', inline=False)
                 if aliases: embed.add_field(name="aliases", value=aliases, inline=False)
                 if Locked is not None: embed.add_field(name="locked", value=Locked, inline=False)
-                if addedBy is not None: embed.add_field(name="added by", value=(await client.fetch_user(int(addedBy))).name)
+                if addedBy is not None: embed.add_field(name="added by", value=(await client.fetch_user(int(addedBy))).name, inline=False)
+                if editedBy: embed.add_field(name="edited by", value="\n".join([(await client.fetch_user(int(userId))).name for userId in editedBy]), inline=False)
                 embed.add_field(name="date added", value=date if date else "unknown", inline=False)
-            except: return await msg.channel.send('command not found')
+            except Exception as e: 
+                print(e)
+                return await msg.channel.send('command not found')
             await msg.channel.send(embed=embed)
             return await embedToReadableDict(msg, embed)
 
@@ -1107,7 +1111,7 @@ async def addCustomCmd(msg, content, cmd="customcmd"):
             d = datetime.datetime.now().strftime("%m/%d/%Y")
         else:
             d = datetime.datetime.now().strftime("%m/%d/%y")
-        data.append({"name": name, "desc": say, "params": params, "date": d, "Locked": Locked, "addedby": str(msg.author.id)})
+        data.append({"name": name, "desc": say, "params": params, "date": d, "Locked": Locked, "addedby": str(msg.author.id), "editedby": []})
         mssg = await msg.channel.send("added")
         clearFile(j)
         json.dump(data, j)
@@ -1421,10 +1425,27 @@ async def customCmdList(msg, content, cmd="customcmdlist"):
         with open(customcmdsFilePath, "rb") as f: await msg.channel.send(file=discord.File(f, "customCmds.json"))
     else: 
         try:
+            if testInContent(content, "--file"): raise Exception("wanted file")
             content = await oneLineCmd(msg, "\n".join([f'{x}: {y}' for x, y in CUSTOMCMDS.items()]))
         except:
-            with open(customcmdsFilePath, "rb") as f: await msg.channel.send(file=discord.File(f, "customCmds.json"))
-
+            write = ""
+            with open(customcmdsFilePath, "r") as j:
+                data = json.load(j)
+                for cmmd in data:
+                    params = cmmd["params"]
+                    desc = cmmd["desc"]
+                    aliases = cmmd.get("aliases")
+                    date = cmmd.get("date")
+                    Locked = cmmd.get("Locked")
+                    addedBy = cmmd.get("addedby")
+                    editedBy = cmmd.get("editedby")
+                    if aliases: aliases = ",\n".join(f'``{x}``' for x in aliases)
+                    write += f'Name {cmmd["name"]}\n\nParams: {params}\n\nDescription: {desc}\n\nAliases: {aliases}\n\nDate added: {date}\n\nLocked: {Locked}\n\nAdded by: {addedBy}\n\nEdited by: {editedBy}\n\n\n\n'
+            with open("customcmdlist.txt", "w") as f:
+                f.write(write)
+            with open("customcmdlist.txt", "rb") as f:
+                await msg.channel.send(file=discord.File(f, "customcmdlist.txt"))
+            os.remove("customcmdlist.txt")
 async def editCustomCmd(msg, content, cmd="eccmd"):
     global BOTMODS
     BOTMODS = reloadBOTMODS()
@@ -1436,7 +1457,12 @@ async def editCustomCmd(msg, content, cmd="eccmd"):
         for command in data:
             if command["name"] == lookFor:
                 if not command.get("Locked") or str(msg.author.id) in BOTMODS or str(msg.author.id) == command["addedby"]:
-                    command["desc"] = changeTo
+                    if "--lock" in changeTo:
+                        command["Locked"] = command["Locked"]^True
+                    else:
+                        command["desc"] = changeTo
+                    if command.get("editedby"): command["editedby"] += [str(msg.author.id)]
+                    else: command["editedby"] = [str(msg.author.id)]
                 else: return await msg.channel.send("cannot change that command it's locked")
         clearFile(j)
         json.dump(data, j)
