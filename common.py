@@ -19,7 +19,7 @@ playingHangman = {}
 playingDB = []
 
 #CONSTS
-PREFIX = "]"
+PREFIX = "["
 UPTIME = time.time()
 token = "NjQxNzk1NjU2Mzc3MTcyMDAw.XcNk8g.HEvnaXjuXFQhN1iilaaffbiPcoo"
 HPKEY = "544fcd57-1cb1-4d8a-8613-c156d7e8f4ed"
