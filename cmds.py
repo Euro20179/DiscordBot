@@ -1464,7 +1464,9 @@ async def editCustomCmd(msg, content, cmd="eccmd"):
                             command["Locked"] = command["Locked"]^True
                     else:
                         command["desc"] = changeTo
-                    if command.get("editedby"): command["editedby"] += [str(msg.author.id)]
+                    if command.get("editedby"): 
+                        if str(msg.author.id) not in command["editedby"]:
+                            command["editedby"] += [str(msg.author.id)]
                     else: command["editedby"] = [str(msg.author.id)]
                 else: return await msg.channel.send("cannot change that command it's locked")
         clearFile(j)
