@@ -1502,16 +1502,17 @@ async def uptime(msg, content, cmd="uptime"):
 async def editCmd(msg, content, cmd="edit"):
     if testInContent(content, "-t"):
         if content.split("-t ")[1] == "instant":
-            content = content.replace(f'-t instant', "")
+            content = content.replace(f' -t instant', "")
             sleepFor = 0
         else:
             sleepFor = float(content.split("-t ")[1])
             if sleepFor < 0:
                 return await msg.channel.send("must be greater than 0")
             if sleepFor >= 1:
-                content = content.replace(f'-t {str(sleepFor).replace(".0", "")}', "")
+                content = content.replace(f' -t {str(sleepFor).replace(".0", "")}', "")
             else:
-                content = content.replace(f'-t {str(sleepFor).replace("0", "")}', "")
+                content = content.replace(f' -t {str(sleepFor).replace("0", "")}', "")
+            print(content)
     else: sleepFor = .7
     edits = content[len(cmd) + 2:].split("|")
     editable = await msg.channel.send(edits[0])
@@ -1523,6 +1524,8 @@ async def editCmd(msg, content, cmd="edit"):
             add = "add"
         elif edits[0][0] == "-":
             add = False
+            print(edits[0][1:], editable.content)
+            print(editable.content.replace(edits[0][1:], ""))
         elif edits[0][0] == "*":
             add = "multiply"
         elif edits[0][0] == "<" and edits[0][1] == "<":
