@@ -55,17 +55,6 @@
     ]
   },
   {
-    "cat": "HELP",
-    "desc": "help",
-    "cmds": [
-      {
-        "name": "help",
-        "params": "[cmd/category] (--all) (--file (only for categories))",
-        "desc": "sends a help message\nif command is specified it will show the help for that command only\nif --all it sends the file"
-      }
-    ]
-  },
-  {
     "cat": "LEVELS",
     "desc": "anything that has to do with leveling",
     "cmds": [
