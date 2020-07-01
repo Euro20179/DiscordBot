@@ -1,3 +1,15 @@
+4.8 (7/1/2020)
+
+ADDITIONS:
+*putting {count} in spam will say what message it's on
+*pingresponse
+    *the bot says it when you are pinged
+    *{author} pings the person who pinged you
+
+CHANGES:
+*the bot will no longer say "is not a thing" if there is no command
+
+====================================================================
 4.7.1.2 (7/1/2020)
 
 FIXES:
