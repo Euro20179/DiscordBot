@@ -529,6 +529,11 @@
         "desc": "gives the times [command] was used, defaults to the top 10"
       },
       {
+        "name": "help",
+        "params": "[cmd/category] (--file)",
+        "desc": "gives help on command, or lists cmds in category, --file gives a file"
+      },
+      {
         "name": "commandcount",
         "params": null,
         "desc": "gives the total number of commands"
