@@ -1,3 +1,12 @@
+4.7-rc5 (7/1/2020)
+
+ADDITIONS:
+*do --lock in eccmd to lock/unlock a command
+*customcmds now keep track of who edits them
+*customcmdlist now gives formatted txt file if can't send in chat
+*--file for customcmdlist
+
+====================================================================
 4.7-rc4 (7/1/2020)
 
 CHANGES:

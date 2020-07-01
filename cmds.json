@@ -282,7 +282,7 @@
       },
       {
         "name": "customcmdlist",
-        "params": null,
+        "params": "(--raw) (--file)",
         "desc": "lists the custom cmds",
         "date": "6/11/2020"
       },
@@ -295,8 +295,8 @@
       },
       {
         "name": "eccmd",
-        "params": "<cmd name>, <say>",
-        "desc": "edits <cmd> to say <say>",
+        "params": "<cmd name>, <say> (--lock)",
+        "desc": "edits <cmd> to say <say>\ndo just --lock to lock/unlock a command",
         "date": "6/13/2020"
       }
     ]
