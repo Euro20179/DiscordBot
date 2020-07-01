@@ -1420,7 +1420,7 @@ async def rob(msg, content, cmd="rob"):
     if random.random() >= .5:
         await addMoney(user, add)
         await addMoney(msg.author, -add)
-        return await msg.channel.send(f'{msg.author.mention} has gained {add} and {user.name} has lost {add}')
+        return await msg.channel.send(f'{msg.author.mention} has lost {add} and {user.name} has gained {add}')
     else:
         await addMoney(user, -add)
         await addMoney(msg.author, add)
