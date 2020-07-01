@@ -110,13 +110,29 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False):
             data = json.load(j)
             try:
                 await msg.channel.send("to what?") 
-                changeTo = await client.wait_for("message", check=lambda message: message.author.id in msg.author.id, timeout=60.0)
+                changeTo = await client.wait_for("message", check=lambda message: message.author.id == msg.author.id, timeout=60.0)
             except: return await msg.channel.send("failed")
             userData = data[str(user.id)]
             userData["message"] = changeTo.content
             clearFile(j)
             json.dump(data, j)
             return await msg.channel.send("changed")
+
+    elif cmd == "changepr" and str(msg.author.id) in BOTMODS:
+        user = await getUserInContent(msg, content, cmd)
+        with open(pingResponseFilePath, "r+") as j:
+            data = json.load(j)
+            try:
+                await msg.channel.send("to what?") 
+                changeTo = await client.wait_for("message", check=lambda message: message.author.id == msg.author.id, timeout=60.0)
+            except Exception as e: 
+                print(e)
+                return await msg.channel.send("failed")
+            data[str(user.id)] = changeTo.content
+            clearFile(j)
+            json.dump(data, j)
+            return await msg.channel.send("changed")
+
 
     cmds = {
         cmd == "echo": echo,
@@ -187,7 +203,8 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False):
         cmd == "luckynumber": luckynumber,
         cmd == "uptime": uptime,
         cmd == "weightedcoin": weightedCoin,
-        cmd == "edit": editCmd
+        cmd == "edit": editCmd,
+        cmd == "pingresponse": pingResponse
     }
 
     if (case := cmds.get(True)):
@@ -306,9 +323,18 @@ async def on_message(msg):
     await giveXP(msg)
     await reduceXP(msg)
 
+    if msg.mentions:
+        usersPinged = {str(user.id) for user in msg.mentions}
+        with open(pingResponseFilePath, "r") as j:
+            data = json.load(j)
+            for user in usersPinged & set(data.keys()):
+                if data.get(user):
+                    await msg.channel.send(data[user].replace("{author}", msg.author.mention))      
+
     if content[0] in PREFIX:
 
         cmd = getCmd(content)
+        if not cmd: return
         WriteToFile = False
 
         if TICDelete(content): 

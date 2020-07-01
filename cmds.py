@@ -87,11 +87,11 @@ async def hlp(msg, content, cmd="help"):
 
 async def spam(msg, messages, message, BlockStop=False):
     global Stop
-    for _ in range(int(messages)):
+    for i in range(int(messages)):
         if Stop and not BlockStop:
             Stop = False
             return await msg.channel.send(await stop("Stopped"))
-        msg = await msg.channel.send(random.choice(message))
+        msg = await msg.channel.send(random.choice(message).replace("{count}", str(i + 1)))
         await asyncio.sleep(random.uniform(.7, 1.3))
     return msg
 
@@ -1543,3 +1543,15 @@ async def editCmd(msg, content, cmd="edit"):
             await editable.edit(content=f'{edits[0][2:]}' + editable.content)
         else: await editable.edit(content=editable.content.replace(edits[0][1:], ""))
     return editable
+
+async def pingResponse(msg, content, cmd="pingresponse"):
+    response = content[len(cmd) + 2:]
+    with open(pingResponseFilePath, "r+") as j:
+        data = json.load(j)
+        if response.lower() == "none":
+            del data[str(msg.author.id)]
+        else:
+            data[str(msg.author.id)] = response
+        clearFile(j)
+        json.dump(data, j)
+    return await msg.channel.send(f"changed to:\n{response}")

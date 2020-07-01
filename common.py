@@ -11,7 +11,7 @@ import bs4 as bs
 import os
 
 DELETE = "--delete"
-VERSION = "4.7.1.2"
+VERSION = "4.8"
 Stop = False
 
 playingGuessingGame = {}
@@ -36,6 +36,7 @@ moneyDataFilePath = f'{DISEXT}/moneyData.json'
 itemDataFilePath = f'{DISEXT}/itemsData.json'
 botModsFilePath = f'{DISEXT}/botMods.txt'
 itemsFilePath = f'items.json'
+pingResponseFilePath = f'{DISEXT}/pingresponse.json'
 EUROID = 334538784043696130
 client = commands.Bot(command_prefix=fakePrefix)
 

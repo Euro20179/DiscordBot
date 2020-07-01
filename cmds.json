@@ -153,7 +153,7 @@
       },
       {
         "name": "spam",
-        "params": "<amount> <message> (--c/--count)  OR (-random <op1> <op2>)",
+        "params": "<amount> <message> (--c/--count)  OR (-random <op1> <op2>)\n{count} will say what message it's on",
         "desc": "spams <message> <amount> times\n--c counts\n-random sends op1 or op2 randomly each time",
         "date": "11/6/19"
       },
@@ -732,6 +732,12 @@
         "params": null,
         "desc": "gives an accurate reading if you have COVID--19 or not",
         "date": "6/9/2020"
+      },
+      {
+        "name": "pingresponse",
+        "params": "<message>",
+        "desc": "when someone pings you the bot will say <message>\n{author} mentions the person who pinged",
+        "date": "7/1/2020"
       }
     ]
   },
