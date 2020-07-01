@@ -1,4 +1,13 @@
-4.7 (7/1/2020)
+4.7-rc2 (7/1/2020)
+
+CHANGES:
+*daily is now a customcmd instead of builtin
+
+FIXES:
+*Locked no longer appears on built-in commands
+
+====================================================================
+4.7-rc1 (7/1/2020)
 
 ADDITIONS:
 *fetchchannel, gets channel from id
