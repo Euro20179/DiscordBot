@@ -92,7 +92,6 @@ async def echo(msg, content, cmd="echo"):
     try: await msg.delete()
     except: pass
     if "-e" in content:
-        print(content)
         if " " in content.split(" -e")[-1]:
             color = int(content.split(" -e")[-1], 16)
             c = content.replace(f"-e{content.split(' -e')[-1]}", "")
@@ -967,7 +966,7 @@ async def spamStop(msg, content, cmd="spamstop"):
         await asyncio.sleep(random.uniform(.3, 1.2))
 
 async def calc(msg, content, cmd="calc"):
-    if "help" in content or "quit" in content or "exit" in content or "os." in content:
+    if "help()" in content or "quit()" in content or "exit()" in content or "os." in content:
         return await msg.channel.send('nice try')
     else: return await msg.channel.send(eval(splitContent(content, cmd + " ", index=1)))
 
@@ -1158,7 +1157,8 @@ async def deathBattle(msg, users, going, notGoing, responseTime, damageMsgs, hea
         else:
             damage = round(random.gauss(-24, 5), 0)
             await temp.delete()
-    elif AH == f'stop':
+    elif AH == 'stop':
+        await addMoney(going, -5)
         await removeFromList(playingDB, going, notGoing) 
         await temp.delete()
         return await stop("stopped")
@@ -1210,6 +1210,8 @@ async def INIT_deathBattle(msg, content, cmd="deathbatte"):
         return await msg.channel.send(f'{msg.author.name} is in a game')
     if user2 in playingDB:
         return await msg.channel.send(f'{user2.name} is in a game')
+    if msg.author == client.user or user2 == client.user:
+        return await msg.channel.send("I cannot play sadly :((((((")
     with open(levelingDataFilePath, "r") as j:
         data = json.load(j)
         b1 = data[str(msg.author.id)]["level"] // 3
@@ -1388,7 +1390,6 @@ async def editCmd(msg, content, cmd="edit"):
     edits = content[len(cmd) + 2:].split("|")
     editable = await msg.channel.send(edits[0])
     while edits:
-        print(edits)
         edits.pop(0)
         if not edits: break
         await asyncio.sleep(sleepFor)
@@ -1407,3 +1408,16 @@ async def editCmd(msg, content, cmd="edit"):
             await editable.edit(content=f'{edits[0][2:]}' + editable.content)
         else: await editable.edit(content=editable.content.replace(edits[0][1:], ""))
     return editable
+
+async def rob(msg, content, cmd="rob"):
+    if isBot(msg, client) and random.random() < .999: return await msg.channel.send("i cannot rob")
+    user = await getUserInContent(msg, content, cmd)
+    add = random.randint(10, 20)
+    if random.random() >= .5:
+        await addMoney(user, add)
+        await addMoney(msg.author, -add)
+        return await msg.channel.send(f'you have lost {add} and {user.name} has gained {add}')
+    else:
+        await addMoney(user, -add)
+        await addMoney(msg.author, add)
+        return await msg.channel.send(f'you have gained {add} and {user.name} has lost {add}')
