@@ -10,7 +10,8 @@
     "cmds": [
       {
         "name": "[chkx",
-        "params": null
+        "params": null,
+        "date": "5/27/2020"
       },
       {
         "name": "[delete",
@@ -20,12 +21,14 @@
       {
         "name": "[rw",
         "params": "*<emote> (sep with ,)",
-        "desc": "reacts"
+        "desc": "reacts",
+        "date": "6/4/2020"
       },
       {
         "name": "[delin",
         "params": "<time>",
-        "desc": "deletes your message in time seconds"
+        "desc": "deletes your message in time seconds",
+        "date": "5/28/2020"
       }
     ]
   },
@@ -40,12 +43,14 @@
       {
         "name": ">>>",
         "params": "<filename>",
-        "desc": "writes the answer to <filename>"
+        "desc": "writes the answer to <filename>",
+        "date": "6/11/2020"
       },
       {
         "name": "/{}",
         "params": "cmd <> [] ()",
-        "desc": "does the cmd inside of /{} first\nask euro"  
+        "desc": "does the cmd inside of /{} first\nask euro",
+        "date": "6/13/2020"
       },
       {
         "name": "--1 (DEPRECATED)",
@@ -62,6 +67,7 @@
         "name": "level",
         "params": "[user] (--raw)",
         "desc": "sends your level, xp, and required xp until the next level\nif [user] is provided it'll send that user's stats\nyou get 1--100 xp every minute if you talk\nif yo'ure innactive for 12 hours, youll lose 1xp per message until you talk aagin",
+        "date": "5/22/2020",
         "aliases": [
           "lvl",
           "rank"
@@ -69,8 +75,9 @@
       },
       {
         "name": "top",
-        "params": "[top] ",
+        "params": "[top]",
         "desc": "gives the top 10 on the leveling leaderboard\nif to is specified gives the top [top]",
+        "date": "5/23/2020",
         "aliases": [
           "leaderboard",
           "levels"
@@ -79,7 +86,8 @@
       {
         "name": "lvlmsg",
         "params": "<message> (--see/--get/--s/--g) (--f/--y) SPECIAL WORDS: {author}, {channel}, {emote}, {level}",
-        "desc": "sets your level up message to <message>\n--see shows the message\n--f auto confirms\n{author}: pings you\n{channel}: the current channel\n{emote} randoms server emote\n{level} the level you leveld up to\nif see or get, shows your level up message\nif message is none it wont say when you level up"
+        "desc": "sets your level up message to <message>\n--see shows the message\n--f auto confirms\n{author}: pings you\n{channel}: the current channel\n{emote} randoms server emote\n{level} the level you leveld up to\nif see or get, shows your level up message\nif message is none it wont say when you level up",
+        "date": "5/29/2020"
       }
     ]
   },
@@ -90,23 +98,33 @@
       {
         "name": "luckynumber",
         "params": "[message] (-c <numbers>)",
-        "desc": "gives author's/[messages]'s luckynumbers (defaults to 3)"
+        "desc": "gives author's/[messages]'s luckynumbers (defaults to 3)",
+        "date": "6/19/2020"
+      },
+      {
+        "name": "shrug",
+        "params": null,
+        "desc": "shrugs",
+        "date": "5/23/2020"
       },
       {
         "name": "edit",
-        "params": "*<message> (-t <time>) (sep with | (spaces on either side will be registered as spaces))\n(use +,-,<<,and * to add subtract, insert at the begging, and multiply words, defaults to add)",
-        "desc": "-t is the time in between edits, defaults to .7 seconds\nexample: [edit hi,*2\nhi->hihi\nexample 2: [edit :,),),)\n:->:)->:))->:)))"
+        "params": "*<message> (-t <time>) (sep with |) (spaces on either side will be registered as spaces)\n(operators:\n+:add\n-:subtract\n*:multiply\n<<:add to beginnging)",
+        "desc": "-t is the time in between edits, defaults to .7 seconds\nexample: [edit hi,*2\nhi->hihi\nexample 2: [edit :,),),)\n:->:)->:))->:)))",
+        "date": "6/30/2020"
       },
       {
         "name": "duplicator",
         "params": "[times] <message>",
         "desc": "duplicates your <message> [times] times defaults to 2",
+        "date": "6/13/2020",
         "aliases":["duplicate"]
       },
       {
         "name": "ship",
         "params": "<name1>, <name2> (sep with commas)",
         "desc": "takes the first half of name1 and combines it with the second half of name2",
+        "date": "5/26/2020",
         "aliases": [
           "boat",
           "boip"
@@ -114,18 +132,21 @@
       },
       {
         "name": "sendblank",
-        "params": "[amount], ",
-        "desc": "sends a [amount] lines of blank messages, defaults to 5"
+        "params": "[amount]",
+        "desc": "sends a [amount] lines of blank messages, defaults to 5",
+        "date": "6/1/2020"
       },
       {
         "name": "echo",
-        "params": "<message> (-e [color]) ",
-        "desc": "sends <message> and deletes your message\n-e embeds it\n--delete doesn't delete your message"
+        "params": "<message> (-e [color])",
+        "desc": "sends <message> and deletes your message\n-e embeds it\n--delete doesn't delete your message",
+        "date": "12/14/19"
       },
       {
         "name": "8ball",
         "params": "[question] (-e [color])",
         "desc": "the magic 8 ball ooooo spooky",
+        "date": "11/6/19",
         "aliases": [
           "magicball"
         ]
@@ -133,7 +154,8 @@
       {
         "name": "spam",
         "params": "<amount> <message> (--c/--count)  OR (-random <op1> <op2>)",
-        "desc": "spams <message> <amount> times\n--c counts\n-random sends op1 or op2 randomly each time"
+        "desc": "spams <message> <amount> times\n--c counts\n-random sends op1 or op2 randomly each time",
+        "date": "11/6/19"
       },
       {
         "name": "randomface",
@@ -147,6 +169,7 @@
         "name": "thewavecommand",
         "params": null,
         "desc": "says something wave would",
+        "date": "6/3/2020",
         "aliases": [
           "twc",
           "thepenguincommand",
@@ -157,6 +180,7 @@
         "name": "thetroycommand",
         "params": null,
         "desc": "says something troy would say",
+        "date": "11/9/19",
         "aliases": [
           "ttc"
         ]
@@ -165,6 +189,7 @@
         "name": "unicodechar",
         "params": "[amount]  (-sep <sepby>)",
         "desc": "sends [amount] of unicode chars, defaults to 1",
+        "date": "11/9/19",
         "aliases": [
           "ucodechar"
         ]
@@ -177,11 +202,12 @@
       {
         "name": "serveremote",
         "params": "[amount] (-sep <sepby>)",
-        "desc": "sends [amount] of random server emotes, defaults to 1"
+        "desc": "sends [amount] of random server emotes, defaults to 1",
+        "date": "11/9/19"
       },
       {
         "name": "upperlower",
-        "params": "<message> ",
+        "params": "<message>",
         "desc": "sends <message> BuT lIkE tHiS",
         "aliases": [
           "ul"
@@ -189,48 +215,57 @@
       },
       {
         "name": "flush",
-        "params": "<message> ",
-        "desc": "flushes <message> down the toilet"
+        "params": "<message>",
+        "desc": "flushes <message> down the toilet",
+        "date": "1/4/2020"
       },
       {
         "name": "longmessage",
         "params": null,
-        "desc": "sends a long message"
+        "desc": "sends a long message",
+        "date": "12/19/19"
       },
       {
         "name": "complexmessage",
         "params": "<send>, <filename.ext>, <content>",
-        "desc": "sends <filename.ext> with <content> inside the file to <send>\n<send> can either be yes (to send to chat) or dm (to send to your dms)"
+        "desc": "sends <filename.ext> with <content> inside the file to <send>\n<send> can either be yes (to send to chat) or dm (to send to your dms)",
+        "date": "1/5/2020"
       },
       {
         "name": "mesage",
         "params": "<send>, <filename>.txt, <content>",
-        "desc": "sends <filename>.txt withe <content> to <send> (send is same as complexmessage)"
+        "desc": "sends <filename>.txt withe <content> to <send> (send is same as complexmessage)",
+        "date": "1/5/20?"
       },
       {
         "name": "sanity",
         "params": "<message>  (-r <round to>)",
-        "desc": "gives the sanity of <message>\n-r rounds the decimal"
+        "desc": "gives the sanity of <message>\n-r rounds the decimal",
+        "date": "1/18/2020"
       },
       {
         "name": "family",
         "params": null,
-        "desc": "sends a family tree"
+        "desc": "sends a family tree",
+        "date": "1/25/2020"
       },
       {
         "name": "reverse",
-        "params": "<message> ",
-        "desc": "reverses <message>"
+        "params": "<message>",
+        "desc": "reverses <message>",
+        "date": "5/10/2020"
       },
       {
         "name": "piglatin",
         "params": "<message> (--kc)",
-        "desc": "onvertscay essagemay intoay igpay atinlay\n--kc eppskay asecay"
+        "desc": "onvertscay essagemay intoay igpay atinlay\n--kc eppskay asecay",
+        "date": "5/10/2020"
       },
       {
         "name": "iq",
-        "params": "[message] ",
-        "desc": "gives the iq of message, if not message, you"
+        "params": "[message]",
+        "desc": "gives the iq of message, if not message, you",
+        "date": "5/27/2020"
       }
     ]
   },
@@ -242,23 +277,27 @@
         "name": "customcmd",
         "params": "<cmd name>, <say>",
         "desc": "when [<cmd name> is typed it'll say <say>\n{content} will replace with the message of who did cmd\n{version} will replace with the bot's version\n{uptime} will replace with the bot's uptime",
+        "date": "6/11/2020",
         "aliases": ["accmd", "customcommand"]
       },
       {
         "name": "customcmdlist",
         "params": null,
-        "desc": "lists the custom cmds"
+        "desc": "lists the custom cmds",
+        "date": "6/11/2020"
       },
       {
         "name": "dccmd",
         "params": "<cmd name>",
         "desc": "removes <cmd name> (must have message perms or mballresponseadder to use this)",
+        "date": "6/11/2020",
         "aliases": ["removecustomcmd", "delcustomcmd", "rccmd"]
       },
       {
         "name": "eccmd",
         "params": "<cmd name>, <say>",
-        "desc": "edits <cmd> to say <say>"
+        "desc": "edits <cmd> to say <say>",
+        "date": "6/13/2020"
       }
     ]
   },
@@ -269,12 +308,14 @@
       {
         "name": "guessinggame",
         "params": "[high] [lives] (--bet)",
-        "desc": "you have to guess the random number from low to high, defaults to 1 through 100"
+        "desc": "you have to guess the random number from low to high, defaults to 1 through 100",
+        "date": "5/12/2020"
       },
       {
         "name": "rps",
         "params": "@<member> (-time <time>)",
         "desc": "you play rock paper scissors with member",
+        "date": "5/18/2020",
         "aliases": [
           "rockpaperscissors"
         ]
@@ -282,17 +323,20 @@
       {
         "name": "reactiontime",
         "params": null,
-        "desc": "says GO and you have to send a message as fast as possible"
+        "desc": "says GO and you have to send a message as fast as possible",
+        "date": "5/20/2020"
       },
       {
         "name": "hangman",
         "params": "<user>",
-        "desc": "you have 15 seconds to dm the bot the word <user> will be guessing\n<user> will guess letters indevidually in chat\nif you're the player say STOP to stop the game"
+        "desc": "you have 15 seconds to dm the bot the word <user> will be guessing\n<user> will guess letters indevidually in chat\nif you're the player say STOP to stop the game",
+        "date": "6/1/2020"
       },
       {
         "name": "deathbattle",
         "params": "<user>",
         "desc": "battle <user> TO THE DEATH! DA DA DAAAAAAAAAA",
+        "date": "6/11/2020",
         "aliases": ["db"]
       }
     ]
@@ -304,12 +348,14 @@
       {
         "name": "deathbattle",
         "params": "<user>",
-        "desc": "battle <user> TO THE DEATH! DA DA DAAAAAAAAAAA"
+        "desc": "battle <user> TO THE DEATH! DA DA DAAAAAAAAAAA",
+        "date": "6/11/2020"
       },
       {
         "name": "bal",
         "params": "[user] (--raw)",
         "desc": "your money\n--raw gives the json",
+        "date": "5/10/2020",
         "aliases": [
           "mmoney",
           "mymoney",
@@ -319,12 +365,14 @@
       {
         "name": "shop",
         "params": null,
-        "desc": "lists the items available for purchase in the shop"
+        "desc": "lists the items available for purchase in the shop",
+        "date": "6/11/2020"
       },
       {
         "name": "inv",
         "params": null,
         "desc": "lists the items in your inventory",
+        "date": "6/11/2020",
         "aliases": [
           "inventory",
           "items"
@@ -334,14 +382,10 @@
         "name": "buy",
         "params": "<item>, [amount]",
         "desc": "buys an item",
+        "date": "6/11/2020",
         "aliases": [
           "buyitem"
         ]
-      },
-      {
-        "name": "rob",
-        "params": "<user>",
-        "desc": "robs <user> from 10-20 or you from 10-20"
       }
     ]
   },
@@ -352,22 +396,26 @@
       {
         "name": "weightedcoin",
         "params": "<heads odds> (-picks <amount>)",
-        "desc": "flips a weighted coin -picks times (tails odds is 1 - heads odds)"
+        "desc": "flips a weighted coin -picks times (tails odds is 1 - heads odds)",
+        "date": "6/30/2020"
       },
       {
         "name": "choose",
         "params": "*<from> (sep with commas) (-picks <amount>)",
-        "desc": "chooses -picks amount of <from>, defaults to 1 pick"
+        "desc": "chooses -picks amount of <from>, defaults to 1 pick",
+        "date": "5/6/2020"
       },
       {
         "name": "coin",
-        "params": "(-bet <h/t>) ",
-        "desc": "flips a coin, if bet is specified it'll say if you won or lost"
+        "params": "[h/t]",
+        "desc": "flips a coin, if bet is specified it'll say if you won or lost\ngiving heads/tails will indicate you want to bet",
+        "date": "1/18/2020"
       },
       {
         "name": "rand",
-        "params": "<low> <high> [round] (--even) (--odd) ",
-        "desc": "picks a random number from <low> to <high>\nif either is a decimal it'll give a decimal rounded to [round] defaults to no round\nif --odd or --even it'll be an odd or even number"
+        "params": "<low> <high> [round] (--even) (--odd)",
+        "desc": "picks a random number from <low> to <high>\nif either is a decimal it'll give a decimal rounded to [round] defaults to no round\nif --odd or --even it'll be an odd or even number",
+        "date": "1/18/2020"
       }
     ]
   },
@@ -378,32 +426,38 @@
       {
         "name": "bin",
         "params": "*<num> (sep with commas)",
-        "desc": "gives the binary form of each <num> (base 2)"
+        "desc": "gives the binary form of each <num> (base 2)",
+        "date": "5/21/2020"
       },
       {
         "name": "calc",
-        "params": "<equation> ",
-        "desc": "gives the answer to <equation>\nsome things will not work as intended ie:\n ** is power instead of ^"
+        "params": "<equation>",
+        "desc": "gives the answer to <equation>\nsome things will not work as intended ie:\n ** is power instead of ^",
+        "date": "5/23/2020"
       },
       {
         "name": "hex",
         "params": "*<num> (sep with commas)",
-        "desc": "gives the hexidecimal form of each <num> (base 16)"
+        "desc": "gives the hexidecimal form of each <num> (base 16)",
+        "date": "5/21/2020"
       },
       {
         "name": "oct",
         "params": "*<num> (sep with commas)",
-        "desc": "gives the oct form of each <num> (base 8)"
+        "desc": "gives the oct form of each <num> (base 8)",
+        "date": "5/27/2020"
       },
       {
         "name": "toc",
         "params": "<temp (fahrenheit)>",
-        "desc": "gives the celcius temp of <temp>"
+        "desc": "gives the celcius temp of <temp>",
+        "date": "5/26/2020"
       },
       {
         "name": "tof",
         "params": "<temp (celcius)>",
-        "desc": "gives the fahrenheit temp of <temp>"
+        "desc": "gives the fahrenheit temp of <temp>",
+        "date": "5/26/2020"
       },
       {
         "name": "timecalc",
@@ -419,12 +473,14 @@
       {
         "name": "pokemon",
         "params": "<pokemon pokedex #/name>",
-        "desc": "gets info on pokemon"
+        "desc": "gets info on pokemon",
+        "date": "6/2/2020"
       },
       {
         "name": "hasrole",
         "params": "<role>, (--raw)",
         "desc": "gives a list of the users with role\n--raw gets a file",
+        "date": "6/11/2020",
         "aliases": [
           "whohas"
         ]
@@ -432,37 +488,44 @@
       {
         "name": "categoryinfo",
         "params": "<category>",
-        "desc": "gets info on the category"
+        "desc": "gets info on the category",
+        "date": "6/3/2020"
       },
       {
         "name": "messageinfo",
-        "params": "[message id] [channel where mesage is] ",
-        "desc": "gets mesage info on the message you just sent, or on message id\nif the message id isn't in the current channel specify which chanenl the message is from"
+        "params": "[message id] [channel where mesage is]",
+        "desc": "gets mesage info on the message you just sent, or on message id\nif the message id isn't in the current channel specify which chanenl the message is from",
+        "date": "6/3/2020"
       },
       {
         "name": "userinfo",
-        "params": "[user] ",
-        "desc": "gets info on user"
+        "params": "[user]",
+        "desc": "gets info on user",
+        "date": "6/3/2020"
       },
       {
         "name": "serverinfo",
         "params": null,
-        "desc": "gets info on the server"
+        "desc": "gets info on the server",
+        "date": "6/2/2020"
       },
       {
         "name": "roleinfo",
-        "params": "[role] ",
-        "desc": "gets info on <role>"
+        "params": "[role]",
+        "desc": "gets info on <role>",
+        "date": "5/26/2020"
       },
       {
         "name": "rolecount",
         "params": "[member]  (--showroles)",
-        "desc": "gives the role count of [member] defaults to you\n--showroles shows the roles"
+        "desc": "gives the role count of [member] defaults to you\n--showroles shows the roles",
+        "date": "1/19/2020"
       },
       {
         "name": "comproles",
         "params": "<member1> <member2>",
         "desc": "compares the roles of both members",
+        "date": "5/5/2020",
         "aliases": [
           "compareroles"
         ]
@@ -471,6 +534,7 @@
         "name": "8brlist",
         "params": null,
         "desc": "sends the text file with all 8ball responses",
+        "date": "5/12/2020",
         "aliases": [
           "mballreplylist",
           "8ballreplylist",
@@ -480,17 +544,20 @@
       {
         "name": "mostroles",
         "params": "[top]",
-        "desc": "sends the top top members by role count, defaults to top 5"
+        "desc": "sends the top top members by role count, defaults to top 5",
+        "date": "1/1/2020"
       },
       {
         "name": "color",
         "params": "[role] OR [color <r, g, b> OR #<hex color>] OR [user] (--rand)",
-        "desc": "gives the color of [role], or the hex color of <r, g, b>\n--rand gives a random color"
+        "desc": "gives the color of [role], or the hex color of <r, g, b>\n--rand gives a random color",
+        "date": "5/11/2020"
       },
       {
         "name": "cc",
         "params": "[channel]",
         "desc": "gives info about [channel] defaults to current channel",
+        "date": "5/26/2020",
         "aliases": [
           "channlinfo",
           "ci"
@@ -499,12 +566,14 @@
       {
         "name": "emoteinfo",
         "params": null,
-        "desc": "gives info about a server emote"
+        "desc": "gives info about a server emote",
+        "date": "5/30/2020"
       },
       {
         "name": "hypixelpc",
         "params": "[game]",
         "desc": "gives hypixel's current player count\nor the playercount of [game]",
+        "date": "6/9/2020",
         "aliases": [
           "hppc"
         ]
@@ -513,6 +582,7 @@
         "name": "hypixelbans",
         "params": null,
         "desc": "gives the hypixel ban stats",
+        "date": "6/22/2020",
         "aliases": [
           "hpbans"
         ]
@@ -526,32 +596,38 @@
       {
         "name": "commandusage",
         "params": "[command] (-top <amount>)",
-        "desc": "gives the times [command] was used, defaults to the top 10"
+        "desc": "gives the times [command] was used, defaults to the top 10",
+        "date": "5/23/2020"
       },
       {
         "name": "help",
-        "params": "[cmd/category] (--file)",
-        "desc": "gives help on command, or lists cmds in category, --file gives a file"
+        "params": "[cmd/category] (-added <date>) (--file)",
+        "desc": "gives help on command, or lists cmds in category, --file gives a file\n-added lists the commands added on <date>",
+        "date": "11/6/19"
       },
       {
         "name": "commandcount",
         "params": null,
-        "desc": "gives the total number of commands"
+        "desc": "gives the total number of commands",
+        "date": "5/20/2020"
       },
       {
         "name": "changes",
-        "params": "[version] (--nlatest) (--dms) ",
-        "desc": "gives the latest changes, if version is specified it gives that version's changes\n-nlatest gives the text file\n--dms sends to dms"
+        "params": "[version] (--nlatest) (--dms)",
+        "desc": "gives the latest changes, if version is specified it gives that version's changes\n-nlatest gives the text file\n--dms sends to dms",
+        "date": "5/20/2020"
       },
       {
         "name": "version",
         "params": null,
-        "desc": "gives the bot version"
+        "desc": "gives the bot version",
+        "date": "11/9/19"
       },
       {
         "name": "uptime",
         "params": "(--s)",
-        "desc": "says the uptime of the bot"
+        "desc": "says the uptime of the bot",
+        "date": "6/26/2020"
       }
     ]
   },
@@ -562,20 +638,23 @@
       {
         "name": "ping",
         "params": null,
-        "desc": "gives the bots ping to discord (I think)"
+        "desc": "gives the bots ping to discord (I think)",
+        "date": "11/6/19"
       },
       {
         "name": "alphabet",
         "params": "(--vowels) (--consonants)",
         "desc": "gives the alphabet\n--vowels only vowels\nconsonants only consonants",
+        "date": "11/9/19",
         "aliases": [
           "alpha"
         ]
       },
       {
         "name": "doesnothing",
-        "params": "<filename> ",
-        "desc": "gives a file of every member and their roles"
+        "params": "<filename>",
+        "desc": "gives a file of every member and their roles",
+        "date": "1/1/2020"
       },
       {
         "name": "stop",
@@ -585,12 +664,14 @@
       {
         "name": "mballreply",
         "params": "<reply> (only available to those who write good replies)",
-        "desc": "adds <reply> to the list of 8ball replies"
+        "desc": "adds <reply> to the list of 8ball replies",
+        "date": "1/29/2020"
       },
       {
         "name": "stopwatch",
         "params": "[interval [round]] (--stop)",
         "desc": "starts a stopwatch\ninterval can be seconds, minutes, days, hours, or weeks",
+        "date": "5/20/2020",
         "aliases": [
           "timer"
         ]
@@ -598,12 +679,14 @@
       {
         "name": "response",
         "params": "<message> (-lim <lim>)",
-        "desc": "finds the message (response) after <message> in chat with a limit of lim defaults to 1000"
+        "desc": "finds the message (response) after <message> in chat with a limit of lim defaults to 1000",
+        "date": "5/20/2020"
       },
       {
         "name": "wiki",
-        "params": "<query> ",
+        "params": "<query>",
         "desc": "gives link to wikipedia/query",
+        "date": "5/21/2020",
         "aliases": [
           "wikipedia"
         ]
@@ -611,32 +694,38 @@
       {
         "name": "timeit",
         "params": "<command <> [] ()>",
-        "desc": "times how long a command takes"
+        "desc": "times how long a command takes",
+        "date": "5/28/2020"
       },
       {
         "name": "avatar",
         "params": "[user]",
-        "desc": "gets the avatar of user, defaults to you"
+        "desc": "gets the avatar of user, defaults to you",
+        "date": "5/30/2020"
       },
       {
         "name": "servericon",
         "params": null,
-        "desc": "gets the server icon"
+        "desc": "gets the server icon",
+        "date": "5/11/2020"
       },
       {
         "name": "count",
         "params": "(--i) (--b) (--ib) (--e (-c <color>)) (--u) (--ui) (--all)",
-        "desc": "counts in #counting\n--i makes *italic*\n--b makes **bold**\n--ib makes ***italic and bold***\n--e makes embeded, if -c must be a hex code like 00ffe2\n--u makes underlined\n--ui makes underlined + italic\n-all sends __***number***__"
+        "desc": "counts in #counting\n--i makes *italic*\n--b makes **bold**\n--ib makes ***italic and bold***\n--e makes embeded, if -c must be a hex code like 00ffe2\n--u makes underlined\n--ui makes underlined + italic\n-all sends __***number***__",
+        "date": "5/6/2020"
       },
       {
         "name": "fetchuser",
         "params": "<userid>",
-        "desc": "says the nick_name of <userid> (must be an id)"
+        "desc": "says the nick_name of <userid> (must be an id)",
+        "date": "5/30/2020"
       },
       {
         "name": "fetchrole",
         "params": "<role id>",
-        "desc": "says the name of <role id> (must be an id)"
+        "desc": "says the name of <role id> (must be an id)",
+        "date": "6/3/2020"
       }
     ]
   },
@@ -647,12 +736,14 @@
       {
         "name": "clearinvites",
         "params": null,
-        "desc": "clears the invites"
+        "desc": "clears the invites",
+        "date": "5/30/2020"
       },
       {
         "name": "clear",
         "params": "<amount>",
-        "desc": "clears <amount> of messages in chat"
+        "desc": "clears <amount> of messages in chat",
+        "date": "11/6/19"
       }
     ]
   },
@@ -663,33 +754,39 @@
       {
         "name": "imscared",
         "params": null,
-        "desc": "don't be scared :)"
+        "desc": "don't be scared :)",
+        "date": "5/10/2020"
       },
       {
         "name": "slowdown",
         "params": null,
-        "desc": "**Slow Down** :snail:"
+        "desc": "**Slow Down** :snail:",
+        "date": "5/30/2020"
       },
       {
         "name": "typefor",
         "params": "[time]",
-        "desc": "types for [time] defaults to 5 seconds"
+        "desc": "types for [time] defaults to 5 seconds",
+        "date": "6/1/2020"
       },
       {
         "name": "daily",
         "params": null,
-        "desc": "daily coin money time"
+        "desc": "daily coin money time",
+        "date": "6/1/2020"
       },
       {
         "name": "doihavecovid",
         "params": null,
-        "desc": "gives an accurate reading if you have COVID--19 or not"
+        "desc": "gives an accurate reading if you have COVID--19 or not",
+        "date": "6/9/2020"
       }
     ]
   },
   {
     "cat": "CUSTOM",
     "desc": "custom cmds",
+    "date": "6/11/2020",
     "cmds": []
   }
 ]

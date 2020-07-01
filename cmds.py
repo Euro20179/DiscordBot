@@ -10,6 +10,14 @@ async def hlp(msg, content, cmd="help"):
     CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
     cat = splitContent(content, cmd + " ", index=1).upper()
     File = True if testInContent(cat.lower(), "--file") else False
+    GiveByAdded = True if testInContent(cat.lower(), "-added") else False
+    if GiveByAdded:
+        date = cat.lower().split("-added ")[1]
+        with open(f'cmds.json', "r") as f:
+            data = json.load(f)
+            cmds = [cmd["name"] for cat in data for cmd in cat["cmds"] if cmd.get("date") == date]
+            return await msg.channel.send("\n".join(cmds))
+
     if File: 
         cat = cat.replace(" --FILE", "").strip()
     if not cat and "--file" not in cat.lower():
@@ -27,15 +35,16 @@ async def hlp(msg, content, cmd="help"):
                 embed.add_field(name=f'{cmd["name"]}', value=f'``{cmd["name"]}``  {cmd["desc"]}')
         else:
             for cmd in CATS[cat]:
-                embed.add_field(name=f'{cmd["name"]}', value=f'``{cmd["name"]}``  {cmd["params"]}', inline=False)
+                embed.add_field(name=f'{cmd["name"]}', value=f'Params: ``{cmd["params"]}``\nDescription:``{cmd["desc"]}``', inline=False)
         try:
             if File: raise Exception("file specified") 
             await msg.channel.send(embed=embed)
+            return await embedToReadableDict(msg, embed)
         except:
             if not cat: cat = "help"
             with open(f'{cat}.txt', "w") as f:
                 for cmd in CATS[cat]:
-                    f.write(f'{cmd["name"]}  {cmd["params"]}\n\nDescription: {cmd["desc"]}\n\nAliases: {cmd.get("aliases")}\n\n\n\n')
+                    f.write(f'{cmd["name"]}\n\nparams: {cmd["params"]}\n\nDescription: {cmd["desc"]}\n\nAliases: {cmd.get("aliases")}\n\nAdded: {cmd.get("date")}\n\n\n\n')
             with open(f'{cat}.txt', "rb") as f:
                 await msg.channel.send(file=discord.File(f, f'{cat}.txt'))
             os.remove(f"{cat}.txt")
@@ -56,12 +65,16 @@ async def hlp(msg, content, cmd="help"):
                         params = c["params"]
                         desc = c["desc"]
                         aliases = c.get("aliases")
+                        date = c.get("date")
                         if aliases: aliases = ",\n".join(f'``{x}``' for x in aliases)
-                        text = f'**``{command}``**: ``{params}``\n\n{desc}\n\n__Aliases__:\n{aliases}'
-                        break
-            try: embed.add_field(name="description", value=text)
+            try: 
+                embed.add_field(name="params", value=f'``{params}``')
+                embed.add_field(name="description", value=f'``{desc}``', inline=False)
+                if aliases: embed.add_field(name="aliases", value=aliases)
+                if date: embed.add_field(name="added", value=date)
             except: return await msg.channel.send('command not found')
             await msg.channel.send(embed=embed)
+            return await embedToReadableDict(msg, embed)
 
 async def spam(msg, messages, message, BlockStop=False):
     global Stop
@@ -111,7 +124,7 @@ async def timers(msg, content, cmd="timers"):
         for user, t in data.items():
             embed.add_field(name=user, value=round(time.time() - t, 2))
         await msg.channel.send(embed=embed)
-        return f'{user}: {round(time.time() - t, 2)}'
+        return await embedToReadableDict(msg, embed)
 
 async def levelMessage(msg, content, cmd="lvlmsg"):
     if isBot(msg, client): return await msg.channel.send(await formatLevelMessage(msg, "I AM GREAT I AM LEVEL {level}", 9999999))
@@ -153,6 +166,7 @@ async def cmdUsage(msg, content, cmd="commandusage"):
             embed = discord.Embed(title=split)
             embed.add_field(name="times", value=commandUse)
             await msg.channel.send(embed=embed)
+            return await embedToReadableDict(msg, embed)
         else:
             data = {k: v for k, v in sorted(data.items(), key=lambda item: item[1], reverse=True)}
             send = "\n".join([f'{n + 1}: {c[0]}, {c[1]}' for n, c in enumerate(data.items()) if n < top])
@@ -444,8 +458,8 @@ async def sanity(msg, content, cmd="sanity"):
 
 async def coin(msg, content, cmd="coin"):
     title = res = "heads" if random.random() >= .5 else "tails"
-    if testInContent(content, "-bet"):
-        bet = splitContent(content, "-bet")[1].strip()
+    if testInContent(content, " "):
+        bet = splitContent(content, " ")[1].strip()
         if bet == "t": bet = "tails"
         if bet == "h": bet = "heads"
         color, title = (0x00ff00, "YOU WIN") if res == bet else (0xff0000, "YOU LOSE")
@@ -1063,7 +1077,11 @@ async def addCustomCmd(msg, content, cmd="customcmd"):
         params = ""
         if "{content}" in say:
             params += " <message>"
-        data.append({"name": name, "desc": say, "params": params})
+        if datetime.datetime.now().strftime("%Y") == "2020":
+            d = datetime.datetime.now().strftime("%m/%d/%Y")
+        else:
+            d = datetime.datetime.now().strftime("%m/%d/%y")
+        data.append({"name": name, "desc": say, "params": params, "date": d})
         await msg.channel.send("added")
         clearFile(j)
         json.dump(data, j)

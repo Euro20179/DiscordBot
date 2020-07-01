@@ -1,10 +1,31 @@
-4.5.3.1
+4.6 (7/1/2020)
+
+ADDITIONS:
+*date for commands, i will try to put the date eventually for every command
+*-added <date> for help command, gives commands added on <date>
+*customcommands now by default have a date when they were added
+
+CHANGES:
+*just put what you would bet in [coin without -bet
+*help [category] 
+    *now doesn't say the command twice
+    *category gives description and params, instead of just params
+    *command, is now seperated nicer
+*more commands work with /{}
+    *help [command]
+    *help [cat]
+    *timers
+    *commandusage [command]
+*i will try to put the date added for every built-in command
+
+====================================================================
+4.5.3.1 (6/30/2020)
 
 REMOVED:
 *help category
 
 ====================================================================
-4.5.3
+4.5.3 (6/30/2020)
 
 CHANGES:
 *losing in deathbattle will make you lose money
@@ -15,14 +36,14 @@ REMOVED:
 *rob
 
 ====================================================================
-4.5.2.1
+4.5.2.1 (6/30/2020)
 
 CHANGES:
 *you can't rob with negative balance
 *fixed wording in rob
 
 ====================================================================
-4.5.2
+4.5.2 (6/30/2020)
 
 ADDITIONS:
 *rob
@@ -35,14 +56,14 @@ CHANGES:
 *there is a 5 euro penalty for quitting a deathbattle game
 
 ====================================================================
-4.5.1
+4.5.1 (6/30/2020)
 
 ADDITIONS:
 *botmods, they are bot mods
     *have access to BAN, UNBAN, changelvlmsg
 
 ====================================================================
-4.5
+4.5 (6/30/2020)
 
 ADDITIONS:
 *color now supports getting the color of a user
@@ -66,19 +87,19 @@ FIXES:
 *whohas --raw
 
 ====================================================================
-4.4.1.2
+4.4.1.2 (6/29/2020)
 
 FIXES:
 *useing only an anymessage command without a message will no longer say <cmd> does not exist
 
 ====================================================================
-4.4.1.1
+4.4.1.1 (6/29/2020)
 
 CHANGES:
 *delin now supports non-ints
 
 ====================================================================
-4.4.1
+4.4.1 (6/26/2020)
 
 ADDITIONS:
 *color option for 8ball added for
@@ -90,13 +111,13 @@ CHANGES:
     *except for the [count command
 
 ====================================================================
-4.4.0.1
+4.4.0.1 (6/26/2020)
 
 FIXES:
 *customcmds
 
 ====================================================================
-4.4
+4.4 (6/26/2020)
 
 ADDITIONS:
 *{uptime} for custom cmds
@@ -147,7 +168,7 @@ REMOVED:
 *fortnite cmd
 
 ====================================================================
-4.3.0.1
+4.3.0.1 (6/24/2020)
 
 CHANGES:
 *mballresponseadders can use dccmd
