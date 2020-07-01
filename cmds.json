@@ -154,7 +154,7 @@
       {
         "name": "spam",
         "params": "<amount> <message> (--c/--count)  OR (-random <op1> <op2>)\n{count} will say what message it's on",
-        "desc": "spams <message> <amount> times\n--c counts\n-random sends op1 or op2 randomly each time",
+        "desc": "spams <message> <amount> times\n-random sends op1 or op2 randomly each time",
         "date": "11/6/19"
       },
       {
