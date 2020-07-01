@@ -1555,3 +1555,15 @@ async def pingResponse(msg, content, cmd="pingresponse"):
         clearFile(j)
         json.dump(data, j)
     return await msg.channel.send(f"changed to:\n{response}")
+
+async def swearAtMe(msg, content, cmd="swearatme"):
+    amnt = splitContent(content, " ", index=1)
+    try: 
+        if amnt: amnt = int(amnt)
+        else: amnt = 1
+    except: return await msg.author.send("has to be a number")
+    with open("profanity.json", "r") as f:
+        swears = json.load(f)
+    for _ in range(amnt):
+        await msg.author.send(random.choice(swears))
+        await asyncio.sleep(random.uniform(.7, 1.3))

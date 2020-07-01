@@ -20,7 +20,7 @@
       },
       {
         "name": "[rw",
-        "params": "*<emote> (sep with ,)",
+        "params": "*<emote> (sep with space)",
         "desc": "reacts",
         "date": "6/4/2020"
       },
