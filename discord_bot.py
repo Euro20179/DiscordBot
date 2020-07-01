@@ -136,7 +136,6 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False):
             json.dump(data, j)
             return await msg.channel.send("changed")
 
-
     cmds = {
         cmd == "echo": echo,
         cmd == "iq": iq, 
@@ -207,7 +206,8 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False):
         cmd == "uptime": uptime,
         cmd == "weightedcoin": weightedCoin,
         cmd == "edit": editCmd,
-        cmd == "pingresponse": pingResponse
+        cmd == "pingresponse": pingResponse,
+        cmd == "swearatme": swearAtMe
     }
 
     if (case := cmds.get(True)):
@@ -296,9 +296,8 @@ async def on_message(msg):
 
     if (s := testInContent(content, "[rw", "[reactwith")):
         c = splitContent(content, s, index=1).strip()
-        if testInContent(c, ", "):
-            c = c.replace(" ", "")
-            split = splitContent(c, ",")
+        if testInContent(c, " "):
+            split = splitContent(c, " ")
             for s in split:
                 if s in client.emojis: await msg.add_reaction(discord.utils.get(client.emojis, id=int(s.split(":")[2][:-1])))
                 else: await msg.add_reaction(s)
@@ -354,6 +353,9 @@ async def on_message(msg):
         if msg.author.id:
             with open(bannedFilePath, "r") as bannedJ:
                 data = json.load(bannedJ)
+                if data.get("EVERYONE"):
+                    if cmd in data["EVERYONE"]:
+                        return await msg.channel.send(f"no one can use {cmd}")
                 if (userData := data.get(str(msg.author.id))):
                     if cmd in userData or "ALL" in userData:
                         return await msg.channel.send(f"You cannot use {cmd}")
