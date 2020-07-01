@@ -1,4 +1,13 @@
-4.7-rc3
+4.7-rc4 (7/1/2020)
+
+CHANGES:
+*added in help is now date added
+
+FIXES:
+*params in help don't show if there are no params
+
+====================================================================
+4.7-rc3 (7/1/2020)
 
 ADITIONS:
 *customcmds now keep track of who added them
@@ -42,6 +51,9 @@ ADDITIONS:
 CHANGES:
 *ping is formatted slightly differently (inspired from unbelievaboat)
 *ping no longer rounds
+
+FIXES:
+*:tiredpuffle: works in twc and ttc
 
 ====================================================================
 4.6.1 (7/1/2020)
@@ -519,11 +531,47 @@ CHANGES:
 
 ADDITIONS:
 *random heal item, heals a random amount from 0 to 100
+*whohas, gives the members who have a certain role
+*--f/--y will skip past the y/n question in [lvlmsg
+*custom cmds
+    *customcmd will add a custom cmd
+    *customcmdslist will list custom cmds
+*help will now send text file if it doesn't fit on embed
+*--file for help will send file, only works for categories
+*deathbattle, fight someone to the DEATH
+    *rules: you start with 100 health + your level / 3 rounded
+    *each turn you can either attack or heal
+*economy
+    *you get money by winning deathbattles, you will get the overkill damage
+        *for example: if it says your opponent has -10 health at the end, you get 10
+    *you can also get money from leveling up, you will get your level * 2
+*items
+    *you can buy items with money, and the items are used in deathbattles
+    *shop, gives a list of the items available for purchase
+    *buyitem
+    *inv
+*commandusage will now also sort the file
+*fortnite cmd
+*>>> writes the "answer" of the command to a file
+*a few more cmds work with >> and --1
 
 CHANGES:
 *healing is now 70 instead of 90 coins
+*custom cmds are on their own file
+*gary types for [covid now
+*mmoney now actually shows your balance
+*--rawlevels is now just --raw
+*semi-fixed -top for commandusage
+*xp degrade starts after 2 weeks
 
-EVERYING IN 4.0-rc1 through 4.0-rc5
+FIXES:
+*color will no longer say "not a vaild role" when given a hex code
+*commandusage now says the correct "top <top> commands"
+*--1
+
+TECHNICAL:
+*complete help overhaul
+*seperated files
 
 ====================================================================
 4.0-rc5 (6/11/2020)
@@ -927,16 +975,30 @@ ADDITIONS:
 3.5 (6/1/2020)
 
 ADDITIONS:
-*3.5-rc1 - 3.5
+*typefor, makes the bot type for 5 seconds if no time is specified
+*added "C" and "c" to the list of random mouths to the randomface command
+*hangman, ping a user and play hangman (suggested by penguin)
+*sendblank, sends 10 lines of blank messages
+*boat and boip are now aliases for ship
+*added "does not exist" when command doesn't exist
+*daily command gives you randomly 0 to 1000000 dollars!!!1!!11!1!!!@!!
+*added --u and --ui options to count
 
 CHANGES:
-*3.5-rc1 - 3.5
+*the tile for channel info is now the name of the channel
+*created at is now mm/dd/yyyy instead of dd/mm/yyyy because I like mm/dd/yyyy better
+*help command is now in a json file, instead of 2 seperate files
+*levels now has it's own category in the help command
+*information about the bot has been moved to its own category from the info category
+*the grace time for levels is now 24 hours instead of 12
 
 FIXES:
-*3.5-rc1 - 3.5
+*stuff like [iq iq will actually say "iq's iq is..." instead of "<blank>'s iq is..."
+*-c for --e in count now works
+*count works when the previous message has formatting
 
 TECHNICAL:
-*3.5-rc1 - 3.5
+*changed the way it takes out the command from message
 
 REMOVED:
 *the chris easter egg
