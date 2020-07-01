@@ -1,3 +1,30 @@
+4.7 (7/1/2020)
+
+ADDITIONS:
+*fetchchannel, gets channel from id
+*emoteinfo:
+    *color is the color of the person who added the emote
+    *added some new info:
+        *image url
+        *raw mention
+    *the thumbnail is the image
+*channelinfo + userinfo now have rawmention
+*new items: 
+    *Epic Match: each player's health gets set to a number of your choice
+    *Theft: uses an item from the opponent, (if it uses theft, it becomes the opponent's turn and they use theft, this can create an infinite loop)
+*ping does more stuff
+    *now gives message send time (inspired from unbelievaboat)
+    *now gives the message edit time
+    *total execute time
+*accmd now works with /{}
+*accmd now has --lock, which makes it impossible for someone that isn't a botmod to change it
+*randomface now has a 20% chance to have eyebrows
+
+CHANGES:
+*ping is formatted slightly differently (inspired from unbelievaboat)
+*ping no longer rounds
+
+====================================================================
 4.6.1 (7/1/2020)
 
 CHANGES:
@@ -469,7 +496,7 @@ CHANGES:
 *player 2 gets 15 extra health at the start
 
 ====================================================================
-4.0 (6/12/2020)
+4.0 (6/12/2020) (biggest update as of update)
 
 ADDITIONS:
 *random heal item, heals a random amount from 0 to 100
@@ -508,7 +535,7 @@ FIXES:
 *help
 
 ====================================================================
-4.0-rc1 (6/11/2020) (biggest update as of update)
+4.0-rc1 (6/11/2020)
 
 ADDITIONS:
 *whohas, gives the members who have a certain role

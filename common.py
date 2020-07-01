@@ -11,7 +11,7 @@ import bs4 as bs
 import os
 
 DELETE = "--delete"
-VERSION = "4.6.1"
+VERSION = "4.7-rc1"
 Stop = False
 
 playingGuessingGame = {}
@@ -21,6 +21,7 @@ playingDB = []
 #CONSTS
 PREFIX = "["
 UPTIME = time.time()
+fakePrefix = PREFIX
 token = "NjQxNzk1NjU2Mzc3MTcyMDAw.XcNk8g.HEvnaXjuXFQhN1iilaaffbiPcoo"
 HPKEY = "544fcd57-1cb1-4d8a-8613-c156d7e8f4ed"
 DISEXT = "../disbot_ext"
@@ -36,16 +37,15 @@ itemDataFilePath = f'{DISEXT}/itemsData.json'
 botModsFilePath = f'{DISEXT}/botMods.txt'
 itemsFilePath = f'items.json'
 EUROID = 334538784043696130
-client = commands.Bot(command_prefix=PREFIX)
+client = commands.Bot(command_prefix=fakePrefix)
 
 tracemalloc.start()
 
 def reloadBOTMODS():
+    global BOTMODS
     with open(botModsFilePath, "r") as f:
         BOTMODS = f.read().split("\n")
     return BOTMODS
-
-BOTMODS = reloadBOTMODS()
 
 async def reloadCMDSLIST():
     with open("cmds.json", "r") as cmdsJson:

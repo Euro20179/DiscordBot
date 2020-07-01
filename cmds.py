@@ -66,12 +66,14 @@ async def hlp(msg, content, cmd="help"):
                         desc = c["desc"]
                         aliases = c.get("aliases")
                         date = c.get("date")
+                        Locked = c.get("Locked")
                         if aliases: aliases = ",\n".join(f'``{x}``' for x in aliases)
             try: 
                 embed.add_field(name="params", value=f'``{params}``')
                 embed.add_field(name="description", value=f'``{desc}``', inline=False)
                 if aliases: embed.add_field(name="aliases", value=aliases)
-                if date: embed.add_field(name="added", value=date)
+                embed.add_field(name="locked", value="False" if not Locked else "True", inline=False)
+                embed.add_field(name="added", value=date if date else "unknown")
             except: return await msg.channel.send('command not found')
             await msg.channel.send(embed=embed)
             return await embedToReadableDict(msg, embed)
@@ -87,6 +89,7 @@ async def spam(msg, messages, message, BlockStop=False):
     return msg
 
 async def ping(msg, content, cmd="ping"):
+    startFunction = time.time()
     if random.random() >= .95:
         await msg.author.send("upupdowndownleftrightleftright")
         await asyncio.sleep(5)
@@ -94,11 +97,18 @@ async def ping(msg, content, cmd="ping"):
         await asyncio.sleep(1)
         await msg.author.send("goodbye")
 
-    if random.random() >= .99:
-        return await msg.channel.send("uh yeah tbh i don't really know what this does, like i have an idea but like idk")
     elif random.random() >= .97:
         return await msg.channel.send("LOL GET PRANKD THIS DOES NOTHING ROFL XD XD XD XD XD")
-    else: return await msg.channel.send(f':ping_pong: {round(client.latency * 1000)}ms')	
+    else: 
+        start = time.time()
+        mssg = await msg.channel.send(f'Ping to discord: ``{(client.latency * 1000)}`` ms')	
+        end = time.time()
+        startEdit = time.time()
+        await mssg.edit(content=mssg.content + f'\nMessage send time: ``{(end - start) * 1000}`` ms')
+        endEdit = time.time()
+        await mssg.edit(content=mssg.content + f'\nMessage edit time: ``{(endEdit - startEdit) * 1000}`` ms')
+        await mssg.edit(content=mssg.content + f'\nTotal execute time ``{(time.time() - startFunction) * 1000}`` ms')
+        return mssg
 
 async def echo(msg, content, cmd="echo"):
     content = content[len(cmd) + 2:]
@@ -291,11 +301,15 @@ async def spamCmd(msg, content, cmd="spam"):
     else: return await msg.channel.send(random.choice(("done", "Done")))
 
 async def randomFace(msg, content, cmd="randomface"):
+    BROWS = (">", "|")
     EYES = (":", ";")
     MOUTHS = (")", "(", "{", "}", "[", "]", "p", "P", "d", "l", "C", "c")
     if random.random() >= .995:
         return await msg.channel.send("()-()\n ___")
-    return await oneLineCmd(msg, f'{random.choice(EYES)}{random.choice(MOUTHS)}' if random.random() >= .5 else f'{random.choice(MOUTHS)}{random.choice(EYES)}')
+    if random.random() >= .8:
+        return await oneLineCmd(msg, f'{random.choice(BROWS)}{random.choice(EYES)}{random.choice(MOUTHS)}' if random.random() >= .5 else f'{random.choice(MOUTHS)}{random.choice(EYES)}{random.choice(BROWS)}')
+    else: 
+        return await oneLineCmd(msg, f'{random.choice(EYES)}{random.choice(MOUTHS)}' if random.random() >= .5 else f'{random.choice(MOUTHS)}{random.choice(EYES)}')
 
 async def alphabet(msg, content, cmd="alphabet"):
     send = string.ascii_lowercase
@@ -767,6 +781,7 @@ async def channelInfo(msg, content, cmd="cc"):
     embed.add_field(name="position", value=channel.position + 1)
     embed.add_field(name="slowmode delay", value=channel.slowmode_delay)
     embed.add_field(name="mention", value=channel.mention)
+    embed.add_field(name="raw mention", value=f'\{channel.mention}')
     await msg.channel.send(embed=embed)
 
 async def changes(msg, content, cmd="changes"):
@@ -842,10 +857,13 @@ async def stopwatch(msg, content, cmd="stopwatch"):
 async def emoteInfo(msg, content, cmd="emoteinfo"):
     emote = await msg.guild.fetch_emoji(int(content.split(":")[2][:-1]))
     embed = discord.Embed(title=emote.name)
+    embed.set_thumbnail(url=emote.url)
     embed.add_field(name="Animated", value=emote.animated)
     embed.add_field(name="Added by", value=emote.user)
     embed.add_field(name="created at", value=await formatDateTime(emote.created_at))
     embed.add_field(name="id", value=emote.id)
+    embed.add_field(name="Image", value=str(emote.url))
+    embed.add_field(name="raw mention", value=f"\<:{emote.name}:707773683854213140>")
     await msg.channel.send(embed=embed)
 
 async def messageInfo(msg, content, cmd="messageinfo"):
@@ -956,6 +974,7 @@ async def userInfo(msg, content, cmd="userinfo"):
     embed.add_field(name="discriminator", value=user.discriminator)
     embed.add_field(name="id", value=user.id)
     embed.add_field(name="mention", value=user.mention)
+    embed.add_field(name="raw mention", value=f'\{user.mention}')
     embed.add_field(name="roles", value=" ".join([x.mention for x in user.roles]), inline=False)
     embed.set_thumbnail(url=user.avatar_url)
     await msg.channel.send(embed=embed)
@@ -1064,6 +1083,10 @@ async def whoHasRole(msg, content, cmd="hasrole"):
 
 async def addCustomCmd(msg, content, cmd="customcmd"):
     global CATS, CMDLIST, CUSTOMCMDS
+    if "--lock" in content:
+        Locked = True
+        content = content.replace("--lock", "")
+    else: Locked = False
     c = splitContent(content, ", ")
     name = c[0][len(cmd) + 2:].strip()
     c.pop(0)
@@ -1081,11 +1104,12 @@ async def addCustomCmd(msg, content, cmd="customcmd"):
             d = datetime.datetime.now().strftime("%m/%d/%Y")
         else:
             d = datetime.datetime.now().strftime("%m/%d/%y")
-        data.append({"name": name, "desc": say, "params": params, "date": d})
-        await msg.channel.send("added")
+        data.append({"name": name, "desc": say, "params": params, "date": d, "Locked": Locked})
+        mssg = await msg.channel.send("added")
         clearFile(j)
         json.dump(data, j)
     CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
+    return mssg
 
 async def removeCustomCmd(msg, content, cmd="removecustomcmd"):
     global CATS, CMDLIST, CUSTOMCMDS
@@ -1142,6 +1166,44 @@ async def deathBattle(msg, users, going, notGoing, responseTime, damageMsgs, hea
                 clearFile(j)
                 json.dump(data, j)
             CustomMessage = True
+            if AH.title() == "Theft":
+                count = 0
+                while AH.title() == "Theft":
+                    if not users[notGoing]["items"]:
+                        await msg.channel.send("your opponent doesn't have any items\ndealing 20 damage")
+                        users[notGoing]["health"] -= 20
+                        CustomMessage = f'{going} did 20 damage to {notGoing}'
+                        break
+                    else:
+                        AH = random.choice(users[notGoing]["items"])["name"]
+                        if AH.title() == "Theft":
+                            temp = notGoing
+                            notGoing = going
+                            going = temp
+                    count += 1
+                    if count > 1000: 
+                        await msg.channel.send("1000 limit reached, nothing happens")
+                        CustomMessage = 'nothing happened'
+                        temp = notGoing
+                        notGoing = going
+                        going = temp
+                        break
+            if AH.title() == "Epic Match":
+                try:
+                    await msg.channel.send("what health should each player be set to you have 60 seconds") 
+                    health = await client.wait_for("message", check=lambda message: message.author == going and message.content.isnumeric(), timeout=60.0)
+                except:
+                    await msg.channel.send("you waited too long, picking 15")
+                health = float(health.content)
+                if health > 200:
+                    await msg.channel.send("too high, you get to do NOTHING")
+                    if going == first:
+                        await deathBattle(msg, users, second, first, responseTime, damageMsgs, healMsgs, embed, first, second)
+                    else: await deathBattle(msg, users, first, second, responseTime, damageMsgs, healMsgs, embed, first, second)
+                else:
+                    users[going]["health"] = health
+                    users[notGoing]["health"] = health
+                    CustomMessage = f'both players have been set to {health} hp'
             if AH.title() == "Even Match":
                 users[going]["health"] = 100
                 users[notGoing]["health"] = 100
@@ -1351,7 +1413,7 @@ async def duplicator(msg, content, cmd="duplicator"):
     except: return await msg.channel.send("message too long, try reducing the number of duplications")
 
 async def customCmdList(msg, content, cmd="customcmdlist"):
-    CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
+    _, _, CUSTOMCMDS = await reloadCMDSLIST()
     if testInContent(content, "--raw"):
         with open(customcmdsFilePath, "rb") as f: await msg.channel.send(file=discord.File(f, "customCmds.json"))
     else: 
@@ -1361,6 +1423,8 @@ async def customCmdList(msg, content, cmd="customcmdlist"):
             with open(customcmdsFilePath, "rb") as f: await msg.channel.send(file=discord.File(f, "customCmds.json"))
 
 async def editCustomCmd(msg, content, cmd="eccmd"):
+    global BOTMODS
+    BOTMODS = reloadBOTMODS()
     lookFor = content.split(", ")[0][len(cmd) + 2:].strip()
     changeTo = content.split(", ")[1:]
     changeTo = ", ".join(changeTo)
@@ -1368,7 +1432,9 @@ async def editCustomCmd(msg, content, cmd="eccmd"):
         data = json.load(j)
         for command in data:
             if command["name"] == lookFor:
-                command["desc"] = changeTo
+                if not command.get("Locked") or str(msg.author.id) in BOTMODS:
+                    command["desc"] = changeTo
+                else: return await msg.channel.send("cannot change that command it's locked")
         clearFile(j)
         json.dump(data, j)
     return await msg.channel.send("changed successfully")

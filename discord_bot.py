@@ -3,7 +3,7 @@ from cmds import *
 
 @client.event
 async def on_ready():
-    global blueCheck, neutral, CATS, CMDLIST, CUSTOMCMDS
+    global blueCheck, neutral, CATS, CMDLIST, CUSTOMCMDS, BOTMODS
     await client.change_presence(activity=discord.Game(f'version: {VERSION}'))
     foo = await client.fetch_user(334538784043696130)
     await foo.send(f"ONLINE\nversion: {VERSION}")
@@ -11,6 +11,7 @@ async def on_ready():
     blueCheck = discord.utils.get(client.emojis, name="Blue_check")
     neutral = discord.utils.get(client.emojis, name="neutral")
     CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
+    BOTMODS = reloadBOTMODS()
     print(f"ONLINE\nversion: {VERSION}")
 
 async def runCommand(msg, content, cmd, layer=1, Iscmd=False):
@@ -198,17 +199,18 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False):
     elif cmd == "tof": content = await oneLineCmd(msg, 9 / 5 * float(splitContent(content, cmd + " ", index=1)) + 32)
     elif cmd == "avatar": content = await oneLineCmd(msg, await getUserInContent(msg, content, cmd)).avatar_url
     elif cmd == "fetchuser": content = await oneLineCmd(msg, (await client.fetch_user(int(splitContent(content, f'{cmd} ', index=1)))).name)
+    elif cmd == "fetchchannel": content = await oneLineCmd(msg, (await client.fetch_channel(int(splitContent(content, f'{cmd} ', index=1)))).name)
     elif cmd == "toc": content = await oneLineCmd(msg, 5 / 9 * (float(splitContent(content, cmd + " ", index=1)) - 32))
-    elif cmd in ["thepenguincommand", "tpc", "thewavecommand", "twc"]: await oneLineCmd(msg, random.choice(("very nice!", "very cool!", ":TiredPuffle:")))
+    elif cmd in ["thepenguincommand", "tpc", "thewavecommand", "twc"]: await oneLineCmd(msg, random.choice(("very nice!", "very cool!", "<:TiredPuffle:707773683854213140>")))
     elif cmd == "daily": content = await oneLineCmd(msg, f"you earned ${random.randint(0, 1000000)} you can use this command once a day!")
     elif cmd == "reverse": content = await oneLineCmd(msg, splitContent(content, f'{cmd} ')[1][::-1])
     elif cmd == "imscared": content = await oneLineCmd(msg, random.choice(("don't be :smiling_imp:", "oh it's ok :)))))))))))))))))", "just don't pay attention of the sounds coming from your attic.....\nit's ok", "it's ok... he's comming :)")))
     elif cmd == "doihavecovid": content = await oneLineCmd(msg, "yes" if random.random() < .995 else "no")
     elif cmd in ["ship", "boat", "boip"]: content = await oneLineCmd(msg, "DISCLAIMER: I DO NOT SUPPORT SHIPPING PEOPLE IN ANY WAY, HOWEVER MY MASTER SEEMS TO HAVE OTHER PLANS" if random.random() >= .985 else f'{splitContent(content, ", ")[0].replace("[" + cmd + " ", "")[0:len(splitContent(content, ", ")[0].replace("[" + cmd + " ", "")) // 2]}{splitContent(content, ", ")[1][len(splitContent(content, ", ")[1]) // 2:]}')
-    elif cmd in ["ttc", "thetroycommand"]: content = await oneLineCmd(msg, random.choice(("meow", "7", "**7**", "*7*", "mo", ":TiredPuffle:")))
+    elif cmd in ["ttc", "thetroycommand"]: content = await oneLineCmd(msg, random.choice(("meow", "7", "**7**", "*7*", "mo", "<:TiredPuffle:707773683854213140>")))
     elif cmd == "longmessage": content = await oneLineCmd(msg, "```````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````hI```````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````")
     elif cmd in ["wiki", "wikipedia"]: content = await oneLineCmd(msg, f'https://en.wikipedia.org/wiki/Special:Search?search={content[len(cmd) + 2:].replace(" ", "_")}')
-    
+
     elif cmd in ["eccmd", "editcustomcmd"]:
         content = await editCustomCmd(msg, content, cmd=cmd)
         CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
