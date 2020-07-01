@@ -337,7 +337,8 @@
         "params": null,
         "desc": "lists the items in your inventory",
         "aliases": [
-          "inventory"
+          "inventory",
+          "items"
         ]
       },
       {
@@ -347,6 +348,11 @@
         "aliases": [
           "buyitem"
         ]
+      },
+      {
+        "name": "rob",
+        "params": "<user>",
+        "desc": "robs <user> from 10-20 or you from 10-20"
       }
     ]
   },

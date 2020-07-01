@@ -49,6 +49,12 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False):
         await runCommand(msg, content.replace(f'{PREFIX}timeit ', ""), splitContent(content, "timeit ", index=1).split(" ")[0][1:])
         return await msg.channel.send(time.time() - start)
 
+    elif cmd == "ADDMONEY" and msg.author.id == EUROID:
+        user = await getUserInContent(msg, content.split(", ")[0], cmd)
+        amnt = content.split(", ")[1]
+        await addMoney(user, float(amnt))
+        return await msg.channel.send(f'{float(amnt)} removed from {user.name}')
+
     elif cmd == "ADDBOTMOD" and msg.author.id == EUROID:
         user = await getUserInContent(msg, content, cmd)
         with open(botModsFilePath, "r+") as f:
@@ -71,18 +77,19 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False):
         BOTMODS = reloadBOTMODS()
         return await msg.channel.send(f'removed {user.name} from bot mod')
 
-    elif cmd == "ENDPLS" and msg.author.id == EUROID:
+    elif cmd == "ENDPLS" and msg.author.id in BOTMODS:
         await msg.channel.send("Logging out")
         await client.logout()
 
     elif cmd == "BANS":
-        with open(bannedFilePath, "r+") as bannedJ:
-            data = json.load(bannedJ)
-            mssg = "".join([f'{(await client.fetch_user(int(user))).name}: {data[user]}\n' for user in data.keys()])
-            try: return await msg.channel.send(mssg)
-            except: pass
+        if not testInContent(content, "--raw"):
+            with open(bannedFilePath, "r+") as bannedJ:
+                data = json.load(bannedJ)
+                mssg = "".join([f'{(await client.fetch_user(int(user))).name}: {data[user]}\n' for user in data.keys()])
+                try: return await msg.channel.send(mssg)
+                except: pass
         with open(bannedFilePath, "rb") as bannedJ:
-            await msg.channel.send(file=discord.File(bannedJ, "bans.json"))
+            return await msg.channel.send(file=discord.File(bannedJ, "bans.json"))
 
     elif cmd == "BAN" and str(msg.author.id) in BOTMODS:
         user = await getUserInContent(msg, " ".join(content.split(" ")[0:2]), cmd)
@@ -93,8 +100,8 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False):
                 data[str(user.id)].append(banFrom)
             else: data[str(user.id)] = [banFrom]
             clearFile(bannedJ)
-            await msg.channel.send(f'banned {user.name} from {banFrom}')
             json.dump(data, bannedJ)
+            return await msg.channel.send(f'banned {user.name} from {banFrom}')
 
     elif cmd == "changelvlmsg" and str(msg.author.id) in BOTMODS:
         user = await getUserInContent(msg, content, cmd)
@@ -174,12 +181,13 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False):
         cmd in ["db", "deathbattle"]: INIT_deathBattle, 
         cmd == "shop": shop, 
         cmd in ["buyitem", "buy"]: buyItem, 
-        cmd in ["inv", "inventory"]: inventory, 
+        cmd in ["inv", "inventory", "items"]: inventory, 
         cmd in ["duplicator", "duplicate"]: duplicator,
         cmd == "luckynumber": luckynumber,
         cmd == "uptime": uptime,
         cmd == "weightedcoin": weightedCoin,
-        cmd == "edit": editCmd
+        cmd == "edit": editCmd,
+        cmd == "rob": rob
     }
 
     if (case := cmds.get(True)):
@@ -235,8 +243,8 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False):
                 data[str(user.id)].remove(unbanFrom)
             else: return await msg.channel.send("did not find user")
             clearFile(bannedJ)
-            await msg.channel.send(f'unbanned {user.name} from {unbanFrom}')
             json.dump(data, bannedJ)
+            return await msg.channel.send(f'unbanned {user.name} from {unbanFrom}')
 
     elif cmd == "upupdowndownleftrightleftright":
         return await msg.channel.send("what do you think this is some arcade machine with secret codes, lol")

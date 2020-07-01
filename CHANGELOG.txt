@@ -1,9 +1,21 @@
+4.5.2
+
+ADDITIONS:
+*rob
+*--raw to BANS
+*items as an alias for inv
+
+CHANGES:
+*the bot can't play deathbattle
+*botmods can use ENDPLS
+*there is a 5 euro penalty for quitting a deathbattle game
+
+====================================================================
 4.5.1
 
 ADDITIONS:
 *botmods, they are bot mods
     *have access to BAN, UNBAN, changelvlmsg
-
 
 ====================================================================
 4.5
