@@ -302,9 +302,15 @@
     ]
   },
   {
-    "cat": "GAMES",
-    "desc": "games",
+    "cat": "MONEYSTUFF",
+    "desc": "commands relating to deathbattle",
     "cmds": [
+      {
+        "name": "deathbattle",
+        "params": "<user>",
+        "desc": "battle <user> TO THE DEATH! DA DA DAAAAAAAAAAA",
+        "date": "6/11/2020"
+      },
       {
         "name": "guessinggame",
         "params": "[high] [lives] (--bet)",
@@ -331,25 +337,6 @@
         "params": "<user>",
         "desc": "you have 15 seconds to dm the bot the word <user> will be guessing\n<user> will guess letters indevidually in chat\nif you're the player say STOP to stop the game",
         "date": "6/1/2020"
-      },
-      {
-        "name": "deathbattle",
-        "params": "<user>",
-        "desc": "battle <user> TO THE DEATH! DA DA DAAAAAAAAAA",
-        "date": "6/11/2020",
-        "aliases": ["db"]
-      }
-    ]
-  },
-  {
-    "cat": "DEATHBATTLECMDS",
-    "desc": "commands relating to deathbattle",
-    "cmds": [
-      {
-        "name": "deathbattle",
-        "params": "<user>",
-        "desc": "battle <user> TO THE DEATH! DA DA DAAAAAAAAAAA",
-        "date": "6/11/2020"
       },
       {
         "name": "bal",
@@ -390,8 +377,8 @@
     ]
   },
   {
-    "cat": "RANDOM",
-    "desc": "random number generator stuff",
+    "cat": "MATHY",
+    "desc": "stuff like a calculator",
     "cmds": [
       {
         "name": "weightedcoin",
@@ -416,13 +403,7 @@
         "params": "<low> <high> [round] (--even) (--odd)",
         "desc": "picks a random number from <low> to <high>\nif either is a decimal it'll give a decimal rounded to [round] defaults to no round\nif --odd or --even it'll be an odd or even number",
         "date": "1/18/2020"
-      }
-    ]
-  },
-  {
-    "cat": "MATHY",
-    "desc": "stuff like a calculator",
-    "cmds": [
+      },
       {
         "name": "bin",
         "params": "*<num> (sep with commas)",
@@ -458,11 +439,6 @@
         "params": "<temp (celcius)>",
         "desc": "gives the fahrenheit temp of <temp>",
         "date": "5/26/2020"
-      },
-      {
-        "name": "timecalc",
-        "params": "<time equation>",
-        "desc": "example: [timecalc 21:32 + 33:43 -> 55:15"
       }
     ]
   },
@@ -586,13 +562,7 @@
         "aliases": [
           "hpbans"
         ]
-      }
-    ]
-  },
-  {
-    "cat": "BOTINFO",
-    "desc": "like info but only about the bot",
-    "cmds": [
+      },
       {
         "name": "commandusage",
         "params": "[command] (-top <amount>)",
@@ -726,31 +696,7 @@
         "params": "<role id>",
         "desc": "says the name of <role id> (must be an id)",
         "date": "6/3/2020"
-      }
-    ]
-  },
-  {
-    "cat": "STAFF",
-    "desc": "commands only available to staff",
-    "cmds": [
-      {
-        "name": "clearinvites",
-        "params": null,
-        "desc": "clears the invites",
-        "date": "5/30/2020"
       },
-      {
-        "name": "clear",
-        "params": "<amount>",
-        "desc": "clears <amount> of messages in chat",
-        "date": "11/6/19"
-      }
-    ]
-  },
-  {
-    "cat": "INTERESTING",
-    "desc": "it's ok...",
-    "cmds": [
       {
         "name": "imscared",
         "params": null,
@@ -780,6 +726,24 @@
         "params": null,
         "desc": "gives an accurate reading if you have COVID--19 or not",
         "date": "6/9/2020"
+      }
+    ]
+  },
+  {
+    "cat": "STAFF",
+    "desc": "commands only available to staff",
+    "cmds": [
+      {
+        "name": "clearinvites",
+        "params": null,
+        "desc": "clears the invites",
+        "date": "5/30/2020"
+      },
+      {
+        "name": "clear",
+        "params": "<amount>",
+        "desc": "clears <amount> of messages in chat",
+        "date": "11/6/19"
       }
     ]
   },

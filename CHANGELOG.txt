@@ -1,3 +1,12 @@
+4.6.1 (7/1/2020)
+
+CHANGES:
+*RANDOM category is now party of MATHY
+*DEATHBATTLECMDS is now called MONEYSTUFF, moved GAMES to MONEYSTUFF
+*moved BOTINFO to INFO
+*moved INTERESTING to MISC
+
+====================================================================
 4.6 (7/1/2020)
 
 ADDITIONS:
