@@ -275,8 +275,8 @@
     "cmds": [
       {
         "name": "customcmd",
-        "params": "<cmd name>, <say>",
-        "desc": "when [<cmd name> is typed it'll say <say>\n{content} will replace with the message of who did cmd\n{version} will replace with the bot's version\n{uptime} will replace with the bot's uptime",
+        "params": "<cmd name>, <say> (--locked)",
+        "desc": "when [<cmd name> is typed it'll say <say> --locked only allows botmods to change a command\n{content} will replace with the message of who did cmd\n{version} will replace with the bot's version\n{uptime} will replace with the bot's uptime",
         "date": "6/11/2020",
         "aliases": ["accmd", "customcommand"]
       },
@@ -608,7 +608,7 @@
       {
         "name": "ping",
         "params": null,
-        "desc": "gives the bots ping to discord (I think)",
+        "desc": "gives ping to discord, time to send message, time to edit message, and time to execute all that",
         "date": "11/6/19"
       },
       {
@@ -696,6 +696,12 @@
         "params": "<role id>",
         "desc": "says the name of <role id> (must be an id)",
         "date": "6/3/2020"
+      },
+      {
+        "name": "fetchchannel",
+        "params": "<channel id>",
+        "desc": "gives the name of <channel id> (must be an id)",
+        "date": "7/1/2020"
       },
       {
         "name": "imscared",
