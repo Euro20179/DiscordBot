@@ -1456,9 +1456,12 @@ async def editCustomCmd(msg, content, cmd="eccmd"):
         data = json.load(j)
         for command in data:
             if command["name"] == lookFor:
-                if not command.get("Locked") or str(msg.author.id) in BOTMODS or str(msg.author.id) == command["addedby"]:
+                if not command.get("Locked") or str(msg.author.id) in BOTMODS or str(msg.author.id) == command.get("addedby"):
                     if "--lock" in changeTo:
-                        command["Locked"] = command["Locked"]^True
+                        if not command.get("Locked"):
+                            command["Locked"] = True
+                        else:
+                            command["Locked"] = command["Locked"]^True
                     else:
                         command["desc"] = changeTo
                     if command.get("editedby"): command["editedby"] += [str(msg.author.id)]
