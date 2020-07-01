@@ -77,7 +77,7 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False):
         BOTMODS = reloadBOTMODS()
         return await msg.channel.send(f'removed {user.name} from bot mod')
 
-    elif cmd == "ENDPLS" and msg.author.id in BOTMODS:
+    elif cmd == "ENDPLS" and str(msg.author.id) in BOTMODS:
         await msg.channel.send("Logging out")
         await client.logout()
 
