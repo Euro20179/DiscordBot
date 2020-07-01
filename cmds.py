@@ -1388,6 +1388,7 @@ async def editCmd(msg, content, cmd="edit"):
     edits = content[len(cmd) + 2:].split("|")
     editable = await msg.channel.send(edits[0])
     while edits:
+        print(edits)
         edits.pop(0)
         if not edits: break
         await asyncio.sleep(sleepFor)
