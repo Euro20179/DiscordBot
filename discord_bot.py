@@ -220,7 +220,7 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False):
         CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
     elif cmd == "customcmdlist": await customCmdList(msg, content, cmd=cmd)
     elif cmd in CUSTOMCMDS.keys(): 
-        say = CUSTOMCMDS[cmd].replace("{content}", content[len(cmd) + 2:]).replace("{version}", VERSION).replace("{author}", msg.author.mention).replace("{uptime}", str((await formatSeconds(time.time() - UPTIME))[0]))
+        say = CUSTOMCMDS[cmd].replace("{content}", content[len(cmd) + 2:]).replace("{version}", VERSION).replace("{author}", msg.author.mention).replace("{uptime}", str((await formatSeconds(time.time() - UPTIME))[0]))       
         temp = say.split("{")
         if len(temp) > 1:
             tempCMDSLIST = tuple(x["name"] for x in CMDLIST)
@@ -232,7 +232,7 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False):
                     await mssg.delete()
         say = "".join(temp)
         content = await oneLineCmd(msg, say)
-        
+
     elif cmd == "UNBAN" and str(msg.author.id) in BOTMODS:
         user = await getUserInContent(msg, " ".join(content.split(" ")[0:2]), cmd)
         unbanFrom = splitContent(content, " ", index=2)
