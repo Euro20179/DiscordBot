@@ -1279,12 +1279,12 @@ async def deathBattle(msg, users, going, notGoing, responseTime, damageMsgs, hea
         await removeFromList(playingDB, going, notGoing) 
         await addMoney(first, abs(users[second]["health"]))
         await addMoney(second, users[second]["health"])
-        return await msg.channel.send(f'{first.name} has won!\nthey earned {abs(users[second]["health"])}')
+        return await msg.channel.send(f'{first.name} has won!\nthey earned {abs(users[second]["health"])} and {second.name} has lost {abs(users[second]["health"])}')
     elif users[first]["health"] <= 0:
         await removeFromList(playingDB, going, notGoing) 
         await addMoney(second, abs(users[first]["health"]))
         await addMoney(first, users[first]["health"])
-        return await msg.channel.send(f'{second.name} has won!\nthey earned {abs(users[first]["health"])}')
+        return await msg.channel.send(f'{second.name} has won!\nthey earned {abs(users[first]["health"])} and {first.name} has lost {abs(users[second]["health"])}')
     else:
         if going == first:
             await deathBattle(msg, users, second, first, responseTime, damageMsgs, healMsgs, embed, first, second)
