@@ -1413,11 +1413,15 @@ async def rob(msg, content, cmd="rob"):
     if isBot(msg, client) and random.random() < .999: return await msg.channel.send("i cannot rob")
     user = await getUserInContent(msg, content, cmd)
     add = random.randint(10, 20)
+    with open(moneyDataFilePath, "r") as j:
+        data = json.load(j)
+        if data[str(msg.author.id)] <= 0:
+            return await msg.channel.send(f'you cannot rob because you have debt')
     if random.random() >= .5:
         await addMoney(user, add)
         await addMoney(msg.author, -add)
-        return await msg.channel.send(f'you have lost {add} and {user.name} has gained {add}')
+        return await msg.channel.send(f'{msg.author.mention} have lost {add} and {user.name} has gained {add}')
     else:
         await addMoney(user, -add)
         await addMoney(msg.author, add)
-        return await msg.channel.send(f'you have gained {add} and {user.name} has lost {add}')
+        return await msg.channel.send(f'{user.name} have gained {add} and {msg.author.mention} has lost {add}')
