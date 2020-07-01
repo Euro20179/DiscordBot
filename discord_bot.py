@@ -128,7 +128,7 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False):
             except Exception as e: 
                 print(e)
                 return await msg.channel.send("failed")
-            if changeTo.lower() == "none":
+            if changeTo.content.lower() == "none":
                 del data[str(user.id)]
             else:
                 data[str(user.id)] = changeTo.content
