@@ -84,7 +84,7 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False):
         with open(bannedFilePath, "rb") as bannedJ:
             await msg.channel.send(file=discord.File(bannedJ, "bans.json"))
 
-    elif cmd == "BAN" and msg.author.id in BOTMODS:
+    elif cmd == "BAN" and str(msg.author.id) in BOTMODS:
         user = await getUserInContent(msg, " ".join(content.split(" ")[0:2]), cmd)
         banFrom = splitContent(content, " ", index=2)
         with open(bannedFilePath, "r+") as bannedJ:
@@ -96,7 +96,7 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False):
             await msg.channel.send(f'banned {user.name} from {banFrom}')
             json.dump(data, bannedJ)
 
-    elif cmd == "changelvlmsg" and msg.author.id in BOTMODS:
+    elif cmd == "changelvlmsg" and str(msg.author.id) in BOTMODS:
         user = await getUserInContent(msg, content, cmd)
         with open(levelingDataFilePath, "r+") as j:
             data = json.load(j)
@@ -226,7 +226,7 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False):
         say = "".join(temp)
         content = await oneLineCmd(msg, say)
         
-    elif cmd == "UNBAN" and msg.author.id in BOTMODS:
+    elif cmd == "UNBAN" and str(msg.author.id) in BOTMODS:
         user = await getUserInContent(msg, " ".join(content.split(" ")[0:2]), cmd)
         unbanFrom = splitContent(content, " ", index=2)
         with open(bannedFilePath, "r+") as bannedJ:
