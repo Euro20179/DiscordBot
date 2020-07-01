@@ -109,7 +109,7 @@
       },
       {
         "name": "edit",
-        "params": "*<message> (-t <time>) (sep with |) (spaces on either side will be registered as spaces)\n(operators:\n+:add\n-:subtract\n*:multiply\n<<:add to beginnging)",
+        "params": "*<message> (-t <time>) (sep with |) (spaces on either side will be registered as spaces)\n(operators:\n+:add\n-:subtract\n*:multiply\n<<:add to beginnging\n%v>>v2: replace v with v2)",
         "desc": "-t is the time in between edits, defaults to .7 seconds\nexample: [edit hi,*2\nhi->hihi\nexample 2: [edit :,),),)\n:->:)->:))->:)))",
         "date": "6/30/2020"
       },
