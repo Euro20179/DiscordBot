@@ -1,3 +1,9 @@
+4.7.1.2 (7/1/2020)
+
+FIXES:
+*if you used -t in [edit the last edit may not have worked as intended
+
+====================================================================
 4.7.1.1 (7/1/2020)
 
 FIXES:
