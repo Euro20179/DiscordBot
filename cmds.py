@@ -67,12 +67,14 @@ async def hlp(msg, content, cmd="help"):
                         aliases = c.get("aliases")
                         date = c.get("date")
                         Locked = c.get("Locked")
+                        addedBy = c.get("addedby")
                         if aliases: aliases = ",\n".join(f'``{x}``' for x in aliases)
             try: 
                 embed.add_field(name="params", value=f'``{params}``', inline=False)
                 embed.add_field(name="description", value=f'``{desc}``', inline=False)
                 if aliases: embed.add_field(name="aliases", value=aliases, inline=False)
                 if Locked is not None: embed.add_field(name="locked", value=Locked, inline=False)
+                if addedBy is not None: embed.add_field(name="added by", value=(await client.fetch_user(int(addedBy))).name)
                 embed.add_field(name="added", value=date if date else "unknown", inline=False)
             except: return await msg.channel.send('command not found')
             await msg.channel.send(embed=embed)
@@ -1104,7 +1106,7 @@ async def addCustomCmd(msg, content, cmd="customcmd"):
             d = datetime.datetime.now().strftime("%m/%d/%Y")
         else:
             d = datetime.datetime.now().strftime("%m/%d/%y")
-        data.append({"name": name, "desc": say, "params": params, "date": d, "Locked": Locked})
+        data.append({"name": name, "desc": say, "params": params, "date": d, "Locked": Locked, "addedby": str(msg.author.id)})
         mssg = await msg.channel.send("added")
         clearFile(j)
         json.dump(data, j)
@@ -1432,7 +1434,7 @@ async def editCustomCmd(msg, content, cmd="eccmd"):
         data = json.load(j)
         for command in data:
             if command["name"] == lookFor:
-                if not command.get("Locked") or str(msg.author.id) in BOTMODS:
+                if not command.get("Locked") or str(msg.author.id) in BOTMODS or str(msg.author.id) == command["addedby"]:
                     command["desc"] = changeTo
                 else: return await msg.channel.send("cannot change that command it's locked")
         clearFile(j)

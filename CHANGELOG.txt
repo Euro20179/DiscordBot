@@ -1,3 +1,13 @@
+4.7-rc3
+
+ADITIONS:
+*customcmds now keep track of who added them
+*help [custom cmd] shows who made it
+
+FIXES:
+*thou who made the command can edit it if thy command is locked
+
+====================================================================
 4.7-rc2 (7/1/2020)
 
 CHANGES:
