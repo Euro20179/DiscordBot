@@ -1527,9 +1527,15 @@ async def editCmd(msg, content, cmd="edit"):
             add = "multiply"
         elif edits[0][0] == "<" and edits[0][1] == "<":
             add = "insertBeggining"
+        elif edits[0][0] == "%":
+            add = "replace"
         else: add = "add"
         if add == "add": await editable.edit(content=editable.content + edits[0])
         elif add == "multiply": await editable.edit(content=editable.content*int(edits[0][1:]))
+        elif add == "replace":
+            rep = edits[0].split("%")[1].split(">>")[0]
+            repWith = edits[0].split(">>")[1]
+            await editable.edit(content=editable.content.replace(rep, repWith))
         elif add == "insertBeggining": 
             await editable.edit(content=f'{edits[0][2:]}' + editable.content)
         else: await editable.edit(content=editable.content.replace(edits[0][1:], ""))
