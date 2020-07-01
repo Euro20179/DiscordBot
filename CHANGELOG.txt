@@ -1,3 +1,49 @@
+4.7 (7/1/2020)
+
+ADDITIONS:
+*fetchchannel, gets channel from id
+*emoteinfo:
+    *color is the color of the person who added the emote
+    *added some new info:
+        *image url
+        *raw mention
+    *the thumbnail is the image
+*channelinfo + userinfo now have rawmention
+*new items: 
+    *Epic Match: each player's health gets set to a number of your choice
+    *Theft: uses an item from the opponent, (if it uses theft, it becomes the opponent's turn and they use theft, this can create an infinite loop)
+*ping does more stuff
+    *now gives message send time (inspired from unbelievaboat)
+    *now gives the message edit time
+    *total execute time
+*cmds:
+    *customcmds now keep track of who added them
+    *accmd now has --lock, which makes it impossible for someone that isn't a botmod to change it
+    *help [custom cmd] shows who made it
+    *do --lock in eccmd to lock/unlock a command
+    *customcmds now keep track of who edits them
+    *customcmdlist now gives formatted txt file if can't send in chat
+    *--file for customcmdlist
+*accmd now works with /{}
+*randomface now has a 20% chance to have eyebrows
+
+CHANGES:
+*ping is formatted slightly differently (inspired from unbelievaboat)
+*ping no longer rounds
+*daily is now a customcmd instead of builtin
+*randface always faces the same way
+
+FIXES:
+*:tiredpuffle: works in twc and ttc
+*params in help don't show if there are no params
+
+====================================================================
+4.7-rc8 (7/1/2020)
+
+CHANGES:
+*randface will always face the same way now
+
+====================================================================
 4.7-rc7 (7/1/2020)
 
 FIXES:

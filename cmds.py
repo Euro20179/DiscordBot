@@ -314,9 +314,9 @@ async def randomFace(msg, content, cmd="randomface"):
     if random.random() >= .995:
         return await msg.channel.send("()-()\n ___")
     if random.random() >= .8:
-        return await oneLineCmd(msg, f'{random.choice(BROWS)}{random.choice(EYES)}{random.choice(MOUTHS)}' if random.random() >= .5 else f'{random.choice(MOUTHS)}{random.choice(EYES)}{random.choice(BROWS)}')
+        return await oneLineCmd(msg, f'{random.choice(BROWS)}{random.choice(EYES)}{random.choice(MOUTHS)}')
     else: 
-        return await oneLineCmd(msg, f'{random.choice(EYES)}{random.choice(MOUTHS)}' if random.random() >= .5 else f'{random.choice(MOUTHS)}{random.choice(EYES)}')
+        return await oneLineCmd(msg, f'{random.choice(EYES)}{random.choice(MOUTHS)}')
 
 async def alphabet(msg, content, cmd="alphabet"):
     send = string.ascii_lowercase
@@ -1485,6 +1485,7 @@ async def luckynumber(msg, content, cmd="luckynumber"):
     if testInContent(content, " "):
         who = splitContent(content, " ")[1]
     nums = " ".join([str(random.randint(1, 10)) for _ in range(count)])
+    if random.random() >= .999: return await msg.channel.send(f"{who}'s lucky numbers are 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7")
     return await msg.channel.send(f"{who}'s lucky numbers are {nums}")
 
 async def uptime(msg, content, cmd="uptime"):
@@ -1494,6 +1495,7 @@ async def uptime(msg, content, cmd="uptime"):
             r = 15 if not splitContent(content, stopAt + " ") else int(splitContent(content, f'{stopAt} ')[1])
             await msg.channel.send(f'{round(t, r)} {layer}')
     else:
+        if random.random() > .99: return await msg.channel.send("tbh i forget how long i've been on for sorry, i might remember later though")
         t, layer = await formatSeconds(time.time() - UPTIME) 
         return await msg.channel.send(f'{str(t)} {layer}')
 
