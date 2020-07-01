@@ -128,7 +128,10 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False):
             except Exception as e: 
                 print(e)
                 return await msg.channel.send("failed")
-            data[str(user.id)] = changeTo.content
+            if changeTo.lower() == "none":
+                del data[str(user.id)]
+            else:
+                data[str(user.id)] = changeTo.content
             clearFile(j)
             json.dump(data, j)
             return await msg.channel.send("changed")
