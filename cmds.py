@@ -144,7 +144,7 @@ async def timers(msg, content, cmd="timers"):
         return await embedToReadableDict(msg, embed)
 
 async def levelMessage(msg, content, cmd="lvlmsg"):
-    if isBot(msg, client): return await msg.channel.send(await formatLevelMessage(msg, "I AM GREAT I AM LEVEL {level}", 9999999))
+    if isBot(msg, client): return await msg.channel.send("easter e g g")
     with open(levelingDataFilePath, "r+") as j:
         data = json.load(j)
         changeTo = content[len(cmd) + 2:].strip()
@@ -1546,6 +1546,7 @@ async def editCmd(msg, content, cmd="edit"):
 
 async def pingResponse(msg, content, cmd="pingresponse"):
     response = content[len(cmd) + 2:]
+    if isBot(msg, client): return
     with open(pingResponseFilePath, "r+") as j:
         data = json.load(j)
         if response.lower() == "none":
