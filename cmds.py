@@ -373,6 +373,7 @@ async def spacer(msg, content, cmd="spacer"):
         sep = splitContent(c, "-sep ", index=1)
         c = c.replace(f' -sep {sep}', "")
         if sep == r"\n": sep = "\n"
+        if sep == r"\t": sep = "\t"
     if not isInt(spaces):
         return await msg.channel.send(f"{spaces} is not a valid number of spaces")
     add = sep * int(spaces)
@@ -1010,7 +1011,7 @@ async def spamStop(msg, content, cmd="spamstop"):
         await asyncio.sleep(random.uniform(.3, 1.2))
 
 async def calc(msg, content, cmd="calc"):
-    if "help()" in content or "quit()" in content or "exit()" in content or "os." in content:
+    if "help()" in content or "quit()" in content or "exit()" in content or "os." in content or "token" in content:
         return await msg.channel.send('nice try')
     else: return await msg.channel.send(eval(splitContent(content, cmd + " ", index=1)))
 
