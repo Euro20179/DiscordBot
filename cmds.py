@@ -1011,6 +1011,7 @@ async def spamStop(msg, content, cmd="spamstop"):
         await asyncio.sleep(random.uniform(.3, 1.2))
 
 async def calc(msg, content, cmd="calc"):
+    content = content[len(cmd) + 2:]
     if "help(" in content or "quit()" in content or "exit()" in content or "os." in content or "token" in content or "input(" in content:
         return await msg.channel.send('nice try')
     else: return await msg.channel.send(eval(content))
@@ -1285,7 +1286,7 @@ async def deathBattle(msg, users, going, notGoing, responseTime, damageMsgs, hea
         await removeFromList(playingDB, going, notGoing) 
         await addMoney(second, abs(users[first]["health"]))
         await addMoney(first, users[first]["health"])
-        return await msg.channel.send(f'{second.name} has won!\nthey earned {abs(users[first]["health"])} and {first.name} has lost {abs(users[second]["health"])}')
+        return await msg.channel.send(f'{second.name} has won!\nthey earned {abs(users[first]["health"])} and {first.name} has lost {abs(users[first]["health"])}')
     else:
         if going == first:
             await deathBattle(msg, users, second, first, responseTime, damageMsgs, healMsgs, embed, first, second)
@@ -1525,8 +1526,6 @@ async def editCmd(msg, content, cmd="edit"):
             add = "add"
         elif edits[0][0] == "-":
             add = False
-            print(edits[0][1:], editable.content)
-            print(editable.content.replace(edits[0][1:], ""))
         elif edits[0][0] == "*":
             add = "multiply"
         elif edits[0][0] == "<" and edits[0][1] == "<":

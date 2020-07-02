@@ -1,3 +1,9 @@
+4.8.1.1
+
+FIXES:
+*deathbattle says the right amount lost/gained
+
+====================================================================
 4.8.1 (the random update)
 
 ADDITIONS:
