@@ -824,6 +824,8 @@ async def changes(msg, content, cmd="changes"):
             date = content.split("-date ")[1]
             c = f.read().split("\n")
             vers = [line.split(" ")[0] for line in c if date in line]
+            if not vers:
+                return await msg.channel.send("NO CHANGES")
             return await msg.channel.send("\n".join(vers))
     ver = splitContent(content, " ")[1].strip() if testInContent(content, " ") else None
     if ver or not testInContent(content, "--nlatest"):
