@@ -337,7 +337,9 @@ async def on_message(msg):
             data = json.load(j)
             for user in usersPinged & set(data.keys()):
                 if data.get(user):
-                    await msg.channel.send(data[user].replace("{author}", msg.author.mention))      
+                    u = findMember(user, msg)
+                    if u.status == "offline":
+                        await msg.channel.send(data[user].replace("{author}", msg.author.mention))      
 
     if content[0] in PREFIX:
 
