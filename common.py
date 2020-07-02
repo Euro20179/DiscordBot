@@ -13,7 +13,7 @@ import math
 import statistics
 
 DELETE = "--delete"
-VERSION = "4.8.4"
+VERSION = "4.8.4.1_B"
 Stop = False
 
 playingGuessingGame = {}
