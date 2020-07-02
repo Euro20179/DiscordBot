@@ -60,7 +60,8 @@
       {
         "name": "--cmddelete",
         "params": null,
-        "desc": "--delete, but if you want it to apply to what the blue circle says"
+        "desc": "--delete, but if you want it to apply to what the blue circle says",
+        "date": "7/1/2020"
       }
     ]
   },
