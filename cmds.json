@@ -56,6 +56,11 @@
         "name": "--1 (DEPRECATED)",
         "params": "cmd <> [] ()",
         "desc": "similar to /{}\nask euro"
+      },
+      {
+        "name": "--cmddelete",
+        "params": null,
+        "desc": "--delete, but if you want it to apply to what the blue circle says"
       }
     ]
   },
@@ -382,8 +387,8 @@
     "cmds": [
       {
         "name": "weightedcoin",
-        "params": "<heads odds> (-picks <amount>)",
-        "desc": "flips a weighted coin -picks times (tails odds is 1 - heads odds)",
+        "params": "<heads odds> [times]",
+        "desc": "flips a weighted coin\n[times]: the amount of flips",
         "date": "6/30/2020"
       },
       {
@@ -394,8 +399,8 @@
       },
       {
         "name": "coin",
-        "params": "[h/t]",
-        "desc": "flips a coin, if bet is specified it'll say if you won or lost\ngiving heads/tails will indicate you want to bet",
+        "params": "[h/t/flips]",
+        "desc": "flips a coin, if bet is specified it'll say if you won or lost\ngiving heads/tails will indicate you want to bet\ngiving a number for [] will flip that many times",
         "date": "1/18/2020"
       },
       {

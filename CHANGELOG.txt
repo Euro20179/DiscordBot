@@ -1,17 +1,24 @@
-4.8.1.2
+4.8.2 (7/1/2020)
+
+ADDITIONS:
+*coin now has [times]
+*weightedcoin now has [times]
+*--cmddelete
+
+====================================================================
+4.8.1.2 (7/1/2020)
 
 CHANGES:
 *bot can't change it's pingresponse
 
-
 ====================================================================
-4.8.1.1
+4.8.1.1 (7/1/2020)
 
 FIXES:
 *deathbattle says the right amount lost/gained
 
 ====================================================================
-4.8.1 (the random update)
+4.8.1 (the random update) (7/1/2020)
 
 ADDITIONS:
 *secret bad word command
