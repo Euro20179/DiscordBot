@@ -12,8 +12,10 @@ import os
 import math
 import statistics
 
+#TODO: make pingresponse activate on user's choice, they do --online/--offline/--idle in the command to choose, it triggers when their status is their choice
+
 DELETE = "--delete"
-VERSION = "4.8.4.3"
+VERSION = "4.8.4.4"
 Stop = False
 
 playingGuessingGame = {}
