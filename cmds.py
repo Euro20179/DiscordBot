@@ -819,6 +819,8 @@ async def channelInfo(msg, content, cmd="cc"):
     await msg.channel.send(embed=embed)
 
 async def changes(msg, content, cmd="changes"):
+    if "--raw" in content:
+        with open("CHANGELOG.txt", "rb") as f: return await msg.channel.send(file=discord.File(f, "CHANGELOG.txt"))
     if "-date" in content:
         with open("CHANGELOG.txt", 'r') as f:
             date = content.split("-date ")[1]
