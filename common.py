@@ -9,9 +9,11 @@ import tracemalloc
 import requests
 import bs4 as bs
 import os
+import math
+import statistics
 
 DELETE = "--delete"
-VERSION = "4.8.1"
+VERSION = "4.8.1.1"
 Stop = False
 
 playingGuessingGame = {}
