@@ -1,5 +1,5 @@
 [
-  {
+  { 
     "cat": "KEY",
     "desc": "<> required parameter, [] optional parameter, () option, lets you do\n[serveremote 10 -sep --1 [serveremote",
     "cmds": []

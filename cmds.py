@@ -1156,6 +1156,14 @@ async def removeCustomCmd(msg, content, cmd="removecustomcmd"):
         data = json.load(j)
         for cmd in data:
             if cmd["name"] in name:
+                if cmd.get("Locked"):
+                    try:
+                        await msg.channel.send(f"{msg.author.mention} this command is locked are you sure") 
+                        YN = await client.wait_for("message", check=lambda message: message.author.id == msg.author.id, timeout=60.0)
+                    except:
+                        return await msg.channel.send("cancelled")
+                    if YN.content.lower() in ["no", "cancel", 'stop', 'n']:
+                        return await msg.channel.send("cancelled")
                 data.remove(cmd)
                 name.remove(cmd["name"])
         if name: return await msg.channel.send(f"{', '.join(name)} not found")
