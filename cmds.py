@@ -1011,9 +1011,10 @@ async def spamStop(msg, content, cmd="spamstop"):
         await asyncio.sleep(random.uniform(.3, 1.2))
 
 async def calc(msg, content, cmd="calc"):
+    content = content[len(cmd) + 2:]
     if "help()" in content or "quit()" in content or "exit()" in content or "os." in content or "token" in content:
         return await msg.channel.send('nice try')
-    else: return await msg.channel.send(eval(splitContent(content, cmd + " ", index=1)))
+    else: return await msg.channel.send(eval(content))
 
 async def pokemon(msg, content, cmd="pokemon"):
     pokemon = splitContent(content, " ", index=1)
