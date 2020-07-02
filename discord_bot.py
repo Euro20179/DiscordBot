@@ -26,6 +26,9 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False):
         layer += 1 #DEPRICATED 
 
     if "/{" in content:
+        interpateCount = len(content.split("/{"))
+        if len(content.split("}")) != interpateCount:
+            return await msg.channel.send("Syntax Error missing }")
         while True:
             cmds = [x.split("}")[0] for x in content.split("/{")]
             if not cmds: break
@@ -36,6 +39,7 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False):
             mssg = await runCommand(msg, f'{PREFIX}{cmd}', cmd=cmd.split(" ")[0].strip())
             await mssg.delete()
             content = content.replace("/{" + cmd + "}", mssg.content)
+            print(content)
         return await runCommand(msg, f'{content}', content.split(" ")[0][1:])
 
     with open(commandusageFilePath, "r+") as j:
@@ -338,6 +342,7 @@ async def on_message(msg):
     if content[0] in PREFIX:
 
         cmd = getCmd(content)
+        if not cmd: return
         WriteToFile = False
 
         if TICDelete(content): 
@@ -364,7 +369,6 @@ async def on_message(msg):
                     if cmd in userData or "ALL" in userData:
                         return await msg.channel.send(f"You cannot use {cmd}")
 
-        if not cmd: return
         #ongoing events			
         if cmd == "stop":
             if TICDelete(content): await msg.message.delete()
