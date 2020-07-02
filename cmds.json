@@ -115,7 +115,7 @@
       },
       {
         "name": "edit",
-        "params": "*<message> (-t <time>) (sep with |) (spaces on either side will be registered as spaces)\n(operators:\n+:add\n-:subtract\n*:multiply\n<<:add to beginnging\n%v>>v2: replace v with v2)",
+        "params": "*<message> (-t <time>) (sep with |) (spaces on either side will be registered as spaces)\n(operators:\n+:add\n-:subtract\n*:multiply\n<<:add to beginnging\n%v>>v2: replace v with v2 do MSG for v if you want to replace the whole message)",
         "desc": "-t is the time in between edits, defaults to .7 seconds\nexample: [edit hi,*2\nhi->hihi\nexample 2: [edit :,),),)\n:->:)->:))->:)))",
         "date": "6/30/2020"
       },
@@ -589,8 +589,8 @@
       },
       {
         "name": "changes",
-        "params": "[version] (--nlatest) (--dms)",
-        "desc": "gives the latest changes, if version is specified it gives that version's changes\n-nlatest gives the text file\n--dms sends to dms",
+        "params": "[version] (-date <date>)",
+        "desc": "gives the latest changes, if version is specified it gives that version's changes\n-date gives all version added on <date> (try [changes -date 7/1/2020)",
         "date": "5/20/2020"
       },
       {
