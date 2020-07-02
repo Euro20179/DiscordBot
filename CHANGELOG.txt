@@ -1,3 +1,10 @@
+4.8.4 (7/1/2020)
+
+ADDITIONS:
+*doing %MSG>>v2 in edit will replace the message with v2
+*-date to changes, gives all the versions added on that date
+
+====================================================================
 4.8.3 (7/1/2020)
 
 CHANGES:

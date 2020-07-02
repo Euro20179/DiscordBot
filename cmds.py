@@ -819,6 +819,12 @@ async def channelInfo(msg, content, cmd="cc"):
     await msg.channel.send(embed=embed)
 
 async def changes(msg, content, cmd="changes"):
+    if "-date" in content:
+        with open("CHANGELOG.txt", 'r') as f:
+            date = content.split("-date ")[1]
+            c = f.read().split("\n")
+            vers = [line.split(" ")[0] for line in c if date in line]
+            return await msg.channel.send("\n".join(vers))
     ver = splitContent(content, " ")[1].strip() if testInContent(content, " ") else None
     if ver or not testInContent(content, "--nlatest"):
         with open("CHANGELOG.txt", "r") as f:
@@ -1572,7 +1578,7 @@ async def editCmd(msg, content, cmd="edit"):
         elif add == "replace":
             rep = edits[0].split("%")[1].split(">>")[0]
             repWith = edits[0].split(">>")[1]
-            await editable.edit(content=editable.content.replace(rep, repWith))
+            await editable.edit(content=editable.content.replace(rep if rep != "MSG" else editable.content, repWith))
         elif add == "insertBeggining": 
             await editable.edit(content=f'{edits[0][2:]}' + editable.content)
         else: await editable.edit(content=editable.content.replace(edits[0][1:], ""))
