@@ -484,15 +484,28 @@ async def coin(msg, content, cmd="coin"):
         bet = splitContent(content, " ")[1].strip()
         if bet == "t": bet = "tails"
         if bet == "h": bet = "heads"
-        color, title = (0x00ff00, "YOU WIN") if res == bet else (0xff0000, "YOU LOSE")
-        if res == bet: 
-            add = random.randint(1, 3)
-            title += f"\nYOU WON {add}"
-            await addMoney(msg.author, add)
-        else: 
-            add = random.randint(-3, -1)
-            title += f'\nYOU LOSE {abs(add)}'
-            await addMoney(msg.author, add)
+        if not bet.isnumeric():
+            color, title = (0x00ff00, "YOU WIN") if res == bet else (0xff0000, "YOU LOSE")
+            if res == bet: 
+                add = random.randint(1, 3)
+                title += f"\nYOU WON {add}"
+                await addMoney(msg.author, add)
+            else: 
+                add = random.randint(-3, -1)
+                title += f'\nYOU LOSE {abs(add)}'
+                await addMoney(msg.author, add)
+        else:
+            results = {}
+            for _ in range(int(bet)):
+                while True:
+                    f = random.random()
+                    if f != .5: break
+                flip = "heads" if f > .5 else "tails"
+                try: results[flip] += 1
+                except: results[flip] = 1
+            embed = discord.Embed(title=f'Heads: {results["heads"]}\nTails: {results["tails"]}', color=0x00aa00)
+            return await msg.channel.send(embed=embed)
+
     else:  color = 0xff00ff if res == "heads" else 0x0000ff
     
     embed = discord.Embed(title=title, color=color)
@@ -501,15 +514,28 @@ async def coin(msg, content, cmd="coin"):
 async def weightedCoin(msg, content, cmd="weightedcoin"):
     content = content[len(cmd) + 2:].split(" ")
     headsOdds = content[0]
+    if len(content) > 1:
+        flips = content[1]
+    else: flips = 1
     try: headsOdds = float(headsOdds)
     except: return await msg.channel.send("not a number")
     if headsOdds > 1 or headsOdds < 0:
         return await msg.channel.send("odds must be less than 1 and greater than 0")
-    ans = "heads" if random.random() <= headsOdds else "tails"
-    embed = discord.Embed(title=ans, color=0xff00ff if ans == "heads" else 0x0000ff)
+    results = {}
+    if int(flips) > 1:
+        for _ in range(int(flips)):
+            while True:
+                f = random.random()
+                if f != .5: break
+            flip = "heads" if f <= headsOdds else "tails"
+            try: results[flip] += 1
+            except: results[flip] = 1
+        embed = discord.Embed(title=f'Heads: {results["heads"]}\nTails: {results["tails"]}', color=0x00ff00)
+    else:
+        ans = "heads" if random.random() <= headsOdds else "tails"
+        embed = discord.Embed(title=ans, color=0xff00ff if ans == "heads" else 0x0000ff)
     await msg.channel.send(embed=embed)
-    msg.content = ans
-    return msg
+    return await embedToReadableDict(msg, embed)
 
 async def roleInfo(msg, content, cmd="roleinfo"):
     if not splitContent(content, cmd + " "):

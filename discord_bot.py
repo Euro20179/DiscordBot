@@ -285,8 +285,10 @@ async def on_message(msg):
 
     content = msg.content
     Iscmd = False
-    if testInContent(content, "[delete") or (msg.author.id == 311621977339068418 and msg.channel.id not in (658815060646297659, 715043261110288415)): await msg.delete() #deletes message if requested or myustiak sent it
-    if not content: return
+    if testInContent(content, "[delete") or (msg.author.id == 311621977339068418 and msg.channel.id not in (658815060646297659, 715043261110288415)): 
+        await msg.delete() #deletes message if requested or myustiak sent it
+    if not content: 
+        return
     if testInContent(content, "[delin "):
         t = splitContent(content, "[delin", index=1).strip()
         try: await asyncio.sleep(float(t))
@@ -336,12 +338,14 @@ async def on_message(msg):
     if content[0] in PREFIX:
 
         cmd = getCmd(content)
-        if not cmd: return
         WriteToFile = False
 
         if TICDelete(content): 
             content = content.replace(" --delete", "")
             await msg.delete()
+
+        if testInContent(content, "--cmddelete"):
+            content = content.replace(" --cmddelete", " --delete")
 
         if testInContent(content, ">>> "):
             WriteToFile = splitContent(content, ">>> ")[1]
@@ -360,6 +364,7 @@ async def on_message(msg):
                     if cmd in userData or "ALL" in userData:
                         return await msg.channel.send(f"You cannot use {cmd}")
 
+        if not cmd: return
         #ongoing events			
         if cmd == "stop":
             if TICDelete(content): await msg.message.delete()
