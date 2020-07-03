@@ -1182,7 +1182,7 @@ async def removeCustomCmd(msg, content, cmd="removecustomcmd"):
     CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
     return await msg.channel.send(f'removed {" ".join(name)}')
 
-async def deathBattle(msg, users, going, notGoing, responseTime, damageMsgs, healMsgs, embed, first, second):
+async def deathBattle(msg, users, going, notGoing, responseTime, damageMsgs, healMsgs, embed, first, second, editable):
     global playingDB, Stop
     if Stop: 
         Stop = False
@@ -1192,6 +1192,7 @@ async def deathBattle(msg, users, going, notGoing, responseTime, damageMsgs, hea
     try: #waiting for option
         ah = await client.wait_for("message", check=lambda message: message.author.id == going.id and message.content.lower() in ["attack", "a", "h", "heal", "stop", "item"], timeout=responseTime)
         AH = ah.content.lower()
+        await ah.delete()
     except: #didnt' pick in time
         AH = random.choice(["attack", "heal"])
         await msg.channel.send(f"you waited too long you I picked {AH} for you")
@@ -1202,13 +1203,15 @@ async def deathBattle(msg, users, going, notGoing, responseTime, damageMsgs, hea
             await msg.channel.send("you don't have items")
             AH = "attack"
         else: 
-            await msg.channel.send(f"which item (say a number)\n{newLine.join([f'{idd}: {name}' for idd, name in tempItems.items()])}") #says list of items user has
+            whichItem = await msg.channel.send(f"which item (say a number)\n{newLine.join([f'{idd}: {name}' for idd, name in tempItems.items()])}") #says list of items user has
             try:
                 i = await client.wait_for("message", check=lambda message: message.author.id == going.id and message.content.lower().isnumeric()) #waits for pick
+                await i.delete()
                 i = int(i.content.lower())
             except: #waited too long
                 await msg.channel.send("you waited to long, picking 1")
                 i = 1
+            await whichItem.delete()
             with open(itemDataFilePath, "r+", encoding="utf-8-sig") as j: #removes from inventory
                 data = json.load(j)
                 for item in data[str(going.id)]:
@@ -1251,8 +1254,8 @@ async def deathBattle(msg, users, going, notGoing, responseTime, damageMsgs, hea
                 if health > 200:
                     await msg.channel.send("too high, you get to do NOTHING")
                     if going == first:
-                        await deathBattle(msg, users, second, first, responseTime, damageMsgs, healMsgs, embed, first, second)
-                    else: await deathBattle(msg, users, first, second, responseTime, damageMsgs, healMsgs, embed, first, second)
+                        await deathBattle(msg, users, second, first, responseTime, damageMsgs, healMsgs, embed, first, second, editable)
+                    else: await deathBattle(msg, users, first, second, responseTime, damageMsgs, healMsgs, embed, first, second, editable)
                 else:
                     users[going]["health"] = health
                     users[notGoing]["health"] = health
@@ -1317,7 +1320,7 @@ async def deathBattle(msg, users, going, notGoing, responseTime, damageMsgs, hea
         elif d["name"] == second.name:
             d["value"] = str(users[second]["health"])
     embed = embed.from_dict(ED)
-    await msg.channel.send(embed=embed)
+    await editable.edit(embed=embed)
     if users[second]["health"] <= 0 and users[first]["health"] <= 0:
         await removeFromList(playingDB, going, notGoing)
         return await msg.channel.send("ITS A DRAW!")
@@ -1333,8 +1336,8 @@ async def deathBattle(msg, users, going, notGoing, responseTime, damageMsgs, hea
         return await msg.channel.send(f'{second.name} has won!\nthey earned {abs(users[first]["health"])} and {first.name} has lost {abs(users[first]["health"])}')
     else:
         if going == first:
-            await deathBattle(msg, users, second, first, responseTime, damageMsgs, healMsgs, embed, first, second)
-        else: await deathBattle(msg, users, first, second, responseTime, damageMsgs, healMsgs, embed, first, second)
+            await deathBattle(msg, users, second, first, responseTime, damageMsgs, healMsgs, embed, first, second, editable)
+        else: await deathBattle(msg, users, first, second, responseTime, damageMsgs, healMsgs, embed, first, second, editable)
 
 async def INIT_deathBattle(msg, content, cmd="deathbatte"):
     global Stop, playingDB
@@ -1377,8 +1380,8 @@ async def INIT_deathBattle(msg, content, cmd="deathbatte"):
         embed.add_field(name=user["user"].name, value=user["health"])
     damageMsgs = ["{attaker} punched {aked} for {damage}", "{attaker} fireballed {aked} for {damage}", "{attaker} summoned a meteor and it hit {aked} for {damage}", "{aked} was unconsious and a pickle came FLYING at {aked} they took {damage} damage"]
     healMsgs = ["{attaker} was healed for {damage}", "{attaker} was blessed with {damage} extra health"]
-    await msg.channel.send(embed=embed)    
-    await deathBattle(msg, users, first, second, responseTime, damageMsgs, healMsgs, embed, first, second)
+    editable = await msg.channel.send(embed=embed)    
+    await deathBattle(msg, users, first, second, responseTime, damageMsgs, healMsgs, embed, first, second, editable)
     
 async def mmoney(msg, content, cmd="mmoney"):
     user = await getUserInContent(msg, content, cmd)
