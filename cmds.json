@@ -741,8 +741,8 @@
       },
       {
         "name": "pingresponse",
-        "params": "<message>",
-        "desc": "when someone pings you the bot will say <message>\n{author} mentions the person who pinged",
+        "params": "<message> (-WHEN <offline/online/idle/dnd/all>)",
+        "desc": "when someone pings you the bot will say <message>\n{author} mentions the person who pinged\nif you want to have more than just one of -WHEN sep with space do all for all of them",
         "date": "7/1/2020"
       }
     ]

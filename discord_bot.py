@@ -135,7 +135,7 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False):
             if changeTo.content.lower() == "none":
                 del data[str(user.id)]
             else:
-                data[str(user.id)] = changeTo.content
+                data[str(user.id)]["response"] = changeTo.content
             clearFile(j)
             json.dump(data, j)
             return await msg.channel.send("changed")
@@ -338,8 +338,9 @@ async def on_message(msg):
             for user in usersPinged & set(data.keys()):
                 if data.get(user):
                     u = findMember(user, msg)
-                    if str(u.status) == "offline":
-                        await msg.channel.send(data[user].replace("{author}", msg.author.mention))      
+                    print(data[user]["when"])
+                    if str(u.status) in data[user]["when"] or "all" in data[user]["when"]:
+                        await msg.channel.send(data[user]["response"].replace("{author}", msg.author.mention))      
 
     if content[0] in PREFIX:
 

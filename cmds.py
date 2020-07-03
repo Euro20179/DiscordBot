@@ -1593,12 +1593,21 @@ async def pingResponse(msg, content, cmd="pingresponse"):
     if isBot(msg, client): return
     with open(pingResponseFilePath, "r+") as j:
         data = json.load(j)
-        if response.lower() == "none":
+        if testInContent(response, "-WHEN"):
+            when = response.split("-WHEN ")[1]
+            when = when.split(" ")
+            data[str(msg.author.id)]["when"] = when
+        elif response.lower() == "none":
             del data[str(msg.author.id)]
         else:
-            data[str(msg.author.id)] = response
+            try:
+                data[str(msg.author.id)]["response"] = response
+            except:
+                data[str(msg.author.id)] = {"response": response, "when": ["offline"]}
         clearFile(j)
         json.dump(data, j)
+    if "-WHEN" in response:
+        return await msg.channel.send(f'response will happen when you are {" ".join(data[str(msg.author.id)]["when"])}')
     return await msg.channel.send(f"changed to:\n{response}")
 
 async def swearAtMe(msg, content, cmd="swearatme"):
