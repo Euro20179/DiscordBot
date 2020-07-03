@@ -1625,7 +1625,7 @@ async def swearAtMe(msg, content, cmd="swearatme"):
 async def setStatus(msg, content, cmd="status"):
     st = content.split(" ")
     if len(st) > 1:
-        st = st[1]
+        st = st[1:]
         print(st)
         await client.change_presence(activity=discord.Game(name=str(st)))
         return await msg.channel.send(f"changed to {st}")
