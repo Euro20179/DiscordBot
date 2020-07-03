@@ -460,8 +460,8 @@
       },
       {
         "name": "hasrole",
-        "params": "<role>, (--raw)",
-        "desc": "gives a list of the users with role\n--raw gets a file",
+        "params": "<role>, (--file)",
+        "desc": "gives a list of the users with role\n--file gets a file",
         "date": "6/11/2020",
         "aliases": [
           "whohas"

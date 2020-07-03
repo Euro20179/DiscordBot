@@ -1,5 +1,16 @@
+4.8.9 (7/3/2020)
+
+CHANGES:
+*whohas --raw is now whohas --file
+*whohas files now says name and user id
+
+FIXES:
+*--file in whohas will no longer say "too many chars here's a text file"
+
+====================================================================
 4.8.8 (7/2/2020)
 
+FIXES:
 *messages that send embeds and work with /{} should delete now
 
 ====================================================================
