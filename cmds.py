@@ -1,5 +1,9 @@
 from common import *
 
+class FileException(Exception):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
 async def stop(*args, **kwargs)->None: #similar to how raise StopIteration works, it stops whatever is happening
     global Stop
     Stop = True
@@ -37,7 +41,7 @@ async def hlp(msg, content, cmd="help"):
             for cmd in CATS[cat]:
                 embed.add_field(name=f'{cmd["name"]}', value=f'Params: ``{cmd["params"]}``\nDescription:``{cmd["desc"]}``', inline=False)
         try:
-            if File: raise Exception("file specified") 
+            if File: raise Exception("wanted file")
             msg = await msg.channel.send(embed=embed)
             return await embedToReadableDict(msg, embed)
         except:
@@ -1101,8 +1105,8 @@ async def hypixelBanStats(msg, content, cmd="hypixelban"):
 
 async def whoHasRole(msg, content, cmd="hasrole"):
     Raw = False
-    if testInContent(content, "--raw"):
-        content = content.replace(" --raw", "")
+    if testInContent(content, "--file"):
+        content = content.replace(" --file", "")
         Raw = True
     role = splitContent(content, cmd + " ")[1]
     role = discord.utils.find(lambda r: r.name.lower() == role.lower(), msg.channel.guild.roles)
@@ -1110,18 +1114,19 @@ async def whoHasRole(msg, content, cmd="hasrole"):
     has = [user.mention for user in msg.channel.guild.members if role in user.roles]
     try: 
         embed = discord.Embed(title=role.name, color=role.color)   
-        if Raw: raise Exception("wanted raw file")
+        if Raw: raise FileException("wanted file")
         embed.add_field(name="has", value="\n".join(has))
         await msg.channel.send(embed=embed)
         msg.content = "\n".join([user.name for user in msg.channel.guild.members if role in user.roles])
         return msg
-    except:
+    except Exception as e:
         if not has:
             return await msg.channel.send(f'no one has {role.name}')
-        await msg.channel.send("too many chars, here's a text file")
-        has = [user.name for user in msg.channel.guild.members if role in user.roles]
+        if type(e) != FileException:
+            await msg.channel.send("too many chars, here's a text file")
+        has = [f'NAME: {user.name}\nID: {user.id}' for user in msg.channel.guild.members if role in user.roles]
         with open(f"whohas{role.name}.txt", "w") as f:
-            f.write("\n".join(has))
+            f.write("\n\n".join(has))
         with open(f'whohas{role.name}.txt', "rb") as f:
             await msg.channel.send(file=discord.File(f, f'whohas{role.name}.txt'))
         os.remove(f"whohas{role.name}.txt")
@@ -1474,7 +1479,7 @@ async def customCmdList(msg, content, cmd="customcmdlist"):
         with open(customcmdsFilePath, "rb") as f: await msg.channel.send(file=discord.File(f, "customCmds.json"))
     else: 
         try:
-            if testInContent(content, "--file"): raise Exception("wanted file")
+            if testInContent(content, "--file"): raise FileException("wanted file")
             content = await oneLineCmd(msg, "\n".join([f'{x}: {y}' for x, y in CUSTOMCMDS.items()]))
         except:
             write = ""
