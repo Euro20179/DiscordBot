@@ -38,7 +38,7 @@ async def hlp(msg, content, cmd="help"):
                 embed.add_field(name=f'{cmd["name"]}', value=f'Params: ``{cmd["params"]}``\nDescription:``{cmd["desc"]}``', inline=False)
         try:
             if File: raise Exception("file specified") 
-            await msg.channel.send(embed=embed)
+            msg = await msg.channel.send(embed=embed)
             return await embedToReadableDict(msg, embed)
         except:
             if not cat: cat = "help"
@@ -82,7 +82,7 @@ async def hlp(msg, content, cmd="help"):
             except Exception as e: 
                 print(e)
                 return await msg.channel.send('command not found')
-            await msg.channel.send(embed=embed)
+            msg = await msg.channel.send(embed=embed)
             return await embedToReadableDict(msg, embed)
 
 async def spam(msg, messages, message, BlockStop=False):
@@ -140,7 +140,7 @@ async def timers(msg, content, cmd="timers"):
         data = json.load(tJ)
         for user, t in data.items():
             embed.add_field(name=user, value=round(time.time() - t, 2))
-        await msg.channel.send(embed=embed)
+        msg = await msg.channel.send(embed=embed)
         return await embedToReadableDict(msg, embed)
 
 async def levelMessage(msg, content, cmd="lvlmsg"):
@@ -241,7 +241,7 @@ async def level(msg, content, cmd="level"):
     embed.add_field(name="xp needed", value=required - xp)
     embed.add_field(name="approx minutes", value=round((required - xp) / 57.5)) #TODO format this
     embed.add_field(name="level up mesage", value=await formatLevelMessage(msg, message, level), inline=False)
-    await msg.channel.send(embed=embed)
+    msg = await msg.channel.send(embed=embed)
     return await embedToReadableDict(msg, embed) 
 
 async def leaderboard(msg, content, cmd="top"):
@@ -534,7 +534,7 @@ async def weightedCoin(msg, content, cmd="weightedcoin"):
     else:
         ans = "heads" if random.random() <= headsOdds else "tails"
         embed = discord.Embed(title=ans, color=0xff00ff if ans == "heads" else 0x0000ff)
-    await msg.channel.send(embed=embed)
+    msg = await msg.channel.send(embed=embed)
     return await embedToReadableDict(msg, embed)
 
 async def roleInfo(msg, content, cmd="roleinfo"):
@@ -550,7 +550,7 @@ async def roleInfo(msg, content, cmd="roleinfo"):
         embed.add_field(name="hierarchical position", value=len(msg.guild.roles) - role.position)
         embed.add_field(name="members with role", value=len(role.members))
         embed.add_field(name="Created at", value=await formatDateTime(role.created_at))
-        await msg.channel.send(embed=embed)
+        msg = await msg.channel.send(embed=embed)
         return await embedToReadableDict(msg, embed)
     except AttributeError:
         return await msg.channel.send("role not found")
@@ -939,7 +939,7 @@ async def messageInfo(msg, content, cmd="messageinfo"):
     embed.add_field(name="created at", value=await formatDateTime(msg.created_at))
     embed.add_field(name="jump to link", value=msg.jump_url)
 
-    await sendTo.send(embed=embed)
+    msg = await sendTo.send(embed=embed)
     return await embedToReadableDict(msg, embed)
 
 async def typeFor(msg, content, cmd="type"):
@@ -1038,7 +1038,7 @@ async def categoryInfo(msg, content, cmd="categoryinfo"):
     embed.add_field(name="text channels", value=len(cat.text_channels))
     embed.add_field(name="voice channels", value=len(cat.voice_channels))
     embed.add_field(name="created at", value=await formatDateTime(cat.created_at))
-    await msg.channel.send(embed=embed)
+    msg = await msg.channel.send(embed=embed)
     return await embedToReadableDict(msg, embed)
 
 async def spamStop(msg, content, cmd="spamstop"):
@@ -1070,7 +1070,7 @@ async def pokemon(msg, content, cmd="pokemon"):
             embed.add_field(name=key, value=item)
         embed.set_thumbnail(url=img)
         embed.set_footer(text=f'source: https://www.pokemon.com/us/pokedex/{pokemon}')
-        await msg.channel.send(embed=embed)
+        msg = await msg.channel.send(embed=embed)
         return await embedToReadableDict(msg, embed)
     except Exception as e: 
         print(e)
