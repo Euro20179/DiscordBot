@@ -618,6 +618,12 @@
         "date": "11/6/19"
       },
       {
+        "name": "status",
+        "params": "<message>",
+        "desc": "sets the bots status to message",
+        "date": "7/2/2020"
+      },
+      {
         "name": "alphabet",
         "params": "(--vowels) (--consonants)",
         "desc": "gives the alphabet\n--vowels only vowels\nconsonants only consonants",
