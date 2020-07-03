@@ -1621,3 +1621,12 @@ async def swearAtMe(msg, content, cmd="swearatme"):
     for _ in range(amnt):
         await msg.author.send(random.choice(swears))
         await asyncio.sleep(random.uniform(.7, 1.3))
+
+async def setStatus(msg, content, cmd="status"):
+    st = content.split(" ")
+    if len(st) > 1:
+        st = st[1]
+        print(st)
+        await client.change_presence(activity=discord.Game(name=str(st)))
+        return await msg.channel.send(f"changed to {st}")
+    else: return await msg.channel.send("you didn't set the status to anything")

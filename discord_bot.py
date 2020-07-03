@@ -211,7 +211,8 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False):
         cmd == "weightedcoin": weightedCoin,
         cmd == "edit": editCmd,
         cmd == "pingresponse": pingResponse,
-        cmd == "swearatme": swearAtMe
+        cmd == "swearatme": swearAtMe,
+        cmd == "status": setStatus
     }
 
     if (case := cmds.get(True)):
