@@ -1056,7 +1056,11 @@ async def calc(msg, content, cmd="calc"):
     content = content[len(cmd) + 2:]
     if "help(" in content or "quit()" in content or "exit()" in content or "os." in content or "token" in content or "input(" in content:
         return await msg.channel.send('nice try')
-    else: return await msg.channel.send(eval(content))
+    else: 
+        try:
+            return await msg.channel.send(eval(content))
+        except Exception as e:
+            return await msg.channel.send(str(type(e)).split(' ')[1].split("'")[1].strip("'"))
 
 async def pokemon(msg, content, cmd="pokemon"):
     pokemon = splitContent(content, " ", index=1)
