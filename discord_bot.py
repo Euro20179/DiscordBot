@@ -335,7 +335,7 @@ async def on_message(msg):
     await giveXP(msg)
     await reduceXP(msg)
 
-    if msg.mentions:
+    if msg.mentions and not isBot(msg, client):
         usersPinged = {str(user.id) for user in msg.mentions}
         with open(pingResponseFilePath, "r") as j:
             data = json.load(j)
