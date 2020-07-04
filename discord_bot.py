@@ -339,7 +339,6 @@ async def on_message(msg):
             for user in usersPinged & set(data.keys()):
                 if data.get(user):
                     u = findMember(user, msg)
-                    print(data[user]["when"])
                     if str(u.status) in data[user]["when"] or "all" in data[user]["when"]:
                         await msg.channel.send(data[user]["response"].replace("{author}", msg.author.mention))      
 

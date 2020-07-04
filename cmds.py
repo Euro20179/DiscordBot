@@ -1610,10 +1610,10 @@ async def pingResponse(msg, content, cmd="pingresponse"):
         elif response.lower() == "none":
             del data[str(msg.author.id)]
         else:
-            try:
-                data[str(msg.author.id)]["response"] = response
-            except:
+            if not data.get(str(msg.author.id)):
                 data[str(msg.author.id)] = {"response": response, "when": ["offline"]}
+            else:
+                data[str(msg.author.id)] = {"response": response, "when": data[str(msg.author.id)]["when"]}
         clearFile(j)
         json.dump(data, j)
     if "-WHEN" in response:
