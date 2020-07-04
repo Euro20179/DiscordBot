@@ -214,8 +214,14 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False):
         cmd == "weightedcoin": weightedCoin,
         cmd == "edit": editCmd,
         cmd == "pingresponse": pingResponse,
-        cmd == "swearatme": swearAtMe,
-        cmd == "status": setStatus
+        cmd == "status": setStatus,
+        cmd == "imginfo": imageInfo,
+        cmd == "rotateimg": rotateImg,
+        cmd == "mirrorimg": mirrorImg,
+        cmd == "spreadpixels": spreadPixels,
+        cmd == "filterimg": filterImg,
+        cmd == "pixelcolor": pixelColor,
+        cmd == "shrinkimg": shrinkImg
     }
 
     if (case := cmds.get(True)):
@@ -290,7 +296,6 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False):
 async def on_message(msg):
     global Stop, playingGuessingGame
     global blueCheck, neutral
-
     content = msg.content
     Iscmd = False
     if testInContent(content, "[delete") or (msg.author.id == 311621977339068418 and msg.channel.id not in (658815060646297659, 715043261110288415)): 
@@ -348,6 +353,8 @@ async def on_message(msg):
     if content[0] in PREFIX:
 
         cmd = getCmd(content)
+        if msg.attachments and cmd != "imginfo":
+            msg.content += " " + " ".join(att.url for att in msg.attachments)
         if not cmd: return
         WriteToFile = False
 
