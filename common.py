@@ -11,9 +11,10 @@ import bs4 as bs
 import os
 import math
 import statistics
+from PIL import Image, ImageFilter
 
 DELETE = "--delete"
-VERSION = "4.8.10.5"
+VERSION = "4.9"
 Stop = False
 
 playingGuessingGame = {}
@@ -49,6 +50,24 @@ def reloadBOTMODS():
     with open(botModsFilePath, "r") as f:
         BOTMODS = f.read().split("\n")
     return BOTMODS
+
+async def saveImg(filename, url):
+    with open(filename, 'wb') as i:
+        response = requests.get(url, stream=True)
+        if not response.ok:
+            print(response)
+        for block in response.iter_content(1024):
+            if not block:
+                break
+            i.write(block)
+
+async def imgInChat(msg, limit=20):
+    async for mssg in msg.channel.history(limit=limit):
+        if mssg.attachments:
+            att = mssg.attachments[0]
+            filename = att.filename
+            url = att.url
+            return att, filename, url
 
 async def reloadCMDSLIST():
     with open("cmds.json", "r") as cmdsJson:

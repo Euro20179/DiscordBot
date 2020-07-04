@@ -1,7 +1,20 @@
+4.9 (7/4/2020)
+
+ADDITIONS:
+*IMAGES category in help
+*imageinfo
+*rotateimg, rotates an image by [angle] defaults to 90
+*mirrorimg, mirrors an image along the x/y axis
+*spreadpixels, spreads pixels
+*filterimg, filters image with filters
+*pixelcolor, gets the color of x y in an img
+*shrinkimg, shrinks the image by [factor] defaults to 2
+
+====================================================================
 4.8.10.5 (7/4/2020)
 
 FIXES:
-*cc when the chanel is < 1 day old
+*cc when the channel is < 1 day old
 
 ====================================================================
 4.8.10.4 (7/4/2020)
