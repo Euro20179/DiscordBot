@@ -624,7 +624,9 @@ async def compareRoles(msg, content, cmd="compareroles"):
     if u1name and u2name:
         roles1 = {role.mention for role in u1name.roles}
         roles2 = {role.mention for role in u2name.roles}
-        embed.add_field(name="both members", value="".join(roles1 & roles2))
+        embed.add_field(name=f'{u1name} role count', value=len(roles1) - 1)
+        embed.add_field(name=f'{u2name} role count', value=len(roles2) - 1)
+        embed.add_field(name="both members", value="".join(roles1 & roles2), inline=False)
         embed.add_field(name=u1name, value="".join(roles1 - roles2), inline=False)
         embed.add_field(name=u2name, value="".join(roles2 - roles1), inline=False)
         await msg.channel.send(embed=embed)
