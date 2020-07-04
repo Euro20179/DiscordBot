@@ -812,7 +812,10 @@ async def channelInfo(msg, content, cmd="cc"):
     created = channel.created_at
     diff = datetime.datetime.now() - created
     pinCount = len(await channel.pins())
-    if pinCount != 0: daysTillLastPin = (50-pinCount) / (pinCount / int(str(diff).split(" ")[0]))
+    if pinCount != 0: 
+        if ":" in str(diff).split(" ")[0]:
+            daysTillLastPin = (50-pinCount) / (pinCount / (int(str(diff).split(" ")[0].split(":")[0]) / 24))
+        else: daysTillLastPin = (50-pinCount) / (pinCount / int(str(diff).split(" ")[0]))
     embed.add_field(name="Created at", value=await formatDateTime(created))
     embed.add_field(name="Pins", value=pinCount)
     if pinCount != 0: embed.add_field(name="days till last pin", value=str(daysTillLastPin))
