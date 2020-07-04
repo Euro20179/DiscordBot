@@ -135,7 +135,10 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False):
             if changeTo.content.lower() == "none":
                 del data[str(user.id)]
             else:
-                data[str(user.id)]["response"] = changeTo.content
+                if data.get(str(user.id)):
+                    data[str(user.id)]["response"] = changeTo.content
+                else:
+                    data[str(user.id)] = {"response": changeTo.content, "when": ["offline"]}
             clearFile(j)
             json.dump(data, j)
             return await msg.channel.send("changed")
