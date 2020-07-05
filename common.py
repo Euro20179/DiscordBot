@@ -22,9 +22,9 @@ playingHangman = {}
 playingDB = []
 
 #CONSTS
-PREFIX = "]"
-fakePrefix = "lol the prefix honestly doesn't matter, it's basically just whatever euro says it is so listen to him instead"
+PREFIX = "["
 UPTIME = time.time()
+fakePrefix = PREFIX
 token = "NjQxNzk1NjU2Mzc3MTcyMDAw.XcNk8g.HEvnaXjuXFQhN1iilaaffbiPcoo"
 HPKEY = "544fcd57-1cb1-4d8a-8613-c156d7e8f4ed"
 DISEXT = "../disbot_ext"
