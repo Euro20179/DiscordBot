@@ -1,4 +1,4 @@
-4.10 (4.9 part 2) (7/5/2020)
+4.10 (The MORE IMAGE Update) (7/5/2020)
 
 ADDITIONS:
 *spreadpx alias for spreadpixels
@@ -6,6 +6,7 @@ ADDITIONS:
 *crop, crops image
 *imgborder, adds a border to the img
 *greyscale, converts the img to greyscale
+*invert, inverts the image
 
 CHANGES:
 *imginfo now doesn't need img in command
@@ -27,7 +28,7 @@ ADDITIONS:
 *enhanceimg, similar to filter be sure to read the help carefuly
 
 ====================================================================
-4.9 (7/5/2020)
+4.9 (The Image Update) (7/5/2020)
 
 ADDITIONS:
 *IMAGES category in help

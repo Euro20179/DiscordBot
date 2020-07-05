@@ -357,8 +357,8 @@
       },
       {
         "name": "invert",
-        "params": "<img>",
-        "desc": "inverts the img",
+        "params": "[threshold] <img>",
+        "desc": "inverts the img\nthreshold specifies what greyscale value and above it inverts defaults to 0, basically meaning anything with a greyscale of black or lighter",
         "date": "7/5/2020"
       }
     ]
