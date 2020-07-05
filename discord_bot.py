@@ -108,6 +108,18 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False):
             json.dump(data, bannedJ)
             return await msg.channel.send(f'banned {user.name} from {banFrom}')
 
+    elif cmd == "UNBAN" and str(msg.author.id) in BOTMODS:
+        user = await getUserInContent(msg, " ".join(content.split(" ")[0:2]), cmd)
+        unbanFrom = splitContent(content, " ", index=2)
+        with open(bannedFilePath, "r+") as bannedJ:
+            data = json.load(bannedJ)
+            if data.get(str(user.id)):
+                data[str(user.id)].remove(unbanFrom)
+            else: return await msg.channel.send("did not find user")
+            clearFile(bannedJ)
+            json.dump(data, bannedJ)
+            return await msg.channel.send(f'unbanned {user.name} from {unbanFrom}')
+
     elif cmd == "changelvlmsg" and str(msg.author.id) in BOTMODS:
         user = await getUserInContent(msg, content, cmd)
         with open(levelingDataFilePath, "r+") as j:
@@ -269,18 +281,6 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False):
                     await mssg.delete()
         say = "".join(temp)
         content = await oneLineCmd(msg, say)
-
-    elif cmd == "UNBAN" and str(msg.author.id) in BOTMODS:
-        user = await getUserInContent(msg, " ".join(content.split(" ")[0:2]), cmd)
-        unbanFrom = splitContent(content, " ", index=2)
-        with open(bannedFilePath, "r+") as bannedJ:
-            data = json.load(bannedJ)
-            if data.get(str(user.id)):
-                data[str(user.id)].remove(unbanFrom)
-            else: return await msg.channel.send("did not find user")
-            clearFile(bannedJ)
-            json.dump(data, bannedJ)
-            return await msg.channel.send(f'unbanned {user.name} from {unbanFrom}')
 
     elif cmd == "upupdowndownleftrightleftright":
         return await msg.channel.send("what do you think this is some arcade machine with secret codes, lol")
