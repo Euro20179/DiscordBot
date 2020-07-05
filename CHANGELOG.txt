@@ -1,3 +1,12 @@
+4.10.1 (7/5/2020)
+
+ADDITIONS:
+*do [dr in smth like #suggestions, and the bot won't react
+
+FIXES:
+*attachments work, if it's not used in something that deletes the origional message
+
+====================================================================
 4.10 (The MORE IMAGE Update) (7/5/2020)
 
 ADDITIONS:

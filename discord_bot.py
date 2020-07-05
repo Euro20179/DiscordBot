@@ -319,7 +319,7 @@ async def on_message(msg):
         Iscmd = True
 
     s = testInContent(content, "[rw", "[reactwith")
-    if s:
+    if s and "[dr" not in content:
         c = splitContent(content, s, index=1).strip()
         if testInContent(c, " "):
             split = splitContent(c, " ")
@@ -331,7 +331,7 @@ async def on_message(msg):
             await msg.add_reaction(e)
         Iscmd = True
         
-    if msg.channel.id == 427973752647712768 or testInContent(content, f"{PREFIX}chkx"):
+    if msg.channel.id == 427973752647712768 or testInContent(content, f"{PREFIX}chkx") and "[dr" not in content:
         await msg.add_reaction(blueCheck)
         await msg.add_reaction(neutral)
         await msg.add_reaction("❌")
@@ -364,7 +364,8 @@ async def on_message(msg):
 
         cmd = getCmd(content)
         if msg.attachments and cmd != "imginfo":
-            msg.content += " " + " ".join(att.url for att in msg.attachments)
+            content += " " + " ".join(att.url for att in msg.attachments)
+        print(content)
         if not cmd: return
         WriteToFile = False
 
