@@ -31,7 +31,7 @@ async def hlp(msg, content, cmd="help"):
             for cat in data:
                 embed.add_field(name=cat["cat"], value=cat["desc"])
         await msg.channel.send(embed=embed)
-        return "help"
+        return await embedToReadableDict(msg, embed)
     elif cat in CATS:
         embed = discord.Embed(title=cat, color=discord.Color(0x00ffe2))
         if cat == "CUSTOM":

@@ -1,3 +1,18 @@
+4.10.2 (7/5/2020)
+
+ADDITIONS:
+*IMAGES commands can now pull images from embeds
+
+CHANGES:
+*changepr is now CHANGEPR
+*changelvlmsg is now CHANGELVLMSG
+*BANS is now bans
+
+*FIXES:
+*shop
+*buy
+
+====================================================================
 4.10.1 (7/5/2020)
 
 ADDITIONS:

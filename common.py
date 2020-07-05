@@ -14,7 +14,7 @@ import statistics
 from PIL import Image, ImageFilter, ImageEnhance, ImageOps
 
 DELETE = "--delete"
-VERSION = "4.10.1"
+VERSION = "4.10.2"
 Stop = False
 
 playingGuessingGame = {}
@@ -63,11 +63,23 @@ async def saveImg(filename, url):
 
 async def imgInChat(msg, limit=20):
     async for mssg in msg.channel.history(limit=limit):
+        if mssg.embeds:
+            if mssg.embeds[0].image:
+                att = mssg.embeds[0].image
+                url = att.url
+                filename = url.split("/")[-1]
+                break
+            if mssg.embeds[0].thumbnail:
+                att = mssg.embeds[0].thumbnail
+                url = att.url
+                filename = url.split("/")[-1]
+                break
         if mssg.attachments:
             att = mssg.attachments[0]
             filename = att.filename
             url = att.url
-            return att, filename, url
+            break
+    return att, filename, url
 
 async def getImg(msg):
     if msg.attachments:
