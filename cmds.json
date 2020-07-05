@@ -30,6 +30,12 @@
         "params": "<time>",
         "desc": "deletes your message in time seconds",
         "date": "5/28/2020"
+      },
+      {
+        "name": "[dr",
+        "params": null,
+        "desc": "stops the bot from reacting to your message",
+        "date": "7/5/2020"
       }
     ]
   },
