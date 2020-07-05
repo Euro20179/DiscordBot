@@ -1901,12 +1901,15 @@ async def greyscale(msg, content, cmd="greyscale"):
     os.remove(filename)
 
 async def invert(msg, content, cmd="invert"):
-    content = content[len(cmd) + 2:]
+    content = content[len(cmd) + 2:].split(" ")
+    if content[0]:
+        amnt = int(content[0])
+    else: amnt = 0
     att, filename, url = await getImg(msg)
     await saveImg(filename, url)
     img = Image.open(filename)
-    img = ImageOps.invert(img)
-    img.save(filename)  
+    img = ImageOps.solarize(img.convert("RGB"), threshold=amnt) 
+    img.save(filename)
     with open(filename, "rb") as i:
         await msg.channel.send(file=discord.File(i, filename=filename))
     os.remove(filename)
