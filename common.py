@@ -143,7 +143,8 @@ async def giveXP(msg : discord.Message)->None:
     if isBot(msg, client): return
     with open(levelingDataFilePath, "r+") as f:
         data = json.load(f)
-        if (userInfo := data.get(str(msg.author.id))):
+        userInfo = data.get(str(msg.author.id))
+        if userInfo:
             lastTalked = int(userInfo["lastTalked"])
             if time.time() - lastTalked >= 60:
                 level = userInfo["level"]
@@ -162,7 +163,8 @@ async def giveXP(msg : discord.Message)->None:
                         clearFile(j)
                         json.dump(moneyData, j)
                     level += 1; xp //= 2 #gives level; reduces xp
-                    if (disp := await formatLevelMessage(msg, levelUpMessage, level)) not in ["none", "None", "null", "Null"]:
+                    disp = await formatLevelMessage(msg, levelUpMessage, level)
+                    if disp not in ["none", "None", "null", "Null"]:
                         await msg.channel.send(disp)
                 required = round((1000 * level) * 1.1)
                 userInfo = {"level": level, "xp": xp, "required": required, "lastTalked": lastTalked, "message": levelUpMessage}
