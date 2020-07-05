@@ -1667,11 +1667,11 @@ async def setStatus(msg, content, cmd="status"):
     else: return await msg.channel.send("you didn't set the status to anything")
 
 async def imageInfo(msg, content, cmd="imginfo"):
-    att = msg.attachments[0]
+    att, *_ = await getImg(msg)
     
     embed = discord.Embed(title=att.filename)
     embed.add_field(name="id", value=att.id)
-    embed.add_field(name="file syze", value=att.size)
+    embed.add_field(name="file size", value=att.size)
     embed.add_field(name="width", value=att.width)
     embed.add_field(name="height", value=att.height)
     embed.add_field(name="url", value=att.url)
@@ -1685,17 +1685,7 @@ async def rotateImg(msg, content, cmd="rotateImg"):
     if len(content.split(" ")) == 1 and any(content.split(" ")):
         angle = content.split(" ")[0]
     else: angle = 90
-    if msg.attachments:
-        att = msg.attachments[0]
-        filename = att.filename
-        url = att.url
-    else: 
-        async for mssg in msg.channel.history(limit=20):
-            if mssg.attachments:
-                att = mssg.attachments[0]
-                filename = att.filename
-                url = att.url
-                break
+    att, filename, url = await getImg(msg)
             
     if not url: return await msg.channel.send("no img provided")
     await saveImg(filename, url)
@@ -1710,16 +1700,7 @@ async def rotateImg(msg, content, cmd="rotateImg"):
 async def mirrorImg(msg, content, cmd="mirrorimg"):
     content = content[len(cmd) + 2:]
     XY = content.lower()
-    if msg.attachments:
-        att = msg.attachments[0]
-        filename = att.filename
-        url = att.url
-    else: 
-        tup = await imgInChat(msg)
-        if tup:
-            att, filename, url = tup
-        else:
-            return await msg.channel.send("no img provided")
+    att, filename, url = await getImg(msg)
     await saveImg(filename, url)
     img = Image.open(filename)
     if XY == "x":
@@ -1737,16 +1718,7 @@ async def spreadPixels(msg, content, cmd="spreadpixels"):
     if content.split(" ")[0]:
         dist = int(content.split(" ")[0])
     else: dist = 100
-    if msg.attachments:
-        att = msg.attachments[0]
-        filename = att.filename
-        url = att.url
-    else: 
-        tup = await imgInChat(msg)
-        if tup:
-            att, filename, url = tup
-        else:
-            return await msg.channel.send("no img provided")
+    att, filename, url = await getImg(msg)
     await saveImg(filename, url)
     img = Image.open(filename)
     img = img.effect_spread(dist)
@@ -1760,16 +1732,7 @@ async def filterImg(msg, content, cmd="filterimg"):
     if content.split(" ")[0]:
         filt = content.split(" ")[0:]
     else: return await msg.channel.send("no filter provided")
-    if msg.attachments:
-        att = msg.attachments[0]
-        filename = att.filename
-        url = att.url
-    else: 
-        tup = await imgInChat(msg)
-        if tup:
-            att, filename, url = tup
-        else:
-            return await msg.channel.send("no img provided")
+    att, filename, url = await getImg(msg)
     await saveImg(filename, url)
     img = Image.open(filename)
     async with msg.channel.typing():
@@ -1802,16 +1765,7 @@ async def pixelColor(msg, content, cmd="pixelcolor"):
         except:
             return await msg.channel.send("provide x and y")
     else: return await msg.channel.send("no coords provided")
-    if msg.attachments:
-        att = msg.attachments[0]
-        filename = att.filename
-        url = att.url
-    else: 
-        tup = await imgInChat(msg)
-        if tup:
-            att, filename, url = tup
-        else:
-            return await msg.channel.send("no img provided")
+    att, filename, url = await getImg(msg)
     await saveImg(filename, url)
     img = Image.open(filename)
     img = img.load()
@@ -1828,16 +1782,7 @@ async def shrinkImg(msg, content, cmd="shrinkimg"):
         except:
             return await msg.channel.send("must be int")
     else: red = 2
-    if msg.attachments:
-        att = msg.attachments[0]
-        filename = att.filename
-        url = att.url
-    else: 
-        tup = await imgInChat(msg)
-        if tup:
-            att, filename, url = tup
-        else:
-            return await msg.channel.send("no img provided")
+    att, filename, url = await getImg(msg)
     await saveImg(filename, url)
     img = Image.open(filename)
     img = img.reduce(red)
@@ -1861,16 +1806,7 @@ async def resizeImg(msg, content, cmd="resizeimg"):
             y2 = int(content[5])
     except:
         return await msg.channel.send("must be int")
-    if msg.attachments:
-        att = msg.attachments[0]
-        filename = att.filename
-        url = att.url
-    else: 
-        tup = await imgInChat(msg)
-        if tup:
-            att, filename, url = tup
-        else:
-            return await msg.channel.send("no img provided")
+    att, filename, url = await getImg(msg)
     await saveImg(filename, url)
     img = Image.open(filename)
     try:
@@ -1888,16 +1824,7 @@ async def enhanceImg(msg, content, cmd="enhanceimg"):
     if content.split(" ")[0]:
         enh = content.split(" ")[0:]
     else: return await msg.channel.send("no filter provided")
-    if msg.attachments:
-        att = msg.attachments[0]
-        filename = att.filename
-        url = att.url
-    else: 
-        tup = await imgInChat(msg)
-        if tup:
-            att, filename, url = tup
-        else:
-            return await msg.channel.send("no img provided")
+    att, filename, url = await getImg(msg)
     await saveImg(filename, url)
     img = Image.open(filename)
     async with msg.channel.typing():
@@ -1921,6 +1848,64 @@ async def enhanceImg(msg, content, cmd="enhanceimg"):
                 print(e)
                 return await msg.channel.send(f'Invalid filter: {filt}')
             enh.pop(0)
+    img.save(filename)  
+    with open(filename, "rb") as i:
+        await msg.channel.send(file=discord.File(i, filename=filename))
+    os.remove(filename)
+
+async def cropImg(msg, content, cmd="crop"):
+    content = content[len(cmd) + 2:]
+    if content.split(" ")[0]:
+        amnt = int(content.split(" ")[0])
+    else: amnt = 20
+    att, filename, url = await getImg(msg)
+    await saveImg(filename, url)
+    img = Image.open(filename)
+    img = ImageOps.crop(img, border=amnt)
+    img.save(filename)  
+    with open(filename, "rb") as i:
+        await msg.channel.send(file=discord.File(i, filename=filename))
+    os.remove(filename)
+
+async def imgBorder(msg, content, cmd="imgborder"):
+    content = content[len(cmd) + 2:].split(" ")
+    if content[0] and len(content) != 3:
+        amnt = int(content[0])
+    else: amnt = 20
+    if len(content) > 1 and len(content) != 3:
+        r, g, b = content[1:4]
+    elif len(content) == 3:
+        r, g, b = content[0:3]
+    else: r=g=b = 0
+    r = int(r)
+    g = int(g)
+    b = int(b)
+    att, filename, url = await getImg(msg)
+    await saveImg(filename, url)
+    img = Image.open(filename)
+    img = ImageOps.expand(img, border=amnt, fill=(r, g, b))
+    img.save(filename)  
+    with open(filename, "rb") as i:
+        await msg.channel.send(file=discord.File(i, filename=filename))
+    os.remove(filename)
+
+async def greyscale(msg, content, cmd="greyscale"):
+    content = content[len(cmd) + 2:]
+    att, filename, url = await getImg(msg)
+    await saveImg(filename, url)
+    img = Image.open(filename)
+    img = ImageOps.grayscale(img)
+    img.save(filename)  
+    with open(filename, "rb") as i:
+        await msg.channel.send(file=discord.File(i, filename=filename))
+    os.remove(filename)
+
+async def invert(msg, content, cmd="invert"):
+    content = content[len(cmd) + 2:]
+    att, filename, url = await getImg(msg)
+    await saveImg(filename, url)
+    img = Image.open(filename)
+    img = ImageOps.invert(img)
     img.save(filename)  
     with open(filename, "rb") as i:
         await msg.channel.send(file=discord.File(i, filename=filename))
