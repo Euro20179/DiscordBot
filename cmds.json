@@ -325,7 +325,8 @@
       {
         "name": "enhanceimg",
         "params": "*<<method>,<amnt>> <img>",
-        "desc": "applies method with <amnt> to img\nmethods: color, sharpness, brightness, contrast\nex: [enhanceimg color,.5 <img>\nex2: [enhanceimg sharpness,3 color,.2 <img>"
+        "desc": "applies method with <amnt> to img\nmethods: color, sharpness, brightness, contrast\nex: [enhanceimg color,.5 <img>\nex2: [enhanceimg sharpness,3 color,.2 <img>",
+        "date": "7/5/2020"
       }
     ]
   },
