@@ -86,7 +86,7 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False):
         await msg.channel.send("Logging out")
         await client.logout()
 
-    elif cmd == "BANS":
+    elif cmd == "bans":
         if not testInContent(content, "--raw"):
             with open(bannedFilePath, "r+") as bannedJ:
                 data = json.load(bannedJ)
@@ -120,7 +120,7 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False):
             json.dump(data, bannedJ)
             return await msg.channel.send(f'unbanned {user.name} from {unbanFrom}')
 
-    elif cmd == "changelvlmsg" and str(msg.author.id) in BOTMODS:
+    elif cmd == "CHANGELVLMSG" and str(msg.author.id) in BOTMODS:
         user = await getUserInContent(msg, content, cmd)
         with open(levelingDataFilePath, "r+") as j:
             data = json.load(j)
@@ -134,7 +134,7 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False):
             json.dump(data, j)
             return await msg.channel.send("changed")
 
-    elif cmd == "changepr" and str(msg.author.id) in BOTMODS:
+    elif cmd == "CHANGEPR" and str(msg.author.id) in BOTMODS:
         user = await getUserInContent(msg, content, cmd)
         with open(pingResponseFilePath, "r+") as j:
             data = json.load(j)
