@@ -22,7 +22,7 @@ playingHangman = {}
 playingDB = []
 
 #CONSTS
-PREFIX = "["
+PREFIX = "]"
 UPTIME = time.time()
 fakePrefix = PREFIX
 token = "NjQxNzk1NjU2Mzc3MTcyMDAw.XcNk8g.HEvnaXjuXFQhN1iilaaffbiPcoo"
