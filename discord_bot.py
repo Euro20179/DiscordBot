@@ -331,7 +331,7 @@ async def on_message(msg):
             await msg.add_reaction(e)
         Iscmd = True
         
-    if msg.channel.id == 427973752647712768 or testInContent(content, f"{PREFIX}chkx") and "[dr" not in content:
+    if (msg.channel.id == 427973752647712768 or testInContent(content, f"{PREFIX}chkx")) and "[dr" not in content:
         await msg.add_reaction(blueCheck)
         await msg.add_reaction(neutral)
         await msg.add_reaction("❌")
