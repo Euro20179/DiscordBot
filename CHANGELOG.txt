@@ -1,4 +1,4 @@
-4.9 (7/4/2020)
+4.9 (7/5/2020)
 
 ADDITIONS:
 *IMAGES category in help
@@ -9,6 +9,9 @@ ADDITIONS:
 *filterimg, filters image with filters
 *pixelcolor, gets the color of x y in an img
 *shrinkimg, shrinks the image by [factor] defaults to 2
+
+CHANGES:
+*runs on py3.7 instead of py3.8 BECAUSE STUPID AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 
 ====================================================================
 4.8.10.5 (7/4/2020)

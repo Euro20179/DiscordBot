@@ -224,7 +224,8 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False):
         cmd == "shrinkimg": shrinkImg
     }
 
-    if (case := cmds.get(True)):
+    case = cmds.get(True)
+    if case:
         content = await case(msg, content, cmd=cmd)
 
     elif cmd == "botmods": 
@@ -260,7 +261,8 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False):
         if len(temp) > 1:
             tempCMDSLIST = tuple(x["name"] for x in CMDLIST)
             for line in temp:
-                if (cmd := line.split("}")[0].split(" ")[0].strip()) in tempCMDSLIST:
+                cmd = line.split("}")[0].split(" ")[0].strip()
+                if cmd in tempCMDSLIST:
                     foo = line.split("}")[0]
                     mssg = await runCommand(msg, f'{PREFIX}{foo}', cmd=cmd)
                     temp[temp.index(line)] = mssg.content + line.split("}")[1]
@@ -309,7 +311,8 @@ async def on_message(msg):
         await msg.delete()
         Iscmd = True
 
-    if (s := testInContent(content, "[rw", "[reactwith")):
+    s = testInContent(content, "[rw", "[reactwith")
+    if s:
         c = splitContent(content, s, index=1).strip()
         if testInContent(c, " "):
             split = splitContent(c, " ")
@@ -378,7 +381,8 @@ async def on_message(msg):
                 if data.get("EVERYONE"):
                     if cmd in data["EVERYONE"]:
                         return await msg.channel.send(f"no one can use {cmd}")
-                if (userData := data.get(str(msg.author.id))):
+                userData = data.get(str(msg.author.id))
+                if userData:
                     if cmd in userData or "ALL" in userData:
                         return await msg.channel.send(f"You cannot use {cmd}")
 

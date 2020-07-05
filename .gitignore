@@ -1,5 +1,7 @@
 .vscode
 .settings
-.env
 *.ini
+*.png
+*.jpg
+.env
 __pycache__

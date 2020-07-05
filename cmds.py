@@ -62,7 +62,8 @@ async def hlp(msg, content, cmd="help"):
             embed = discord.Embed(title=command, color=discord.Color(0x00ffe2))
             for cmd in CATS.values():
                 for c in cmd:
-                    if (al := c.get("aliases")):
+                    al = c.get("aliases")
+                    if al:
                         if command in al: isCmd = True
                     else: isCmd = False
                     if c["name"] == command or isCmd:
@@ -180,7 +181,8 @@ async def cmdUsage(msg, content, cmd="commandusage"):
             return await msg.channel.send(file=discord.File(j, commandusageFilePath))
     with open(commandusageFilePath, "r+") as j:
         data = json.load(j)
-        if (split := splitContent(content, cmd, index=1).strip()):
+        split = splitContent(content, cmd, index=1).strip()
+        if split:
             commandUse = data.get(split)
             if not commandUse:
                 return await msg.channel.send("command not found")
@@ -295,7 +297,8 @@ async def spamCmd(msg, content, cmd="spam"):
     try: messages = int(c[:c.find(" ")])
     except: return await msg.channel.send("not a valid number of messages")		
 
-    if messages > (lim := random.randint(40000, 110000)):
+    lim = random.randint(40000, 110000)
+    if messages > lim:
         return await msg.channel.send(f"pls consult a psychiatrist that's too many messages\nthe limit is: {lim}")		
 
     if messages < 0: return await msg.channel.send("ERROR: MESSAGE COUNT LESS THAN 0")
@@ -335,7 +338,8 @@ async def unicodeChar(msg, content, cmd="unicodechar"):
     
     sep = splitContent(content, "-sep ", index=1) if testInContent(content, "-sep ") else "\n"
 
-    if (split := splitContent(content, " ")):
+    split = splitContent(content, " ")
+    if split:
         amount = split[1]
         if not isInt(amount): return await msg.channel.send("NaN")
         elif isInt(amount): amount = int(amount)
@@ -567,7 +571,8 @@ async def roleCount(msg, content, cmd="rolecount"):
         c = c.replace(" --showroles", "") if c != "--showroles" else ""
     c = c.replace("!", "")[2:-1] if "<@" in c else c
     if not c: c = str(msg.author.id)
-    if (m := findMember(c, msg)):
+    m = findMember(c, msg)
+    if m:
         roles = [x.mention for x in m.roles]
         roleCount = len(roles) - 1
         if Showroles:
@@ -664,7 +669,8 @@ async def count(msg, content, cmd="count"):
     highest = int(highest) + 1
     async for x in channel.history(limit=1):
         if x.author == client.user: return ""
-    if (style := testInContent(content, "--i", "--b", "--ib", "--e", "--u", "--ui", "--all")):
+    style = testInContent(content, "--i", "--b", "--ib", "--e", "--u", "--ui", "--all")
+    if style:
         if style == "--i":
             await channel.send(f'*.{highest}.*')
         elif style == "--b":
@@ -749,7 +755,8 @@ async def ridInvites(msg, content, cmd="clearinvites"):
     else: return await msg.channel.send("you don't have perms")
 
 async def color(msg, content, cmd="color"):
-    if (user := await getUserInContent(msg, content, cmd)) != msg.author:
+    user = await getUserInContent(msg, content, cmd)
+    if user != msg.author:
         color = user.color
         tempColor = str(color)[1:]
         r, g, b = int(tempColor[0:2], 16), int(tempColor[2:4], 16), int(tempColor[4:], 16)
@@ -887,6 +894,7 @@ async def stopwatch(msg, content, cmd="stopwatch"):
     with open(timersPath, "r+") as tJ:
         data = json.load(tJ)
         running = data.get(str(msg.author.id))
+        stopAt = {x for x in content.split(" ")} & {"seconds", "minutes", "hours", "days", "weeks"}
         if not running:
             data[msg.author.id] = time.time()
             await msg.channel.send(f'{msg.author.mention} stopwatch started')
@@ -894,7 +902,7 @@ async def stopwatch(msg, content, cmd="stopwatch"):
             t = await formatSeconds(time.time() - running)
             await msg.channel.send(embed=discord.Embed(title=str(round(t[0], 2)) + f' {t[1]}'))
             del data[str(msg.author.id)]
-        elif (stopAt := {x for x in content.split(" ")} & {"seconds", "minutes", "hours", "days", "weeks"}):
+        elif stopAt:
             stopAt = list(stopAt)[0]
             t, layer = await formatSeconds(time.time() - running, stopAt=stopAt)
             r = 15 if not splitContent(content, stopAt + " ") else int(splitContent(content, f'{stopAt} ')[1])
@@ -953,7 +961,8 @@ async def messageInfo(msg, content, cmd="messageinfo"):
 
 async def typeFor(msg, content, cmd="type"):
     timeToType = 5
-    if (split := splitContent(content, " ")):
+    split = splitContent(content, " ")
+    if split:
         timeToType = int(split[1])
     if timeToType > 420:
         return await msg.channel.send("sorry thats too long")
@@ -963,7 +972,8 @@ async def typeFor(msg, content, cmd="type"):
 
 async def sendBlank(msg, content, cmd="sendblank"):
     amnt = 5
-    if (split := splitContent(content, f"{cmd} ", index=1)):
+    split = splitContent(content, f"{cmd} ", index=1)
+    if split:
         amnt = int(split)
     send = "_" + ("\n" * amnt) + "_"
     return await msg.channel.send(send)
@@ -973,7 +983,8 @@ async def hangman(msg, content, cmd="hangman"):
     content = content[len(cmd) + 2:]
     if user.id in playingHangman.keys():
         return await msg.channel.send(f'{msg.author.mention} {user.name} is already in a game')
-    if (split := splitContent(content, " ", index=1)): 
+    split = splitContent(content, " ", index=1)
+    if split: 
         lives = int(split.strip())
     else: lives = 9
     playingHangman[user.id] = None
@@ -1095,10 +1106,12 @@ async def hypixelPlayerCount(msg, content, cmd="hypixelpc"):
         data = requests.get(f"https://api.hypixel.net/gameCounts?key={HPKEY}").json()
         if game == "list":
             return await msg.channel.send(", ".join(list(x.lower() for x in data["games"].keys())))
-        if (gameData := data["games"].get(game.upper())):
+        gameData = data["games"].get(game.upper())
+        if gameData:
             embed = discord.Embed(title=game, color=discord.Color(0xffff00))
             embed.add_field(name=game, value=gameData["players"])
-            if (modes := gameData.get("modes")):
+            modes = gameData.get("modes")
+            if modes:
                 for mode in modes.items():
                     embed.add_field(name=mode[0], value=mode[1])
             return await msg.channel.send(embed=embed)
@@ -1380,10 +1393,12 @@ async def INIT_deathBattle(msg, content, cmd="deathbatte"):
     playingDB.append(second)
     with open(itemDataFilePath, "r", encoding="utf-8-sig") as j:
         data = json.load(j)
-        if (items := data.get(str(msg.author.id))):
+        items = data.get(str(msg.author.id))
+        if items:
             i1 = items
         else: i1 = []
-        if (items := data.get(str(user2.id))):
+        items = data.get(str(user2.id))
+        if items:
             i2 = items
         else: i2 = []
     users = {msg.author: {"user": msg.author, "health": 100 + b1, "items": i1},
@@ -1457,7 +1472,8 @@ async def buyItem(msg, content, cmd="buyitem"):
 async def inventory(msg, content, cmd="inv"):
     with open(itemDataFilePath, "r+", encoding="utf-8-sig") as j:
         data = json.load(j)
-        if (items := data.get(str(msg.author.id))):
+        items = data.get(str(msg.author.id))
+        if items:
             embed = discord.Embed(name=f"{msg.author.name}'s inventory", color=msg.author.color)
             s = {item["name"] for item in items}
             count = {item: 0 for item in s}
@@ -1476,7 +1492,8 @@ async def inventory(msg, content, cmd="inv"):
 
 async def duplicator(msg, content, cmd="duplicator"):
     times = 2
-    if (t := splitContent(content, " ")[1]).isnumeric():
+    t = splitContent(content, " ")[1]
+    if t.isnumeric():
         times = int(t)
         content = content.replace(f' {str(times)}', "")
     try: return await msg.channel.send(f'{content[len(cmd) + 2:]} '*times)
@@ -1552,11 +1569,12 @@ async def luckynumber(msg, content, cmd="luckynumber"):
     return await msg.channel.send(f"{who}'s lucky numbers are {nums}")
 
 async def uptime(msg, content, cmd="uptime"):
-    if (stopAt := {x for x in content.split(" ")} & {"seconds", "minutes", "hours", "days", "weeks"}):
-            stopAt = list(stopAt)[0]
-            t, layer = await formatSeconds(time.time() - UPTIME, stopAt=stopAt)
-            r = 15 if not splitContent(content, stopAt + " ") else int(splitContent(content, f'{stopAt} ')[1])
-            await msg.channel.send(f'{round(t, r)} {layer}')
+    stopAt = {x for x in content.split(" ")} & {"seconds", "minutes", "hours", "days", "weeks"}
+    if stopAt:
+        stopAt = list(stopAt)[0]
+        t, layer = await formatSeconds(time.time() - UPTIME, stopAt=stopAt)
+        r = 15 if not splitContent(content, stopAt + " ") else int(splitContent(content, f'{stopAt} ')[1])
+        await msg.channel.send(f'{round(t, r)} {layer}')
     else:
         if random.random() > .99: return await msg.channel.send("tbh i forget how long i've been on for sorry, i might remember later though")
         t, layer = await formatSeconds(time.time() - UPTIME) 
@@ -1697,7 +1715,8 @@ async def mirrorImg(msg, content, cmd="mirrorimg"):
         filename = att.filename
         url = att.url
     else: 
-        if (tup := await imgInChat(msg)):
+        tup = await imgInChat(msg)
+        if tup:
             att, filename, url = tup
         else:
             return await msg.channel.send("no img provided")
@@ -1723,7 +1742,8 @@ async def spreadPixels(msg, content, cmd="spreadpixels"):
         filename = att.filename
         url = att.url
     else: 
-        if (tup := await imgInChat(msg)):
+        tup = await imgInChat(msg)
+        if tup:
             att, filename, url = tup
         else:
             return await msg.channel.send("no img provided")
@@ -1745,7 +1765,8 @@ async def filterImg(msg, content, cmd="filterimg"):
         filename = att.filename
         url = att.url
     else: 
-        if (tup := await imgInChat(msg)):
+        tup = await imgInChat(msg)
+        if tup:
             att, filename, url = tup
         else:
             return await msg.channel.send("no img provided")
@@ -1786,7 +1807,8 @@ async def pixelColor(msg, content, cmd="pixelcolor"):
         filename = att.filename
         url = att.url
     else: 
-        if (tup := await imgInChat(msg)):
+        tup = await imgInChat(msg)
+        if tup:
             att, filename, url = tup
         else:
             return await msg.channel.send("no img provided")
@@ -1799,7 +1821,8 @@ async def pixelColor(msg, content, cmd="pixelcolor"):
 
 async def shrinkImg(msg, content, cmd="shrinkimg"):
     content = content[len(cmd) + 2:]
-    if (x := content.split(" ")[0]):
+    x = content.split(" ")[0]
+    if x:
         try:
             red = int(x)
         except:
@@ -1810,7 +1833,8 @@ async def shrinkImg(msg, content, cmd="shrinkimg"):
         filename = att.filename
         url = att.url
     else: 
-        if (tup := await imgInChat(msg)):
+        tup = await imgInChat(msg)
+        if tup:
             att, filename, url = tup
         else:
             return await msg.channel.send("no img provided")
