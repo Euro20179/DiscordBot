@@ -1,3 +1,25 @@
+4.10 (4.9 part 2) (7/5/2020)
+
+ADDITIONS:
+*spreadpx alias for spreadpixels
+*pxcolor alis for pixelcolor
+*crop, crops image
+*imgborder, adds a border to the img
+*greyscale, converts the img to greyscale
+
+CHANGES:
+*imginfo now doesn't need img in command
+*resizeimg -> resize
+*shrinkimg -> shrink
+*enhanceimg -> enhance
+*mirrorimg -> mirror
+*rotateimg -> rotate
+
+FIXES:
+*avatar
+*file syze -> file size
+
+====================================================================
 4.9.1 (7/5/2020)
 
 ADDITIONS:

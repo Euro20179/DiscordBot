@@ -11,10 +11,10 @@ import bs4 as bs
 import os
 import math
 import statistics
-from PIL import Image, ImageFilter, ImageEnhance
+from PIL import Image, ImageFilter, ImageEnhance, ImageOps
 
 DELETE = "--delete"
-VERSION = "4.9.1"
+VERSION = "4.10"
 Stop = False
 
 playingGuessingGame = {}
@@ -68,6 +68,19 @@ async def imgInChat(msg, limit=20):
             filename = att.filename
             url = att.url
             return att, filename, url
+
+async def getImg(msg):
+    if msg.attachments:
+        att = msg.attachments[0]
+        filename = att.filename
+        url = att.url
+    else: 
+        tup = await imgInChat(msg)
+        if tup:
+            att, filename, url = tup
+        else:
+            return await msg.channel.send("no img provided")
+    return att, filename, url
 
 async def reloadCMDSLIST():
     with open("cmds.json", "r") as cmdsJson:

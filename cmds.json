@@ -281,13 +281,13 @@
     "desc": "commands related to images mainly editing",
     "cmds": [
       {
-        "name": "rotateimg",
+        "name": "rotate",
         "params": "[angle] <img>",
         "desc": "rotates the image by angle, defaults to 90",
         "date": "7/5/2020"
       },
       {
-        "name": "mirrorimg",
+        "name": "mirror",
         "params": "<y/x> <img>",
         "desc": "mirrors image along y/x axis",
         "date": "7/5/2020"
@@ -296,7 +296,10 @@
         "name": "spreadpixels",
         "params": "[dist] <img>",
         "desc": "scatters the pixels, defaults to 100",
-        "date": "7/5/2020"
+        "date": "7/5/2020",
+        "aliases":[
+          "spreadpx"
+        ]
       },
       {
         "name": "filterimg",
@@ -308,24 +311,54 @@
         "name": "pixelcolor",
         "params": "<x> <y> <img>",
         "desc": "gets the pixel color of x, y",
-        "date": "7/5/2020"
+        "date": "7/5/2020",
+        "aliases": [
+          "pxcolor"
+        ]
       },
       {
-        "name": "shrinkimg",
+        "name": "shrink",
         "params": "[factor] <img>",
         "desc": "reduces the size of img by factor defaults to 2",
         "date": "7/5/2020"
       },
       {
-        "name": "resizeimg",
-        "params": "<width> <height> [x1, y1, x2, y2] <img>",
+        "name": "resize",
+        "params": "<width> <height> [<x1> <y1> <x2> <y2>] <img>",
         "desc": "resizes img to width height\nx1, y1, x2, y2 specifies the box to resize",
         "date": "7/5/2020"
       },
       {
-        "name": "enhanceimg",
+        "name": "enhance",
         "params": "*<<method>,<amnt>> <img>",
         "desc": "applies method with <amnt> to img\nmethods: color, sharpness, brightness, contrast\nex: [enhanceimg color,.5 <img>\nex2: [enhanceimg sharpness,3 color,.2 <img>",
+        "date": "7/5/2020"
+      },
+      {
+        "name": "crop",
+        "params": "[amnt] <img>",
+        "desc": "crops img, defaults to 20 px",
+        "date": "7/5/2020"
+      },
+      {
+        "name": "imgborder",
+        "params": "[px] [<r> <g> <b>] <img>",
+        "desc": "adds a border to the img px pixels thick, defaults to 20 and a color of r, g, b defaults to black",
+        "date": "7/5/2020"
+      },
+      {
+        "name": "greyscale",
+        "params": "<img>",
+        "desc": "converts the img to greyscale",
+        "date": "7/5/2020",
+        "aliases":[
+          "grayscale"
+        ]
+      },
+      {
+        "name": "invert",
+        "params": "<img>",
+        "desc": "inverts the img",
         "date": "7/5/2020"
       }
     ]

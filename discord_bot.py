@@ -228,14 +228,18 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False):
         cmd == "pingresponse": pingResponse,
         cmd == "status": setStatus,
         cmd == "imginfo": imageInfo,
-        cmd == "rotateimg": rotateImg,
-        cmd == "mirrorimg": mirrorImg,
-        cmd == "spreadpixels": spreadPixels,
+        cmd == "rotate": rotateImg,
+        cmd == "mirror": mirrorImg,
+        cmd in ["spreadpixels", "spreadpix"]: spreadPixels,
         cmd == "filterimg": filterImg,
-        cmd == "pixelcolor": pixelColor,
-        cmd == "shrinkimg": shrinkImg,
-        cmd == "resizeimg": resizeImg,
-        cmd == "enhanceimg": enhanceImg
+        cmd in ["pixelcolor", "pxcolor"]: pixelColor,
+        cmd == "shrink": shrinkImg,
+        cmd == "resize": resizeImg,
+        cmd == "enhance": enhanceImg,
+        cmd == "crop": cropImg,
+        cmd == "imgborder": imgBorder,
+        cmd in ["greyscale", "grayscale"]: greyscale,
+        cmd == "invert": invert
     }
 
     CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
@@ -247,7 +251,7 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False):
         BOTMODS = reloadBOTMODS()
         content = await oneLineCmd(msg, "\n".join([(await getUserInContent(msg, f'ok {i}', "ok")).name for i in BOTMODS[:-1]]))
     elif cmd == "tof": content = await oneLineCmd(msg, 9 / 5 * float(splitContent(content, cmd + " ", index=1)) + 32)
-    elif cmd == "avatar": content = await oneLineCmd(msg, await getUserInContent(msg, content, cmd)).avatar_url
+    elif cmd == "avatar": content = await oneLineCmd(msg, (await getUserInContent(msg, content, cmd)).avatar_url)
     elif cmd == "fetchuser": content = await oneLineCmd(msg, (await client.fetch_user(int(splitContent(content, f'{cmd} ', index=1)))).name)
     elif cmd == "fetchchannel": content = await oneLineCmd(msg, (await client.fetch_channel(int(splitContent(content, f'{cmd} ', index=1)))).name)
     elif cmd == "toc": content = await oneLineCmd(msg, 5 / 9 * (float(splitContent(content, cmd + " ", index=1)) - 32))
