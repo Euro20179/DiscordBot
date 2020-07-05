@@ -1759,7 +1759,7 @@ async def filterImg(msg, content, cmd="filterimg"):
     content = content[len(cmd) + 2:]
     if content.split(" ")[0]:
         filt = content.split(" ")[0:]
-    else: return await msg.channel.send("not filter provided")
+    else: return await msg.channel.send("no filter provided")
     if msg.attachments:
         att = msg.attachments[0]
         filename = att.filename
@@ -1841,6 +1841,86 @@ async def shrinkImg(msg, content, cmd="shrinkimg"):
     await saveImg(filename, url)
     img = Image.open(filename)
     img = img.reduce(red)
+    img.save(filename)  
+    with open(filename, "rb") as i:
+        await msg.channel.send(file=discord.File(i, filename=filename))
+    os.remove(filename)
+
+async def resizeImg(msg, content, cmd="resizeimg"):
+    content = content[len(cmd) + 2:]
+    content = content.split(" ")
+    width = content[0]
+    height = content[1]
+    try:
+        width = int(width)
+        height = int(height)
+        if len(content) > 2:
+            x1 = int(content[2])
+            y1 = int(content[3])
+            x2 = int(content[4])
+            y2 = int(content[5])
+    except:
+        return await msg.channel.send("must be int")
+    if msg.attachments:
+        att = msg.attachments[0]
+        filename = att.filename
+        url = att.url
+    else: 
+        tup = await imgInChat(msg)
+        if tup:
+            att, filename, url = tup
+        else:
+            return await msg.channel.send("no img provided")
+    await saveImg(filename, url)
+    img = Image.open(filename)
+    try:
+        img = img.resize((width, height), box=(x1, y1, x2, y2))
+    except:
+        img = img.resize((width, height))
+    finally:
+        img.save(filename)  
+        with open(filename, "rb") as i:
+            await msg.channel.send(file=discord.File(i, filename=filename))
+        os.remove(filename)
+
+async def enhanceImg(msg, content, cmd="enhanceimg"):
+    content = content[len(cmd) + 2:]
+    if content.split(" ")[0]:
+        enh = content.split(" ")[0:]
+    else: return await msg.channel.send("no filter provided")
+    if msg.attachments:
+        att = msg.attachments[0]
+        filename = att.filename
+        url = att.url
+    else: 
+        tup = await imgInChat(msg)
+        if tup:
+            att, filename, url = tup
+        else:
+            return await msg.channel.send("no img provided")
+    await saveImg(filename, url)
+    img = Image.open(filename)
+    async with msg.channel.typing():
+        while enh:
+            currFilt = enh[0]
+            try:
+                filt = currFilt.split(",")[0]
+                amnt = currFilt.split(",")[1]
+            except:
+                filt = currFilt
+                amnt = 1
+            try: 
+                i = {
+                    "color": ImageEnhance.Color(img),
+                    "contrast": ImageEnhance.Contrast(img),
+                    "brightness": ImageEnhance.Brightness(img),
+                    "sharpness": ImageEnhance.Sharpness(img)
+                }[filt]
+                img = i.enhance(float(amnt))
+            except Exception as e:
+                print(e)
+                return await msg.channel.send(f'Invalid filter: {filt}')
+            enh.pop(0)
     img.save(filename)  
     with open(filename, "rb") as i:
         await msg.channel.send(file=discord.File(i, filename=filename))

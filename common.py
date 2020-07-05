@@ -11,10 +11,10 @@ import bs4 as bs
 import os
 import math
 import statistics
-from PIL import Image, ImageFilter
+from PIL import Image, ImageFilter, ImageEnhance
 
 DELETE = "--delete"
-VERSION = "4.9"
+VERSION = "4.9.1"
 Stop = False
 
 playingGuessingGame = {}
@@ -22,7 +22,7 @@ playingHangman = {}
 playingDB = []
 
 #CONSTS
-PREFIX = "["
+PREFIX = "]"
 UPTIME = time.time()
 fakePrefix = PREFIX
 token = "NjQxNzk1NjU2Mzc3MTcyMDAw.XcNk8g.HEvnaXjuXFQhN1iilaaffbiPcoo"

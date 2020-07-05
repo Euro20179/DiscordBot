@@ -1,3 +1,10 @@
+4.9.1 (7/5/2020)
+
+ADDITIONS:
+*resizeimg, resizes img
+*enhanceimg, similar to filter be sure to read the help carefuly
+
+====================================================================
 4.9 (7/5/2020)
 
 ADDITIONS:

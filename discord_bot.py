@@ -233,7 +233,9 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False):
         cmd == "spreadpixels": spreadPixels,
         cmd == "filterimg": filterImg,
         cmd == "pixelcolor": pixelColor,
-        cmd == "shrinkimg": shrinkImg
+        cmd == "shrinkimg": shrinkImg,
+        cmd == "resizeimg": resizeImg,
+        cmd == "enhanceimg": enhanceImg
     }
 
     CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
