@@ -304,7 +304,7 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
             cmds = cmds[:-1]
             try: cmd = cmds[0]
             except IndexError: break
-            mssg = await runCommand(msg, f'{PREFIX}{cmd}', cmd=cmd.split(" ")[0].strip())
+            mssg = await runCommand(msg, f'{PREFIX}{cmd.strip("_")}', cmd=cmd.split(" ")[0].strip().strip("_"))
             await mssg.delete()
             content = content.replace("{" + cmd + "}", mssg.content)
         content = await oneLineCmd(msg, content)
