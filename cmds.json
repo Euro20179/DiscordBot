@@ -393,13 +393,13 @@
       },
       {
         "name": "line",
-        "params": "<x1> <y1> <x2> <y2> (-fill <r> <g> <b>) (-width <width>) <img>",
+        "params": "<x1> <y1> <x2> <y2> (-fill <r> <g> <b>) (-width <width>) (--rgba (provide a with rgb if specified)) <img>",
         "desc": "draws a line",
         "date": "7/5/2020"
       },
       {
         "name": "imgpoint",
-        "params": "*<<x> <y>> (-fill <r> <g> <b>) <img>",
+        "params": "*<<x> <y>> (-fill <r> <g> <b>) (--rgba (provide a with rgb if specified)) <img>",
         "desc": "makes a point",
         "date": "7/5/2020"
       },

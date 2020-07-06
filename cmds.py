@@ -2224,16 +2224,29 @@ async def line(msg, content, cmd="line"):
     if "https://" in content:
         content = content.replace(url, '')
     await saveImg(filename, url)
+    img = Image.open(filename)
+    params = content.split(" ")
+    if "--rgba" in params:
+        Rgba = True
+        img = img.convert("RGBA")
+    else: Rgba = False
+    img.save(filename)
     with Image.open(filename) as img:
         draw = ImageDraw.Draw(img)
         params = content.split(" ")
         x1, y1, x2, y2 = params[0:4]
-        FR=FG=FB=width = None
+        FR=FG=FB=FA=width = None
         if "-fill" in params:
-            FR, FG, FB = params[params.index("-fill") + 1 : params.index("-fill") + 4]
+            if Rgba: 
+                FR, FG, FB, FA = params[params.index("-fill") + 1 : params.index("-fill") + 5]
+            else:
+                FR, FG, FB = params[params.index("-fill") + 1 : params.index("-fill") + 4]
         if "-width" in params:
             width = params[params.index("-width") + 1]
-        draw.line([(int(x1), int(y1)), (int(x2), int(y2))], fill=None if not FR else (int(FR), int(FG), int(FB)), width=1 if not width else int(width))
+        if Rgba:
+            draw.line([(int(x1), int(y1)), (int(x2), int(y2))], fill=None if not FR else (int(FR), int(FG), int(FB), int(FA)), width=1 if not width else int(width))
+        else:
+            draw.line([(int(x1), int(y1)), (int(x2), int(y2))], fill=None if not FR else (int(FR), int(FG), int(FB)), width=1 if not width else int(width))
         img.save(filename)
     with open(filename, "rb") as i:
         await msg.channel.send(file=discord.File(i, filename=filename))
