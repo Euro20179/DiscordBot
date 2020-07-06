@@ -2131,6 +2131,8 @@ async def rectangle(msg, content, cmd="rectangle"):
     with Image.open(filename) as img:
         draw = ImageDraw.Draw(img)
         params = content.split(" ")
+        for param in params:
+            params[params.index(param)] = params[params.index(param)].replace("{width}", str(img.width)).replace("{height}", str(img.height))
         x1, y1, x2, y2 = params[0:4]
         FR=FG=FB=FA=OA=OR=OG=OB=width = None
         if "-fill" in params:
@@ -2170,6 +2172,8 @@ async def imgArc(msg, content, cmd="imgarc"):
     with Image.open(filename) as img:
         draw = ImageDraw.Draw(img)
         params = content.split(" ")
+        for param in params:
+            params[params.index(param)] = params[params.index(param)].replace("{width}", str(img.width)).replace("{height}", str(img.height))
         x1, y1, x2, y2 = params[0:4]
         startAngle = int(params[4])
         endAngle = int(params[5])
@@ -2204,6 +2208,8 @@ async def ellipse(msg, content, cmd="ellipse"):
     with Image.open(filename) as img:
         draw = ImageDraw.Draw(img)
         params = content.split(" ")
+        for param in params:
+            params[params.index(param)] = params[params.index(param)].replace("{width}", str(img.width)).replace("{height}", str(img.height))
         x1, y1, x2, y2 = params[0:4]
         FR=FG=FB=FA=OR=OG=OB=OA=width = None
         if "-fill" in params:
@@ -2241,6 +2247,8 @@ async def line(msg, content, cmd="line"):
     with Image.open(filename) as img:
         draw = ImageDraw.Draw(img)
         params = content.split(" ")
+        for param in params:
+            params[params.index(param)] = params[params.index(param)].replace("{width}", str(img.width)).replace("{height}", str(img.height))
         x1, y1, x2, y2 = params[0:4]
         FR=FG=FB=FA=width = None
         if "-fill" in params:
@@ -2364,3 +2372,23 @@ async def imgText(msg, content, cmd="imgtext"):
         await msg.channel.send(file=discord.File(i, filename=filename))
     os.remove(filename)
 
+async def convertImg(msg, content, cmd):
+    content = content[len(cmd) + 2:]
+    att, filename, url = await getImg(msg)
+    if "https://" in content:
+        content = content.replace(url, '')
+    mode = content.split(" ")[0]
+    pallete=colors = None
+    if "-palette" in content.split(" "):
+        pallete = content.split(" ")[1]
+        if len(content.split(" ")) > 4:
+            colors = int(content.split(" ")[4])
+    await saveImg(filename, url)
+    img = Image.open(filename)
+    if mode == "LAB":
+        return await msg.channel.send("PRAISE L A B ")
+    img = img.convert(mode=mode, palette=0 if not pallete else pallete, colors=256 if not colors else colors)
+    img.save(filename)  
+    with open(filename, "rb") as i:
+        await msg.channel.send(file=discord.File(i, filename=filename))
+    os.remove(filename)
