@@ -14,12 +14,12 @@ async def on_ready():
     BOTMODS = reloadBOTMODS()
     print(f"ONLINE\nversion: {VERSION}")
 
-async def runCommand(msg, content, cmd, layer=1, Iscmd=False):
+async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
     global CUSTOMCMDS, CATS, CMDLIST, BOTMODS
 
     DOFIRST = f'--{layer} ' #DEPRICATED
     if DOFIRST in content: #DEPRICATED
-        c = await runCommand(msg, content.split(DOFIRST)[1], splitContent(content, DOFIRST, index=1).split(" ")[0][1:], layer=layer + 1) #DEPRICATED
+        c = await runCommand(msg, content.split(DOFIRST)[1], splitContent(content, DOFIRST, index=1).split(" ")[0][1:], layer=layer + 1, DoFirst=True) #DEPRICATED
         await c.delete() #DEPRICATED
         content = f'{content.split(f" {DOFIRST}")[0]} {c.content}'#DEPRICATED
         msg = c #DEPRICATED
@@ -38,7 +38,7 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False):
             cmds = cmds[:-1]
             try: cmd = cmds[0]
             except IndexError: break
-            mssg = await runCommand(msg, f'{PREFIX}{cmd}', cmd=cmd.split(" ")[0].strip())
+            mssg = await runCommand(msg, f'{PREFIX}{cmd}', cmd=cmd.split(" ")[0].strip(), DoFirst=True)
             await mssg.delete()
             content = content.replace("/{" + cmd + "}", mssg.content)
         return await runCommand(msg, f'{content}', content.split(" ")[0][1:])
@@ -318,6 +318,8 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False):
             clearFile(j)
             json.dump(data, j)
         content = await msg.channel.send(f'{cmd} {random.choice(("is not a thing", "does not exist"))}')
+    if not DoFirst:
+        await content.channel.send(content.content)
     return content
 
 @client.event

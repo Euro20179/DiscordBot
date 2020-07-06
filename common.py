@@ -47,6 +47,11 @@ client = commands.Bot(command_prefix=fakePrefix)
 
 tracemalloc.start()
 
+async def returnMessage(msg, content, author=client.user):
+    msg.content = content
+    msg.author = author
+    return msg
+
 def reloadBOTMODS():
     global BOTMODS
     with open(botModsFilePath, "r") as f:
