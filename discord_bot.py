@@ -28,7 +28,9 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False):
     if "/{" in content:
         interpateCount = len(content.split("/{"))
         if len(content.split("}")) != interpateCount:
-            return await msg.channel.send("Syntax Error missing }")
+            if len(content.split("}")) < len(content.split("{")):
+                return await msg.channel.send("Syntax Error missing }")
+            return await msg.channel.send("Syntax Error missing /{")
         while True:
             cmds = [x.split("}")[0] for x in content.split("/{")]
             if not cmds: break
@@ -274,19 +276,23 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False):
         CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
     elif cmd == "customcmdlist": await customCmdList(msg, content, cmd=cmd)
     elif cmd in CUSTOMCMDS.keys(): 
-        say = CUSTOMCMDS[cmd].replace("{content}", content[len(cmd) + 2:]).replace("{version}", VERSION).replace("{author}", msg.author.mention).replace("{uptime}", str((await formatSeconds(time.time() - UPTIME))[0]))       
-        temp = say.split("{")
-        if len(temp) > 1:
-            tempCMDSLIST = tuple(x["name"] for x in CMDLIST)
-            for line in temp:
-                cmd = line.split("}")[0].split(" ")[0].strip()
-                if cmd in tempCMDSLIST:
-                    foo = line.split("}")[0]
-                    mssg = await runCommand(msg, f'{PREFIX}{foo}', cmd=cmd)
-                    temp[temp.index(line)] = mssg.content + line.split("}")[1]
-                    await mssg.delete()
-        say = "".join(temp)
-        content = await oneLineCmd(msg, say)
+        content = CUSTOMCMDS[cmd].replace("{content}", content[len(cmd) + 2:]).replace("{version}", VERSION).replace("{author}", msg.author.mention).replace("{uptime}", str((await formatSeconds(time.time() - UPTIME))[0]))       
+        interpateCount = len(content.split("{"))
+        if len(content.split("}")) != interpateCount:
+            if len(content.split("}")) < len(content.split("{")):
+                return await msg.channel.send("Syntax Error missing }")
+            return await msg.channel.send("Syntax Error missing {")
+        while True:
+            cmds = [x.split("}")[0] for x in content.split("{")]
+            if not cmds: break
+            cmds.reverse()
+            cmds = cmds[:-1]
+            try: cmd = cmds[0]
+            except IndexError: break
+            mssg = await runCommand(msg, f'{PREFIX}{cmd}', cmd=cmd.split(" ")[0].strip())
+            await mssg.delete()
+            content = content.replace("{" + cmd + "}", mssg.content)
+        content = await oneLineCmd(msg, content)
 
     elif cmd == "upupdowndownleftrightleftright":
         return await msg.channel.send("what do you think this is some arcade machine with secret codes, lol")

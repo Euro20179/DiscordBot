@@ -14,7 +14,7 @@ import statistics
 from PIL import Image, ImageFilter, ImageEnhance, ImageOps
 
 DELETE = "--delete"
-VERSION = "4.10.3.1"
+VERSION = "4.10.4"
 Stop = False
 
 playingGuessingGame = {}
