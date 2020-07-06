@@ -76,7 +76,6 @@ async def hlp(msg, content, cmd="help"):
                         editedBy = c.get("editedby")
                         if aliases: aliases = ",\n".join(f'``{x}``' for x in aliases)
             try: 
-                print(params)
                 if params: embed.add_field(name="params", value=f'``{params}``', inline=False)
                 embed.add_field(name="description", value=f'``{desc}``', inline=False)
                 if aliases: embed.add_field(name="aliases", value=aliases, inline=False)
@@ -1593,7 +1592,6 @@ async def editCmd(msg, content, cmd="edit"):
                 content = content.replace(f' -t {str(sleepFor).replace(".0", "")}', "")
             else:
                 content = content.replace(f' -t {str(sleepFor).replace("0", "")}', "")
-            print(content)
     else: sleepFor = .7
     edits = content[len(cmd) + 2:].split("|")
     editable = await msg.channel.send(edits[0])
@@ -1661,7 +1659,6 @@ async def setStatus(msg, content, cmd="status"):
     st = content.split(" ")
     if len(st) > 1:
         st = " ".join(st[1:])
-        print(st)
         await client.change_presence(activity=discord.Game(name=str(st)))
         return await msg.channel.send(f"changed to {st}")
     else: return await msg.channel.send("you didn't set the status to anything")
@@ -1720,7 +1717,6 @@ async def spreadPixels(msg, content, cmd="spreadpixels"):
     att, filename, url = await getImg(msg)
     if "https://" in content:
         content = content.replace(url, '')
-    print(content.split(" "))
     if content.split(" ")[0]:
         dist = int(content.split(" ")[0])
     else: dist = 100
@@ -1778,7 +1774,11 @@ async def pixelColor(msg, content, cmd="pixelcolor"):
     await saveImg(filename, url)
     img = Image.open(filename)
     img = img.load()
-    r, g, b, a = img[int(x), int(y)]
+    r, g, *b = img[int(x), int(y)]
+    if len(b) > 1:
+        a = b[1]
+    else: a = 255
+    b = b[0]
     os.remove(filename)
     return await msg.channel.send(embed=discord.Embed(title=f'R: {r} G: {g} B: {b} ALPHA: {a}', color=discord.Color.from_rgb(r, g, b)))
 
@@ -1926,7 +1926,6 @@ async def invert(msg, content, cmd="invert"):
     att, filename, url = await getImg(msg)
     if "https://" in content:
         content = content.replace(url, '')
-    print(content[0])
     if content[0].isnumeric():
         amnt = int(content[0])
     else: amnt = 0

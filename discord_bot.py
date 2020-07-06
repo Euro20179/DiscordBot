@@ -39,7 +39,6 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False):
             mssg = await runCommand(msg, f'{PREFIX}{cmd}', cmd=cmd.split(" ")[0].strip())
             await mssg.delete()
             content = content.replace("/{" + cmd + "}", mssg.content)
-            print(content)
         return await runCommand(msg, f'{content}', content.split(" ")[0][1:])
 
     with open(commandusageFilePath, "r+") as j:
@@ -365,7 +364,6 @@ async def on_message(msg):
         cmd = getCmd(content)
         if msg.attachments and cmd != "imginfo":
             content += " " + " ".join(att.url for att in msg.attachments)
-        print(content)
         if not cmd: return
         WriteToFile = False
 
