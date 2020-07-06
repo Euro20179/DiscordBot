@@ -449,6 +449,12 @@
         "params": "<mode> (-palette <WEB/ADAPTIVE> [colors (1-256)])",
         "desc": "MODES:\n1: pure black and white\nL: greyscale\nand some others\nthis is a direct wrapper around PIL.Image.convert(mode=mode) refer to https://pillow.readthedocs.io/en/stable/handbook/concepts.html#concept-modes",
         "date": "7/6/2020"
+      },
+      {
+        "name": "imgtext",
+        "params": "<x (can be center/top/bottom)> <y> <text> (-fill <r g b>) (-font <font name> <font size.) (-txtwidth <width>) <img>",
+        "desc": "puts text on an image",
+        "date": "7/6/2020"
       }
     ]
   },
