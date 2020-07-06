@@ -443,6 +443,12 @@
         "name": "imgnoise",
         "params": "<width> <height> <stdev>",
         "desc": "generates a noise map <stdev> basically gives how noisy it is"
+      },
+      {
+        "name": "convertimg",
+        "params": "<mode> (-palette <WEB/ADAPTIVE> [colors (1-256)])",
+        "desc": "MODES:\n1: pure black and white\nL: greyscale\nand some others\nthis is a direct wrapper around PIL.Image.convert(mode=mode) refer to https://pillow.readthedocs.io/en/stable/handbook/concepts.html#concept-modes",
+        "date": "7/6/2020"
       }
     ]
   },
