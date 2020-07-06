@@ -1773,6 +1773,9 @@ async def filterImg(msg, content, cmd="filterimg"):
     async with msg.channel.typing():
         while filt:
             currFilt = filt[0]
+            if not currFilt: 
+                filt.pop(0)
+                continue
             try: img = {
                 "blur": lambda: img.filter(ImageFilter.BLUR),
                 "contour": lambda: img.filter(ImageFilter.CONTOUR),
@@ -1922,6 +1925,9 @@ async def enhanceImg(msg, content, cmd="enhanceimg"):
     async with msg.channel.typing():
         while enh:
             currFilt = enh[0]
+            if not currFilt:
+                enh.pop(0)
+                continue
             try:
                 filt = currFilt.split(",")[0]
                 amnt = currFilt.split(",")[1]

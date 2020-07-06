@@ -1,3 +1,9 @@
+4.11.1.2 (7/6/2020)
+
+FIXES:
+*filterimg and enhance somtimes didn't work with an image
+
+====================================================================
 4.11.1.1 (7/6/2020)
 
 ADDITIONS:
