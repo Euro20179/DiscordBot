@@ -1,4 +1,10 @@
-4.10.3
+4.10.3.1 (7/5/2020)
+
+FIXES:
+*bug with pxcolor
+
+====================================================================
+4.10.3 (7/5/2020)
 
 ADDITIONS:
 *if IMAGES cmds can't find image in message or chat, it picks your avatar

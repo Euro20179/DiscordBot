@@ -14,7 +14,7 @@ import statistics
 from PIL import Image, ImageFilter, ImageEnhance, ImageOps
 
 DELETE = "--delete"
-VERSION = "4.10.2"
+VERSION = "4.10.3.1"
 Stop = False
 
 playingGuessingGame = {}
@@ -54,8 +54,6 @@ def reloadBOTMODS():
 async def saveImg(filename, url):
     with open(filename, 'wb') as i:
         response = requests.get(url, stream=True)
-        if not response.ok:
-            print(response)
         for block in response.iter_content(1024):
             if not block:
                 break
@@ -87,7 +85,6 @@ async def getImg(msg, user=None):
         att = None
         filename = "UNKNOWN.png"
         url = msg.content.split(" ")[-1]
-        print(url)
     elif msg.attachments:
         att = msg.attachments[0]
         filename = att.filename
@@ -166,7 +163,6 @@ async def formatDateTime(createdAt : datetime.datetime)->str:
     return f'{createdAt.month}/{createdAt.day}/{createdAt.year}\nat {createdAt.hour}:{createdAt.minute}:{createdAt.second}'
 
 async def getUserInContent(msg : discord.Message, c : str, cmd : str)->discord.User: #gets user by id, name, etc
-    print(c)
     c = str(c.split(cmd)[1].strip())
     c = c.replace("!", "")[2:-1] if "<@" in c else c
     if not c: c = str(msg.author.id)
