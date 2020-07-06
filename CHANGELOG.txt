@@ -1,3 +1,10 @@
+4.11.1 (7/6/2020)
+
+ADDITIONS:
+*--rgba to rectangle, imgarc, ellipse, polygon
+    *uses rgba instead of rgb
+
+====================================================================
 4.11 (The Imageinator update) (7/6/2020)
 
 ADDITIONS:

@@ -375,19 +375,19 @@
       },
       {
         "name": "rectangle",
-        "params": "<x1> <y1> <x2> <y2> (-width <px>) (-fill <r> <g> <b>) (-outline <r> <g> <b>) <img>",
+        "params": "<x1> <y1> <x2> <y2> (-width <px>) (-fill <r> <g> <b>) (-outline <r> <g> <b>) (--rgba (provide a with rgb if specified)) <img>",
         "desc": "draws a rectangle on an image",
         "date": "7/5/2020"
       },
       {
         "name": "imgarc",
-        "params": "<x1> <y1> <x2> <y2> <start angle> <end angle> (-fill <r> <g> <b>) (-width <width>) <img>",
+        "params": "<x1> <y1> <x2> <y2> <start angle> <end angle> (-fill <r> <g> <b>) (-width <width>) (--rgba (provide a with rgb if specified)) <img>",
         "desc": "draws an arc",
         "date": "7/5/2020"
       },
       {
         "name": "ellipse",
-        "params": "<x1> <y1> <x2> <y2> (-fill <r> <g> <b>) (-outline <r> <g> <b>) (-width <width>) <img>",
+        "params": "<x1> <y1> <x2> <y2> (-fill <r> <g> <b>) (-outline <r> <g> <b>) (-width <width>) (--rgba (provide a with rgb if specified)) <img>",
         "desc": "draws a circle",
         "date": "7/5/2020"
       },
@@ -405,7 +405,7 @@
       },
       {
         "name": "polygon",
-        "params": "<x1> <y1> <x2> <y2> *[<x> <y>] (-fill <r> <g> <b>) (-outline <r> <g> <b>) <img>",
+        "params": "<x1> <y1> <x2> <y2> *[<x> <y>] (-fill <r> <g> <b>) (-outline <r> <g> <b>) (--rgba (provide a with rgb if specified)) <img>",
         "desc": "draws a polygon",
         "date": "7/5/2020"
       },

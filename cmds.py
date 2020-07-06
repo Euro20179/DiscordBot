@@ -2114,18 +2114,34 @@ async def rectangle(msg, content, cmd="rectangle"):
     if "https://" in content:
         content = content.replace(url, '')
     await saveImg(filename, url)
+    img = Image.open(filename)
+    params = content.split(" ")
+    if "--rgba" in params:
+        Rgba = True
+        img = img.convert("RGBA")
+    else: Rgba = False
+    img.save(filename)
     with Image.open(filename) as img:
         draw = ImageDraw.Draw(img)
         params = content.split(" ")
         x1, y1, x2, y2 = params[0:4]
-        FR=FG=FB=OR=OG=OB=width = None
+        FR=FG=FB=FA=OA=OR=OG=OB=width = None
         if "-fill" in params:
-            FR, FG, FB = params[params.index("-fill") + 1 : params.index("-fill") + 4]
+            if not Rgba:
+                FR, FG, FB = params[params.index("-fill") + 1 : params.index("-fill") + 4]
+            else:
+                FR, FG, FB, FA = params[params.index("-fill") + 1 : params.index("-fill") + 5]
         if "-outline" in params:  
-            OR, OG, OB = params[params.index("-outline") + 1 : params.index("-outline") + 4]
+            if not Rgba:
+                OR, OG, OB = params[params.index("-outline") + 1 : params.index("-outline") + 4]
+            else:
+                OR, OG, OB, OA = params[params.index("-outline") + 1 : params.index("-outline") + 5]
         if "-width" in params:
             width = params[params.index("-width") + 1]
-        draw.rectangle([(int(x1), int(y1)), (int(x2), int(y2))], fill=None if not FR else (int(FR), int(FG), int(FB)), outline=None if not OR else (int(OR), int(OG), int(OB)), width=1 if not width else int(width))
+        if Rgba:
+            draw.rectangle([(int(x1), int(y1)), (int(x2), int(y2))], fill=None if not FR else (int(FR), int(FG), int(FB), int(FA)), outline=None if not OR else (int(OR), int(OG), int(OB), int(OA)), width=1 if not width else int(width))
+        else:
+            draw.rectangle([(int(x1), int(y1)), (int(x2), int(y2))], fill=None if not FR else (int(FR), int(FG), int(FB)), outline=None if not OR else (int(OR), int(OG), int(OB)), width=1 if not width else int(width))
         img.save(filename)
     with open(filename, "rb") as i:
         await msg.channel.send(file=discord.File(i, filename=filename))
@@ -2137,18 +2153,29 @@ async def imgArc(msg, content, cmd="imgarc"):
     if "https://" in content:
         content = content.replace(url, '')
     await saveImg(filename, url)
+    img = Image.open(filename)
+    params = content.split(" ")
+    if "--rgba" in params:
+        Rgba = True
+        img = img.convert("RGBA")
+    else: Rgba = False
+    img.save(filename)
     with Image.open(filename) as img:
         draw = ImageDraw.Draw(img)
         params = content.split(" ")
         x1, y1, x2, y2 = params[0:4]
         startAngle = int(params[4])
         endAngle = int(params[5])
-        FR=FG=FB=width = None
+        FR=FG=FB=FA=width = None
         if "-fill" in params:
-            FR, FG, FB = params[params.index("-fill") + 1 : params.index("-fill") + 4]
+            if Rgba:
+                FR, FG, FB, FA = params[params.index("-fill") + 1 : params.index("-fill") + 5]
+            else:
+                FR, FG, FB = params[params.index("-fill") + 1 : params.index("-fill") + 4]
         if "-width" in params:
             width = params[params.index("-width") + 1]
-        draw.arc([(int(x1), int(y1)), (int(x2), int(y2))], startAngle, endAngle, fill=None if not FR else (int(FR), int(FG), int(FB)), width=1 if not width else int(width))
+        if Rgba: draw.arc([(int(x1), int(y1)), (int(x2), int(y2))], startAngle, endAngle, fill=None if not FR else (int(FR), int(FG), int(FB), int(FA)), width=1 if not width else int(width))
+        else: draw.arc([(int(x1), int(y1)), (int(x2), int(y2))], startAngle, endAngle, fill=None if not FR else (int(FR), int(FG), int(FB)), width=1 if not width else int(width))
         img.save(filename)
     with open(filename, "rb") as i:
         await msg.channel.send(file=discord.File(i, filename=filename))
@@ -2160,18 +2187,32 @@ async def ellipse(msg, content, cmd="ellipse"):
     if "https://" in content:
         content = content.replace(url, '')
     await saveImg(filename, url)
+    img = Image.open(filename)
+    params = content.split(" ")
+    if "--rgba" in params:
+        Rgba = True
+        img = img.convert("RGBA")
+    else: Rgba = False
+    img.save(filename)
     with Image.open(filename) as img:
         draw = ImageDraw.Draw(img)
         params = content.split(" ")
         x1, y1, x2, y2 = params[0:4]
-        FR=FG=FB=OR=OG=OB=width = None
+        FR=FG=FB=FA=OR=OG=OB=OA=width = None
         if "-fill" in params:
-            FR, FG, FB = params[params.index("-fill") + 1 : params.index("-fill") + 4]
+            if Rgba:
+                FR, FG, FB = params[params.index("-fill") + 1 : params.index("-fill") + 5]
+            else:
+                FR, FG, FB = params[params.index("-fill") + 1 : params.index("-fill") + 4]
         if "-outline" in params:
-            OR, OG, OB = params[params.index("-outline") + 1 : params.index("-outline") + 4]
+            if Rgba:
+                OR, OG, OB = params[params.index("-outline") + 1 : params.index("-outline") + 5]
+            else:
+                OR, OG, OB = params[params.index("-outline") + 1 : params.index("-outline") + 5]
         if "-width" in params:
             width = params[params.index("-width") + 1]
-        draw.ellipse([(int(x1), int(y1)), (int(x2), int(y2))], outline=None if not OR else (int(OR), int(OG), int(OB)), fill=None if not FR else (int(FR), int(FG), int(FB)), width=1 if not width else int(width))
+        if Rgba: draw.ellipse([(int(x1), int(y1)), (int(x2), int(y2))], outline=None if not OR else (int(OR), int(OG), int(OB), int(OA)), fill=None if not FR else (int(FR), int(FG), int(FB), int(FA)), width=1 if not width else int(width))
+        else: draw.ellipse([(int(x1), int(y1)), (int(x2), int(y2))], outline=None if not OR else (int(OR), int(OG), int(OB)), fill=None if not FR else (int(FR), int(FG), int(FB)), width=1 if not width else int(width))
         img.save(filename)
     with open(filename, "rb") as i:
         await msg.channel.send(file=discord.File(i, filename=filename))
@@ -2234,22 +2275,37 @@ async def polygon(msg, content, cmd="poly"):
     if "https://" in content:
         content = content.replace(url, '')
     await saveImg(filename, url)
+    img = Image.open(filename)
+    params = content.split(" ")
+    if "--rgba" in params:
+        Rgba = True
+        img = img.convert("RGBA")
+    else: Rgba = False
+    img.save(filename)
     with Image.open(filename) as img:
         draw = ImageDraw.Draw(img)
         params = content.split(" ")
         XYS = params[0:]
         FR=FG=FB=OR=OG=OB = None
         if "-fill" in params:
-            FR, FG, FB = params[params.index("-fill") + 1 : params.index("-fill") + 4]
+            if Rgba:
+                FR, FG, FB = params[params.index("-fill") + 1 : params.index("-fill") + 5]
+            else:
+                FR, FG, FB = params[params.index("-fill") + 1 : params.index("-fill") + 4]
             XYS.remove(FR)
             XYS.remove(FG)
             XYS.remove(FB)
+            XYS.remove(FA)
             XYS.remove("-fill")
         if "-outline" in params:
-            OR, OG, OB = params[params.index("-outline") + 1 : params.index("-outline") + 4]
+            if Rgba:
+                OR, OG, OB = params[params.index("-outline") + 1 : params.index("-outline") + 5]
+            else:
+                OR, OG, OB = params[params.index("-outline") + 1 : params.index("-outline") + 4]
             XYS.remove(OR)
             XYS.remove(OG)
             XYS.remove(OB)
+            XYS.remove(OA)
             XYS.remove("-outline")
 
         newXYS = [""]
@@ -2260,7 +2316,8 @@ async def polygon(msg, content, cmd="poly"):
                 newXYS.append([int(XY)])
         XYS = [tuple(XY) for XY in newXYS if type(XY) != str]
         print(XYS)
-        draw.polygon(XYS, fill=None if not FR else (int(FR), int(FG), int(FB)), outline=None if not OR else (int(OR), int(OG), int(OB)))
+        if Rgba: draw.polygon(XYS, fill=None if not FR else (int(FR), int(FG), int(FB), int(FA)), outline=None if not OR else (int(OR), int(OG), int(OB), int(OA)))
+        else: draw.polygon(XYS, fill=None if not FR else (int(FR), int(FG), int(FB)), outline=None if not OR else (int(OR), int(OG), int(OB)))
         img.save(filename)
     with open(filename, "rb") as i:
         await msg.channel.send(file=discord.File(i, filename=filename))
