@@ -318,8 +318,6 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
             clearFile(j)
             json.dump(data, j)
         content = await msg.channel.send(f'{cmd} {random.choice(("is not a thing", "does not exist"))}')
-    if not DoFirst:
-        await content.channel.send(content.content)
     return content
 
 @client.event
