@@ -79,17 +79,27 @@ async def imgInChat(msg, limit=20):
             filename = att.filename
             url = att.url
             break
+    else: return "USER"
     return att, filename, url
 
-async def getImg(msg):
-    if msg.attachments:
+async def getImg(msg, user=None):
+    if "https://" in msg.content:
+        att = None
+        filename = "UNKNOWN.png"
+        url = msg.content.split(" ")[-1]
+        print(url)
+    elif msg.attachments:
         att = msg.attachments[0]
         filename = att.filename
         url = att.url
     else: 
         tup = await imgInChat(msg)
-        if tup:
+        if tup != "USER":
             att, filename, url = tup
+        elif tup == "USER":
+            att = msg.author.avatar if not user else user.avatar
+            filename = "UNKNOWN.png"
+            url = msg.author.avatar_url if not user else user.avatar_url
         else:
             return await msg.channel.send("no img provided")
     return att, filename, url

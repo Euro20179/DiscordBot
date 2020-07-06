@@ -1,3 +1,13 @@
+4.10.3
+
+ADDITIONS:
+*if IMAGES cmds can't find image in message or chat, it picks your avatar
+*IMAGES can now use urls
+
+CHANGES:
+*Epic Match is now 80 instead of 100
+
+====================================================================
 4.10.2 (7/5/2020)
 
 ADDITIONS:
