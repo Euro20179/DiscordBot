@@ -1106,6 +1106,7 @@ async def calc(msg, content, cmd="calc"):
         try:
             return await msg.channel.send(eval(content))
         except Exception as e:
+            print(e)
             return await msg.channel.send(str(type(e)).split(' ')[1].split("'")[1].strip("'"))
 
 async def pokemon(msg, content, cmd="pokemon"):
@@ -2358,15 +2359,39 @@ async def imgText(msg, content, cmd="imgtext"):
     with Image.open(filename) as img:
         draw = ImageDraw.Draw(img)
         params = content.split(" ")
-        x, y = params[0:2]
+        if params[0] not in ("center", "top", "bottom"):
+            x, y = params[0:2]
+        else: 
+            x=y = params[0]
+            params.insert(1, "center")
+            print(params)
         text = " ".join(params[2:])
-        font=fill=FR=FG=FB = None
+        fill=FR=FG=FB=direction=txtWidth = None
+        font = ImageFont.load_default()
         if msg.attachments:
             text = text.replace(msg.attachments[0].url, "")
         if "-fill" in params:
             FR, FG, FB = params[params.index("-fill") + 1: params.index("-fill") + 4]
             text = text.replace(f'-fill {FR} {FG} {FB}', "")
-        draw.text((int(x), int(y)), text, font=font, fill=(int(FR), int(FG), int(FB)) if FR else None)
+        if "-txtwidth" in params:
+            txtWidth = int(params[params.index("-txtwidth") + 1])
+            text = text.replace(f'-txtwidth {txtWidth}', "")
+        if "-font" in params:
+            font = f'{params[params.index("-font") + 1].title()}.ttf'
+            fontSize = int(params[params.index("-font") + 2])
+            text = text.replace(f'-font {font.replace(".ttf", "").lower()} {fontSize}', "")
+            font = ImageFont.truetype(f"/usr/share/fonts/truetype/msttcorefonts/{font}", fontSize, encoding="unic")
+        imgWidth = img.width
+        imgHeight = img.height
+        textWidth, textHeight = font.getsize(text)
+        if x == "center":
+            draw.text(((imgWidth - textWidth) / 2, (imgHeight - textHeight) / 2), text, font=font, fill=(int(FR), int(FG), int(FB)) if FR else None, stroke_width=0 if not txtWidth else txtWidth)
+        elif x == "top":
+            draw.text(((imgWidth - textWidth) / 2, 0), text, font=font, fill=(int(FR), int(FG), int(FB)) if FR else None, stroke_width=0 if not txtWidth else txtWidth)
+        elif x == "bottom":
+            draw.text(((imgWidth - textWidth) / 2, imgHeight - textHeight), text, font=font, fill=(int(FR), int(FG), int(FB)) if FR else None, stroke_width=0 if not txtWidth else txtWidth)
+        else:
+            draw.text((int(x), int(y)), text, font=font, fill=(int(FR), int(FG), int(FB)) if FR else None, stroke_width=0 if not txtWidth else txtWidth)
         img.save(filename)
     with open(filename, "rb") as i:
         await msg.channel.send(file=discord.File(i, filename=filename))

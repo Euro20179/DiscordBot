@@ -1,3 +1,9 @@
+4.13 (7/6/2020)
+
+PARIAL_ADDITIONS:
+*imgtext, was added before but never completed, it is fully complete now
+
+====================================================================
 4.12 (7/6/2020)
 
 ADDITIONS:
