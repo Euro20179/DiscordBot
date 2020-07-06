@@ -56,7 +56,7 @@
       {
         "name": "/{}",
         "params": "cmd <> [] ()",
-        "desc": "does the cmd inside of /{} first\nask euro",
+        "desc": "does the cmd inside of /{} first\nadd _ to the end of a command if 2+ commands are the same and you want diff resultes\nask euro",
         "date": "6/13/2020"
       },
       {

@@ -1,3 +1,9 @@
+4.12 (7/6/2020)
+
+ADDITIONS:
+*/{} of the same command now do different results if you add _ to the end of the command
+
+====================================================================
 4.11.2 (7/6/2020)
 
 ADDITIONS:
