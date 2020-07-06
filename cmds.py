@@ -849,11 +849,11 @@ async def changes(msg, content, cmd="changes"):
             date = content.split("-date ")[1]
             c = f.read().split("\n")
             vers = []
-            lookFor = testInContent(content, "-my", "-m", "-d", "-y")
-            if lookFor:
-                date = date.replace(f' {lookFor}', "")
+            lookFor = testInContent(content, "-my", "-m", "-day", "-y")
             if not lookFor:
                 lookFor = "date"
+            if lookFor:
+                date = date.replace(f' {lookFor}', "")
             for line in c:
                 ver = line.split(" ")[0]
                 try:
@@ -861,9 +861,11 @@ async def changes(msg, content, cmd="changes"):
                     m = m.strip("(")
                     y = y.strip(")")
                 except: continue
-                print(date.split("/"))
-                print(m, d, y)
-                if lookFor == "-d" and d == date:
+                print(date)
+                print(f'{m}/{d}/{y}')
+                print(date == f'{m}/{d}/{y}')
+                print(lookFor, lookFor == "date")
+                if lookFor == "-day" and d == date:
                     vers.append(ver)
                 elif lookFor == "-m" and m == date:
                     vers.append(ver)
@@ -871,7 +873,7 @@ async def changes(msg, content, cmd="changes"):
                     vers.append(ver)
                 elif lookFor == "-my" and date.split("/")[0] == m and date.split("/")[1] == y:
                     vers.append(ver)
-                elif date in line.split(" ")[-1] and lookFor == "date":
+                elif date == f'{m}/{d}/{y}' and lookFor == "date":
                     vers.append(ver)
             return await msg.channel.send("\n".join(vers))
     ver = splitContent(content, " ")[1].strip() if testInContent(content, " ") else None

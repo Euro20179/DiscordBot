@@ -689,7 +689,7 @@
       },
       {
         "name": "changes",
-        "params": "[version] (-date <date> (-m/-d/-y/-dy) (--raw)",
+        "params": "[version] (-date <date> (-m/-day/-y/-dy) (--raw)",
         "desc": "gives the latest changes, if version is specified it gives that version's changes\n-date gives all version added on <date> (try [changes -date 7/1/2020)\n--raw gives file",
         "date": "5/20/2020"
       },
