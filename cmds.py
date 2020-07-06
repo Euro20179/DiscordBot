@@ -1681,11 +1681,12 @@ async def imageInfo(msg, content, cmd="imginfo"):
 
 async def rotateImg(msg, content, cmd="rotateImg"):
     content = content[len(cmd) + 2:]
-    url = None
+    att, filename, url = await getImg(msg)
+    if "https://" in content:
+        content = content.replace(url, '')
     if len(content.split(" ")) == 1 and any(content.split(" ")):
         angle = content.split(" ")[0]
     else: angle = 90
-    att, filename, url = await getImg(msg)
             
     if not url: return await msg.channel.send("no img provided")
     await saveImg(filename, url)
@@ -1699,8 +1700,10 @@ async def rotateImg(msg, content, cmd="rotateImg"):
 
 async def mirrorImg(msg, content, cmd="mirrorimg"):
     content = content[len(cmd) + 2:]
-    XY = content.lower()
+    XY = content.split(" ")[0].lower()
     att, filename, url = await getImg(msg)
+    if "https://" in content:
+        content = content.replace(url, '')
     await saveImg(filename, url)
     img = Image.open(filename)
     if XY == "x":
@@ -1714,11 +1717,13 @@ async def mirrorImg(msg, content, cmd="mirrorimg"):
 
 async def spreadPixels(msg, content, cmd="spreadpixels"):
     content = content[len(cmd) + 2:]
+    att, filename, url = await getImg(msg)
+    if "https://" in content:
+        content = content.replace(url, '')
     print(content.split(" "))
     if content.split(" ")[0]:
         dist = int(content.split(" ")[0])
     else: dist = 100
-    att, filename, url = await getImg(msg)
     await saveImg(filename, url)
     img = Image.open(filename)
     img = img.effect_spread(dist)
@@ -1729,10 +1734,12 @@ async def spreadPixels(msg, content, cmd="spreadpixels"):
 
 async def filterImg(msg, content, cmd="filterimg"):
     content = content[len(cmd) + 2:]
+    att, filename, url = await getImg(msg)
+    if "https://" in content:
+        content = content.replace(url, '')
     if content.split(" ")[0]:
         filt = content.split(" ")[0:]
     else: return await msg.channel.send("no filter provided")
-    att, filename, url = await getImg(msg)
     await saveImg(filename, url)
     img = Image.open(filename)
     async with msg.channel.typing():
@@ -1759,13 +1766,15 @@ async def filterImg(msg, content, cmd="filterimg"):
     os.remove(filename)
 async def pixelColor(msg, content, cmd="pixelcolor"):
     content = content[len(cmd) + 2:]
+    att, filename, url = await getImg(msg)
+    if "https://" in content:
+        content = content.replace(url, '')
     if content.split(" ")[0]:
         try:
             x, y = content.split(" ")
         except:
             return await msg.channel.send("provide x and y")
     else: return await msg.channel.send("no coords provided")
-    att, filename, url = await getImg(msg)
     await saveImg(filename, url)
     img = Image.open(filename)
     img = img.load()
@@ -1775,6 +1784,9 @@ async def pixelColor(msg, content, cmd="pixelcolor"):
 
 async def shrinkImg(msg, content, cmd="shrinkimg"):
     content = content[len(cmd) + 2:]
+    att, filename, url = await getImg(msg)
+    if "https://" in content:
+        content = content.replace(url, '')
     x = content.split(" ")[0]
     if x:
         try:
@@ -1782,7 +1794,6 @@ async def shrinkImg(msg, content, cmd="shrinkimg"):
         except:
             return await msg.channel.send("must be int")
     else: red = 2
-    att, filename, url = await getImg(msg)
     await saveImg(filename, url)
     img = Image.open(filename)
     img = img.reduce(red)
@@ -1793,20 +1804,22 @@ async def shrinkImg(msg, content, cmd="shrinkimg"):
 
 async def resizeImg(msg, content, cmd="resizeimg"):
     content = content[len(cmd) + 2:]
+    att, filename, url = await getImg(msg)
+    if "https://" in content:
+        content = content.replace(url, '')
     content = content.split(" ")
     width = content[0]
     height = content[1]
     try:
         width = int(width)
         height = int(height)
-        if len(content) > 2:
+        if len(content) > 2 and content[-1]:
             x1 = int(content[2])
             y1 = int(content[3])
             x2 = int(content[4])
             y2 = int(content[5])
     except:
         return await msg.channel.send("must be int")
-    att, filename, url = await getImg(msg)
     await saveImg(filename, url)
     img = Image.open(filename)
     try:
@@ -1821,10 +1834,12 @@ async def resizeImg(msg, content, cmd="resizeimg"):
 
 async def enhanceImg(msg, content, cmd="enhanceimg"):
     content = content[len(cmd) + 2:]
+    att, filename, url = await getImg(msg)
+    if "https://" in content:
+        content = content.replace(url, '')
     if content.split(" ")[0]:
         enh = content.split(" ")[0:]
     else: return await msg.channel.send("no filter provided")
-    att, filename, url = await getImg(msg)
     await saveImg(filename, url)
     img = Image.open(filename)
     async with msg.channel.typing():
@@ -1855,10 +1870,12 @@ async def enhanceImg(msg, content, cmd="enhanceimg"):
 
 async def cropImg(msg, content, cmd="crop"):
     content = content[len(cmd) + 2:]
+    att, filename, url = await getImg(msg)
+    if "https://" in content:
+        content = content.replace(url, '')
     if content.split(" ")[0]:
         amnt = int(content.split(" ")[0])
     else: amnt = 20
-    att, filename, url = await getImg(msg)
     await saveImg(filename, url)
     img = Image.open(filename)
     img = ImageOps.crop(img, border=amnt)
@@ -1869,6 +1886,9 @@ async def cropImg(msg, content, cmd="crop"):
 
 async def imgBorder(msg, content, cmd="imgborder"):
     content = content[len(cmd) + 2:].split(" ")
+    att, filename, url = await getImg(msg)
+    if "https://" in content:
+        content = content.replace(url, '')
     if content[0] and len(content) != 3:
         amnt = int(content[0])
     else: amnt = 20
@@ -1880,7 +1900,6 @@ async def imgBorder(msg, content, cmd="imgborder"):
     r = int(r)
     g = int(g)
     b = int(b)
-    att, filename, url = await getImg(msg)
     await saveImg(filename, url)
     img = Image.open(filename)
     img = ImageOps.expand(img, border=amnt, fill=(r, g, b))
@@ -1892,6 +1911,8 @@ async def imgBorder(msg, content, cmd="imgborder"):
 async def greyscale(msg, content, cmd="greyscale"):
     content = content[len(cmd) + 2:]
     att, filename, url = await getImg(msg)
+    if "https://" in content:
+        content = content.replace(url, '')
     await saveImg(filename, url)
     img = Image.open(filename)
     img = ImageOps.grayscale(img)
@@ -1902,10 +1923,13 @@ async def greyscale(msg, content, cmd="greyscale"):
 
 async def invert(msg, content, cmd="invert"):
     content = content[len(cmd) + 2:].split(" ")
-    if content[0]:
+    att, filename, url = await getImg(msg)
+    if "https://" in content:
+        content = content.replace(url, '')
+    print(content[0])
+    if content[0].isnumeric():
         amnt = int(content[0])
     else: amnt = 0
-    att, filename, url = await getImg(msg)
     await saveImg(filename, url)
     img = Image.open(filename)
     img = ImageOps.solarize(img.convert("RGB"), threshold=amnt) 

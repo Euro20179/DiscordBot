@@ -39,7 +39,7 @@
         "id": 7,
         "name": "Epic Match",
         "desc": "choose a number, each player has that much health (limit of 200)",
-        "cost": 100
+        "cost": 80
     },
     {
         "id": 8,
