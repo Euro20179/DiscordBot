@@ -11,10 +11,11 @@ import bs4 as bs
 import os
 import math
 import statistics
+import re
 from PIL import Image, ImageFilter, ImageEnhance, ImageOps
 
 DELETE = "--delete"
-VERSION = "4.10.5"
+VERSION = "4.10.6"
 Stop = False
 
 playingGuessingGame = {}

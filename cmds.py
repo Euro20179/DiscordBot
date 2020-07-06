@@ -848,9 +848,31 @@ async def changes(msg, content, cmd="changes"):
         with open("CHANGELOG.txt", 'r') as f:
             date = content.split("-date ")[1]
             c = f.read().split("\n")
-            vers = [line.split(" ")[0] for line in c if date in line]
-            if not vers:
-                return await msg.channel.send("NO CHANGES")
+            vers = []
+            lookFor = testInContent(content, "-my", "-m", "-d", "-y")
+            if lookFor:
+                date = date.replace(f' {lookFor}', "")
+            if not lookFor:
+                lookFor = "date"
+            for line in c:
+                ver = line.split(" ")[0]
+                try:
+                    m, d, y = line.split(" ")[-1].split("/")
+                    m = m.strip("(")
+                    y = y.strip(")")
+                except: continue
+                print(date.split("/"))
+                print(m, d, y)
+                if lookFor == "-d" and d == date:
+                    vers.append(ver)
+                elif lookFor == "-m" and m == date:
+                    vers.append(ver)
+                elif lookFor == "-y" and y == date:
+                    vers.append(ver)
+                elif lookFor == "-my" and date.split("/")[0] == m and date.split("/")[1] == y:
+                    vers.append(ver)
+                elif date in line.split(" ")[-1] and lookFor == "date":
+                    vers.append(ver)
             return await msg.channel.send("\n".join(vers))
     ver = splitContent(content, " ")[1].strip() if testInContent(content, " ") else None
     if ver or not testInContent(content, "--nlatest"):
