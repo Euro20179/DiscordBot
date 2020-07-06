@@ -39,7 +39,7 @@ async def hlp(msg, content, cmd="help"):
                 embed.add_field(name=f'{cmd["name"]}', value=f'``{cmd["name"]}``  {cmd["desc"]}')
         else:
             for cmd in CATS[cat]:
-                embed.add_field(name=f'{cmd["name"]}', value=f'Params: ``{cmd["params"]}``\nDescription:``{cmd["desc"]}``', inline=False)
+                embed.add_field(name=f'{cmd["name"]}', value=f'``{cmd["desc"]}``', inline=False)
         try:
             if File: raise Exception("wanted file")
             msg = await msg.channel.send(embed=embed)
@@ -1099,7 +1099,7 @@ async def spamStop(msg, content, cmd="spamstop"):
 
 async def calc(msg, content, cmd="calc"):
     content = content[len(cmd) + 2:]
-    if "help(" in content or "quit()" in content or "exit()" in content or "os." in content or "token" in content or "input(" in content:
+    if "help(" in content or "quit()" in content or "exit()" in content or "os." in content or "token" in content or "input(" in content or "sys.":
         return await msg.channel.send('nice try')
     else: 
         try:
@@ -1786,8 +1786,23 @@ async def filterImg(msg, content, cmd="filterimg"):
                 "smooth_more": lambda: img.filter(ImageFilter.SMOOTH_MORE)
             }[currFilt]()
             except:
-                return await msg.channel.send(f'Invalid filter: {currFilt}')
+                if currFilt.isnumeric():
+                    for x in range(int(currFilt)):
+                        img = {
+                            "blur": lambda: img.filter(ImageFilter.BLUR),
+                            "contour": lambda: img.filter(ImageFilter.CONTOUR),
+                            "detail": lambda: img.filter(ImageFilter.DETAIL),
+                            "edge_enhance": lambda: img.filter(ImageFilter.EDGE_ENHANCE),
+                            "edge_enhance_more": lambda: img.filter(ImageFilter.EDGE_ENHANCE_MORE),
+                            "emboss": lambda: img.filter(ImageFilter.EMBOSS),
+                            "find_edges": lambda: img.filter(ImageFilter.FIND_EDGES),
+                            "sharpen": lambda: img.filter(ImageFilter.SHARPEN),
+                            "smooth": lambda: img.filter(ImageFilter.SMOOTH),
+                            "smooth_more": lambda: img.filter(ImageFilter.SMOOTH_MORE)
+                        }[lastFilt]()
+                else: return await msg.channel.send(f'Invalid filter: {currFilt}')
             filt.pop(0)
+            lastFilt = currFilt
     img.save(filename)  
     with open(filename, "rb") as i:
         await msg.channel.send(file=discord.File(i, filename=filename))
@@ -1833,6 +1848,36 @@ async def shrinkImg(msg, content, cmd="shrinkimg"):
     with open(filename, "rb") as i:
         await msg.channel.send(file=discord.File(i, filename=filename))
     os.remove(filename)
+
+async def colorize(msg, content, cmd="colorize"):
+    content = content[len(cmd) + 2:]
+    att, filename, url = await getImg(msg)
+    if "https://" in content:
+        content = content.replace(url, '')
+    content = content.split(" ")
+    black = content[0:3]
+    white = content[3:6]
+    blackPoint = 0
+    whitePoint = 255
+    midPoint = 127
+    mid = None
+    if "-mid" in content:
+        mid = content[content.index("-mid") + 1: content.index("-mid") + 4]
+        mid = tuple(int(x) for x in mid)
+    if "-midpoint" in content:
+        midPoint = int(content[content.index("-midpoint") + 1])
+    if "-blackpoint" in content:
+        blackPoint = int(content[content.index("-blackpoint") + 1])
+    if "-whitepoint" in content:
+        whitePoint = int(content[content.index("-whitepoint") + 1])
+    await saveImg(filename, url)
+    img = Image.open(filename)
+    img = ImageOps.colorize(img.convert("L"), tuple(int(x) for x in black), tuple(int(x) for x in white), mid=mid, blackpoint=blackPoint, whitepoint=whitePoint, midpoint=midPoint)
+    img.save(filename)  
+    with open(filename, "rb") as i:
+        await msg.channel.send(file=discord.File(i, filename=filename))
+    os.remove(filename)
+
 
 async def resizeImg(msg, content, cmd="resizeimg"):
     content = content[len(cmd) + 2:]
@@ -1884,13 +1929,16 @@ async def enhanceImg(msg, content, cmd="enhanceimg"):
                 filt = currFilt
                 amnt = 1
             try: 
-                i = {
-                    "color": ImageEnhance.Color(img),
-                    "contrast": ImageEnhance.Contrast(img),
-                    "brightness": ImageEnhance.Brightness(img),
-                    "sharpness": ImageEnhance.Sharpness(img)
-                }[filt]
-                img = i.enhance(float(amnt))
+                if filt == "autocontrast":
+                    img = ImageOps.autocontrast(img.convert("RGB"), cutoff=float(amnt))
+                else:
+                    i = {
+                        "color": ImageEnhance.Color(img),
+                        "contrast": ImageEnhance.Contrast(img),
+                        "brightness": ImageEnhance.Brightness(img),
+                        "sharpness": ImageEnhance.Sharpness(img)
+                    }[filt]
+                    img = i.enhance(float(amnt))
             except Exception as e:
                 print(e)
                 return await msg.channel.send(f'Invalid filter: {filt}')
@@ -1953,6 +2001,18 @@ async def greyscale(msg, content, cmd="greyscale"):
         await msg.channel.send(file=discord.File(i, filename=filename))
     os.remove(filename)
 
+async def imgNoise(msg, content, cmd="imgnoise"):
+    content = content[len(cmd) + 2:]
+    filename = f'{msg.author.id}.png'
+    width, height = content.split(" ")[0:2]
+    stdev = content.split(" ")[2]
+    img = Image.new("RGB", (int(width), int(height)))
+    img = Image.effect_noise((img.width, img.height), int(stdev))
+    img.save(filename)  
+    with open(filename, "rb") as i:
+        await msg.channel.send(file=discord.File(i, filename=filename))
+    os.remove(filename)
+    
 async def invert(msg, content, cmd="invert"):
     content = content[len(cmd) + 2:].split(" ")
     att, filename, url = await getImg(msg)
@@ -1968,3 +2028,262 @@ async def invert(msg, content, cmd="invert"):
     with open(filename, "rb") as i:
         await msg.channel.send(file=discord.File(i, filename=filename))
     os.remove(filename)
+
+async def compileImgs(msg, content, cmd="compileimg"):
+    content = content[len(cmd) + 2:].split(" ")
+    filename1 = f'{msg.author.id}.png'
+    filename2 = f'{msg.author.id}2.png'
+    await saveImg(filename1, content[0])
+    await saveImg(filename2, content[1])
+    if "-box" in content:
+        box = content[content.index("-box") + 1: content.index("-box") + 3]
+        box = tuple(int(x) for x in box)
+    else: box = (0, 0)
+    img1 = Image.open(filename1)
+    img2 = Image.open(filename2)
+    img1.paste(img2, box=box)
+    img1.save(filename1)
+    with open(filename1, "rb") as i:
+        await msg.channel.send(file=discord.File(i, filename="yes.png"))
+    os.remove(filename1)
+    os.remove(filename2)
+
+async def imgDiff(msg, content, cmd="imgdiff"):
+    content = content[len(cmd) + 2:].split(" ")
+    filename1 = f'{msg.author.id}.png'
+    filename2 = f'{msg.author.id}2.png'
+    await saveImg(filename1, content[0])
+    await saveImg(filename2, content[1])
+    img1 = Image.open(filename1)
+    img2 = Image.open(filename2)
+    diffImg = ImageChops.difference(img1.convert("RGB"), img2.convert("RGB"))
+    if diffImg.getbbox():
+        diffImg.save(filename1)
+    with open(filename1, "rb") as i:
+        await msg.channel.send(file=discord.File(i, filename="yes.png"))
+    os.remove(filename1)
+    os.remove(filename2)
+
+async def lightImg(msg, content, cmd="lightimg"):
+    content = content[len(cmd) + 2:].split(" ")
+    filename1 = f'{msg.author.id}.png'
+    filename2 = f'{msg.author.id}2.png'
+    await saveImg(filename1, content[0])
+    await saveImg(filename2, content[1])
+    img1 = Image.open(filename1)
+    img2 = Image.open(filename2)
+    lighterImg = ImageChops.lighter(img1.convert("RGB"), img2.convert("RGB"))
+    lighterImg.save(filename1)
+    with open(filename1, "rb") as i:
+        await msg.channel.send(file=discord.File(i, filename="yes.png"))
+    os.remove(filename1)
+    os.remove(filename2)
+
+async def darkImg(msg, content, cmd="darkimg"):
+    content = content[len(cmd) + 2:].split(" ")
+    filename1 = f'{msg.author.id}.png'
+    filename2 = f'{msg.author.id}2.png'
+    await saveImg(filename1, content[0])
+    await saveImg(filename2, content[1])
+    img1 = Image.open(filename1)
+    img2 = Image.open(filename2)
+    darkerImg = ImageChops.darker(img1.convert("RGB"), img2.convert("RGB"))
+    darkerImg.save(filename1)
+    with open(filename1, "rb") as i:
+        await msg.channel.send(file=discord.File(i, filename="yes.png"))
+    os.remove(filename1)
+    os.remove(filename2)
+
+async def newImg(msg, content, cmd="newimg"):
+    content = content[len(cmd) + 2:].split(" ")
+    if "https://" in content:
+        content = content.replace(url, '')
+    size = content[0:2]
+    if len(content) > 2:
+        color = content[2:]
+    else: color = [0, 0, 0]
+    img = Image.new("RGBA" if len(color) == 4 else "RGB", tuple(int(x) for x in size), tuple(int(x) for x in color))
+    img.save(f"{msg.author.id}.png")
+    with open(f"{msg.author.id}.png", "rb") as i:
+        await msg.channel.send(file=discord.File(i, filename=f"{msg.author.id}.png"))
+    os.remove(f"{msg.author.id}.png")
+
+async def rectangle(msg, content, cmd="rectangle"):
+    content = content[len(cmd) + 2:]
+    att, filename, url = await getImg(msg)
+    if "https://" in content:
+        content = content.replace(url, '')
+    await saveImg(filename, url)
+    with Image.open(filename) as img:
+        draw = ImageDraw.Draw(img)
+        params = content.split(" ")
+        x1, y1, x2, y2 = params[0:4]
+        FR=FG=FB=OR=OG=OB=width = None
+        if "-fill" in params:
+            FR, FG, FB = params[params.index("-fill") + 1 : params.index("-fill") + 4]
+        if "-outline" in params:  
+            OR, OG, OB = params[params.index("-outline") + 1 : params.index("-outline") + 4]
+        if "-width" in params:
+            width = params[params.index("-width") + 1]
+        draw.rectangle([(int(x1), int(y1)), (int(x2), int(y2))], fill=None if not FR else (int(FR), int(FG), int(FB)), outline=None if not OR else (int(OR), int(OG), int(OB)), width=1 if not width else int(width))
+        img.save(filename)
+    with open(filename, "rb") as i:
+        await msg.channel.send(file=discord.File(i, filename=filename))
+    os.remove(filename)
+
+async def imgArc(msg, content, cmd="imgarc"):
+    content = content[len(cmd) + 2:]
+    att, filename, url = await getImg(msg)
+    if "https://" in content:
+        content = content.replace(url, '')
+    await saveImg(filename, url)
+    with Image.open(filename) as img:
+        draw = ImageDraw.Draw(img)
+        params = content.split(" ")
+        x1, y1, x2, y2 = params[0:4]
+        startAngle = int(params[4])
+        endAngle = int(params[5])
+        FR=FG=FB=width = None
+        if "-fill" in params:
+            FR, FG, FB = params[params.index("-fill") + 1 : params.index("-fill") + 4]
+        if "-width" in params:
+            width = params[params.index("-width") + 1]
+        draw.arc([(int(x1), int(y1)), (int(x2), int(y2))], startAngle, endAngle, fill=None if not FR else (int(FR), int(FG), int(FB)), width=1 if not width else int(width))
+        img.save(filename)
+    with open(filename, "rb") as i:
+        await msg.channel.send(file=discord.File(i, filename=filename))
+    os.remove(filename)
+
+async def ellipse(msg, content, cmd="ellipse"):
+    content = content[len(cmd) + 2:]
+    att, filename, url = await getImg(msg)
+    if "https://" in content:
+        content = content.replace(url, '')
+    await saveImg(filename, url)
+    with Image.open(filename) as img:
+        draw = ImageDraw.Draw(img)
+        params = content.split(" ")
+        x1, y1, x2, y2 = params[0:4]
+        FR=FG=FB=OR=OG=OB=width = None
+        if "-fill" in params:
+            FR, FG, FB = params[params.index("-fill") + 1 : params.index("-fill") + 4]
+        if "-outline" in params:
+            OR, OG, OB = params[params.index("-outline") + 1 : params.index("-outline") + 4]
+        if "-width" in params:
+            width = params[params.index("-width") + 1]
+        draw.ellipse([(int(x1), int(y1)), (int(x2), int(y2))], outline=None if not OR else (int(OR), int(OG), int(OB)), fill=None if not FR else (int(FR), int(FG), int(FB)), width=1 if not width else int(width))
+        img.save(filename)
+    with open(filename, "rb") as i:
+        await msg.channel.send(file=discord.File(i, filename=filename))
+    os.remove(filename)
+
+async def line(msg, content, cmd="line"):
+    content = content[len(cmd) + 2:]
+    att, filename, url = await getImg(msg)
+    if "https://" in content:
+        content = content.replace(url, '')
+    await saveImg(filename, url)
+    with Image.open(filename) as img:
+        draw = ImageDraw.Draw(img)
+        params = content.split(" ")
+        x1, y1, x2, y2 = params[0:4]
+        FR=FG=FB=width = None
+        if "-fill" in params:
+            FR, FG, FB = params[params.index("-fill") + 1 : params.index("-fill") + 4]
+        if "-width" in params:
+            width = params[params.index("-width") + 1]
+        draw.line([(int(x1), int(y1)), (int(x2), int(y2))], fill=None if not FR else (int(FR), int(FG), int(FB)), width=1 if not width else int(width))
+        img.save(filename)
+    with open(filename, "rb") as i:
+        await msg.channel.send(file=discord.File(i, filename=filename))
+    os.remove(filename)
+
+async def point(msg, content, cmd="point"):
+    content = content[len(cmd) + 2:]
+    att, filename, url = await getImg(msg)
+    if "https://" in content:
+        content = content.replace(url, '')
+    await saveImg(filename, url)
+    with Image.open(filename) as img:
+        draw = ImageDraw.Draw(img)
+        params = content.split(" ")
+        XYS = params[0:]
+        FR=FG=FB=OR=OG=OB = None
+        if "-fill" in params:
+            FR, FG, FB = params[params.index("-fill") + 1 : params.index("-fill") + 4]
+            XYS.remove(FR)
+            XYS.remove(FG)
+            XYS.remove(FB)
+            XYS.remove("-fill")
+        newXYS = [""]
+        for XY in XYS:
+            if len(newXYS[-1]) % 2 != 0:
+                newXYS[-1].append(int(XY))
+            else:
+                newXYS.append([int(XY)])
+        XYS = [tuple(XY) for XY in newXYS if type(XY) != str]
+        draw.point(XYS, fill=None if not FR else (int(FR), int(FG), int(FB)))
+        img.save(filename)
+    with open(filename, "rb") as i:
+        await msg.channel.send(file=discord.File(i, filename=filename))
+    os.remove(filename)
+
+async def polygon(msg, content, cmd="poly"):
+    content = content[len(cmd) + 2:]
+    att, filename, url = await getImg(msg)
+    if "https://" in content:
+        content = content.replace(url, '')
+    await saveImg(filename, url)
+    with Image.open(filename) as img:
+        draw = ImageDraw.Draw(img)
+        params = content.split(" ")
+        XYS = params[0:]
+        FR=FG=FB=OR=OG=OB = None
+        if "-fill" in params:
+            FR, FG, FB = params[params.index("-fill") + 1 : params.index("-fill") + 4]
+            XYS.remove(FR)
+            XYS.remove(FG)
+            XYS.remove(FB)
+            XYS.remove("-fill")
+        if "-outline" in params:
+            OR, OG, OB = params[params.index("-outline") + 1 : params.index("-outline") + 4]
+            XYS.remove(OR)
+            XYS.remove(OG)
+            XYS.remove(OB)
+            XYS.remove("-outline")
+
+        newXYS = [""]
+        for XY in XYS:
+            if len(newXYS[-1]) % 2 != 0:
+                newXYS[-1].append(int(XY))
+            else:
+                newXYS.append([int(XY)])
+        XYS = [tuple(XY) for XY in newXYS if type(XY) != str]
+        print(XYS)
+        draw.polygon(XYS, fill=None if not FR else (int(FR), int(FG), int(FB)), outline=None if not OR else (int(OR), int(OG), int(OB)))
+        img.save(filename)
+    with open(filename, "rb") as i:
+        await msg.channel.send(file=discord.File(i, filename=filename))
+    os.remove(filename)
+
+async def imgText(msg, content, cmd="imgtext"):
+    content = content[len(cmd) + 2:]
+    att, filename, url = await getImg(msg)
+    await saveImg(filename, url)
+    with Image.open(filename) as img:
+        draw = ImageDraw.Draw(img)
+        params = content.split(" ")
+        x, y = params[0:2]
+        text = " ".join(params[2:])
+        font=fill=FR=FG=FB = None
+        if msg.attachments:
+            text = text.replace(msg.attachments[0].url, "")
+        if "-fill" in params:
+            FR, FG, FB = params[params.index("-fill") + 1: params.index("-fill") + 4]
+            text = text.replace(f'-fill {FR} {FG} {FB}', "")
+        draw.text((int(x), int(y)), text, font=font, fill=(int(FR), int(FG), int(FB)) if FR else None)
+        img.save(filename)
+    with open(filename, "rb") as i:
+        await msg.channel.send(file=discord.File(i, filename=filename))
+    os.remove(filename)
+

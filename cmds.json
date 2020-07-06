@@ -337,7 +337,7 @@
       {
         "name": "enhance",
         "params": "*<<method>,<amnt>> <img>",
-        "desc": "applies method with <amnt> to img\nmethods: color, sharpness, brightness, contrast\nex: [enhanceimg color,.5 <img>\nex2: [enhanceimg sharpness,3 color,.2 <img>",
+        "desc": "applies method with <amnt> to img\nmethods: color, sharpness, brightness, contrast, autocontrast\nex: [enhanceimg color,.5 <img>\nex2: [enhanceimg sharpness,3 color,.2 <img>",
         "date": "7/5/2020"
       },
       {
@@ -366,6 +366,83 @@
         "params": "[threshold] <img>",
         "desc": "inverts the img\nthreshold specifies what greyscale value and above it inverts defaults to 0, basically meaning anything with a greyscale of black or lighter",
         "date": "7/5/2020"
+      },
+      {
+        "name": "newimg",
+        "params": "<width> <height> [<r> <g> <b> [a]] <img>",
+        "desc": "makes an image with a size of width x height and a color of r, g, b, [a]",
+        "date": "7/5/2020"
+      },
+      {
+        "name": "rectangle",
+        "params": "<x1> <y1> <x2> <y2> (-width <px>) (-fill <r> <g> <b>) (-outline <r> <g> <b>) <img>",
+        "desc": "draws a rectangle on an image",
+        "date": "7/5/2020"
+      },
+      {
+        "name": "imgarc",
+        "params": "<x1> <y1> <x2> <y2> <start angle> <end angle> (-fill <r> <g> <b>) (-width <width>) <img>",
+        "desc": "draws an arc",
+        "date": "7/5/2020"
+      },
+      {
+        "name": "ellipse",
+        "params": "<x1> <y1> <x2> <y2> (-fill <r> <g> <b>) (-outline <r> <g> <b>) (-width <width>) <img>",
+        "desc": "draws a circle",
+        "date": "7/5/2020"
+      },
+      {
+        "name": "line",
+        "params": "<x1> <y1> <x2> <y2> (-fill <r> <g> <b>) (-width <width>) <img>",
+        "desc": "draws a line",
+        "date": "7/5/2020"
+      },
+      {
+        "name": "imgpoint",
+        "params": "*<<x> <y>> (-fill <r> <g> <b>) <img>",
+        "desc": "makes a point",
+        "date": "7/5/2020"
+      },
+      {
+        "name": "polygon",
+        "params": "<x1> <y1> <x2> <y2> *[<x> <y>] (-fill <r> <g> <b>) (-outline <r> <g> <b>) <img>",
+        "desc": "draws a polygon",
+        "date": "7/5/2020"
+      },
+      {
+        "name": "compileimg",
+        "params": "<img1 url> <img2 url> (-box <x> <y>)",
+        "desc": "puts 2 images ontop of each other\n-box puts img1 on img2 at x, y",
+        "date": "7/5/2020"
+      },
+      {
+        "name": "colorize",
+        "params": "<r> <g> <b> (black->rgb) <r> <g> <b> (white->rgb) (-mid <r> <g> <b> (mid->rgb)) (-blackpoint <n>) (-whitepoint <n>) (-midpoint <n>)",
+        "desc": "converts a greyscale img to rgb, the first set converts blacks to that color, second whites, -mid middle colors -white/black/midpoint say what white/black/mid means\nblackpoint <= midpoint <= whitepoint",
+        "date": "7/6/2020"
+      },
+      {
+        "name": "imgdiff",
+        "params": "<img1 url> <img2 url>",
+        "desc": "finds the difference in the 2 images",
+        "date": "7/6/2020"
+      },
+      {
+        "name": "lightimg",
+        "params": "<img1 url> <img2 url>",
+        "desc": "makes a new image using the lighter of the 2 pixels in each image for each pixel",
+        "date": "7/6/2020"
+      },
+      {
+        "name": "darkimg",
+        "params": "<img1 url> <img2 url>",
+        "desc": "makes a new image using the darker of the 2 pixels in each image for each pixel",
+        "date": "7/6/2020"
+      },
+      {
+        "name": "imgnoise",
+        "params": "<width> <height> <stdev>",
+        "desc": "generates a noise map <stdev> basically gives how noisy it is"
       }
     ]
   },

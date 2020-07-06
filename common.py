@@ -12,10 +12,11 @@ import os
 import math
 import statistics
 import re
-from PIL import Image, ImageFilter, ImageEnhance, ImageOps
+import sys
+from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont, ImageChops
 
 DELETE = "--delete"
-VERSION = "4.10.6"
+VERSION = "4.11"
 Stop = False
 
 playingGuessingGame = {}

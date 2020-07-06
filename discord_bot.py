@@ -240,7 +240,21 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False):
         cmd == "crop": cropImg,
         cmd == "imgborder": imgBorder,
         cmd in ["greyscale", "grayscale"]: greyscale,
-        cmd == "invert": invert
+        cmd == "invert": invert,
+        cmd == "newimg": newImg,
+        cmd == "rectangle": rectangle,
+        cmd == "imgtext": imgText,
+        cmd == "imgarc": imgArc,
+        cmd == "ellipse": ellipse,
+        cmd == "imgpoint": point,
+        cmd == "line": line,
+        cmd in ["polygon", "polyg", "poly"]: polygon,
+        cmd == "compileimg": compileImgs,
+        cmd == "colorize": colorize,
+        cmd == "imgdiff": imgDiff,
+        cmd == "lightimg": lightImg,
+        cmd == "darkimg": darkImg,
+        cmd == "imgnoise": imgNoise
     }
 
     CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()

@@ -1,3 +1,24 @@
+4.11 (The Imageinator update) (7/6/2020)
+
+ADDITIONS:
+*newimg, creates an image
+*rectangle, draws a rectangle on an image
+*imgarc, draws an arc on an image
+*ellipse, dras a circle
+*line, draws a line
+*point, puts a point on an img
+*polygon, draws a polygon
+*enhance now has autocontrast
+*imgdiff, finds the difference between 2 images
+*lightimg, makes an image with the lightest pixel of each pixel in the 2 images
+*darkimg, same as lightimg but the darker of the 2 pixels
+*imgnoise, generates a noise map
+*you can put a number after a filter in filterimg, and it will do the previous filter that many times
+
+CHANGES:
+*help [category] no longer gives the parameters for each command, unless the category is custom or unless it gives a file
+
+====================================================================
 4.10.6 (7/5/2020)
 
 ADDITIONS:
