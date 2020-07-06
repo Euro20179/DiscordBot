@@ -2310,22 +2310,22 @@ async def polygon(msg, content, cmd="poly"):
         if "-fill" in params:
             if Rgba:
                 FR, FG, FB = params[params.index("-fill") + 1 : params.index("-fill") + 5]
+                XYS.remove(FA)
             else:
                 FR, FG, FB = params[params.index("-fill") + 1 : params.index("-fill") + 4]
             XYS.remove(FR)
             XYS.remove(FG)
             XYS.remove(FB)
-            XYS.remove(FA)
             XYS.remove("-fill")
         if "-outline" in params:
             if Rgba:
                 OR, OG, OB = params[params.index("-outline") + 1 : params.index("-outline") + 5]
+                XYS.remove(OA)
             else:
                 OR, OG, OB = params[params.index("-outline") + 1 : params.index("-outline") + 4]
             XYS.remove(OR)
             XYS.remove(OG)
             XYS.remove(OB)
-            XYS.remove(OA)
             XYS.remove("-outline")
 
         newXYS = [""]
