@@ -17,6 +17,8 @@ async def on_ready():
 async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
     global CUSTOMCMDS, CATS, CMDLIST, BOTMODS
 
+    async with msg.channel.typing():
+
     DOFIRST = f'--{layer} ' #DEPRICATED
     if DOFIRST in content: #DEPRICATED
         c = await runCommand(msg, content.split(DOFIRST)[1], splitContent(content, DOFIRST, index=1).split(" ")[0][1:], layer=layer + 1, DoFirst=True) #DEPRICATED
