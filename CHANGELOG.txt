@@ -1,3 +1,9 @@
+4.13.5? (7/6/2020)
+
+ADDITIONS:
+*imgband, seperates the image into r, g, b, a and gives the band provided
+
+====================================================================
 4.13.5 (7/6/2020)
 
 CHANGES:

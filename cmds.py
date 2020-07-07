@@ -2461,3 +2461,28 @@ async def sortImg(msg, content, cmd="sortimg"):
     with open(filename, "rb") as i:
         await msg.channel.send(file=discord.File(i, filename=filename))
     os.remove(filename)
+
+async def imgBand(msg, content, cmd="imgband"):
+    content = content[len(cmd) + 2:].split(" ")
+    content = " ".join(content[0])
+    content = content.split("+")
+    att, filename, url = await getImg(msg)
+    if "https://" in content:
+        content = content.replace(url, '')
+    await saveImg(filename, url)
+    bands = [c.strip() for c in content]
+    img = Image.open(filename)
+    img = img.convert("RGBA")
+    r, g, B, a = img.split()
+    band = []
+    for b in bands:
+        if b.strip() == "r": band.append(r)
+        elif b.strip() == "g": band.append(g)
+        elif b.strip() == 'b': band.append(B)
+        elif b.strip() == "a": band.append(a)
+    for n, b in enumerate(band):
+        b.save(f'{msg.author.id}{n}.png')  
+    for n, b in enumerate(band):
+        with open(f'{msg.author.id}{n}.png', "rb") as i:
+            await msg.channel.send(file=discord.File(i, filename=f'{msg.author.id}{n}.png'))
+        os.remove(f'{msg.author.id}{n}.png')

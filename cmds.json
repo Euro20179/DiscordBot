@@ -471,6 +471,12 @@
         "params": "<sort by> <img>",
         "desc": "sorts image by sort by\nsort by can be wtb, btw, r, g, b, custom\ncustom you give python code for example:\npx[0] will sort by red, px[0] <= px[1] will sort if red is <= green",
         "date": "7/6/2020"
+      },
+      {
+        "name": "imgband",
+        "params": "<band> (band can be r,g,b, or a) (if you want more than one band do <band1>+<band2>..)",
+        "desc": "gives the band of the image, if r is given, it will give the red band",
+        "date": "7/6/2020"
       }
     ]
   },
