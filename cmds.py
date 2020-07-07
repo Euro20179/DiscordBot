@@ -313,7 +313,7 @@ async def spamCmd(msg, content, cmd="spam"):
     if testInContent(c, "-random"):
         c = c.replace("-random", "")
         c = c[c.find(str(messages)) + len(str(messages)):]
-        options = c.split(", ")
+        options = c.split("|")
         return await spam(msg, int(messages), options)
 
     message = c[c.find(str(messages)) + len(str(messages)):]
@@ -457,7 +457,7 @@ async def startRPS(msg, content, cmd="rps"):
     else: await msg.channel.send("either someone spelled something wrong, or someone isn't playing by the rules")
 
 async def complexMessage(msg, content, cmd="complexmessage"):
-    c = splitContent(content.lower(), cmd, index=1).split(", ")
+    c = splitContent(content.lower(), cmd, index=1).split("|")
     try: await msg.delete()
     except: pass
     try:
@@ -699,7 +699,7 @@ async def count(msg, content, cmd="count"):
     else: await channel.send(f'.{highest}.')
 
 async def choose(msg, content, cmd="choose"):
-    options = splitContent(content, f'{cmd} ')[1].split(", ")
+    options = splitContent(content, f'{cmd} ')[1].split("|")
     PICKS = "-picks "
     picks = 1
     for op in options:
@@ -898,7 +898,7 @@ async def changes(msg, content, cmd="changes"):
 
 async def hexBinOct(msg, content, cmd="hex"):
     content = splitContent(content, cmd + " ")[1]
-    num = list(map(lambda n: int(n), content.split(", "))) if ", " in content else [int(content)]
+    num = list(map(lambda n: int(n.strip()), content.split("|"))) if "|" in content else [int(content)]
     repWith = {"hex": "0x", "bin": "0b", "oct": "0o", "tobase": ""}[cmd]
     ans = list(map(lambda n: str(hex(n)).replace(repWith, ""), num))
     return await msg.channel.send(", ".join(ans))
@@ -1192,11 +1192,11 @@ async def addCustomCmd(msg, content, cmd="customcmd"):
         Locked = True
         content = content.replace("--lock", "")
     else: Locked = False
-    c = splitContent(content, ", ")
+    c = splitContent(content, "|")
     name = c[0][len(cmd) + 2:].strip()
     c.pop(0)
     if " " in name: return await msg.channel.send("no spaces in command names")
-    say = ", ".join(c)
+    say = "|".join(c)
     with open(customcmdsFilePath, "r+") as j:
         data = json.load(j)
         for cmd in data:
@@ -1562,8 +1562,8 @@ async def customCmdList(msg, content, cmd="customcmdlist"):
 async def editCustomCmd(msg, content, cmd="eccmd"):
     global BOTMODS
     BOTMODS = reloadBOTMODS()
-    lookFor = content.split(", ")[0][len(cmd) + 2:].strip()
-    changeTo = content.split(", ")[1:]
+    lookFor = content.split("|")[0][len(cmd) + 2:].strip()
+    changeTo = content.split("|")[1:]
     changeTo = ", ".join(changeTo)
     with open(customcmdsFilePath, "r+") as j:
         data = json.load(j)
@@ -1700,13 +1700,13 @@ async def setStatus(msg, content, cmd="status"):
 async def imageInfo(msg, content, cmd="imginfo"):
     att, *_ = await getImg(msg)
     
-    embed = discord.Embed(title=att.filename)
-    embed.add_field(name="id", value=att.id)
-    embed.add_field(name="file size", value=att.size)
-    embed.add_field(name="width", value=att.width)
-    embed.add_field(name="height", value=att.height)
-    embed.add_field(name="url", value=att.url)
-    embed.add_field(name="spoiler?", value=att.is_spoiler())
+    embed = discord.Embed(title=att.filename if att.filename else "UNKNOWN.img")
+    embed.add_field(name="id", value=att.id if att.id else "UNKOWN")
+    embed.add_field(name="file size", value=att.size if att.size else "UNKOWN")
+    embed.add_field(name="width", value=att.width if att.width else "UNKOWN")
+    embed.add_field(name="height", value=att.height if att.height else "UNKOWN")
+    embed.add_field(name="url", value=att.url if att.url else "UNKOWN")
+    embed.add_field(name="spoiler?", value=att.is_spoiler)
     mssg = await msg.channel.send(embed=embed)
     return await embedToReadableDict(mssg, embed)
 

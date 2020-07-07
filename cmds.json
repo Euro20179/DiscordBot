@@ -166,7 +166,7 @@
       },
       {
         "name": "spam",
-        "params": "<amount> <message> (--c/--count)  OR (-random <op1> <op2>)\n{count} will say what message it's on",
+        "params": "<amount> <message> (--c/--count)  OR (-random <op1>|<op2>)\n{count} will say what message it's on",
         "desc": "spams <message> <amount> times\n-random sends op1 or op2 randomly each time",
         "date": "11/6/19"
       },
@@ -486,7 +486,7 @@
     "cmds": [
       {
         "name": "customcmd",
-        "params": "<cmd name>, <say> (--locked)",
+        "params": "<cmd name>|<say> (--locked)",
         "desc": "when [<cmd name> is typed it'll say <say> --locked only allows botmods to change a command\n{content} will replace with the message of who did cmd\n{version} will replace with the bot's version\n{uptime} will replace with the bot's uptime",
         "date": "6/11/2020",
         "aliases": ["accmd", "customcommand"]
@@ -506,7 +506,7 @@
       },
       {
         "name": "eccmd",
-        "params": "<cmd name>, <say> (--lock)",
+        "params": "<cmd name>|<say> (--lock)",
         "desc": "edits <cmd> to say <say>\ndo just --lock to lock/unlock a command",
         "date": "6/13/2020"
       }
@@ -599,7 +599,7 @@
       },
       {
         "name": "choose",
-        "params": "*<from> (sep with commas) (-picks <amount>)",
+        "params": "*<from> (sep with |) (-picks <amount>)",
         "desc": "chooses -picks amount of <from>, defaults to 1 pick",
         "date": "5/6/2020"
       },
@@ -617,7 +617,7 @@
       },
       {
         "name": "bin",
-        "params": "*<num> (sep with commas)",
+        "params": "*<num> (sep with |)",
         "desc": "gives the binary form of each <num> (base 2)",
         "date": "5/21/2020"
       },
@@ -629,13 +629,13 @@
       },
       {
         "name": "hex",
-        "params": "*<num> (sep with commas)",
+        "params": "*<num> (sep with |)",
         "desc": "gives the hexidecimal form of each <num> (base 16)",
         "date": "5/21/2020"
       },
       {
         "name": "oct",
-        "params": "*<num> (sep with commas)",
+        "params": "*<num> (sep with |)",
         "desc": "gives the oct form of each <num> (base 8)",
         "date": "5/27/2020"
       },
