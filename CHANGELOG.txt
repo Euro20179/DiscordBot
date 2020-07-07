@@ -1,3 +1,24 @@
+4.13.6 (7/7/2020)
+
+CHANGES:
+*a bunch of commands use | as a seperator instead of , 
+    *choose
+    *spam -random
+    *message
+    *complexmessage
+    *accmd
+    *eccmd
+    *hex
+    *bin
+    *oct
+
+FIXES:
+*imginfo
+*imginfo will now always have a title even if the image doesn't have a name
+    *if it doesn't have a name the title will be UNKOWN.img
+    *it'll also say unknown for anything that it doesn't know, except spoiler which is Embed.Empty
+
+====================================================================
 4.13.5? (7/6/2020)
 
 ADDITIONS:
