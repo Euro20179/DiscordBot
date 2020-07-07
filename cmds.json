@@ -407,7 +407,11 @@
         "name": "polygon",
         "params": "<x1> <y1> <x2> <y2> *[<x> <y>] (-fill <r> <g> <b>) (-outline <r> <g> <b>) (--rgba (provide a with rgb if specified)) <img>",
         "desc": "draws a polygon",
-        "date": "7/5/2020"
+        "date": "7/5/2020",
+        "aliases":[
+          "poly",
+          "polyg"
+        ]
       },
       {
         "name": "addimg",
