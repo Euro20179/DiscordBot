@@ -19,310 +19,310 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
 
     async with msg.channel.typing():
 
-    DOFIRST = f'--{layer} ' #DEPRICATED
-    if DOFIRST in content: #DEPRICATED
-        c = await runCommand(msg, content.split(DOFIRST)[1], splitContent(content, DOFIRST, index=1).split(" ")[0][1:], layer=layer + 1, DoFirst=True) #DEPRICATED
-        await c.delete() #DEPRICATED
-        content = f'{content.split(f" {DOFIRST}")[0]} {c.content}'#DEPRICATED
-        msg = c #DEPRICATED
-        layer += 1 #DEPRICATED 
+        DOFIRST == f'--{layer} ' #DEPRICATED
+        if DOFIRST in content: #DEPRICATED
+            c = await runCommand(msg, content.split(DOFIRST)[1], splitContent(content, DOFIRST, index=1).split(" ")[0][1:], layer=layer + 1, DoFirst=True) #DEPRICATED
+            await c.delete() #DEPRICATED
+            content = f'{content.split(f" {DOFIRST}")[0]} {c.content}'#DEPRICATED
+            msg = c #DEPRICATED
+            layer += 1 #DEPRICATED 
 
-    if "/{" in content:
-        interpateCount = len(content.split("/{"))
-        if len(content.split("}")) != interpateCount:
-            if len(content.split("}")) < len(content.split("{")):
-                return await msg.channel.send("Syntax Error missing }")
-            return await msg.channel.send("Syntax Error missing /{")
-        while True:
-            cmds = [x.split("}")[0] for x in content.split("/{")]
-            if not cmds: break
-            cmds.reverse()
-            cmds = cmds[:-1]
-            try: cmd = cmds[0]
-            except IndexError: break
-            mssg = await runCommand(msg, f'{PREFIX}{cmd.strip("_")}', cmd=cmd.split(" ")[0].strip().strip("_"), DoFirst=True)
-            await mssg.delete()
-            content = content.replace("/{" + cmd + "}", mssg.content)
-        return await runCommand(msg, f'{content}', content.split(" ")[0][1:])
+        if "/{" in content:
+            interpateCount = len(content.split("/{"))
+            if len(content.split("}")) != interpateCount:
+                if len(content.split("}")) < len(content.split("{")):
+                    return await msg.channel.send("Syntax Error missing }")
+                return await msg.channel.send("Syntax Error missing /{")
+            while True:
+                cmds = [x.split("}")[0] for x in content.split("/{")]
+                if not cmds: break
+                cmds.reverse()
+                cmds = cmds[:-1]
+                try: cmd = cmds[0]
+                except IndexError: break
+                mssg = await runCommand(msg, f'{PREFIX}{cmd.strip("_")}', cmd=cmd.split(" ")[0].strip().strip("_"), DoFirst=True)
+                await mssg.delete()
+                content = content.replace("/{" + cmd + "}", mssg.content)
+            return await runCommand(msg, f'{content}', content.split(" ")[0][1:])
 
-    with open(commandusageFilePath, "r+") as j:
-        data = json.load(j)
-        try: data[cmd] += 1
-        except: data[cmd] = 1
-        clearFile(j)
-        json.dump(data, j)
-        
-    if cmd == "timeit":
-        start = time.time()
-        await runCommand(msg, content.replace(f'{PREFIX}timeit ', ""), splitContent(content, "timeit ", index=1).split(" ")[0][1:])
-        return await msg.channel.send(time.time() - start)
-
-    elif cmd == "ADDMONEY" and msg.author.id == EUROID:
-        user = await getUserInContent(msg, content.split(", ")[0], cmd)
-        amnt = content.split(", ")[1]
-        await addMoney(user, float(amnt))
-        return await msg.channel.send(f'{float(amnt)} removed from {user.name}')
-
-    elif cmd == "ADDBOTMOD" and msg.author.id == EUROID:
-        user = await getUserInContent(msg, content, cmd)
-        with open(botModsFilePath, "r+") as f:
-            if f.read():
-                MODS = f.read().split("\n")
-                if user.id in MODS:
-                    return await msg.channel.send(f'{user.name} already a mod')
-            f.write(f'{user.id}\n')
-        BOTMODS = reloadBOTMODS()
-        return await msg.channel.send(f'added {user.name} as a bot mod')
-
-    elif cmd == "REMOVEBOTMOD" and msg.author.id == EUROID:
-        user = await getUserInContent(msg, content, cmd)
-        with open(botModsFilePath, "r+") as f:
-            MODS = f.read().split("\n")
-            try: MODS.remove(str(user.id))
-            except: return await msg.channel.send(f'{user.name} not a mod')
-            clearFile(f)
-            f.write("\n".join(MODS))
-        BOTMODS = reloadBOTMODS()
-        return await msg.channel.send(f'removed {user.name} from bot mod')
-
-    elif cmd == "ENDPLS" and str(msg.author.id) in BOTMODS:
-        await msg.channel.send("Logging out")
-        await client.logout()
-
-    elif cmd == "bans":
-        if not testInContent(content, "--raw"):
-            with open(bannedFilePath, "r+") as bannedJ:
-                data = json.load(bannedJ)
-                mssg = "".join([f'{(await client.fetch_user(int(user))).name}: {data[user]}\n' for user in data.keys()])
-                try: return await msg.channel.send(mssg)
-                except: pass
-        with open(bannedFilePath, "rb") as bannedJ:
-            return await msg.channel.send(file=discord.File(bannedJ, "bans.json"))
-
-    elif cmd == "BAN" and str(msg.author.id) in BOTMODS:
-        user = await getUserInContent(msg, " ".join(content.split(" ")[0:2]), cmd)
-        banFrom = splitContent(content, " ", index=2)
-        with open(bannedFilePath, "r+") as bannedJ:
-            data = json.load(bannedJ)
-            if data.get(str(user.id)):
-                data[str(user.id)].append(banFrom)
-            else: data[str(user.id)] = [banFrom]
-            clearFile(bannedJ)
-            json.dump(data, bannedJ)
-            return await msg.channel.send(f'banned {user.name} from {banFrom}')
-
-    elif cmd == "UNBAN" and str(msg.author.id) in BOTMODS:
-        user = await getUserInContent(msg, " ".join(content.split(" ")[0:2]), cmd)
-        unbanFrom = splitContent(content, " ", index=2)
-        with open(bannedFilePath, "r+") as bannedJ:
-            data = json.load(bannedJ)
-            if data.get(str(user.id)):
-                data[str(user.id)].remove(unbanFrom)
-            else: return await msg.channel.send("did not find user")
-            clearFile(bannedJ)
-            json.dump(data, bannedJ)
-            return await msg.channel.send(f'unbanned {user.name} from {unbanFrom}')
-
-    elif cmd == "CHANGELVLMSG" and str(msg.author.id) in BOTMODS:
-        user = await getUserInContent(msg, content, cmd)
-        with open(levelingDataFilePath, "r+") as j:
-            data = json.load(j)
-            try:
-                await msg.channel.send("to what?") 
-                changeTo = await client.wait_for("message", check=lambda message: message.author.id == msg.author.id, timeout=60.0)
-            except: return await msg.channel.send("failed")
-            userData = data[str(user.id)]
-            userData["message"] = changeTo.content
-            clearFile(j)
-            json.dump(data, j)
-            return await msg.channel.send("changed")
-
-    elif cmd == "CHANGEPR" and str(msg.author.id) in BOTMODS:
-        user = await getUserInContent(msg, content, cmd)
-        with open(pingResponseFilePath, "r+") as j:
-            data = json.load(j)
-            try:
-                await msg.channel.send("to what?") 
-                changeTo = await client.wait_for("message", check=lambda message: message.author.id == msg.author.id, timeout=60.0)
-            except Exception as e: 
-                print(e)
-                return await msg.channel.send("failed")
-            if changeTo.content.lower() == "none":
-                del data[str(user.id)]
-            else:
-                if data.get(str(user.id)):
-                    data[str(user.id)]["response"] = changeTo.content
-                else:
-                    data[str(user.id)] = {"response": changeTo.content, "when": ["offline"]}
-            clearFile(j)
-            json.dump(data, j)
-            return await msg.channel.send("changed")
-
-    cmds = {
-        cmd == "echo": echo,
-        cmd == "iq": iq, 
-        cmd in ["magicball", "8ball", "7ball"]: magicBall, 
-        cmd in ["level", "rank", "lvl"]: level, 
-        cmd in ["top", "leaderboard", "levels", "lb"]: leaderboard, 
-        cmd == "timers": timers, 
-        cmd == "ping": ping, 
-        cmd == "help": hlp, 
-        cmd in ["commandusage", "cmduse", "cmdusage", "commanduse"]: cmdUsage, 
-        cmd in ["findans", "equation", "result", "eval", "calc"]: calc, 
-        cmd == "shrug": shrug, 
-        cmd == "spam": spamCmd, 
-        cmd in ["randomface","randface", "rface"]: randomFace, 
-        cmd in ["mmoney", "mymoney", "money", "bal"]: mmoney, 
-        cmd in ["ucodechar", "unicodechar"]: unicodeChar, 
-        cmd == "serveremote": serverEmote, 
-        cmd == "doesnothing": writeRoles, 
-        cmd == "spacer": spacer, 
-        cmd in ["upperlower", "ul"]: upperLower, 
-        cmd in ["rps", "rockpaperscissors"]: startRPS, 
-        cmd in ["complexmessage", "message"]: complexMessage, 
-        cmd == "sanity": sanity, 
-        cmd == "coin": coin, 
-        cmd == "roleinfo": roleInfo, 
-        cmd == "rand": rand, 
-        cmd == "rolecount": roleCount, 
-        cmd in ["comproles", "compareroles"]: compareRoles, 
-        cmd == "family": family, 
-        cmd == "mballreply": mballreply, 
-        cmd == "8brdel": mballDel, 			
-        cmd == "count": count, 
-        cmd == "choose": choose, 
-        cmd in ["mballreplylist", "8ballreplylist", "8breplylist", "8brlist"]: mball, 
-        cmd in ["piglatin", "igpayatinlay"]: pigLatin, 
-        cmd == "mostroles": mostRoles, 
-        cmd == "clear": clear, 
-        cmd == "color": color, 
-        cmd == "servericon": serverIcon, 
-        cmd in ["cc", "channelcreated", "channelinfo", "ci"]: channelInfo, 
-        cmd == "changes": changes, 					
-        cmd in ["hex", "bin", "oct"]: hexBinOct, 
-        cmd == "response": response, 
-        cmd in ["stopwatch", "timer"]: stopwatch, 
-        cmd == "lvlmsg": levelMessage, 
-        cmd == "emoteinfo": emoteInfo, 
-        cmd == "clearinvites": ridInvites, 
-        cmd == "typefor": typeFor, 
-        cmd == "hangman": hangman, 
-        cmd == "sendblank": sendBlank, 
-        cmd == "serverinfo": serverInfo, 
-        cmd == "pokemon": pokemon, 
-        cmd == "userinfo": userInfo, 
-        cmd in ["msginfo", "messageinfo"]: messageInfo, 
-        cmd == "fetchrole": fetchRole, 
-        cmd == "categoryinfo": categoryInfo, 
-        cmd in ["alphabet", "alpha", "beta", "gamma", "delta", "epsilon", "zeta", "eta", "theta", "iota", "kappa", "lambda", "mu", "nu", "xi", "omicron", "pi", "rho", "sigma", "tau", "upsilon", "phi", "chi", "psi", "omega"]: alphabet, 
-        cmd == "spamstop": spamStop, 
-        cmd in ["hypixelpc", "hppc"]: hypixelPlayerCount, 
-        cmd in ["hypixelbans", "hpbans"]: hypixelBanStats,
-        cmd in ["hasrole", "whohas"]: whoHasRole, 
-        cmd in ["db", "deathbattle"]: INIT_deathBattle, 
-        cmd == "shop": shop, 
-        cmd in ["buyitem", "buy"]: buyItem, 
-        cmd in ["inv", "inventory", "items"]: inventory, 
-        cmd in ["duplicator", "duplicate"]: duplicator,
-        cmd == "luckynumber": luckynumber,
-        cmd == "uptime": uptime,
-        cmd == "weightedcoin": weightedCoin,
-        cmd == "edit": editCmd,
-        cmd == "pingresponse": pingResponse,
-        cmd == "status": setStatus,
-        cmd == "imginfo": imageInfo,
-        cmd == "rotate": rotateImg,
-        cmd == "mirror": mirrorImg,
-        cmd in ["spreadpixels", "spreadpix"]: spreadPixels,
-        cmd == "filterimg": filterImg,
-        cmd in ["pixelcolor", "pxcolor"]: pixelColor,
-        cmd == "shrink": shrinkImg,
-        cmd == "resize": resizeImg,
-        cmd == "enhance": enhanceImg,
-        cmd == "crop": cropImg,
-        cmd == "imgborder": imgBorder,
-        cmd in ["greyscale", "grayscale"]: greyscale,
-        cmd == "invert": invert,
-        cmd == "newimg": newImg,
-        cmd == "rectangle": rectangle,
-        cmd == "imgtext": imgText,
-        cmd == "imgarc": imgArc,
-        cmd == "ellipse": ellipse,
-        cmd == "imgpoint": point,
-        cmd == "line": line,
-        cmd in ["polygon", "polyg", "poly"]: polygon,
-        cmd in ["compileimg", "combineimg", "addimg"]: compileImgs,
-        cmd == "colorize": colorize,
-        cmd == "imgdiff": imgDiff,
-        cmd == "lightimg": lightImg,
-        cmd == "darkimg": darkImg,
-        cmd == "imgnoise": imgNoise,
-        cmd == "convertimg": convertImg,
-        cmd == "sortimg": sortImg
-    }
-
-    CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
-    case = cmds.get(True)
-    if case:
-        content = await case(msg, content, cmd=cmd)
-
-    elif cmd == "botmods": 
-        BOTMODS = reloadBOTMODS()
-        content = await oneLineCmd(msg, "\n".join([(await getUserInContent(msg, f'ok {i}', "ok")).name for i in BOTMODS[:-1]]))
-    elif cmd == "tof": content = await oneLineCmd(msg, 9 / 5 * float(splitContent(content, cmd + " ", index=1)) + 32)
-    elif cmd == "avatar": content = await oneLineCmd(msg, (await getUserInContent(msg, content, cmd)).avatar_url)
-    elif cmd == "fetchuser": content = await oneLineCmd(msg, (await client.fetch_user(int(splitContent(content, f'{cmd} ', index=1)))).name)
-    elif cmd == "fetchchannel": content = await oneLineCmd(msg, (await client.fetch_channel(int(splitContent(content, f'{cmd} ', index=1)))).name)
-    elif cmd == "toc": content = await oneLineCmd(msg, 5 / 9 * (float(splitContent(content, cmd + " ", index=1)) - 32))
-    elif cmd in ["thepenguincommand", "tpc", "thewavecommand", "twc"]: await oneLineCmd(msg, random.choice(("very nice!", "very cool!", "<:TiredPuffle:707773683854213140>")))
-    elif cmd == "reverse": content = await oneLineCmd(msg, splitContent(content, f'{cmd} ')[1][::-1])
-    elif cmd == "imscared": content = await oneLineCmd(msg, random.choice(("don't be :smiling_imp:", "oh it's ok :)))))))))))))))))", "just don't pay attention of the sounds coming from your attic.....\nit's ok", "it's ok... he's comming :)")))
-    elif cmd == "doihavecovid": content = await oneLineCmd(msg, "yes" if random.random() < .995 else "no")
-    elif cmd in ["ship", "boat", "boip"]: content = await oneLineCmd(msg, "DISCLAIMER: I DO NOT SUPPORT SHIPPING PEOPLE IN ANY WAY, HOWEVER MY MASTER SEEMS TO HAVE OTHER PLANS" if random.random() >= .985 else f'{splitContent(content, ", ")[0].replace("[" + cmd + " ", "")[0:len(splitContent(content, ", ")[0].replace("[" + cmd + " ", "")) // 2]}{splitContent(content, ", ")[1][len(splitContent(content, ", ")[1]) // 2:]}')
-    elif cmd in ["ttc", "thetroycommand"]: content = await oneLineCmd(msg, random.choice(("meow", "7", "**7**", "*7*", "mo", "<:TiredPuffle:707773683854213140>")))
-    elif cmd == "longmessage": content = await oneLineCmd(msg, "```````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````hI```````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````")
-    elif cmd in ["wiki", "wikipedia"]: content = await oneLineCmd(msg, f'https://en.wikipedia.org/wiki/Special:Search?search={content[len(cmd) + 2:].replace(" ", "_")}')
-
-    elif cmd in ["eccmd", "editcustomcmd"]:
-        content = await editCustomCmd(msg, content, cmd=cmd)
-        CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
-    elif cmd in ["customcmd", "accmd", "customcommand"]: 
-        content = await addCustomCmd(msg, content, cmd=cmd)
-        CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
-    elif cmd in ["removecustomcmd", "delcustomcmd", "dccmd", "rccmd"]: 
-        content = await removeCustomCmd(msg, content, cmd=cmd)
-        CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
-    elif cmd == "customcmdlist": await customCmdList(msg, content, cmd=cmd)
-    elif cmd in CUSTOMCMDS.keys(): 
-        content = CUSTOMCMDS[cmd].replace("{content}", content[len(cmd) + 2:]).replace("{version}", VERSION).replace("{author}", msg.author.mention).replace("{uptime}", str((await formatSeconds(time.time() - UPTIME))[0]))       
-        interpateCount = len(content.split("{"))
-        if len(content.split("}")) != interpateCount:
-            if len(content.split("}")) < len(content.split("{")):
-                return await msg.channel.send("Syntax Error missing }")
-            return await msg.channel.send("Syntax Error missing {")
-        while True:
-            cmds = [x.split("}")[0] for x in content.split("{")]
-            if not cmds: break
-            cmds.reverse()
-            cmds = cmds[:-1]
-            try: cmd = cmds[0]
-            except IndexError: break
-            mssg = await runCommand(msg, f'{PREFIX}{cmd.strip("_")}', cmd=cmd.split(" ")[0].strip().strip("_"))
-            await mssg.delete()
-            content = content.replace("{" + cmd + "}", mssg.content)
-        content = await oneLineCmd(msg, content)
-
-    elif cmd == "upupdowndownleftrightleftright":
-        return await msg.channel.send("what do you think this is some arcade machine with secret codes, lol")
-
-    elif cmd not in CMDLIST and not Iscmd: 
         with open(commandusageFilePath, "r+") as j:
             data = json.load(j)
-            del data[cmd]
+            try: data[cmd] += 1
+            except: data[cmd] = 1
             clearFile(j)
             json.dump(data, j)
-        content = await msg.channel.send(f'{cmd} {random.choice(("is not a thing", "does not exist"))}')
-    return content
+            
+        if cmd == "timeit":
+            start = time.time()
+            await runCommand(msg, content.replace(f'{PREFIX}timeit ', ""), splitContent(content, "timeit ", index=1).split(" ")[0][1:])
+            return await msg.channel.send(time.time() - start)
+
+        elif cmd == "ADDMONEY" and msg.author.id == EUROID:
+            user = await getUserInContent(msg, content.split(", ")[0], cmd)
+            amnt = content.split(", ")[1]
+            await addMoney(user, float(amnt))
+            return await msg.channel.send(f'{float(amnt)} removed from {user.name}')
+
+        elif cmd == "ADDBOTMOD" and msg.author.id == EUROID:
+            user = await getUserInContent(msg, content, cmd)
+            with open(botModsFilePath, "r+") as f:
+                if f.read():
+                    MODS = f.read().split("\n")
+                    if user.id in MODS:
+                        return await msg.channel.send(f'{user.name} already a mod')
+                f.write(f'{user.id}\n')
+            BOTMODS = reloadBOTMODS()
+            return await msg.channel.send(f'added {user.name} as a bot mod')
+
+        elif cmd == "REMOVEBOTMOD" and msg.author.id == EUROID:
+            user = await getUserInContent(msg, content, cmd)
+            with open(botModsFilePath, "r+") as f:
+                MODS = f.read().split("\n")
+                try: MODS.remove(str(user.id))
+                except: return await msg.channel.send(f'{user.name} not a mod')
+                clearFile(f)
+                f.write("\n".join(MODS))
+            BOTMODS = reloadBOTMODS()
+            return await msg.channel.send(f'removed {user.name} from bot mod')
+
+        elif cmd == "ENDPLS" and str(msg.author.id) in BOTMODS:
+            await msg.channel.send("Logging out")
+            await client.logout()
+
+        elif cmd == "bans":
+            if not testInContent(content, "--raw"):
+                with open(bannedFilePath, "r+") as bannedJ:
+                    data = json.load(bannedJ)
+                    mssg = "".join([f'{(await client.fetch_user(int(user))).name}: {data[user]}\n' for user in data.keys()])
+                    try: return await msg.channel.send(mssg)
+                    except: pass
+            with open(bannedFilePath, "rb") as bannedJ:
+                return await msg.channel.send(file=discord.File(bannedJ, "bans.json"))
+
+        elif cmd == "BAN" and str(msg.author.id) in BOTMODS:
+            user = await getUserInContent(msg, " ".join(content.split(" ")[0:2]), cmd)
+            banFrom = splitContent(content, " ", index=2)
+            with open(bannedFilePath, "r+") as bannedJ:
+                data = json.load(bannedJ)
+                if data.get(str(user.id)):
+                    data[str(user.id)].append(banFrom)
+                else: data[str(user.id)] = [banFrom]
+                clearFile(bannedJ)
+                json.dump(data, bannedJ)
+                return await msg.channel.send(f'banned {user.name} from {banFrom}')
+
+        elif cmd == "UNBAN" and str(msg.author.id) in BOTMODS:
+            user = await getUserInContent(msg, " ".join(content.split(" ")[0:2]), cmd)
+            unbanFrom = splitContent(content, " ", index=2)
+            with open(bannedFilePath, "r+") as bannedJ:
+                data = json.load(bannedJ)
+                if data.get(str(user.id)):
+                    data[str(user.id)].remove(unbanFrom)
+                else: return await msg.channel.send("did not find user")
+                clearFile(bannedJ)
+                json.dump(data, bannedJ)
+                return await msg.channel.send(f'unbanned {user.name} from {unbanFrom}')
+
+        elif cmd == "CHANGELVLMSG" and str(msg.author.id) in BOTMODS:
+            user = await getUserInContent(msg, content, cmd)
+            with open(levelingDataFilePath, "r+") as j:
+                data = json.load(j)
+                try:
+                    await msg.channel.send("to what?") 
+                    changeTo = await client.wait_for("message", check=lambda message: message.author.id == msg.author.id, timeout=60.0)
+                except: return await msg.channel.send("failed")
+                userData = data[str(user.id)]
+                userData["message"] = changeTo.content
+                clearFile(j)
+                json.dump(data, j)
+                return await msg.channel.send("changed")
+
+        elif cmd == "CHANGEPR" and str(msg.author.id) in BOTMODS:
+            user = await getUserInContent(msg, content, cmd)
+            with open(pingResponseFilePath, "r+") as j:
+                data = json.load(j)
+                try:
+                    await msg.channel.send("to what?") 
+                    changeTo = await client.wait_for("message", check=lambda message: message.author.id == msg.author.id, timeout=60.0)
+                except Exception as e: 
+                    print(e)
+                    return await msg.channel.send("failed")
+                if changeTo.content.lower() == "none":
+                    del data[str(user.id)]
+                else:
+                    if data.get(str(user.id)):
+                        data[str(user.id)]["response"] = changeTo.content
+                    else:
+                        data[str(user.id)] = {"response": changeTo.content, "when": ["offline"]}
+                clearFile(j)
+                json.dump(data, j)
+                return await msg.channel.send("changed")
+
+        cmds = {
+            cmd == "echo": echo,
+            cmd == "iq": iq, 
+            cmd in ["magicball", "8ball", "7ball"]: magicBall, 
+            cmd in ["level", "rank", "lvl"]: level, 
+            cmd in ["top", "leaderboard", "levels", "lb"]: leaderboard, 
+            cmd == "timers": timers, 
+            cmd == "ping": ping, 
+            cmd == "help": hlp, 
+            cmd in ["commandusage", "cmduse", "cmdusage", "commanduse"]: cmdUsage, 
+            cmd in ["findans", "equation", "result", "eval", "calc"]: calc, 
+            cmd == "shrug": shrug, 
+            cmd == "spam": spamCmd, 
+            cmd in ["randomface","randface", "rface"]: randomFace, 
+            cmd in ["mmoney", "mymoney", "money", "bal"]: mmoney, 
+            cmd in ["ucodechar", "unicodechar"]: unicodeChar, 
+            cmd == "serveremote": serverEmote, 
+            cmd == "doesnothing": writeRoles, 
+            cmd == "spacer": spacer, 
+            cmd in ["upperlower", "ul"]: upperLower, 
+            cmd in ["rps", "rockpaperscissors"]: startRPS, 
+            cmd in ["complexmessage", "message"]: complexMessage, 
+            cmd == "sanity": sanity, 
+            cmd == "coin": coin, 
+            cmd == "roleinfo": roleInfo, 
+            cmd == "rand": rand, 
+            cmd == "rolecount": roleCount, 
+            cmd in ["comproles", "compareroles"]: compareRoles, 
+            cmd == "family": family, 
+            cmd == "mballreply": mballreply, 
+            cmd == "8brdel": mballDel, 			
+            cmd == "count": count, 
+            cmd == "choose": choose, 
+            cmd in ["mballreplylist", "8ballreplylist", "8breplylist", "8brlist"]: mball, 
+            cmd in ["piglatin", "igpayatinlay"]: pigLatin, 
+            cmd == "mostroles": mostRoles, 
+            cmd == "clear": clear, 
+            cmd == "color": color, 
+            cmd == "servericon": serverIcon, 
+            cmd in ["cc", "channelcreated", "channelinfo", "ci"]: channelInfo, 
+            cmd == "changes": changes, 					
+            cmd in ["hex", "bin", "oct"]: hexBinOct, 
+            cmd == "response": response, 
+            cmd in ["stopwatch", "timer"]: stopwatch, 
+            cmd == "lvlmsg": levelMessage, 
+            cmd == "emoteinfo": emoteInfo, 
+            cmd == "clearinvites": ridInvites, 
+            cmd == "typefor": typeFor, 
+            cmd == "hangman": hangman, 
+            cmd == "sendblank": sendBlank, 
+            cmd == "serverinfo": serverInfo, 
+            cmd == "pokemon": pokemon, 
+            cmd == "userinfo": userInfo, 
+            cmd in ["msginfo", "messageinfo"]: messageInfo, 
+            cmd == "fetchrole": fetchRole, 
+            cmd == "categoryinfo": categoryInfo, 
+            cmd in ["alphabet", "alpha", "beta", "gamma", "delta", "epsilon", "zeta", "eta", "theta", "iota", "kappa", "lambda", "mu", "nu", "xi", "omicron", "pi", "rho", "sigma", "tau", "upsilon", "phi", "chi", "psi", "omega"]: alphabet, 
+            cmd == "spamstop": spamStop, 
+            cmd in ["hypixelpc", "hppc"]: hypixelPlayerCount, 
+            cmd in ["hypixelbans", "hpbans"]: hypixelBanStats,
+            cmd in ["hasrole", "whohas"]: whoHasRole, 
+            cmd in ["db", "deathbattle"]: INIT_deathBattle, 
+            cmd == "shop": shop, 
+            cmd in ["buyitem", "buy"]: buyItem, 
+            cmd in ["inv", "inventory", "items"]: inventory, 
+            cmd in ["duplicator", "duplicate"]: duplicator,
+            cmd == "luckynumber": luckynumber,
+            cmd == "uptime": uptime,
+            cmd == "weightedcoin": weightedCoin,
+            cmd == "edit": editCmd,
+            cmd == "pingresponse": pingResponse,
+            cmd == "status": setStatus,
+            cmd == "imginfo": imageInfo,
+            cmd == "rotate": rotateImg,
+            cmd == "mirror": mirrorImg,
+            cmd in ["spreadpixels", "spreadpix"]: spreadPixels,
+            cmd == "filterimg": filterImg,
+            cmd in ["pixelcolor", "pxcolor"]: pixelColor,
+            cmd == "shrink": shrinkImg,
+            cmd == "resize": resizeImg,
+            cmd == "enhance": enhanceImg,
+            cmd == "crop": cropImg,
+            cmd == "imgborder": imgBorder,
+            cmd in ["greyscale", "grayscale"]: greyscale,
+            cmd == "invert": invert,
+            cmd == "newimg": newImg,
+            cmd == "rectangle": rectangle,
+            cmd == "imgtext": imgText,
+            cmd == "imgarc": imgArc,
+            cmd == "ellipse": ellipse,
+            cmd == "imgpoint": point,
+            cmd == "line": line,
+            cmd in ["polygon", "polyg", "poly"]: polygon,
+            cmd in ["compileimg", "combineimg", "addimg"]: compileImgs,
+            cmd == "colorize": colorize,
+            cmd == "imgdiff": imgDiff,
+            cmd == "lightimg": lightImg,
+            cmd == "darkimg": darkImg,
+            cmd == "imgnoise": imgNoise,
+            cmd == "convertimg": convertImg,
+            cmd == "sortimg": sortImg
+        }
+
+        CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
+        case = cmds.get(True)
+        if case:
+            content = await case(msg, content, cmd=cmd)
+
+        elif cmd == "botmods": 
+            BOTMODS = reloadBOTMODS()
+            content = await oneLineCmd(msg, "\n".join([(await getUserInContent(msg, f'ok {i}', "ok")).name for i in BOTMODS[:-1]]))
+        elif cmd == "tof": content = await oneLineCmd(msg, 9 / 5 * float(splitContent(content, cmd + " ", index=1)) + 32)
+        elif cmd == "avatar": content = await oneLineCmd(msg, (await getUserInContent(msg, content, cmd)).avatar_url)
+        elif cmd == "fetchuser": content = await oneLineCmd(msg, (await client.fetch_user(int(splitContent(content, f'{cmd} ', index=1)))).name)
+        elif cmd == "fetchchannel": content = await oneLineCmd(msg, (await client.fetch_channel(int(splitContent(content, f'{cmd} ', index=1)))).name)
+        elif cmd == "toc": content = await oneLineCmd(msg, 5 / 9 * (float(splitContent(content, cmd + " ", index=1)) - 32))
+        elif cmd in ["thepenguincommand", "tpc", "thewavecommand", "twc"]: await oneLineCmd(msg, random.choice(("very nice!", "very cool!", "<:TiredPuffle:707773683854213140>")))
+        elif cmd == "reverse": content = await oneLineCmd(msg, splitContent(content, f'{cmd} ')[1][::-1])
+        elif cmd == "imscared": content = await oneLineCmd(msg, random.choice(("don't be :smiling_imp:", "oh it's ok :)))))))))))))))))", "just don't pay attention of the sounds coming from your attic.....\nit's ok", "it's ok... he's comming :)")))
+        elif cmd == "doihavecovid": content = await oneLineCmd(msg, "yes" if random.random() < .995 else "no")
+        elif cmd in ["ship", "boat", "boip"]: content = await oneLineCmd(msg, "DISCLAIMER: I DO NOT SUPPORT SHIPPING PEOPLE IN ANY WAY, HOWEVER MY MASTER SEEMS TO HAVE OTHER PLANS" if random.random() >= .985 else f'{splitContent(content, ", ")[0].replace("[" + cmd + " ", "")[0:len(splitContent(content, ", ")[0].replace("[" + cmd + " ", "")) // 2]}{splitContent(content, ", ")[1][len(splitContent(content, ", ")[1]) // 2:]}')
+        elif cmd in ["ttc", "thetroycommand"]: content = await oneLineCmd(msg, random.choice(("meow", "7", "**7**", "*7*", "mo", "<:TiredPuffle:707773683854213140>")))
+        elif cmd == "longmessage": content = await oneLineCmd(msg, "```````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````hI```````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````")
+        elif cmd in ["wiki", "wikipedia"]: content = await oneLineCmd(msg, f'https://en.wikipedia.org/wiki/Special:Search?search={content[len(cmd) + 2:].replace(" ", "_")}')
+
+        elif cmd in ["eccmd", "editcustomcmd"]:
+            content = await editCustomCmd(msg, content, cmd=cmd)
+            CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
+        elif cmd in ["customcmd", "accmd", "customcommand"]: 
+            content = await addCustomCmd(msg, content, cmd=cmd)
+            CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
+        elif cmd in ["removecustomcmd", "delcustomcmd", "dccmd", "rccmd"]: 
+            content = await removeCustomCmd(msg, content, cmd=cmd)
+            CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
+        elif cmd == "customcmdlist": await customCmdList(msg, content, cmd=cmd)
+        elif cmd in CUSTOMCMDS.keys(): 
+            content = CUSTOMCMDS[cmd].replace("{content}", content[len(cmd) + 2:]).replace("{version}", VERSION).replace("{author}", msg.author.mention).replace("{uptime}", str((await formatSeconds(time.time() - UPTIME))[0]))       
+            interpateCount = len(content.split("{"))
+            if len(content.split("}")) != interpateCount:
+                if len(content.split("}")) < len(content.split("{")):
+                    return await msg.channel.send("Syntax Error missing }")
+                return await msg.channel.send("Syntax Error missing {")
+            while True:
+                cmds = [x.split("}")[0] for x in content.split("{")]
+                if not cmds: break
+                cmds.reverse()
+                cmds = cmds[:-1]
+                try: cmd = cmds[0]
+                except IndexError: break
+                mssg = await runCommand(msg, f'{PREFIX}{cmd.strip("_")}', cmd=cmd.split(" ")[0].strip().strip("_"))
+                await mssg.delete()
+                content = content.replace("{" + cmd + "}", mssg.content)
+            content = await oneLineCmd(msg, content)
+
+        elif cmd == "upupdowndownleftrightleftright":
+            return await msg.channel.send("what do you think this is some arcade machine with secret codes, lol")
+
+        elif cmd not in CMDLIST and not Iscmd: 
+            with open(commandusageFilePath, "r+") as j:
+                data = json.load(j)
+                del data[cmd]
+                clearFile(j)
+                json.dump(data, j)
+            content = await msg.channel.send(f'{cmd} {random.choice(("is not a thing", "does not exist"))}')
+        return content
 
 @client.event
 async def on_message(msg):
