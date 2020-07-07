@@ -1,3 +1,9 @@
+4.14.0.1 (7/7/2020)
+
+CHANGES:
+*8ball now just says the answer without Answer: in front
+
+====================================================================
 4.14 (7/7/2020)
 
 ADDITIONS:
