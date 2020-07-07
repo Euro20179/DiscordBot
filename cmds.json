@@ -461,6 +461,12 @@
         "params": null,
         "desc": "andale_mono\narial\narial_black\narial_bold\narial_bold_italic\narial_italic\ncomic_sans_ms\ncomic_sans_ms_bold\ncourier_new\ncourier_new_bold\ncourier_new_bold_italic\ncourier_new_italic\ngeorgia\ngeorgia_bold\ngeorgia_bold_italic\nimpact\ntimes_new_roman\ntimes_new_roman_bold\ntimes_new_roman_bold_italic\ntimes_new_roman_italic\ntrebuchet_ms\ntrebuchet_ms_bold\ntrebuchet_ms_bold_italic\ntrebuchet_ms_italic\nverdana\nverdana_bold\nverdana_bold_italic\nverdana_italic\nwbdings",
         "date": "7/6/2020"
+      },
+      {
+        "name": "sortimg",
+        "params": "<sort by> <img>",
+        "desc": "sorts image by sort by\nsort by can be wtb, btw, r, g, b, custom\ncustom you give python code for example:\npx[0] will sort by red, px[0] <= px[1] will sort if red is <= green",
+        "date": "7/6/2020"
       }
     ]
   },

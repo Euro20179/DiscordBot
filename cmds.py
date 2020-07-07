@@ -2417,3 +2417,34 @@ async def convertImg(msg, content, cmd):
     with open(filename, "rb") as i:
         await msg.channel.send(file=discord.File(i, filename=filename))
     os.remove(filename)
+
+async def sortImg(msg, content, cmd="sortimg"):
+    content = content[len(cmd) + 2:].split(" ")
+    att, filename, url = await getImg(msg)
+    if "https://" in content:
+        content = content.replace(url, '')
+    await saveImg(filename, url)
+    sortBy = content[0]
+    img = Image.open(filename)
+    data = list(img.getdata())
+    if sortBy.lower() in ["btw", "ltd"]:
+        data.sort(key=lambda x: sum(x), reverse=True)
+    elif sortBy.lower() in ["wtb", "dtl"]:
+        data.sort(key=lambda x: sum(x))
+    elif sortBy.lower() in ["r", "red"]:
+        data.sort(key=lambda x: x[0], reverse=True)
+    elif sortBy.lower() in ["g", "green"]:
+        data.sort(key=lambda x: x[1], reverse=True)
+    elif sortBy.lower() in ["b", "blue"]:
+        data.sort(key=lambda x: x[2], reverse=True)
+    elif sortBy.lower() == "custom":
+        source = " ".join(content[1:])
+        if "help(" in source or "quit()" in source or "exit()" in source or "os." in source or "token" in source or "input(" in source or "sys." in source:
+            return await msg.channel.send("nice try")
+        code = compile(source, "", "eval")
+        data.sort(key=lambda px: eval(code), reverse=True)
+    img.putdata(data)
+    img.save(filename)  
+    with open(filename, "rb") as i:
+        await msg.channel.send(file=discord.File(i, filename=filename))
+    os.remove(filename)
