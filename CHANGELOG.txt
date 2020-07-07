@@ -1,3 +1,10 @@
+4.13.5 (7/6/2020)
+
+CHANGES:
+*the bot types for everything
+*typefor now says typed for <time>
+
+====================================================================
 4.13.4.1 (7/6/2020)
 
 CHANGES:

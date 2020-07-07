@@ -999,7 +999,7 @@ async def typeFor(msg, content, cmd="type"):
         return await msg.channel.send("sorry thats too long")
     async with msg.channel.typing():
         await asyncio.sleep(timeToType)
-    return await msg.channel.send(f'slept for {timeToType} seconds')
+    return await msg.channel.send(f'typed for {timeToType} seconds')
 
 async def sendBlank(msg, content, cmd="sendblank"):
     amnt = 5
