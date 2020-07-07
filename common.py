@@ -16,7 +16,7 @@ import sys
 from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont, ImageChops
 
 DELETE = "--delete"
-VERSION = "4.13.6"
+VERSION = "4.14"
 Stop = False
 
 playingGuessingGame = {}
@@ -87,7 +87,7 @@ async def imgInChat(msg, limit=20):
     else: return "USER"
     return att, filename, url
 
-async def getImg(msg, user=None):
+async def getImg(msg, user=None, NotFromChat=False):
     if "https://" in msg.content:
         att = None
         filename = "UNKNOWN.png"
@@ -96,7 +96,7 @@ async def getImg(msg, user=None):
         att = msg.attachments[0]
         filename = att.filename
         url = att.url
-    else: 
+    elif not NotFromChat: 
         tup = await imgInChat(msg)
         if tup != "USER":
             att, filename, url = tup
@@ -126,12 +126,17 @@ def isBot(msg, client)->bool:
 
 async def embedToReadableDict(msg, embed):
     d = embed.to_dict()
-    msg.content = d["title"] + "\n"
+    msg.content = str(d.get("title")) + "\n"
     for k in d.keys():
-        if k == "color" or k == "type": continue
+        if k == "type": continue
         if k == "fields":
             for field in d[k]:
                 msg.content += f'{field["name"]}: {field["value"]}\n'
+        if k == "image":
+            msg.content += f'{d[k]["url"]}\n'
+        if k == "color":
+            msg.content += f'Color: {d[k]}\n'
+    msg.content = discord.utils.escape_mentions(msg.content)
     return msg
 
 async def writeToFile(msg, content, F):
@@ -181,7 +186,8 @@ async def giveXP(msg : discord.Message)->None:
     if isBot(msg, client): return
     with open(levelingDataFilePath, "r+") as f:
         data = json.load(f)
-        userInfo = data.get(str(msg.author.id))
+        authorId = str(msg.author.id)
+        userInfo = data.get(authorId)
         if userInfo:
             lastTalked = int(userInfo["lastTalked"])
             if time.time() - lastTalked >= 60:
@@ -195,9 +201,10 @@ async def giveXP(msg : discord.Message)->None:
                 if xp >= required:
                     with open(moneyDataFilePath, "r+") as j:		
                         moneyData = json.load(j)
-                        if moneyData.get(str(msg.author.id)):
-                            moneyData[str(msg.author.id)] += int((level + 1) * 2)
-                        else: moneyData[str(msg.author.id)] = int((level + 1) * 2)
+                        give = int((level + 1) * 2)
+                        if moneyData.get(authorId):
+                            moneyData[authorId] += give
+                        else: moneyData[authorId] = give
                         clearFile(j)
                         json.dump(moneyData, j)
                     level += 1; xp //= 2 #gives level; reduces xp
@@ -206,10 +213,10 @@ async def giveXP(msg : discord.Message)->None:
                         await msg.channel.send(disp)
                 required = round((1000 * level) * 1.1)
                 userInfo = {"level": level, "xp": xp, "required": required, "lastTalked": lastTalked, "message": levelUpMessage}
-            data[str(msg.author.id)] = userInfo
+            data[authorId] = userInfo
         else:
-            data[str(msg.author.id)] = BASICINFO
-            data[str(msg.author.id)]["lastTalked"] = time.time()
+            data[authorId] = BASICINFO
+            data[authorId]["lastTalked"] = time.time()
         clearFile(f)
         json.dump(data, f)
 

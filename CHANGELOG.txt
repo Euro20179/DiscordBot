@@ -1,3 +1,12 @@
+4.14 (7/7/2020)
+
+ADDITIONS:
+*fileinfo, gets info on a file, can be txt, html whatever, preferably txt
+*embedtotext, converts an embed to text
+*textinfo, gets info on text from a file that's provided or text in the message you send
+*<<<, replaces <<< with text from a file
+
+====================================================================
 4.13.6 (7/7/2020)
 
 CHANGES:
