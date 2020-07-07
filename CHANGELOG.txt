@@ -1,3 +1,14 @@
+4.13.4 (7/6/2020)
+
+ADDITIONS:
+*-alpha to compileimg
+
+CHANGES:
+*compileimg is now called addimg
+*addimg now puts the images ontop of each other with transparency
+*if you use -box it does it the old way
+
+====================================================================
 4.13.3 (7/6/2020)
 
 ADDITIONS:

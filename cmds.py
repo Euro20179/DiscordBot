@@ -2055,7 +2055,13 @@ async def compileImgs(msg, content, cmd="compileimg"):
     else: box = (0, 0)
     img1 = Image.open(filename1)
     img2 = Image.open(filename2)
-    img1.paste(img2, box=box)
+    if "-box" in content:
+        img1.paste(img2, box=box)
+    else:
+        if "-alpha" in content:
+            alpha = float(content[content.index("-alpha") + 1])
+        else: alpha = .5
+        img1 = Image.blend(img1, img2, alpha)
     img1.save(filename1)
     with open(filename1, "rb") as i:
         await msg.channel.send(file=discord.File(i, filename="yes.png"))
