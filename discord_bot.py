@@ -256,7 +256,10 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
         cmd == "imgnoise": imgNoise,
         cmd == "convertimg": convertImg,
         cmd == "sortimg": sortImg,
-        cmd == "imgband": imgBand
+        cmd == "imgband": imgBand,
+        cmd == "fileinfo": fileInfo,
+        cmd == "embedtotext": embedInfo,
+        cmd == "textinfo": textInfo
     }
 
     CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
@@ -328,29 +331,31 @@ async def on_message(msg):
     global blueCheck, neutral
     content = msg.content
     Iscmd = False
-    if testInContent(content, "[delete") or (msg.author.id == 311621977339068418 and msg.channel.id not in (658815060646297659, 715043261110288415)): 
-        await msg.delete() #deletes message if requested or myustiak sent it
+    if msg.author.id == 311621977339068418 and msg.channel.id not in (658815060646297659, 715043261110288415):
+        await msg.delete()
+    if "[" in content:
+        if testInContent(content, "[delete"): 
+            await msg.delete() #deletes message if requested or myustiak sent it
+        if testInContent(content, "[delin "):
+            t = splitContent(content, "[delin", index=1).strip()
+            try: await asyncio.sleep(float(t))
+            except: return await msg.channel.send("NaN")
+            await msg.delete()
+            Iscmd = True
+        s = testInContent(content, "[rw", "[reactwith")
+        if s and "[dr" not in content:
+            c = splitContent(content, s, index=1).strip()
+            if testInContent(c, " "):
+                split = splitContent(c, " ")
+                for s in split:
+                    if s in client.emojis: await msg.add_reaction(discord.utils.get(client.emojis, id=int(s.split(":")[2][:-1])))
+                    else: await msg.add_reaction(s)
+            else:
+                e = discord.utils.get(client.emojis, id=int(c.split(":")[2][:-1])) if c in client.emojis else c
+                await msg.add_reaction(e)
+            Iscmd = True
     if not content: 
         return
-    if testInContent(content, "[delin "):
-        t = splitContent(content, "[delin", index=1).strip()
-        try: await asyncio.sleep(float(t))
-        except: return await msg.channel.send("NaN")
-        await msg.delete()
-        Iscmd = True
-
-    s = testInContent(content, "[rw", "[reactwith")
-    if s and "[dr" not in content:
-        c = splitContent(content, s, index=1).strip()
-        if testInContent(c, " "):
-            split = splitContent(c, " ")
-            for s in split:
-                if s in client.emojis: await msg.add_reaction(discord.utils.get(client.emojis, id=int(s.split(":")[2][:-1])))
-                else: await msg.add_reaction(s)
-        else:
-            e = discord.utils.get(client.emojis, id=int(c.split(":")[2][:-1])) if c in client.emojis else c
-            await msg.add_reaction(e)
-        Iscmd = True
         
     if (msg.channel.id == 427973752647712768 or testInContent(content, f"{PREFIX}chkx")) and "[dr" not in content:
         await msg.add_reaction(blueCheck)
@@ -361,9 +366,6 @@ async def on_message(msg):
     if random.random() >= .9995: 
         if isBot(msg, client): return
         await msg.channel.send(random.choice(("mhm", "interesting", "fascinating", "very cool")))
-        
-    if content == f'is <@!{client.user.id}> a bot' or content == f'are you a bot <@!{client.user.id}>':
-        return await msg.channel.send(f"no {discord.utils.get(client.emojis, name='Watching1')}")
 
     if f"<@!{client.user.id}>" in content and client.user.id not in playingHangman.keys():
         await msg.channel.send(random.choice((discord.utils.find(lambda e: e.name.lower() == "watching1", client.emojis), discord.utils.find(lambda e: e.name.lower() == "pinged", client.emojis))))
@@ -384,7 +386,18 @@ async def on_message(msg):
     if content[0] in PREFIX:
 
         cmd = getCmd(content)
-        if msg.attachments and cmd != "imginfo":
+
+        if testInContent(content, " <<<"):
+            f = msg.attachments[0]
+            filename, url = f.filename, f.url
+            await saveImg(filename, url)
+            with open(filename, "r") as f:
+                read = f.read()
+            content = content.replace("<<<", read)
+            msg.attachments = []
+            os.remove(filename)
+
+        if msg.attachments and cmd not in ["imginfo", "fileinfo"]:
             content += " " + " ".join(att.url for att in msg.attachments)
         if not cmd: return
         WriteToFile = False
@@ -399,6 +412,7 @@ async def on_message(msg):
         if testInContent(content, ">>> "):
             WriteToFile = splitContent(content, ">>> ")[1]
             content = content.replace(f">>> {WriteToFile}", "")
+
 
         if msg.mention_everyone:
             return await msg.channel.send("NO")

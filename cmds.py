@@ -1706,9 +1706,115 @@ async def imageInfo(msg, content, cmd="imginfo"):
     embed.add_field(name="width", value=att.width if att.width else "UNKOWN")
     embed.add_field(name="height", value=att.height if att.height else "UNKOWN")
     embed.add_field(name="url", value=att.url if att.url else "UNKOWN")
-    embed.add_field(name="spoiler?", value=att.is_spoiler)
+    embed.add_field(name="spoiler?", value=att.is_spoiler if type(att.is_spoiler) is bool else "UNKNOWN")
     mssg = await msg.channel.send(embed=embed)
     return await embedToReadableDict(mssg, embed)
+
+async def fileInfo(msg, content, cmd="fileinfo"):
+    att, filename, url = await getImg(msg)
+
+    await saveImg(filename, url)
+    with open(filename, "r") as f:
+        read = f.read()
+    charCount = len(read)
+    wordCount = len(read.split(" "))
+    charCountEXWhiteSpace = len(re.sub("\s+", "", read))
+    letterCount = len(re.findall("[A-Za-z]", read))
+    numberCount = len(re.findall("[0-9]", read))
+
+    embed = discord.Embed(title=att.filename if att.filename else "UNKNOWN")
+    embed.add_field(name="id", value=att.id if att.id else "UNKNOWN")
+    embed.add_field(name="file size", value=att.size if att.size else "UNKNOWN")
+    embed.add_field(name="word count", value=wordCount)
+    embed.add_field(name="character count", value=charCount)
+    embed.add_field(name="char count ex spaces/whitespace", value=charCountEXWhiteSpace)
+    embed.add_field(name="letter count", value=letterCount)
+    embed.add_field(name="number count", value=numberCount)
+    mssg = await msg.channel.send(embed=embed)
+    os.remove(filename)
+    return await embedToReadableDict(msg, embed)
+
+async def textInfo(msg, content, cmd="textinfo"):
+    try:
+        att, filename, url = await getImg(msg, NotFromChat=True)
+        await saveImg(filename, url)
+        with open(filename, "r") as f:
+            text = f.read()
+    except:
+        text = content[len(cmd) + 2:]
+    RankWords = False
+    if testInContent(text, "--rankwords") and text == content[len(cmd) + 2:]:
+        text = text.replace("--rankwords", "")
+        RankWords = True
+    if not RankWords:
+        charCount = len(text)
+        wordCount = len(text.split(" "))
+        charCountEXWhiteSpace = len(re.sub(r"\s+", "", text))
+        letterCount = len(re.findall(r"[A-Za-z]", text))
+        capitalLetters = len(re.findall(r"[A-Z]", text))
+        lowerLetters = len(re.findall(r"[a-z]", text))
+        numberCount = len(re.findall(r"[0-9]", text))
+        whiteSpaceCount = len(re.findall(r'\s', text))
+        averageWordLength = statistics.mean([len(word) for word in text.split()])
+
+    words = {}
+    for word in text.split():
+        try:
+            words[word] += 1
+        except:
+            words[word] = 1
+
+    sortedWords = sorted(words.items(), key=lambda x: x[1], reverse=True)
+    if not RankWords:
+        embed = discord.Embed(title="Text info")
+        embed.add_field(name="most common word", value=f'{sortedWords[0][0]}: {sortedWords[0][1]}')
+        embed.add_field(name="word count", value=wordCount)
+        embed.add_field(name="average word length", value=averageWordLength)
+        embed.add_field(name="character count", value=charCount)
+        embed.add_field(name="char count ex spaces/whitespace", value=charCountEXWhiteSpace)
+        embed.add_field(name="white space count", value=whiteSpaceCount)
+        embed.add_field(name="letter count", value=letterCount)
+        embed.add_field(name="capital letters", value=capitalLetters)
+        embed.add_field(name="lowercase letters", value=lowerLetters)
+        embed.add_field(name="number count", value=numberCount)
+    else:
+        send = ""
+        for word in sortedWords:
+            send += f'{word[0]}: {word[1]}\n'
+        try:
+            return await msg.channel.send(send)
+        except:
+            with open(f'{msg.author.id}.txt', "w") as f:
+                f.write(send)
+            with open(f'{msg.author.id}.txt', "rb") as f:
+                return await msg.channel.send(file=discord.File(f, "text.txt"))
+            os.remove(f'{msg.author.id}.txt')
+    return await msg.channel.send(embed=embed)
+
+async def embedInfo(msg, content, cmd="embedtotext"):
+    sendTo = msg
+    content = splitContent(content, f'{cmd} ', index=1).strip()
+    fetchFrom = msg.channel
+    if msg.channel_mentions:
+        fetchFrom = msg.channel_mentions[0]
+        content = content.replace(fetchFrom.mention,  "").strip()
+    if content.isnumeric():
+        try: embed = (await fetchFrom.fetch_message(content)).embeds[0]
+        except discord.errors.NotFound:
+            return await msg.channel.send("sorry that message wasn't found")
+    if not msg.embeds:
+        async for mssg in fetchFrom.history(limit=100):
+            if mssg.embeds:
+                embed = mssg.embeds[0]
+                break
+        else:
+            async for mssg in msg.channel.history(limit=100):
+                if mssg.embeds:
+                    embed = mssg.embeds[0]
+                    break
+            return await msg.channel.send('no messages with embeds found')
+    print(embed.to_dict())
+    return await msg.channel.send((await embedToReadableDict(msg, embed)).content)
 
 async def rotateImg(msg, content, cmd="rotateImg"):
     content = content[len(cmd) + 2:]

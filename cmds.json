@@ -673,6 +673,12 @@
         ]
       },
       {
+        "name": "textinfo",
+        "params": "<text/file> (--rankwords)",
+        "desc": "gives info on text\n--rankwords gives a list of words sorted by usage",
+        "date": "7/7/2020"
+      },
+      {
         "name": "categoryinfo",
         "params": "<category>",
         "desc": "gets info on the category",
@@ -707,6 +713,12 @@
         "params": "<image>",
         "desc": "gets info on an image",
         "date": "7/4/2020"
+      },
+      {
+        "name": "fileinfo",
+        "params": "<file>",
+        "desc": "gets info on a file",
+        "date": "7/7/2020"
       },
       {
         "name": "rolecount",
@@ -827,6 +839,12 @@
         "params": null,
         "desc": "gives ping to discord, time to send message, time to edit message, and time to execute all that",
         "date": "11/6/19"
+      },
+      {
+        "name": "embedtotext",
+        "params": "<embed>",
+        "desc": "converts an embed to text",
+        "date": "7/7/2020"
       },
       {
         "name": "status",
