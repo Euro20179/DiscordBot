@@ -452,8 +452,14 @@
       },
       {
         "name": "imgtext",
-        "params": "<x (can be center/top/bottom)> <y> <text> (-fill <r g b>) (-font <font name> <font size.) (-txtwidth <width>) <img>",
+        "params": "<x (can be center/top/bottom)> <y> <text> (-fill <r g b>) (-font <font name> <font size.) (-txtwidth <width>) <img>\ndo help fonts to get a list of fonts",
         "desc": "puts text on an image",
+        "date": "7/6/2020"
+      },
+      {
+        "name": "fonts",
+        "params": null,
+        "desc": "andale_mono\narial\narial_black\narial_bold\narial_bold_italic\narial_italic\ncomic_sans_ms\ncomic_sans_ms_bold\ncourier_new\ncourier_new_bold\ncourier_new_bold_italic\ncourier_new_italic\ngeorgia\ngeorgia_bold\ngeorgia_bold_italic\nimpact\ntimes_new_roman\ntimes_new_roman_bold\ntimes_new_roman_bold_italic\ntimes_new_roman_italic\ntrebuchet_ms\ntrebuchet_ms_bold\ntrebuchet_ms_bold_italic\ntrebuchet_ms_italic\nverdana\nverdana_bold\nverdana_bold_italic\nverdana_italic\nwbdings",
         "date": "7/6/2020"
       }
     ]
