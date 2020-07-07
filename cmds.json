@@ -410,10 +410,14 @@
         "date": "7/5/2020"
       },
       {
-        "name": "compileimg",
-        "params": "<img1 url> <img2 url> (-box <x> <y>)",
+        "name": "addimg",
+        "params": "<img1 url> <img2 url> (-box <x> <y>) (-alpha <alpha : float>)",
         "desc": "puts 2 images ontop of each other\n-box puts img1 on img2 at x, y",
-        "date": "7/5/2020"
+        "date": "7/5/2020",
+        "aliases":[
+          "compileimg",
+          "combineimg"
+        ]
       },
       {
         "name": "colorize",

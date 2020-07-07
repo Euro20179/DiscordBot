@@ -16,7 +16,7 @@ import sys
 from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont, ImageChops
 
 DELETE = "--delete"
-VERSION = "4.13.3"
+VERSION = "4.13.4"
 Stop = False
 
 playingGuessingGame = {}

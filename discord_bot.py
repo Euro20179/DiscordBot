@@ -249,7 +249,7 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
         cmd == "imgpoint": point,
         cmd == "line": line,
         cmd in ["polygon", "polyg", "poly"]: polygon,
-        cmd == "compileimg": compileImgs,
+        cmd in ["compileimg", "combineimg", "addimg"]: compileImgs,
         cmd == "colorize": colorize,
         cmd == "imgdiff": imgDiff,
         cmd == "lightimg": lightImg,
