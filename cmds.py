@@ -2224,7 +2224,11 @@ async def newImg(msg, content, cmd="newimg"):
     content = content[len(cmd) + 2:].split(" ")
     if "https://" in content:
         content = content.replace(url, '')
-    size = content[0:2]
+    try:
+        content[1]
+        size = content[0:2]
+    except:
+        size = (500, 500)
     if len(content) > 2:
         color = content[2:]
     else: color = [0, 0, 0]

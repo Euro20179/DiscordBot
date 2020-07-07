@@ -369,7 +369,7 @@
       },
       {
         "name": "newimg",
-        "params": "<width> <height> [<r> <g> <b> [a]] <img>",
+        "params": "[<width> <height>] [<r> <g> <b> [a]] <img>",
         "desc": "makes an image with a size of width x height and a color of r, g, b, [a]",
         "date": "7/5/2020"
       },
@@ -377,7 +377,10 @@
         "name": "rectangle",
         "params": "<x1> <y1> <x2> <y2> (-width <px>) (-fill <r> <g> <b>) (-outline <r> <g> <b>) (--rgba (provide a with rgb if specified)) <img>",
         "desc": "draws a rectangle on an image",
-        "date": "7/5/2020"
+        "date": "7/5/2020",
+        "aliases":[
+          "rect"
+        ]
       },
       {
         "name": "imgarc",
