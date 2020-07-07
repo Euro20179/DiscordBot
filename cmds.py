@@ -293,7 +293,7 @@ async def magicBall(msg, content, cmd="8ball"):
             color = int(content.split("-e ")[1], 16)
         else: color = 0x000000
         return await msg.channel.send(embed=discord.Embed(title=random.choice(responses), color=color))
-    return await msg.channel.send(f'Answer: {random.choice(responses)}')
+    return await msg.channel.send(random.choice(responses))
 
 async def spamCmd(msg, content, cmd="spam"):
     global Stop
