@@ -2440,9 +2440,9 @@ async def sortImg(msg, content, cmd="sortimg"):
     img = Image.open(filename)
     data = list(img.getdata())
     if sortBy.lower() in ["btw", "ltd"]:
-        data.sort(key=lambda x: sum(x), reverse=True)
-    elif sortBy.lower() in ["wtb", "dtl"]:
         data.sort(key=lambda x: sum(x))
+    elif sortBy.lower() in ["wtb", "dtl"]:
+        data.sort(key=lambda x: sum(x), reverse=True)
     elif sortBy.lower() in ["r", "red"]:
         data.sort(key=lambda x: x[0], reverse=True)
     elif sortBy.lower() in ["g", "green"]:
