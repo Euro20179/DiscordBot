@@ -342,7 +342,7 @@
       },
       {
         "name": "crop",
-        "params": "[amnt] <img>",
+        "params": "[amnt] (-box <x1 y1 x2 y2>) <img>",
         "desc": "crops img, defaults to 20 px",
         "date": "7/5/2020"
       },

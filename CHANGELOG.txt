@@ -1,3 +1,9 @@
+4.13.3 (7/6/2020)
+
+ADDITIONS:
+*-box to crop, crops only to that portion of the img
+
+====================================================================
 4.13.2 (7/6/2020)
 
 ADDITIONS:

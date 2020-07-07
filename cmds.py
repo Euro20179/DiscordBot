@@ -1961,12 +1961,18 @@ async def cropImg(msg, content, cmd="crop"):
     att, filename, url = await getImg(msg)
     if "https://" in content:
         content = content.replace(url, '')
-    if content.split(" ")[0]:
+    if "-box" in content:
+        x1, y1, x2, y2 = content.split("-box ")[1].split(" ")
+    if content.split(" ")[0] and "-box" not in content:
         amnt = int(content.split(" ")[0])
     else: amnt = 20
     await saveImg(filename, url)
     img = Image.open(filename)
-    img = ImageOps.crop(img, border=amnt)
+    if "-box" in content:
+        x1, y1, x2, y2 = (int(x) for x in (x1, y1, x2, y2))
+        img = img.crop(box=(x1, y1, x2, y2))
+    else:
+        img = ImageOps.crop(img, border=amnt)
     img.save(filename)  
     with open(filename, "rb") as i:
         await msg.channel.send(file=discord.File(i, filename=filename))
