@@ -16,7 +16,7 @@ import sys
 from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont, ImageChops
 
 DELETE = "--delete"
-VERSION = "4.14.0.1"
+VERSION = "4.14.1"
 Stop = False
 
 playingGuessingGame = {}
@@ -71,11 +71,6 @@ async def imgInChat(msg, limit=20):
         if mssg.embeds:
             if mssg.embeds[0].image:
                 att = mssg.embeds[0].image
-                url = att.url
-                filename = url.split("/")[-1]
-                break
-            if mssg.embeds[0].thumbnail:
-                att = mssg.embeds[0].thumbnail
                 url = att.url
                 filename = url.split("/")[-1]
                 break

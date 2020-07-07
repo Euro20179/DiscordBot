@@ -1380,7 +1380,12 @@ async def deathBattle(msg, users, going, notGoing, responseTime, damageMsgs, hea
         elif d["name"] == second.name:
             d["value"] = str(users[second]["health"])
     embed = embed.from_dict(ED)
-    await editable.edit(embed=embed)
+    async for msssg in editable.channel.history(limit=5):
+        if msssg.author == editable.author and msssg.embeds: 
+            await editable.edit(embed=embed)
+            break
+    else:
+        editable = await msg.channel.send(embed=embed)
     if users[second]["health"] <= 0 and users[first]["health"] <= 0:
         await removeFromList(playingDB, going, notGoing)
         return await msg.channel.send("ITS A DRAW!")
@@ -2224,7 +2229,11 @@ async def newImg(msg, content, cmd="newimg"):
     content = content[len(cmd) + 2:].split(" ")
     if "https://" in content:
         content = content.replace(url, '')
-    size = content[0:2]
+    try:
+        content[1]
+        size = content[0:2]
+    except:
+        size = (500, 500)
     if len(content) > 2:
         color = content[2:]
     else: color = [0, 0, 0]
