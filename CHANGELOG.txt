@@ -7,6 +7,7 @@ ADDITIONS:
 CHANGES:
 *img cmds no longer thake from the thumbnail of an embed
 *changed how it finds what command you said
+*deathbattle will resend the embed if it goes too far up
 
 ====================================================================
 4.14.0.1 (7/7/2020)
