@@ -12,19 +12,22 @@ async def stop(*args, **kwargs)->None: #similar to how raise StopIteration works
 async def hlp(msg, content, cmd="help"):
     global CATS, CMDLIST, CUSTOMCMDS
     CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
-    cat = splitContent(content, cmd + " ", index=1).upper()
-    File = True if testInContent(cat.lower(), "--file") else False
-    GiveByAdded = True if testInContent(cat.lower(), "-added") else False
-    if GiveByAdded:
-        date = cat.lower().split("-added ")[1]
+    c = Content(content)
+    ops = tuple(c.ops())
+    opParams = tuple(c.opsWithParams())
+    added = False
+    Raw = True if "--raw" in ops else False
+    File = True if "--file" in ops else False
+    for op, param in opParams:
+        if op == "-added":
+            added = param
+    cat = str(c).upper()
+    if added:
         with open(f'cmds.json', "r") as f:
             data = json.load(f)
-            cmds = [cmd["name"] for cat in data for cmd in cat["cmds"] if cmd.get("date") == date]
+            cmds = [cmd["name"] for cat in data for cmd in cat["cmds"] if cmd.get("date") == added]
             return await msg.channel.send("\n".join(cmds))
-
-    if File: 
-        cat = cat.replace(" --FILE", "").strip()
-    if not cat and "--file" not in cat.lower():
+    if not cat:
         embed = discord.Embed(title="General", color=discord.Color(0x0000ff))
         with open("cmds.json", "r") as j:
             data = json.load(j)
@@ -55,7 +58,7 @@ async def hlp(msg, content, cmd="help"):
         return cat
 
     with open("cmds.json", "rb") as j:
-        if testInContent(content, "--all", "--indepth"): #the file
+        if Raw: #the file
             await msg.channel.send(file=discord.File(j, "cmds.json"))
         else: #by specific commoand
             command = splitContent(content, " ", index=1)
@@ -122,29 +125,24 @@ async def ping(msg, content, cmd="ping"):
         return mssg
 
 async def echo(msg, content, cmd="echo"):
-    content = content[len(cmd) + 2:]
+    c = Content(content)
     try: await msg.delete()
     except: pass
-    if "-e" in content:
-        if " " in content.split(" -e")[-1]:
-            color = int(content.split(" -e")[-1], 16)
-            c = content.replace(f"-e{content.split(' -e')[-1]}", "")
-        else: 
-            color = 0x000000
-            c = content.replace(" -e", "")
-        embed = discord.Embed(title=c, color=discord.Color(color))
-        await msg.channel.send(embed=embed)			
-        return c
+    ops = c.opsWithParams()
+    for op, param in ops:
+        if op == "-e":
+            if param:
+                color = int(param, 16)
+            else:
+                color = 0x000000
+            embed = discord.Embed(title=str(c), color=discord.Color(color))
+            await msg.channel.send(embed=embed)			
+            return await embedToReadableDict(msg, embed)
+        if op == "-wait":
+            try: await asyncio.sleep(float(param))
+            except: return await msg.channel.send("-wait must be float")
     if random.random() > .99: await msg.author.send("the secret message dm euro for a doubley secret role, if you tell anyone how you got this the role will be taken away\nif you already have the role, you may choose to dm a screenshot of this message to someone, and they have the chance to get the role")	
-    if "-wait" in content:
-        waitFor = content.split("-wait ")[1]
-        try:
-            waitFor = int(waitFor)
-            content = content.replace(f' -wait {waitFor}', "")
-        except: return await msg.channel.send("-wait must be number")
-    else: waitFor = 0
-    if waitFor: await asyncio.sleep(waitFor)
-    return await msg.channel.send(content)
+    return await msg.channel.send(str(c))
 
 async def timers(msg, content, cmd="timers"):
     embed = discord.Embed(title="Timers")
@@ -157,40 +155,40 @@ async def timers(msg, content, cmd="timers"):
 
 async def levelMessage(msg, content, cmd="lvlmsg"):
     if isBot(msg, client): return await msg.channel.send("easter e g g")
+    changeTo = Content(content)
+    ops = tuple(changeTo.ops())
+    yn=Yes = "--y" in ops
     with open(levelingDataFilePath, "r+") as j:
         data = json.load(j)
-        changeTo = content[len(cmd) + 2:].strip()
         userData = data[str(msg.author.id)]
-        if testInContent(changeTo, "--see", "--get", "--s", "--g"):
+        if "--see" in ops or "--get" in ops:
             return await msg.channel.send(await formatLevelMessage(msg, userData["message"], userData["level"]))
-        Yes = testInContent(changeTo, "--y", "--f")
         if not Yes:
             await msg.channel.send("type y to change message, type n to cancel")
             try: yn = (await client.wait_for('message', check=lambda message: message.author == msg.author, timeout=60.0)).content.lower()
             except asyncio.TimeoutError: yn = "n"
-        else: 
-            changeTo = changeTo.replace(Yes, "")
-            yn = "y"
         if yn in ("yes", "y") or Yes:
-            userData["message"] = changeTo
+            userData["message"] = str(changeTo)
             clearFile(j)
             json.dump(data, j)
             return await msg.channel.send(f"changed to {changeTo}")
         return await msg.channel.send("CANCELLED")
 
 async def cmdUsage(msg, content, cmd="commandusage"):
+    content = Content(content)
+    content.calcOps()
+    opOps = tuple(content.opsWithParams())
     top = 10
-    if testInContent(content, "-top"):
-        top = int(splitContent(content, "-top ")[1].strip())
-        content = cmd
-    if testInContent(content, "--raw"):
+    for op in opOps:
+        if "-top" == op[0]:
+            top = int(op[1])
+    if content @ "--raw":
         with open(commandusageFilePath, "rb") as j:
             return await msg.channel.send(file=discord.File(j, commandusageFilePath))
     with open(commandusageFilePath, "r+") as j:
         data = json.load(j)
-        split = splitContent(content, cmd, index=1).strip()
-        if split:
-            commandUse = data.get(split)
+        if content[0] and top == 10:
+            commandUse = data.get(content[0])
             if not commandUse:
                 return await msg.channel.send("command not found")
             embed = discord.Embed(title=split)
@@ -209,7 +207,8 @@ async def cmdUsage(msg, content, cmd="commandusage"):
 
 async def iq(msg, content, cmd="iq"):
     iq = random.randint(-3, 200)
-    c = msg.author.mention if not splitContent(content, f'{cmd} ', index=1) else content[len(cmd) + 2:]
+    content = Content(content)
+    c = msg.author.mention if not content.split(" ")[0] else str(content)
     await msg.channel.send(f'{c}\'s iq is *DRUMROLL*...')
     await asyncio.sleep(random.uniform(.7, 1.3))
     return await msg.channel.send({msg.author.bot: "i am computer i have [ERROR] iq",
@@ -233,9 +232,8 @@ async def getUserData(user):
         return data.get(str(user))
 
 async def level(msg, content, cmd="level"):
-    user = await getUserInContent(msg, content, cmd)
-    if len(splitContent(content, " ")) > 1:
-        user = discord.utils.get(msg.guild.members, id=user.id)
+    content = Content(content)
+    user = content.getUser(msg, 0)
     userData = await getUserData(user.id)
     with open(levelingDataFilePath, "r") as f:
         data = json.load(f)
@@ -258,14 +256,14 @@ async def level(msg, content, cmd="level"):
     return await embedToReadableDict(msg, embed) 
 
 async def leaderboard(msg, content, cmd="top"):
-    if testInContent(content, "--raw"):
+    content = Content(content)
+    content.calcOps()
+    if content @ "--raw":
         with open(levelingDataFilePath, "rb") as f:
-            await msg.channel.send(file=discord.File(f, levelingDataFilePath))
-            return "FILE"
+            return await msg.channel.send(file=discord.File(f, levelingDataFilePath))
     top = 10
-    if testInContent(content, " "):
-        t = splitContent(content, " ", index=1)
-        try: top = int(t)
+    if str(content):
+        try: top = int(content)
         except: await msg.channel.send("NaN")
     with open(levelingDataFilePath, "r") as f:
         data = json.load(f)
@@ -285,23 +283,19 @@ async def leaderboard(msg, content, cmd="top"):
         await msg.channel.send(embed=embed)
 
 async def magicBall(msg, content, cmd="8ball"):
+    opOps = Content(content).opsWithParams()
     with open(mballresponseFilePath, "r") as f:
         responses = f.read().split("\n")
-
-    if testInContent(content, "-embed", "-e"):
-        if testInContent(content.split("-e")[1], " "):
-            color = int(content.split("-e ")[1], 16)
-        else: color = 0x000000
-        return await msg.channel.send(embed=discord.Embed(title=random.choice(responses), color=color))
+    for op, param in opOps:
+        if op == "-e":
+            return await msg.channel.send(embed=discord.Embed(title=random.choice(responses), color=int(param, 16) if param else 0x000000))
     return await msg.channel.send(random.choice(responses))
 
 async def spamCmd(msg, content, cmd="spam"):
     global Stop
     if Stop: Stop = False
-
-    c = content[len(cmd) + 2:]
-
-    try: messages = int(c[:c.find(" ")])
+    c = Content(content)
+    try: messages = int(c.split(" ")[0])
     except: return await msg.channel.send("not a valid number of messages")		
 
     lim = random.randint(40000, 110000)
@@ -310,13 +304,13 @@ async def spamCmd(msg, content, cmd="spam"):
 
     if messages < 0: return await msg.channel.send("ERROR: MESSAGE COUNT LESS THAN 0")
 
-    if testInContent(c, "-random"):
-        c = c.replace("-random", "")
-        c = c[c.find(str(messages)) + len(str(messages)):]
+    if "-random" in c:
+        c.replace("-random ", "")
+        c = " ".join(c.split(" ")[1:])
         options = c.split("|")
         return await spam(msg, int(messages), options)
 
-    message = c[c.find(str(messages)) + len(str(messages)):]
+    message = " ".join(c.split(" ")[1:])
     await spam(msg, messages, [message])
     if random.random() >= .99: await msg.channel.send("You found an easter egg hehe")
     else: return await msg.channel.send(random.choice(("done", "Done")))
@@ -334,38 +328,35 @@ async def randomFace(msg, content, cmd="randomface"):
 
 async def alphabet(msg, content, cmd="alphabet"):
     send = string.ascii_lowercase
-    if testInContent(content, "--vowels"): send = "aeiou(y)"
-    if testInContent(content, "--consonants"):
+    content = Content(content)
+    if content.testOps("--vowels"): send = "aeiou(y)"
+    if content.testOps("--consonants"):
         send = "".join([x for x in string.ascii_lowercase if x not in "aeiou"])
-    if random.random() > .98: send = "zyxwvutsrqponmlkjihgfedcba"
-    return await oneLineCmd(msg, send)
+    if random.random() > .98: send = send[::-1]
+    return await msg.channel.send(send)
 
 async def unicodeChar(msg, content, cmd="unicodechar"):
-    amount = 1
-    
-    sep = splitContent(content, "-sep ", index=1) if testInContent(content, "-sep ") else "\n"
-
-    split = splitContent(content, " ")
-    if split:
-        amount = split[1]
-        if not isInt(amount): return await msg.channel.send("NaN")
-        elif isInt(amount): amount = int(amount)
-    chars = [chr(random.randint(0, 185000)) for _ in range(amount)]
-    
-    return await msg.channel.send(sep.join(chars))
+    content = Content(content)
+    if "-sep" in content:
+        sep = content.split("-sep ")[1]
+        content = content.split(" ")[0]
+    else: sep = "\n"
+    try: amount = int(content)
+    except: amount = 1
+    return await msg.channel.send(sep.join([chr(random.randint(0, 185000)) for _ in range(amount)]))
 
 async def serverEmote(msg, content, cmd="serveremote"):
-    amount = 1
-    sep = "\n"
-    if testInContent(content, "-sep"):
+    content = Content(content)
+    if "-sep" in content:
         sep = content.split("-sep ")[1]
-    if isInt(splitContent(content.lower(), " ", index=1)): amount = int(splitContent(content.lower(), " ", index=1))
-    sendE = [str(random.choice(client.emojis)) for _ in range(amount)]
-    return await oneLineCmd(msg, sep.join(sendE))
+        content = content.split(" ")[0]
+    else: sep = "\n"
+    try: amount = int(content)
+    except: amount = 1
+    return await msg.channel.send(sep.join([str(random.choice(client.emojis)) for _ in range(amount)]))
 
 async def writeRoles(msg, content, cmd="doesnothing"):
-    filename = splitContent(content.lower(), cmd, index=1)
-
+    filename = Content(content)
     with open(f".\\roles\\{filename}.txt", "w") as f:
         for x in client.get_all_members():
             try: f.write(f'\n{str(x.name)}\n')
@@ -373,7 +364,6 @@ async def writeRoles(msg, content, cmd="doesnothing"):
             for y in x.roles:
                 try: f.write(f'{y.name}\n')
                 except: f.write(f'{y.id}\n')
-
     with open(f'.\\roles\\{filename}.txt', "rb") as f:
         await msg.channel.send(file=discord.File(f, f'{filename}.txt'))
 
@@ -381,16 +371,15 @@ async def spacer(msg, content, cmd="spacer"):
     try: await msg.delete()
     except: pass
     sep = " "
-    c = content.split(cmd)[1].strip()
-    spaces = c[:c.find(" ")]
-    c = c[c.find(" "):]
+    content = Content(content)
+    try: spaces = int(content.split(" ")[0])
+    except: spaces = 1
+    c = content.split(" ", pastIndex=1)
     if "-sep" in c:
-        sep = splitContent(c, "-sep ", index=1)
-        c = c.replace(f' -sep {sep}', "")
+        sep = content.split("-sep ")[1]
+        c = c.split("-sep")[0]
         if sep == r"\n": sep = "\n"
         if sep == r"\t": sep = "\t"
-    if not isInt(spaces):
-        return await msg.channel.send(f"{spaces} is not a valid number of spaces")
     add = sep * int(spaces)
     word = add.join(c)
     return await oneLineCmd(msg, word)
@@ -399,7 +388,6 @@ async def upperLower(msg, content, cmd="upperlower"):
     mssg = content[len(cmd) + 2:]
     try: await msg.delete()
     except: pass
-    else: mssg = mssg.replace(DELETE, "")
 
     newPhrase = []
 
@@ -457,14 +445,14 @@ async def startRPS(msg, content, cmd="rps"):
     else: await msg.channel.send("either someone spelled something wrong, or someone isn't playing by the rules")
 
 async def complexMessage(msg, content, cmd="complexmessage"):
-    c = splitContent(content.lower(), cmd, index=1).split("|")
+    content = Content(content).split("|")
     try: await msg.delete()
     except: pass
     try:
-        send = c[0].strip().lower()
-        filename = c[1]
-        mssg = c[2]
-    except: await msg.channel.send("make sure you give and seperate each paremeter with a ','")
+        send = content[0].strip().lower()
+        filename = content[1]
+        mssg = content[2]
+    except: return await msg.channel.send("make sure you give and seperate each paremeter with a '|'")
 
     dm = (send == "dm")
     send = dm^True
@@ -478,37 +466,28 @@ async def complexMessage(msg, content, cmd="complexmessage"):
         if dm:await msg.author.send(file=discord.File(f, filename))
 
 async def sanity(msg, content, cmd="sanity"):
-    c = content.split(cmd)[1]
-
-    if testInContent(c, "-r "):
-        r = int(content.split("-r ")[1].split(" ")[0])
-        c = c.split("-r ")[0]
-    else: r = 3
-
+    c = Content(content)
+    if "-r" in c:
+        r = int(c.split("-r ")[1])
+        c = c.split("-r")[0]
+    else: r = 2
     san = round(random.uniform(-1.5, 101), r)
-
     cases = {san > 100: f'{c} is so sane that they have become the universe itself',
                 san >=49.5 and san <= 50.5: f'{c} is perfectly balanced between sane and insane',
-                san < 0: f'how is {c} even alive'}
-                
+                san < 0: f'how is {c} even alive'}            
     return await msg.channel.send(cases.get(True)) if cases.get(True) else await msg.channel.send(f'{c} has {san}% sanity')
 
 async def coin(msg, content, cmd="coin"):
     title = res = "heads" if random.random() >= .5 else "tails"
-    if testInContent(content, " "):
-        bet = splitContent(content, " ")[1].strip()
+    if " " in content:
+        bet = content.split(" ")[1].strip()
         if bet == "t": bet = "tails"
         if bet == "h": bet = "heads"
         if not bet.isnumeric():
             color, title = (0x00ff00, "YOU WIN") if res == bet else (0xff0000, "YOU LOSE")
-            if res == bet: 
-                add = random.randint(1, 3)
-                title += f"\nYOU WON {add}"
-                await addMoney(msg.author, add)
-            else: 
-                add = random.randint(-3, -1)
-                title += f'\nYOU LOSE {abs(add)}'
-                await addMoney(msg.author, add)
+            add = random.randint(1, 3) if res == bet else random.randint(-3, -1)
+            await addMoney(msg.author, add)
+            title += f'\nYOU WON {add}' if res == bet else f'\nYOU LOSE {abs(add)}'
         else:
             results = {}
             for _ in range(int(bet)):
@@ -520,14 +499,12 @@ async def coin(msg, content, cmd="coin"):
                 except: results[flip] = 1
             embed = discord.Embed(title=f'Heads: {results["heads"]}\nTails: {results["tails"]}', color=0x00aa00)
             return await msg.channel.send(embed=embed)
-
     else:  color = 0xff00ff if res == "heads" else 0x0000ff
-    
     embed = discord.Embed(title=title, color=color)
     await msg.channel.send(embed=embed)
 
 async def weightedCoin(msg, content, cmd="weightedcoin"):
-    content = content[len(cmd) + 2:].split(" ")
+    content = Content(content).split(" ")
     headsOdds = content[0]
     if len(content) > 1:
         flips = content[1]
@@ -553,9 +530,9 @@ async def weightedCoin(msg, content, cmd="weightedcoin"):
     return await embedToReadableDict(msg, embed)
 
 async def roleInfo(msg, content, cmd="roleinfo"):
-    if not splitContent(content, cmd + " "):
+    rolename = Content(content).strip()
+    if not rolename:
         rolename = msg.author.top_role.name
-    else: rolename = splitContent(content, cmd + " ")[1]
     try:
         role = discord.utils.find(lambda r: r.name.lower() == rolename.lower(), msg.guild.roles)
         embed = discord.Embed(title=role.name, color=role.color)
@@ -571,11 +548,11 @@ async def roleInfo(msg, content, cmd="roleinfo"):
         return await msg.channel.send("role not found")
 
 async def roleCount(msg, content, cmd="rolecount"):
-    c = str(content.split(cmd)[1].strip())
+    c = Content(content).string
     Showroles = False
     if "--showroles" in c:
         Showroles = True
-        c = c.replace(" --showroles", "") if c != "--showroles" else ""
+        c = c.replace("--showroles", "")
     c = c.replace("!", "")[2:-1] if "<@" in c else c
     if not c: c = str(msg.author.id)
     m = findMember(c, msg)
@@ -594,28 +571,26 @@ async def roleCount(msg, content, cmd="rolecount"):
 async def rand(msg, content, cmd="rand"):
     global Stop
     if Stop: Stop = False
-    if len(splitContent(content, cmd + " ")) > 1:
-        c = content.split(" ")[1:]
-        EVEN, ODD = "--even", "--odd"
-        Even = True if testInContent(" ".join(c), EVEN) else False
-        Odd = True if testInContent(" ".join(c), ODD) else False
-        if Even: c.remove(EVEN)
-        if Odd: c.remove(ODD)
-        low = c[0].strip()
-        high = c[1].strip()
-
-        r = int(c[2].strip()) if len(c) == 3 else 15
+    content = Content(content)
+    content.calcOps()
+    print(content)
+    Even = False if not content @ "--even" else True
+    Odd = False if not content @ "--odd" else True
+    content = content.split(" ")
+    if len(content) > 1:
+        r = int(content[2].strip()) if len(content) == 3 else 15
+        low, high = int(content[0]), int(content[1])
 
         if not isInt(r): return await msg.channel.send("you are not rounding to a whole number")				
         if float(low) >= float(high): return await msg.channel.send("Low must be lower than high")
 
-        if isInt(low) and isInt(high):
+        if low and high:
             while True:
                 if Stop: await msg.channel.send(await stop("stopped picking a number"))
-                res = random.randint(int(low), int(high))
+                res = random.randint(low, high)
+                print(res, low, high)
                 if Even and res % 2 != 0: continue					
                 if Odd and res % 2 == 0: continue
-                else: break
         else:
             res = random.uniform(float(low), float(high))
             if r: res = round(res, r)
@@ -624,9 +599,9 @@ async def rand(msg, content, cmd="rand"):
 
 async def compareRoles(msg, content, cmd="compareroles"):
     embed = discord.Embed(name="Role Comparison")
-    c = content.split(testInContent(content, "comproles", "compareroles"))[1].split(" ")
-    user1 = str(c[1].strip()) 
-    user2 = str(c[2].strip())
+    c = Content(content).split(" ")
+    user1 = str(c[0].strip()) 
+    user2 = str(c[1].strip())
     if "<@" in user1:
         user1 = str(user1).replace("!", "")[2:-1]
     if "<@" in user2:
@@ -648,7 +623,7 @@ async def family(msg, content, cmd="family"):
     with open("family.txt", "r") as f: await oneLineCmd(msg, f.read())
 
 async def mballreply(msg, content, cmd="mballreply"):
-    mssg = content.split(f'{cmd} ')[1]
+    mssg = Content(content)
     if userHasRole(msg, "mballresponseadder"):
         with open(mballresponseFilePath, "a") as f:
             f.write(mssg + "\n")
@@ -656,7 +631,7 @@ async def mballreply(msg, content, cmd="mballreply"):
     else: return await msg.channel.send("you don't have perms")
 
 async def mballDel(msg, content, cmd="8brdel"):
-    reply = content.split(f"{cmd} ")[1]
+    reply = str(Content(content))
     if userHasRole(msg, "mballresponseadder"):
         with open(mballresponseFilePath, "r+") as f:
             replies = f.read().split("\n")
@@ -671,59 +646,53 @@ async def mballDel(msg, content, cmd="8brdel"):
 async def count(msg, content, cmd="count"):
     try: await msg.delete()
     except: pass
+    content = Content(content)
+    content.calcOps()
     channel = discord.utils.get(msg.guild.channels, name="counting")
-    highest = max([x.content.replace("*", "").replace("_", "").replace("`", "").strip(".") async for x in channel.history(limit=3)])
-    highest = int(highest) + 1
+    highest = int(max([x.content.replace("*", "").replace("_", "").replace("`", "").strip(".") async for x in channel.history(limit=3)])) + 1
     async for x in channel.history(limit=1):
         if x.author == client.user: return ""
-    style = testInContent(content, "--i", "--b", "--ib", "--e", "--u", "--ui", "--all")
-    if style:
-        if style == "--i":
-            await channel.send(f'*.{highest}.*')
-        elif style == "--b":
-            await channel.send(f'**.{highest}.**')
-        elif style == "--ib":
-            await channel.send(f'***.{highest}.***')
-        elif style == "--u":
-            await channel.send(f"__.{highest}.__")
-        elif style == "--ui":
-            await channel.send(f"___.{highest}.___")
-        elif style == "--all":
-            await channel.send(f'__***.{highest}.***__')
-        elif style == "--e":
-            if testInContent(content, "-c"):
-                color = splitContent(content, "-c ")[1]
-                color = int(f'0x{color}', 16)
-            else: color = 0x000000
-            await channel.send(embed=discord.Embed(title=f'.{highest}.', color=discord.Color(color)))
-    else: await channel.send(f'.{highest}.')
+    text = f'.{highest}.'
+    fancy = ""
+    for op in content.ops_:
+        print(op)
+        if op == "--i":
+            fancy += "*"
+        if op == "--b":
+            fancy += "**"
+        if op == "--u":
+            fancy += "__"
+        if op == "--all":
+            fancy += "***__"
+    text = fancy + text + fancy[::-1]
+    if "-e" in content:
+        if "-c" in content:
+            color = int(f'0x{content.split("-c")[1].strip()}', 16)
+        else: color = 0x000000
+        await channel.send(embed=discord.Embed(title=f'.{highest}.', color=discord.Color(color)))
+    else: await channel.send(text)
 
 async def choose(msg, content, cmd="choose"):
-    options = splitContent(content, f'{cmd} ')[1].split("|")
-    PICKS = "-picks "
+    content = Content(content)
+    opOps = list(content.opsWithParams())
+    sep="\n"
     picks = 1
-    for op in options:
-        if PICKS in op.lower():
-            picks = int(op.split(PICKS)[1])
-            options[options.index(op)] = op.split(PICKS)[0]
-            break
-    return await msg.channel.send("\n".join([random.choice(options) for _ in range(int(picks))]))
+    for op, param in opOps:
+        if op == "-picks": picks = int(param)
+        if op == "-sep": sep = param
+    print(content)
+    options = content.split("|", key=lambda x: x.strip())
+    return await msg.channel.send(sep.join([random.choice(options) for _ in range(picks)]))
 
 async def mball(msg, content, cmd="8ball"):
     with open(mballresponseFilePath, "rb") as f:
         await msg.channel.send(file=discord.File(f, "mballresponse.txt"))
 
 async def pigLatin(msg, content, cmd="piglatin"):
-    CASE = " --kc"
-    content = content.replace(CASE, "") if testInContent(content, CASE) else content.lower()
-
-    m = content.split(" ")[1:]
-
-    if DELETE in m:
-        try: await msg.delete()
-        except: pass
-        m.remove(DELETE)
-
+    content = Content(content)
+    if content.testOps("--kc"):
+        content = content.lower()
+    m = [x for x in content.split(" ") if x]
     for n, word in enumerate(m):
         if word[0] in "aeiou": m[n] += "ay"
         else:
@@ -733,10 +702,9 @@ async def pigLatin(msg, content, cmd="piglatin"):
     return await msg.channel.send(" ".join(m))
 
 async def mostRoles(msg, content, cmd="mostroles"):
-    top = int(splitContent(content, " ", index=1)) if splitContent(content, " ", index=1) else 5
-
+    content = Content(content).split(" ")[0]
+    top = int(content) if content else 5
     memberRoles = {member.display_name.split("#")[0]: len(member.roles) - 1 for member in msg.guild.members}
-
     sortedKeys = sorted(memberRoles, key=memberRoles.get, reverse=True)
     top = [f'{r}, {memberRoles[r]}' for n, r in enumerate(sortedKeys) if n < top]
     return await msg.channel.send("\n".join(top))
@@ -762,36 +730,29 @@ async def ridInvites(msg, content, cmd="clearinvites"):
     else: return await msg.channel.send("you don't have perms")
 
 async def color(msg, content, cmd="color"):
-    user = await getUserInContent(msg, content, cmd)
+    c = Content(content)
+    user = c.getUser(msg, 0)
     if user != msg.author:
         color = user.color
         tempColor = str(color)[1:]
         r, g, b = int(tempColor[0:2], 16), int(tempColor[2:4], 16), int(tempColor[4:], 16)
         embed = discord.Embed(title=f'Hex: {str(color)}\nRGB: {r}, {g}, {b}', color=color)
         await msg.channel.send(embed=embed)
-        msg.content = f'{r}, {g}, {b}'
-        return msg
-
-    c = splitContent(content, f'{cmd}')[1].strip()
+        return await embedToReadableDict(msg, embed)
+        
+    c = str(c)
     if "--rand" in c:
         ns = "0123456789abcdef"
         c = "#"
         for _ in range(6):
             c += random.choice(ns)
-        tempC = c[1:]
-        r, g, b = int(tempC[0:2], 16), int(tempC[2:4], 16), int(tempC[4:], 16)
-        embed = discord.Embed(title=f'Hex: {c}\nRGB: {r}, {g}, {b}', color=discord.Color.from_rgb(r, g, b))
-        await msg.channel.send(embed=embed)
-        msg.content = c
-        return msg
 
     if "#" in c:
-        color = c.replace("#", "")
-        r, g, b = int(color[0:2], 16), int(color[2:4], 16), int(color[4:], 16)
-        embed = discord.Embed(title=f'{r} {g} {b}', color=discord.Color(int(color, 16)))
+        c = c.replace("#", "")
+        r, g, b = int(c[0:2], 16), int(c[2:4], 16), int(c[4:], 16)
+        embed = discord.Embed(title=f'{r} {g} {b}', color=discord.Color(int(c, 16)))
         await msg.channel.send(embed=embed)
-        msg.content = color
-        return msg
+        return await embedToReadableDict(msg, embed)
 
     if ", " in c:
         c = c.replace(" ", "")
@@ -799,8 +760,7 @@ async def color(msg, content, cmd="color"):
         hexColor = [str(hex(x))[2:] for x in color]
         hexColor = list(map(lambda x: f'0{x}' if len(x) == 1 else x, hexColor))
         await msg.channel.send(embed=discord.Embed(title=f'#{"".join(hexColor)}', color=discord.Color.from_rgb(color[0], color[1], color[2])))	
-        msg.content = ", ".join(color)
-        return msg
+        return await embedToReadableDict(msg, embed)
 
     if not c: c = str(msg.author.top_role)
     m = discord.utils.find(lambda r: r.name.lower() == c.lower(), msg.guild.roles)
@@ -819,10 +779,10 @@ async def serverIcon(msg, content, cmd="servericon"):
 
 async def channelInfo(msg, content, cmd="cc"):
     channel = msg.channel
+    content = Content(content)
+    if content:
+        channel = discord.utils.find(lambda x: x.mention == str(content), msg.guild.channels)
     embed = discord.Embed(title=channel.name)
-    if splitContent(content, cmd)[1]:
-        c = content.split(cmd)[1].strip()[2:-1]
-        channel = discord.utils.get(msg.guild.channels, id=int(c))
     created = channel.created_at
     diff = datetime.datetime.now() - created
     pinCount = len(await channel.pins())
@@ -897,7 +857,7 @@ async def changes(msg, content, cmd="changes"):
         else: return await msg.channel.send("\n".join(c)) if c else await msg.channel.send(file=discord.File(f, "changes.txt")) 
 
 async def hexBinOct(msg, content, cmd="hex"):
-    content = splitContent(content, cmd + " ")[1]
+    content = str(Content(content))
     num = list(map(lambda n: int(n.strip()), content.split("|"))) if "|" in content else [int(content)]
     repWith = {"hex": "0x", "bin": "0b", "oct": "0o", "tobase": ""}[cmd]
     ans = list(map(lambda n: str(hex(n)).replace(repWith, ""), num))
@@ -908,12 +868,14 @@ async def response(msg, content, cmd="response", doFirst=False):
     if Stop: Stop = False
     if isBot(msg, client): return "is bot"
     limit = 1000
-    mssg = content[len(cmd) + 2:].lower()
-    if testInContent(mssg, "-lim"):
-        limit = int(splitContent(mssg, "-lim ")[1].strip())
-        if limit > 100000:
-            return await msg.channel.send("you cannot go above 100k")
-        mssg = splitContent(mssg, " -lim")[0]
+    content = Content(content)
+    for op, param in content.opsWithParams():
+        if "-lim" == op:
+            limit = int(param)
+            if limit > 100000:
+                return await msg.channel.send("you cannot go above 100k")
+            break
+    mssg = str(content).strip()
     async with msg.channel.typing():
         hist = [m.content async for m in msg.channel.history(limit=limit)]
         responses = [hist[n - 1] for n, message in enumerate(hist) if message == mssg]
@@ -922,21 +884,23 @@ async def response(msg, content, cmd="response", doFirst=False):
         return msg
 
 async def stopwatch(msg, content, cmd="stopwatch"):
+    content = Content(content)
     with open(timersPath, "r+") as tJ:
         data = json.load(tJ)
         running = data.get(str(msg.author.id))
-        stopAt = {x for x in content.split(" ")} & {"seconds", "minutes", "hours", "days", "weeks"}
+        stopAt = content.toSet() & {"seconds", "minutes", "hours", "days", "weeks"}
         if not running:
             data[msg.author.id] = time.time()
             await msg.channel.send(f'{msg.author.mention} stopwatch started')
-        elif running and testInContent(content, "--stop"):
+        elif running and content @ "--stop":
             t = await formatSeconds(time.time() - running)
             await msg.channel.send(embed=discord.Embed(title=str(round(t[0], 2)) + f' {t[1]}'))
             del data[str(msg.author.id)]
+            return await msg.channel.send("timer stopped")
         elif stopAt:
             stopAt = list(stopAt)[0]
             t, layer = await formatSeconds(time.time() - running, stopAt=stopAt)
-            r = 15 if not splitContent(content, stopAt + " ") else int(splitContent(content, f'{stopAt} ')[1])
+            r = 15 if not splitContent(content, f'{stopAt} ', index=1) else int(content.split(f'{stopAt} ')[1])
             t = round(t, r)
             await msg.channel.send(embed=discord.Embed(title=f'{t} {layer}'))
         elif running:
@@ -960,11 +924,11 @@ async def emoteInfo(msg, content, cmd="emoteinfo"):
 
 async def messageInfo(msg, content, cmd="messageinfo"):
     sendTo = msg.channel
-    content = splitContent(content, f'{cmd} ', index=1).strip()
+    content = Content(content)
     fetchFrom = msg.channel
     if msg.channel_mentions:
         fetchFrom = msg.channel_mentions[0]
-        content = content.replace(fetchFrom.mention,  "").strip()
+        content = content.replace(fetchFrom.mention,  "", ret=True).strip()
     if content.isnumeric():
         try: msg = await fetchFrom.fetch_message(content)
         except discord.errors.NotFound:
@@ -991,10 +955,8 @@ async def messageInfo(msg, content, cmd="messageinfo"):
     return await embedToReadableDict(msg, embed)
 
 async def typeFor(msg, content, cmd="type"):
-    timeToType = 5
-    split = splitContent(content, " ")
-    if split:
-        timeToType = int(split[1])
+    content = Content(content)
+    timeToType = int(content) if content else 5
     if timeToType > 420:
         return await msg.channel.send("sorry thats too long")
     async with msg.channel.typing():
@@ -1002,22 +964,20 @@ async def typeFor(msg, content, cmd="type"):
     return await msg.channel.send(f'typed for {timeToType} seconds')
 
 async def sendBlank(msg, content, cmd="sendblank"):
-    amnt = 5
-    split = splitContent(content, f"{cmd} ", index=1)
-    if split:
-        amnt = int(split)
-    send = "_" + ("\n" * amnt) + "_"
-    return await msg.channel.send(send)
+    content = Content(content)
+    amnt = int(content) if content else 5
+    msg = await msg.channel.send("_" + ("\n" * amnt) + "_")
+    if msg.channel.name == "waddles_and_tales":
+        await msg.channel.send("https://media.discordapp.net/attachments/693893222006521856/730483647857033257/Screen_Shot_2020-07-08_at_2.00.35_PM.png")
+    return msg
 
 async def hangman(msg, content, cmd="hangman"):
-    user = (await getUserInContent(msg, content, cmd))
-    content = content[len(cmd) + 2:]
+    content = Content(content)
+    user = content.getUser(msg, 0)
     if user.id in playingHangman.keys():
         return await msg.channel.send(f'{msg.author.mention} {user.name} is already in a game')
-    split = splitContent(content, " ", index=1)
-    if split: 
-        lives = int(split.strip())
-    else: lives = 9
+    try: lives = int(content.split(" ")[1])
+    except: lives = 9
     playingHangman[user.id] = None
     await msg.author.send(f"you will have 15 seconds to send a word of your choice, and {user.name} will have to guess it in {msg.channel.name}")
     await asyncio.sleep(15)
@@ -1075,12 +1035,11 @@ async def userInfo(msg, content, cmd="userinfo"):
     await msg.channel.send(embed=embed)
 
 async def fetchRole(msg, content, cmd="fetchrole"):
-    roleId = int(content[len(cmd) + 2:])
-    role = msg.guild.get_role(roleId)
+    role = msg.guild.get_role(int(Content(content)))
     return await msg.channel.send(role.name)
 
 async def categoryInfo(msg, content, cmd="categoryinfo"):
-    content = content[len(cmd) + 2:]
+    content = Content(content).string
     cat = discord.utils.find(lambda x: x.name.lower() == content.lower(), msg.guild.categories)
     embed = discord.Embed(title=cat.name)
     embed.add_field(name="id", value=cat.id)
@@ -1098,20 +1057,18 @@ async def spamStop(msg, content, cmd="spamstop"):
         await asyncio.sleep(random.uniform(.3, 1.2))
 
 async def calc(msg, content, cmd="calc"):
-    content = content[len(cmd) + 2:]
-    print(content)
-    if "help(" in content or "quit()" in content or "exit()" in content or "os." in content or "token" in content or "input(" in content or "sys." in content or "__import__('os')" in content or '__import__("os")' in content:
+    content = Content(content)
+    if not content.suitibleForEval():
         return await msg.channel.send('nice try')
     else: 
         try:
-            print(exec(content))
-            return await msg.channel.send(eval(content))
+            return await msg.channel.send(eval(str(content)))
         except Exception as e:
             print(e)
             return await msg.channel.send(str(type(e)).split(' ')[1].split("'")[1].strip("'"))
 
 async def pokemon(msg, content, cmd="pokemon"):
-    pokemon = splitContent(content, " ", index=1)
+    pokemon = Content(content)
     try:
         request = requests.get(f"https://www.pokemon.com/us/pokedex/{pokemon}")
         soup = bs.BeautifulSoup(request.text, features="html.parser")
@@ -1135,8 +1092,8 @@ async def pokemon(msg, content, cmd="pokemon"):
         return await msg.channel.send("smth went wrong")
 
 async def hypixelPlayerCount(msg, content, cmd="hypixelpc"):
-    if testInContent(content, " "):
-        game = splitContent(content, " ", index=1)
+    game = Content(content).string
+    if game:
         data = requests.get(f"https://api.hypixel.net/gameCounts?key={HPKEY}").json()
         if game == "list":
             return await msg.channel.send(", ".join(list(x.lower() for x in data["games"].keys())))
@@ -1160,17 +1117,15 @@ async def hypixelBanStats(msg, content, cmd="hypixelban"):
     return await msg.channel.send(embed=embed)
 
 async def whoHasRole(msg, content, cmd="hasrole"):
-    Raw = False
-    if testInContent(content, "--file"):
-        content = content.replace(" --file", "")
-        Raw = True
-    role = splitContent(content, cmd + " ")[1]
-    role = discord.utils.find(lambda r: r.name.lower() == role.lower(), msg.channel.guild.roles)
+    role = Content(content)
+    role.calcOps()
+    Raw = False if not role @ "--file" else True
+    role = discord.utils.find(lambda r: r.name.lower() == role.lower().strip(), msg.channel.guild.roles)
     if not role: return await msg.channel.send("role not found")
     has = [user.mention for user in msg.channel.guild.members if role in user.roles]
     try: 
-        embed = discord.Embed(title=role.name, color=role.color)   
         if Raw: raise FileException("wanted file")
+        embed = discord.Embed(title=role.name, color=role.color)   
         embed.add_field(name="has", value="\n".join(has))
         await msg.channel.send(embed=embed)
         msg.content = "\n".join([user.name for user in msg.channel.guild.members if role in user.roles])
@@ -1189,15 +1144,12 @@ async def whoHasRole(msg, content, cmd="hasrole"):
 
 async def addCustomCmd(msg, content, cmd="customcmd"):
     global CATS, CMDLIST, CUSTOMCMDS
-    if "--lock" in content:
-        Locked = True
-        content = content.replace("--lock", "")
-    else: Locked = False
-    c = splitContent(content, "|")
-    name = c[0][len(cmd) + 2:].strip()
-    c.pop(0)
+    content = Content(content)
+    Locked = False if not content @ "--lock" else True
+    c = content.split("|")
+    name = c.pop(0)
+    say = c.pop(0)
     if " " in name: return await msg.channel.send("no spaces in command names")
-    say = "|".join(c)
     with open(customcmdsFilePath, "r+") as j:
         data = json.load(j)
         for cmd in data:
@@ -1452,7 +1404,7 @@ async def INIT_deathBattle(msg, content, cmd="deathbatte"):
     await deathBattle(msg, users, first, second, responseTime, damageMsgs, healMsgs, embed, first, second, editable)
     
 async def mmoney(msg, content, cmd="mmoney"):
-    user = await getUserInContent(msg, content, cmd)
+    user = Content(content).getUser(msg, 0)
     if testInContent(content, "--raw"):
         with open(moneyDataFilePath, "rb") as f:
             await msg.channel.send(file=discord.File(f, "money.json"))
@@ -1469,11 +1421,10 @@ async def shop(msg, content, cmd="shop"):
         await msg.channel.send(embed=embed)
 
 async def buyItem(msg, content, cmd="buyitem"):
-    buying = splitContent(content, cmd)[1].strip()
-    if testInContent(content, ", "):
-        split = splitContent(buying, ", ")
-        amnt = int(split[1])
-        buying = split[0]
+    buying = Content(content).string
+    if ", " in content:
+        amnt = int(content.split(", ")[1])
+        buying = content.split(", ")[0]
     else: amnt = 1
     with open(moneyDataFilePath, "r") as j:
         data = json.load(j)
@@ -1530,21 +1481,22 @@ async def inventory(msg, content, cmd="inv"):
         else: return await msg.channel.send("none")
 
 async def duplicator(msg, content, cmd="duplicator"):
+    t = Content(content)
     times = 2
-    t = splitContent(content, " ")[1]
-    if t.isnumeric():
-        times = int(t)
-        content = content.replace(f' {str(times)}', "")
-    try: return await msg.channel.send(f'{content[len(cmd) + 2:]} '*times)
+    if t.split(" ")[0].isnumeric():
+        times = int(t.split(" ")[0])
+        t = t.replace(f'{times}', "", ret=True).strip()
+    try: return await msg.channel.send(f'{t} '*times)
     except: return await msg.channel.send("message too long, try reducing the number of duplications")
 
 async def customCmdList(msg, content, cmd="customcmdlist"):
     _, _, CUSTOMCMDS = await reloadCMDSLIST()
-    if testInContent(content, "--raw"):
+    content = Content(content)
+    if content @ "--raw":
         with open(customcmdsFilePath, "rb") as f: await msg.channel.send(file=discord.File(f, "customCmds.json"))
     else: 
         try:
-            if testInContent(content, "--file"): raise FileException("wanted file")
+            if content @ "--file": raise FileException("wanted file")
             content = await oneLineCmd(msg, "\n".join([f'{x}: {y}' for x, y in CUSTOMCMDS.items()]))
         except:
             write = ""
@@ -1568,9 +1520,9 @@ async def customCmdList(msg, content, cmd="customcmdlist"):
 async def editCustomCmd(msg, content, cmd="eccmd"):
     global BOTMODS
     BOTMODS = reloadBOTMODS()
-    lookFor = content.split("|")[0][len(cmd) + 2:].strip()
-    changeTo = content.split("|")[1:]
-    changeTo = ", ".join(changeTo)
+    content = Content(content)
+    lookFor = content.split("|")[0]
+    changeTo = content.split("|", pastIndex=1)
     with open(customcmdsFilePath, "r+") as j:
         data = json.load(j)
         for command in data:
@@ -1588,31 +1540,32 @@ async def editCustomCmd(msg, content, cmd="eccmd"):
                             command["editedby"] += [str(msg.author.id)]
                     else: command["editedby"] = [str(msg.author.id)]
                 else: return await msg.channel.send("cannot change that command it's locked")
+                break
+        else: return await msg.channel.send("command doesn't exist")
         clearFile(j)
         json.dump(data, j)
     return await msg.channel.send("changed successfully")
 
 async def luckynumber(msg, content, cmd="luckynumber"):
+    content = Content(content)
     who = msg.author.mention
-    content = content[len(cmd) + 2:]
     count = 3
-    if testInContent(content, "-c"):
-        c = splitContent(content, "-c ")[1]
-        try: count = int(c)
-        except: return await msg.channel.send("amount of numbers must be an integer")
-        content = content.replace(f"-c {count}", "")
-    if testInContent(content, " "):
-        who = splitContent(content, " ")[1]
+    for op, param in content.opsWithParams():
+        if op == "-c":
+            try: count = int(param)
+            except: return await msg.channel.send("amount of numbers must be an integer")
+    if content: who = content
     nums = " ".join([str(random.randint(1, 10)) for _ in range(count)])
     if random.random() >= .999: return await msg.channel.send(f"{who}'s lucky numbers are 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7")
     return await msg.channel.send(f"{who}'s lucky numbers are {nums}")
 
 async def uptime(msg, content, cmd="uptime"):
-    stopAt = {x for x in content.split(" ")} & {"seconds", "minutes", "hours", "days", "weeks"}
+    content = Content(content)
+    stopAt = content.toSet() & {"seconds", "minutes", "hours", "days", "weeks"}
     if stopAt:
-        stopAt = list(stopAt)[0]
+        stopAt = tuple(stopAt)[0]
         t, layer = await formatSeconds(time.time() - UPTIME, stopAt=stopAt)
-        r = 15 if not splitContent(content, stopAt + " ") else int(splitContent(content, f'{stopAt} ')[1])
+        r = 15 if not splitContent(str(content), stopAt + " ") else int(splitContent(str(content), f'{stopAt} ')[1])
         await msg.channel.send(f'{round(t, r)} {layer}')
     else:
         if random.random() > .99: return await msg.channel.send("tbh i forget how long i've been on for sorry, i might remember later though")
@@ -1620,20 +1573,18 @@ async def uptime(msg, content, cmd="uptime"):
         return await msg.channel.send(f'{str(t)} {layer}')
 
 async def editCmd(msg, content, cmd="edit"):
-    if testInContent(content, "-t"):
-        if content.split("-t ")[1] == "instant":
-            content = content.replace(f' -t instant', "")
-            sleepFor = 0
-        else:
-            sleepFor = float(content.split("-t ")[1])
-            if sleepFor < 0:
-                return await msg.channel.send("must be greater than 0")
-            if sleepFor >= 1:
-                content = content.replace(f' -t {str(sleepFor).replace(".0", "")}', "")
+    content = Content(content)
+    for op, param in content.opsWithParams():
+        if op == "-t":
+            if param == "instant":
+                sleepFor = 0
             else:
-                content = content.replace(f' -t {str(sleepFor).replace("0", "")}', "")
+                sleepFor = float(param)
+                if sleepFor < 0:
+                    return await msg.channel.send("must be greater than 0")
+            break
     else: sleepFor = .7
-    edits = content[len(cmd) + 2:].split("|")
+    edits = content.split("|")
     editable = await msg.channel.send(edits[0])
     while edits:
         edits.pop(0)
@@ -1662,11 +1613,11 @@ async def editCmd(msg, content, cmd="edit"):
     return editable
 
 async def pingResponse(msg, content, cmd="pingresponse"):
-    response = content[len(cmd) + 2:]
+    response = Content(content)
     if isBot(msg, client): return
     with open(pingResponseFilePath, "r+") as j:
         data = json.load(j)
-        if testInContent(response, "-WHEN"):
+        if "-WHEN" in response:
             when = response.split("-WHEN ")[1]
             when = when.split(" ")
             data[str(msg.author.id)]["when"] = when
@@ -1674,31 +1625,18 @@ async def pingResponse(msg, content, cmd="pingresponse"):
             del data[str(msg.author.id)]
         else:
             if not data.get(str(msg.author.id)):
-                data[str(msg.author.id)] = {"response": response, "when": ["offline"]}
+                data[str(msg.author.id)] = {"response": str(response), "when": ["offline"]}
             else:
-                data[str(msg.author.id)] = {"response": response, "when": data[str(msg.author.id)]["when"]}
+                data[str(msg.author.id)] = {"response": str(response), "when": data[str(msg.author.id)]["when"]}
         clearFile(j)
         json.dump(data, j)
     if "-WHEN" in response:
         return await msg.channel.send(f'response will happen when you are {" ".join(data[str(msg.author.id)]["when"])}')
     return await msg.channel.send(f"changed to:\n{response}")
 
-async def swearAtMe(msg, content, cmd="swearatme"):
-    amnt = splitContent(content, " ", index=1)
-    try: 
-        if amnt: amnt = int(amnt)
-        else: amnt = 1
-    except: return await msg.author.send("has to be a number")
-    with open("profanity.json", "r") as f:
-        swears = json.load(f)
-    for _ in range(amnt):
-        await msg.author.send(random.choice(swears))
-        await asyncio.sleep(random.uniform(.7, 1.3))
-
 async def setStatus(msg, content, cmd="status"):
-    st = content.split(" ")
+    st = Content(content)
     if len(st) > 1:
-        st = " ".join(st[1:])
         await client.change_presence(activity=discord.Game(name=str(st)))
         return await msg.channel.send(f"changed to {st}")
     else: return await msg.channel.send("you didn't set the status to anything")
@@ -1799,7 +1737,7 @@ async def textInfo(msg, content, cmd="textinfo"):
 
 async def embedInfo(msg, content, cmd="embedtotext"):
     sendTo = msg
-    content = splitContent(content, f'{cmd} ', index=1).strip()
+    content = Content(content).string
     fetchFrom = msg.channel
     if msg.channel_mentions:
         fetchFrom = msg.channel_mentions[0]
@@ -1819,34 +1757,34 @@ async def embedInfo(msg, content, cmd="embedtotext"):
                     embed = mssg.embeds[0]
                     break
             return await msg.channel.send('no messages with embeds found')
-    print(embed.to_dict())
     return await msg.channel.send((await embedToReadableDict(msg, embed)).content)
 
 async def rotateImg(msg, content, cmd="rotateImg"):
-    content = content[len(cmd) + 2:]
+    content = Content(content)
     att, filename, url = await getImg(msg)
+    Fit = True if not content @ "--nofit" else False
+    print(content)
     if "https://" in content:
-        content = content.replace(url, '')
+        content.replace(url, '')
     if len(content.split(" ")) == 1 and any(content.split(" ")):
-        angle = content.split(" ")[0]
+        angle = int(content.split(" ")[0])
     else: angle = 90
             
     if not url: return await msg.channel.send("no img provided")
     await saveImg(filename, url)
-    
     img = Image.open(filename)
-    img = img.rotate(int(angle), expand=True)
+    img = img.rotate(int(angle), expand=Fit)
     img.save(filename)
     with open(filename, "rb") as i:
         await msg.channel.send(file=discord.File(i, filename=filename))
     os.remove(filename)
 
 async def mirrorImg(msg, content, cmd="mirrorimg"):
-    content = content[len(cmd) + 2:]
+    content = Content(content)
     XY = content.split(" ")[0].lower()
     att, filename, url = await getImg(msg)
     if "https://" in content:
-        content = content.replace(url, '')
+        content.replace(url, '')
     await saveImg(filename, url)
     img = Image.open(filename)
     if XY == "x":
@@ -1859,10 +1797,10 @@ async def mirrorImg(msg, content, cmd="mirrorimg"):
     os.remove(filename)
 
 async def spreadPixels(msg, content, cmd="spreadpixels"):
-    content = content[len(cmd) + 2:]
+    content = Content(content)
     att, filename, url = await getImg(msg)
     if "https://" in content:
-        content = content.replace(url, '')
+        content.replace(url, '')
     if content.split(" ")[0]:
         dist = int(content.split(" ")[0])
     else: dist = 100
@@ -1875,10 +1813,10 @@ async def spreadPixels(msg, content, cmd="spreadpixels"):
     os.remove(filename)
 
 async def filterImg(msg, content, cmd="filterimg"):
-    content = content[len(cmd) + 2:]
+    content = Content(content)
     att, filename, url = await getImg(msg)
     if "https://" in content:
-        content = content.replace(url, '')
+        content.replace(url, '')
     if content.split(" ")[0]:
         filt = content.split(" ")[0:]
     else: return await msg.channel.send("no filter provided")
@@ -1925,15 +1863,13 @@ async def filterImg(msg, content, cmd="filterimg"):
         await msg.channel.send(file=discord.File(i, filename=filename))
     os.remove(filename)
 async def pixelColor(msg, content, cmd="pixelcolor"):
-    content = content[len(cmd) + 2:]
+    content = Content(content)
     att, filename, url = await getImg(msg)
     if "https://" in content:
-        content = content.replace(url, '')
+        content.replace(url, '')
     if content.split(" ")[0]:
-        try:
-            x, y = content.split(" ")
-        except:
-            return await msg.channel.send("provide x and y")
+        try: x, y = content.split(" ")
+        except: return await msg.channel.send("provide x and y")
     else: return await msg.channel.send("no coords provided")
     await saveImg(filename, url)
     img = Image.open(filename)
@@ -1967,34 +1903,33 @@ async def shrinkImg(msg, content, cmd="shrinkimg"):
     os.remove(filename)
 
 async def colorize(msg, content, cmd="colorize"):
-    content = content[len(cmd) + 2:]
+    content = Content(content)
     att, filename, url = await getImg(msg)
     if "https://" in content:
         content = content.replace(url, '')
-    content = content.split(" ")
-    black = content[0:3]
-    white = content[3:6]
     blackPoint = 0
     whitePoint = 255
     midPoint = 127
     mid = None
-    if "-mid" in content:
-        mid = content[content.index("-mid") + 1: content.index("-mid") + 4]
-        mid = tuple(int(x) for x in mid)
-    if "-midpoint" in content:
-        midPoint = int(content[content.index("-midpoint") + 1])
-    if "-blackpoint" in content:
-        blackPoint = int(content[content.index("-blackpoint") + 1])
-    if "-whitepoint" in content:
-        whitePoint = int(content[content.index("-whitepoint") + 1])
+    for op, param in content.opsWithParams({"mid": 3}):
+        if "-mid" in content:
+            mid = tuple(int(x) for x in param)
+        if "-midpoint" in content:
+            midPoint = int(param[0])
+        if "-blackpoint" in content:
+            blackPoint = int(param[0])
+        if "-whitepoint" in content:
+            whitePoint = int(param[0])
+    content = content.split(" ", key=lambda x: int(x) if x else False)
+    black = content[0:3]
+    white = content[3:6]
     await saveImg(filename, url)
     img = Image.open(filename)
-    img = ImageOps.colorize(img.convert("L"), tuple(int(x) for x in black), tuple(int(x) for x in white), mid=mid, blackpoint=blackPoint, whitepoint=whitePoint, midpoint=midPoint)
+    img = ImageOps.colorize(img.convert("L"), black, white, mid=mid, blackpoint=blackPoint, whitepoint=whitePoint, midpoint=midPoint)
     img.save(filename)  
     with open(filename, "rb") as i:
         await msg.channel.send(file=discord.File(i, filename=filename))
     os.remove(filename)
-
 
 async def resizeImg(msg, content, cmd="resizeimg"):
     content = content[len(cmd) + 2:]
@@ -2069,22 +2004,20 @@ async def enhanceImg(msg, content, cmd="enhanceimg"):
     os.remove(filename)
 
 async def cropImg(msg, content, cmd="crop"):
-    content = content[len(cmd) + 2:]
+    content = Content(content)
     att, filename, url = await getImg(msg)
     if "https://" in content:
-        content = content.replace(url, '')
-    if "-box" in content:
-        x1, y1, x2, y2 = content.split("-box ")[1].split(" ")
-    if content.split(" ")[0] and "-box" not in content:
-        amnt = int(content.split(" ")[0])
-    else: amnt = 20
+        content.replace(url, '')
+    for op, param in content.opsWithParams({"box": 4}):
+        if op == "-box":
+            x1, y1, x2, y2 = (int(x) for x in param)
+            break
+    else: amnt = int(content) if content else 20
     await saveImg(filename, url)
     img = Image.open(filename)
-    if "-box" in content:
-        x1, y1, x2, y2 = (int(x) for x in (x1, y1, x2, y2))
+    if "-box" in content.opOps:
         img = img.crop(box=(x1, y1, x2, y2))
-    else:
-        img = ImageOps.crop(img, border=amnt)
+    else: img = ImageOps.crop(img, border=amnt)
     img.save(filename)  
     with open(filename, "rb") as i:
         await msg.channel.send(file=discord.File(i, filename=filename))
@@ -2156,24 +2089,22 @@ async def invert(msg, content, cmd="invert"):
     os.remove(filename)
 
 async def compileImgs(msg, content, cmd="compileimg"):
-    content = content[len(cmd) + 2:].split(" ")
+    content = Content(content)
     filename1 = f'{msg.author.id}.png'
     filename2 = f'{msg.author.id}2.png'
-    await saveImg(filename1, content[0])
-    await saveImg(filename2, content[1])
-    if "-box" in content:
-        box = content[content.index("-box") + 1: content.index("-box") + 3]
-        box = tuple(int(x) for x in box)
-    else: box = (0, 0)
+    await saveImg(filename1, content.split(" ")[0])
+    await saveImg(filename2, content.split(" ")[1])
+    box = (0, 0)
+    alpha = .5
+    for op, param in content.opsWithParams({"box": 2}):
+        if op == "-box":
+            box = tuple(int(x) for x in param)
+        elif op == "-alpha":
+            alpha = float(param)
     img1 = Image.open(filename1)
     img2 = Image.open(filename2)
-    if "-box" in content:
-        img1.paste(img2, box=box)
-    else:
-        if "-alpha" in content:
-            alpha = float(content[content.index("-alpha") + 1])
-        else: alpha = .5
-        img1 = Image.blend(img1, img2, alpha)
+    if "-box" in content.opOps: img1.paste(img2, box=box)
+    else: img1 = Image.blend(img1, img2, alpha)
     img1.save(filename1)
     with open(filename1, "rb") as i:
         await msg.channel.send(file=discord.File(i, filename="yes.png"))
@@ -2233,8 +2164,7 @@ async def newImg(msg, content, cmd="newimg"):
     try:
         content[1]
         size = content[0:2]
-    except:
-        size = (500, 500)
+    except: size = (500, 500)
     if len(content) > 2:
         color = content[2:]
     else: color = [0, 0, 0]
@@ -2245,37 +2175,31 @@ async def newImg(msg, content, cmd="newimg"):
     os.remove(f"{msg.author.id}.png")
 
 async def rectangle(msg, content, cmd="rectangle"):
-    content = content[len(cmd) + 2:]
+    content = Content(content)
     att, filename, url = await getImg(msg)
     if "https://" in content:
-        content = content.replace(url, '')
+        content.replace(url, '')
     await saveImg(filename, url)
     img = Image.open(filename)
-    params = content.split(" ")
-    if "--rgba" in params:
+    content.calcOps()
+    if content @ "--rgba":
         Rgba = True
         img = img.convert("RGBA")
     else: Rgba = False
     img.save(filename)
     with Image.open(filename) as img:
         draw = ImageDraw.Draw(img)
-        params = content.split(" ")
-        for param in params:
-            params[params.index(param)] = params[params.index(param)].replace("{width}", str(img.width)).replace("{height}", str(img.height))
-        x1, y1, x2, y2 = params[0:4]
+        x1, y1, x2, y2 = content.replace("{width}", str(img.width), ret=True).replace("{height}", str(img.height)).split(" ")[0:4]
         FR=FG=FB=FA=OA=OR=OG=OB=width = None
-        if "-fill" in params:
-            if not Rgba:
-                FR, FG, FB = params[params.index("-fill") + 1 : params.index("-fill") + 4]
-            else:
-                FR, FG, FB, FA = params[params.index("-fill") + 1 : params.index("-fill") + 5]
-        if "-outline" in params:  
-            if not Rgba:
-                OR, OG, OB = params[params.index("-outline") + 1 : params.index("-outline") + 4]
-            else:
-                OR, OG, OB, OA = params[params.index("-outline") + 1 : params.index("-outline") + 5]
-        if "-width" in params:
-            width = params[params.index("-width") + 1]
+        for op, param in content.opsWithParams({"fill": 3, "outline": 3} if not Rgba else {"fill": 4, "outline": 4}):
+            if op == "-fill":
+                if not Rgba: FR, FG, FB = param
+                else: FR, FG, FB, FA = param
+            if op == "-outline":  
+                if not Rgba: OR, OG, OB = param
+                else: OR, OG, OB, OA = param
+            if op == "-width":
+                width = param
         if Rgba:
             draw.rectangle([(int(x1), int(y1)), (int(x2), int(y2))], fill=None if not FR else (int(FR), int(FG), int(FB), int(FA)), outline=None if not OR else (int(OR), int(OG), int(OB), int(OA)), width=1 if not width else int(width))
         else:
@@ -2286,73 +2210,66 @@ async def rectangle(msg, content, cmd="rectangle"):
     os.remove(filename)
 
 async def imgArc(msg, content, cmd="imgarc"):
-    content = content[len(cmd) + 2:]
+    content = Content(content)
+    content.calcOps()
     att, filename, url = await getImg(msg)
     if "https://" in content:
-        content = content.replace(url, '')
+        content.replace(url, '')
     await saveImg(filename, url)
     img = Image.open(filename)
-    params = content.split(" ")
-    if "--rgba" in params:
+    if content @ "--rgba":
         Rgba = True
         img = img.convert("RGBA")
     else: Rgba = False
     img.save(filename)
     with Image.open(filename) as img:
         draw = ImageDraw.Draw(img)
-        params = content.split(" ")
-        for param in params:
-            params[params.index(param)] = params[params.index(param)].replace("{width}", str(img.width)).replace("{height}", str(img.height))
-        x1, y1, x2, y2 = params[0:4]
-        startAngle = int(params[4])
-        endAngle = int(params[5])
+        x1, y1, x2, y2 = content.replace("{width}", str(img.width), ret=True).replace("{height}", str(img.height)).split(" ")[0:4]
+        startAngle = content.split(" ")[4]
+        endAngle = content.split(" ")[5]
         FR=FG=FB=FA=width = None
-        if "-fill" in params:
-            if Rgba:
-                FR, FG, FB, FA = params[params.index("-fill") + 1 : params.index("-fill") + 5]
-            else:
-                FR, FG, FB = params[params.index("-fill") + 1 : params.index("-fill") + 4]
-        if "-width" in params:
-            width = params[params.index("-width") + 1]
-        if Rgba: draw.arc([(int(x1), int(y1)), (int(x2), int(y2))], startAngle, endAngle, fill=None if not FR else (int(FR), int(FG), int(FB), int(FA)), width=1 if not width else int(width))
-        else: draw.arc([(int(x1), int(y1)), (int(x2), int(y2))], startAngle, endAngle, fill=None if not FR else (int(FR), int(FG), int(FB)), width=1 if not width else int(width))
+        for op, param in content.opsWithParams({"fill": 3 if not Rgba else 4}):
+            if op== "-fill":
+                if not Rgba: FR, FG, FB = param
+                else: FR, FG, FB, FA = param
+            if op == "-width":
+                print(param)
+                width = param
+        if Rgba: draw.arc([(int(x1), int(y1)), (int(x2), int(y2))], 
+                            startAngle, endAngle, 
+                            fill=None if not FR else (int(FR), int(FG), int(FB), int(FA)), 
+                            width=1 if not width else int(width))
+        else: draw.arc([(int(x1), int(y1)), (int(x2), int(y2))], int(startAngle), int(endAngle), fill=None if not FR else (int(FR), int(FG), int(FB)), width=1 if not width else int(width))
         img.save(filename)
     with open(filename, "rb") as i:
         await msg.channel.send(file=discord.File(i, filename=filename))
     os.remove(filename)
 
 async def ellipse(msg, content, cmd="ellipse"):
-    content = content[len(cmd) + 2:]
+    content = Content(content)
     att, filename, url = await getImg(msg)
     if "https://" in content:
-        content = content.replace(url, '')
+        content.replace(url, '')
     await saveImg(filename, url)
     img = Image.open(filename)
-    params = content.split(" ")
-    if "--rgba" in params:
+    if content @ "--rgba":
         Rgba = True
         img = img.convert("RGBA")
     else: Rgba = False
     img.save(filename)
     with Image.open(filename) as img:
         draw = ImageDraw.Draw(img)
-        params = content.split(" ")
-        for param in params:
-            params[params.index(param)] = params[params.index(param)].replace("{width}", str(img.width)).replace("{height}", str(img.height))
-        x1, y1, x2, y2 = params[0:4]
+        x1, y1, x2, y2 = content.replace("{width}", str(img.width), ret=True).replace("{height}", str(img.height)).split(" ")[0:4]
         FR=FG=FB=FA=OR=OG=OB=OA=width = None
-        if "-fill" in params:
-            if Rgba:
-                FR, FG, FB = params[params.index("-fill") + 1 : params.index("-fill") + 5]
-            else:
-                FR, FG, FB = params[params.index("-fill") + 1 : params.index("-fill") + 4]
-        if "-outline" in params:
-            if Rgba:
-                OR, OG, OB = params[params.index("-outline") + 1 : params.index("-outline") + 5]
-            else:
-                OR, OG, OB = params[params.index("-outline") + 1 : params.index("-outline") + 5]
-        if "-width" in params:
-            width = params[params.index("-width") + 1]
+        for op, param in content.opsWithParams({"fill": 3, "outline": 3} if not Rgba else {"fill": 4, "outline": 4}):
+            if op == "-fill":
+                if not Rgba: FR, FG, FB = param
+                else: FR, FG, FB, FA = param
+            if "-outline" in params:
+                if not Rgba: OR, OG, OB = param
+                else: OR, OG, OB, OA = param
+            if "-width" in params:
+                width = param
         if Rgba: draw.ellipse([(int(x1), int(y1)), (int(x2), int(y2))], outline=None if not OR else (int(OR), int(OG), int(OB), int(OA)), fill=None if not FR else (int(FR), int(FG), int(FB), int(FA)), width=1 if not width else int(width))
         else: draw.ellipse([(int(x1), int(y1)), (int(x2), int(y2))], outline=None if not OR else (int(OR), int(OG), int(OB)), fill=None if not FR else (int(FR), int(FG), int(FB)), width=1 if not width else int(width))
         img.save(filename)
@@ -2361,36 +2278,32 @@ async def ellipse(msg, content, cmd="ellipse"):
     os.remove(filename)
 
 async def line(msg, content, cmd="line"):
-    content = content[len(cmd) + 2:]
+    content = Content(content)
     att, filename, url = await getImg(msg)
     if "https://" in content:
         content = content.replace(url, '')
     await saveImg(filename, url)
     img = Image.open(filename)
     params = content.split(" ")
-    if "--rgba" in params:
+    if content @ "--rgba":
         Rgba = True
         img = img.convert("RGBA")
     else: Rgba = False
     img.save(filename)
     with Image.open(filename) as img:
         draw = ImageDraw.Draw(img)
-        params = content.split(" ")
-        for param in params:
-            params[params.index(param)] = params[params.index(param)].replace("{width}", str(img.width)).replace("{height}", str(img.height))
-        x1, y1, x2, y2 = params[0:4]
+        x1, y1, x2, y2 = content.replace("{width}", str(img.width), ret=True).replace("{height}", str(img.height)).split(" ")[0:4]
         FR=FG=FB=FA=width = None
-        if "-fill" in params:
-            if Rgba: 
-                FR, FG, FB, FA = params[params.index("-fill") + 1 : params.index("-fill") + 5]
-            else:
-                FR, FG, FB = params[params.index("-fill") + 1 : params.index("-fill") + 4]
-        if "-width" in params:
-            width = params[params.index("-width") + 1]
-        if Rgba:
-            draw.line([(int(x1), int(y1)), (int(x2), int(y2))], fill=None if not FR else (int(FR), int(FG), int(FB), int(FA)), width=1 if not width else int(width))
-        else:
-            draw.line([(int(x1), int(y1)), (int(x2), int(y2))], fill=None if not FR else (int(FR), int(FG), int(FB)), width=1 if not width else int(width))
+        for op, param in content.opsWithParams({"fill": 3 if not Rgba else 4}):
+            if "-fill" in params:
+                if Rgba: FR, FG, FB, FA = param
+                else: FR, FG, FB = param
+            if "-width" in params:
+                width = param
+        if Rgba: draw.line([(int(x1), int(y1)), (int(x2), int(y2))], 
+                            fill=None if not FR else (int(FR), int(FG), int(FB), int(FA)), 
+                            width=1 if not width else int(width))
+        else: draw.line([(int(x1), int(y1)), (int(x2), int(y2))], fill=None if not FR else (int(FR), int(FG), int(FB)), width=1 if not width else int(width))
         img.save(filename)
     with open(filename, "rb") as i:
         await msg.channel.send(file=discord.File(i, filename=filename))
@@ -2427,52 +2340,36 @@ async def point(msg, content, cmd="point"):
     os.remove(filename)
 
 async def polygon(msg, content, cmd="poly"):
-    content = content[len(cmd) + 2:]
+    content = Content(content)
     att, filename, url = await getImg(msg)
     if "https://" in content:
-        content = content.replace(url, '')
+        content.replace(url, '')
     await saveImg(filename, url)
     img = Image.open(filename)
-    params = content.split(" ")
-    if "--rgba" in params:
+    if content @ "--rgba":
         Rgba = True
         img = img.convert("RGBA")
     else: Rgba = False
     img.save(filename)
     with Image.open(filename) as img:
         draw = ImageDraw.Draw(img)
-        params = content.split(" ")
-        XYS = params[0:]
-        FR=FG=FB=OR=OG=OB = None
-        if "-fill" in params:
-            if Rgba:
-                FR, FG, FB = params[params.index("-fill") + 1 : params.index("-fill") + 5]
-                XYS.remove(FA)
-            else:
-                FR, FG, FB = params[params.index("-fill") + 1 : params.index("-fill") + 4]
-            XYS.remove(FR)
-            XYS.remove(FG)
-            XYS.remove(FB)
-            XYS.remove("-fill")
-        if "-outline" in params:
-            if Rgba:
-                OR, OG, OB = params[params.index("-outline") + 1 : params.index("-outline") + 5]
-                XYS.remove(OA)
-            else:
-                OR, OG, OB = params[params.index("-outline") + 1 : params.index("-outline") + 4]
-            XYS.remove(OR)
-            XYS.remove(OG)
-            XYS.remove(OB)
-            XYS.remove("-outline")
-
+        FR=FG=FB=FA=OR=OG=OB=OA = None
+        for op, param in content.opsWithParams({"fill": 3, "outline": 3} if not Rgba else {"fill": 4, "outline": 4}):
+            if op == "-fill":
+                if Rgba: FR, FG, FB, FA = param
+                else: FR, FG, FB = param
+            elif op == "-outline":
+                if Rgba: OR, OG, OB, OA = param
+                else: OR, OG, OB = param
+        XYS = content[0:].split(" ")
         newXYS = [""]
         for XY in XYS:
+            if not XY: continue
             if len(newXYS[-1]) % 2 != 0:
                 newXYS[-1].append(int(XY))
             else:
                 newXYS.append([int(XY)])
         XYS = [tuple(XY) for XY in newXYS if type(XY) != str]
-        print(XYS)
         if Rgba: draw.polygon(XYS, fill=None if not FR else (int(FR), int(FG), int(FB), int(FA)), outline=None if not OR else (int(OR), int(OG), int(OB), int(OA)))
         else: draw.polygon(XYS, fill=None if not FR else (int(FR), int(FG), int(FB)), outline=None if not OR else (int(OR), int(OG), int(OB)))
         img.save(filename)
@@ -2481,36 +2378,34 @@ async def polygon(msg, content, cmd="poly"):
     os.remove(filename)
 
 async def imgText(msg, content, cmd="imgtext"):
-    content = content[len(cmd) + 2:]
+    content = Content(content)
     att, filename, url = await getImg(msg)
     await saveImg(filename, url)
     with Image.open(filename) as img:
         draw = ImageDraw.Draw(img)
-        params = content.split(" ")
-        if params[0] not in ("center", "top", "bottom"):
-            x, y = params[0:2]
+        split = content.split(" ")
+        if split[0] not in ("center", "top", "bottom"):
+            x, y = split[0:2]
         else: 
-            x=y = params[0]
-            params.insert(1, "center")
-            print(params)
-        text = " ".join(params[2:])
+            x=y = split[0]
+            split.insert(1, "center")
+        text = Content(" ".join(split[2:]), removeCmd=False)
         fill=FR=FG=FB=direction=txtWidth = None
         font = ImageFont.load_default()
         if msg.attachments:
             text = text.replace(msg.attachments[0].url, "")
-        if "-fill" in params:
-            FR, FG, FB = params[params.index("-fill") + 1: params.index("-fill") + 4]
-            text = text.replace(f'-fill {FR} {FG} {FB}', "")
-        if "-txtwidth" in params:
-            txtWidth = int(params[params.index("-txtwidth") + 1])
-            text = text.replace(f'-txtwidth {txtWidth}', "")
-        if "-font" in params:
-            font = f'{params[params.index("-font") + 1].title()}.ttf'
-            fontSize = int(params[params.index("-font") + 2])
-            text = text.replace(f'-font {font.replace(".ttf", "").lower()} {fontSize}', "")
-            font = ImageFont.truetype(f"/usr/share/fonts/truetype/msttcorefonts/{font}", fontSize, encoding="unic")
+        for op, param in text.opsWithParams({"fill": 3, "font": 2}):
+            if op == "-fill":
+                FR, FG, FB = param
+            if op == "-txtwidth":
+                txtWidth = param
+            if op == "-font":
+                font = f'{param[0].title()}.ttf'
+                fontSize = int(param[1])
+                font = ImageFont.truetype(f"/usr/share/fonts/truetype/msttcorefonts/{font}", fontSize, encoding="unic")
         imgWidth = img.width
         imgHeight = img.height
+        text = text.string
         textWidth, textHeight = font.getsize(text)
         if x == "center":
             draw.text(((imgWidth - textWidth) / 2, (imgHeight - textHeight) / 2), text, font=font, fill=(int(FR), int(FG), int(FB)) if FR else None, stroke_width=0 if not txtWidth else txtWidth)
@@ -2526,16 +2421,17 @@ async def imgText(msg, content, cmd="imgtext"):
     os.remove(filename)
 
 async def convertImg(msg, content, cmd):
-    content = content[len(cmd) + 2:]
+    content = Content(content)
     att, filename, url = await getImg(msg)
     if "https://" in content:
-        content = content.replace(url, '')
+        content.replace(url, '')
     mode = content.split(" ")[0]
     pallete=colors = None
-    if "-palette" in content.split(" "):
-        pallete = content.split(" ")[1]
-        if len(content.split(" ")) > 4:
-            colors = int(content.split(" ")[4])
+    for op, param in content.opsWithParams():
+        if op == "-palette":
+            pallete = param
+        if op == "-colors":
+            colors = param
     await saveImg(filename, url)
     img = Image.open(filename)
     if mode == "LAB":

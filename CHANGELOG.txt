@@ -1,3 +1,20 @@
+5.0-rc1  (7/8/2020)
+
+ADDITIONS:
+*-wait now works with -e in echo
+*-sep to choose
+*--nofit to rotate
+
+CHANGES:
+*lvlmsg now only accepts --see and --get
+*round now rounds to 2 instead of 3
+*color now works better with /{}
+*-color is now seperate from -palette in convertimg
+
+TECHNICAL:
+*completely changed how the bot parses commands
+
+====================================================================
 4.15
 
 ADDITIONS:

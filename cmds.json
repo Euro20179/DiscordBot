@@ -98,7 +98,7 @@
       },
       {
         "name": "lvlmsg",
-        "params": "<message> (--see/--get/--s/--g) (--f/--y) SPECIAL WORDS: {author}, {channel}, {emote}, {level}",
+        "params": "<message> (--see/--get) (--f/--y) SPECIAL WORDS: {author}, {channel}, {emote}, {level}",
         "desc": "sets your level up message to <message>\n--see shows the message\n--f auto confirms\n{author}: pings you\n{channel}: the current channel\n{emote} randoms server emote\n{level} the level you leveld up to\nif see or get, shows your level up message\nif message is none it wont say when you level up",
         "date": "5/29/2020"
       }
@@ -288,8 +288,8 @@
     "cmds": [
       {
         "name": "rotate",
-        "params": "[angle] <img>",
-        "desc": "rotates the image by angle, defaults to 90",
+        "params": "[angle] (--nofit) <img>",
+        "desc": "rotates the image by angle, defaults to 90\n--nofit makes it not expand the image to fit the rotation",
         "date": "7/5/2020"
       },
       {
@@ -457,7 +457,7 @@
       },
       {
         "name": "convertimg",
-        "params": "<mode> (-palette <WEB/ADAPTIVE> [colors (1-256)])",
+        "params": "<mode> (-palette <palette> (-color <color>))",
         "desc": "MODES:\n1: pure black and white\nL: greyscale\nand some others\nthis is a direct wrapper around PIL.Image.convert(mode=mode) refer to https://pillow.readthedocs.io/en/stable/handbook/concepts.html#concept-modes",
         "date": "7/6/2020"
       },
@@ -606,7 +606,7 @@
       },
       {
         "name": "choose",
-        "params": "*<from> (sep with |) (-picks <amount>)",
+        "params": "*<from> (sep with |) (-picks <amount>) (-sep <sep>)",
         "desc": "chooses -picks amount of <from>, defaults to 1 pick",
         "date": "5/6/2020"
       },
