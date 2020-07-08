@@ -14,7 +14,7 @@ class Content:
         self.opOps = []
 
     def calcOps(self):
-        if not self.split(" ") or "--" not in self or "—" not in self: return []
+        if not self.split(" ") or ("--" not in self and "—" not in self): return []
         for word in reversed(self.split(" ")):
             if "--" in word or "—" in word:
                 self.ops_.append(word)
@@ -69,7 +69,6 @@ class Content:
                     paramCount = paramcount.get(word.strip("-"))
                     if paramCount:
                         self.opOps.append(word)
-                        print(self, f'{word} {" ".join(l[l.index(word) + 1: l.index(word) + paramCount + 1])}')
                         self.replace(f'{word} {" ".join(l[l.index(word) + 1: l.index(word) + paramCount + 1])}', "")
                         yield (word, l[l.index(word) + 1: l.index(word) + paramCount + 1])
                 else:

@@ -13,11 +13,10 @@ async def hlp(msg, content, cmd="help"):
     global CATS, CMDLIST, CUSTOMCMDS
     CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
     c = Content(content)
-    ops = tuple(c.ops())
     opParams = tuple(c.opsWithParams())
     added = False
-    Raw = True if "--raw" in ops else False
-    File = True if "--file" in ops else False
+    Raw = True if c @ "--raw" else False
+    File = True if c @ "--file" else False
     for op, param in opParams:
         if op == "-added":
             added = param
@@ -577,7 +576,6 @@ async def rand(msg, content, cmd="rand"):
     if Stop: Stop = False
     content = Content(content)
     content.calcOps()
-    print(content)
     Even = False if not content @ "--even" else True
     Odd = False if not content @ "--odd" else True
     content = content.split(" ")
@@ -592,7 +590,6 @@ async def rand(msg, content, cmd="rand"):
             while True:
                 if Stop: await msg.channel.send(await stop("stopped picking a number"))
                 res = random.randint(low, high)
-                print(res, low, high)
                 if Even and res % 2 != 0: continue					
                 if Odd and res % 2 == 0: continue
         else:
@@ -659,7 +656,6 @@ async def count(msg, content, cmd="count"):
     text = f'.{highest}.'
     fancy = ""
     for op in content.ops_:
-        print(op)
         if op == "--i":
             fancy += "*"
         if op == "--b":
@@ -827,10 +823,6 @@ async def changes(msg, content, cmd="changes"):
                     m = m.strip("(")
                     y = y.strip(")")
                 except: continue
-                print(date)
-                print(f'{m}/{d}/{y}')
-                print(date == f'{m}/{d}/{y}')
-                print(lookFor, lookFor == "date")
                 if lookFor == "-day" and d == date:
                     vers.append(ver)
                 elif lookFor == "-m" and m == date:
@@ -1769,7 +1761,6 @@ async def rotateImg(msg, content, cmd="rotateImg"):
     content = Content(content)
     att, filename, url = await getImg(msg)
     Fit = True if not content @ "--nofit" else False
-    print(content)
     if "https://" in content:
         content.replace(url, '')
     if len(content.split(" ")) == 1 and any(content.split(" ")):
@@ -2239,7 +2230,6 @@ async def imgArc(msg, content, cmd="imgarc"):
                 if not Rgba: FR, FG, FB = param
                 else: FR, FG, FB, FA = param
             if op == "-width":
-                print(param)
                 width = param
         if Rgba: draw.arc([(int(x1), int(y1)), (int(x2), int(y2))], 
                             startAngle, endAngle, 
