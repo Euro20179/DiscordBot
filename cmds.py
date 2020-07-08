@@ -1100,10 +1100,11 @@ async def spamStop(msg, content, cmd="spamstop"):
 async def calc(msg, content, cmd="calc"):
     content = content[len(cmd) + 2:]
     print(content)
-    if "help(" in content or "quit()" in content or "exit()" in content or "os." in content or "token" in content or "input(" in content or "sys." in content:
+    if "help(" in content or "quit()" in content or "exit()" in content or "os." in content or "token" in content or "input(" in content or "sys." in content or "__import__('os')" in content or '__import__("os") in content':
         return await msg.channel.send('nice try')
     else: 
         try:
+            print(exec(content))
             return await msg.channel.send(eval(content))
         except Exception as e:
             print(e)
