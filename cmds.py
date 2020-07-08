@@ -967,7 +967,7 @@ async def sendBlank(msg, content, cmd="sendblank"):
     content = Content(content)
     amnt = int(content) if content else 5
     msg = await msg.channel.send("_" + ("\n" * amnt) + "_")
-    if msg.channel.name == "waddles_and_takles":
+    if msg.channel.name == "waddles_and_talkles":
         await msg.channel.send("https://media.discordapp.net/attachments/693893222006521856/730483647857033257/Screen_Shot_2020-07-08_at_2.00.35_PM.png")
     return msg
 
