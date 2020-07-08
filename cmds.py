@@ -2619,8 +2619,8 @@ async def play(msg, content, cmd="play"):
         try:
             VC = await vc.connect()
             queue.setVC(VC)
-        except:
-            pass
+        except Exception as e:
+            print(e)
         source = discord.FFmpegPCMAudio(source=f'./queue/{queue[0]}')
         VC = queue.VC
         if not VC.is_playing():
