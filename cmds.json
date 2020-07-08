@@ -681,7 +681,7 @@
       },
       {
         "name": "textinfo",
-        "params": "<text/file> (--rankwords)",
+        "params": "<text/file> (-re <regex>) (--rankwords)",
         "desc": "gives info on text\n--rankwords gives a list of words sorted by usage",
         "date": "7/7/2020"
       },
@@ -1007,7 +1007,7 @@
       },
       {
         "name": "clear",
-        "params": "<amount>",
+        "params": "<amount> (-user <user>) (-len <length of message or less that can stay>)",
         "desc": "clears <amount> of messages in chat",
         "date": "11/6/19"
       }

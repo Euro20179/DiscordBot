@@ -90,12 +90,16 @@ class Content:
                         self.replace(word, "")
                         yield(word, None)
 
-    def getUser(self, msg, index):
+    def getUser(self, msg, index=None, content=None):
         """
         index is the index where the user should be when content is split by spaces
         """
-        try: c = str(self.split(" ")[index].strip())
-        except: return msg.author
+        if index:
+            try: c = str(self.split(" ")[index].strip())
+            except: return msg.author
+        else:
+            try: c = str(content)
+            except: return msg.author
         c = c.replace("!", "")[2:-1] if "<@" in c else c
         if not c: c = str(msg.author.id)
         user = discord.utils.find(lambda m: str(m.id) == c or str(m.display_name.split("#")[0].lower()) == c.lower() or m.name.lower() == c.lower(), msg.guild.members)

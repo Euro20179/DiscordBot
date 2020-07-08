@@ -18,7 +18,7 @@ from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont
 from Content import Content
 
 DELETE = "--delete"
-VERSION = "5.0-rc4"
+VERSION = "5.0-rc5"
 Stop = False
 
 playingGuessingGame = {}
