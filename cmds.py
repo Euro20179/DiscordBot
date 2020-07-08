@@ -128,12 +128,10 @@ async def echo(msg, content, cmd="echo"):
     try: await msg.delete()
     except: pass
     ops = c.opsWithParams()
-    for op, param in ops:
+    for op, param in c.opsWithParams({"test": (..., '"')}):
         if op == "-e":
-            if param:
-                color = int(param, 16)
-            else:
-                color = 0x000000
+            if param: color = int(param, 16)
+            else: color = 0x000000
             embed = discord.Embed(title=str(c), color=discord.Color(color))
             await msg.channel.send(embed=embed)			
             return await embedToReadableDict(msg, embed)
@@ -155,12 +153,11 @@ async def timers(msg, content, cmd="timers"):
 async def levelMessage(msg, content, cmd="lvlmsg"):
     if isBot(msg, client): return await msg.channel.send("easter e g g")
     changeTo = Content(content)
-    ops = tuple(changeTo.ops())
-    yn=Yes = "--y" in ops
+    yn=Yes = changeTo @ "--y"
     with open(levelingDataFilePath, "r+") as j:
         data = json.load(j)
         userData = data[str(msg.author.id)]
-        if "--see" in ops or "--get" in ops:
+        if changeTo.testOps("--see", "--get", "--s", "--g"):
             return await msg.channel.send(await formatLevelMessage(msg, userData["message"], userData["level"]))
         if not Yes:
             await msg.channel.send("type y to change message, type n to cancel")
@@ -175,10 +172,8 @@ async def levelMessage(msg, content, cmd="lvlmsg"):
 
 async def cmdUsage(msg, content, cmd="commandusage"):
     content = Content(content)
-    content.calcOps()
-    opOps = tuple(content.opsWithParams())
     top = 10
-    for op in opOps:
+    for op in content.opsWithParams():
         if "-top" == op[0]:
             top = int(op[1])
     if content @ "--raw":
@@ -186,16 +181,16 @@ async def cmdUsage(msg, content, cmd="commandusage"):
             return await msg.channel.send(file=discord.File(j, commandusageFilePath))
     with open(commandusageFilePath, "r+") as j:
         data = json.load(j)
-        if content[0] and top == 10:
-            commandUse = data.get(content[0])
+        if content and top == 10:
+            commandUse = data.get(str(content))
             if not commandUse:
                 return await msg.channel.send("command not found")
-            embed = discord.Embed(title=split)
+            embed = discord.Embed(title=str(content))
             embed.add_field(name="times", value=commandUse)
             await msg.channel.send(embed=embed)
             return await embedToReadableDict(msg, embed)
         else:
-            data = {k: v for k, v in sorted(data.items(), key=lambda item: item[1], reverse=True)}
+            data = {k: v for k, v in sorted(data.items(), key=lambda item: item[1], reverse=False if content.testOps("--least", "--ltg") else True)}
             send = "\n".join([f'{n + 1}: {c[0]}, {c[1]}' for n, c in enumerate(data.items()) if n < top])
             try:
                 clearFile(j)
@@ -2460,7 +2455,7 @@ async def sortImg(msg, content, cmd="sortimg"):
             data.sort(key=lambda x: x[2], reverse=True)
         elif sortBy.lower() == "custom":
             source = " ".join(content[1:])
-            if "help(" in source or "quit()" in source or "exit()" in source or "os." in source or "token" in source or "input(" in source or "sys." in source:
+            if not Content(" ".join(content), removeCmd=False).suitibleForEval():
                 return await msg.channel.send("nice try")
             code = compile(source, "", "eval")
             data.sort(key=lambda px: eval(code), reverse=True)

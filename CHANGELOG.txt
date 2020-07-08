@@ -1,3 +1,37 @@
+5.0 (7/??/2020)
+
+ADDITIONS:
+*-wait now works with -e in echo
+*-sep to choose
+*--nofit to rotate
+*— should now work for most of the args that need --
+*cmds with sep that now support \n and \t
+    *choose
+    *ucodechar
+    *serveremote
+*--least to commandusage
+
+CHANGES:
+*choose sep now defaults to |
+*round now rounds to 2 instead of 3
+*color now works better with /{}
+*-color is now seperate from -palette in convertimg
+
+TECHNICAL:
+*completely changed how the bot parses commands
+====================================================================
+5.0-rc4 (7/8/2020)
+
+ADDITIONS:
+*--least for commandusage
+
+FIXES:
+*commanudsage [commandS]
+
+ADDEDBACK:
+*--s, and --g for lvlmsg
+
+====================================================================
 5.0-rc3 (7/8/2020)
 
 FIXES:
@@ -6,11 +40,14 @@ FIXES:
 ====================================================================
 5.0-rc2 (7/8/2020)
 
-*choose sep now defaults to |
+ADDITIONS:
 *cmds with sep that now support \n and \t
     *choose
     *ucodechar
     *serveremote
+
+CHANGES:
+*choose sep now defaults to |
 
 ====================================================================
 5.0-rc1  (7/8/2020)

@@ -98,7 +98,7 @@
       },
       {
         "name": "lvlmsg",
-        "params": "<message> (--see/--get) (--f/--y) SPECIAL WORDS: {author}, {channel}, {emote}, {level}",
+        "params": "<message> (--see/--get/--s/--g) (--f/--y) SPECIAL WORDS: {author}, {channel}, {emote}, {level}",
         "desc": "sets your level up message to <message>\n--see shows the message\n--f auto confirms\n{author}: pings you\n{channel}: the current channel\n{emote} randoms server emote\n{level} the level you leveld up to\nif see or get, shows your level up message\nif message is none it wont say when you level up",
         "date": "5/29/2020"
       }
@@ -801,7 +801,7 @@
       },
       {
         "name": "commandusage",
-        "params": "[command] (-top <amount>)",
+        "params": "[command] (-top <amount>) (--least/--ltg) (--raw)",
         "desc": "gives the times [command] was used, defaults to the top 10",
         "date": "5/23/2020"
       },

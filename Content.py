@@ -56,7 +56,7 @@ class Content:
         for op in self.ops_:
             yield op
 
-    def opsWithParams(self, paramcount=None):
+    def opsWithParams(self, paramcount : dict =None):
         """
         paramcount could be {'-param': arg_num}
         """
@@ -68,9 +68,17 @@ class Content:
                 if paramcount and word.strip("-") in paramcount.keys():
                     paramCount = paramcount.get(word.strip("-"))
                     if paramCount:
-                        self.opOps.append(word)
-                        self.replace(f'{word} {" ".join(l[l.index(word) + 1: l.index(word) + paramCount + 1])}', "")
-                        yield (word, l[l.index(word) + 1: l.index(word) + paramCount + 1])
+                        if isinstance(paramCount, tuple):
+                            splitBy = paramCount[1]
+                            arg = " ".join(l[n + 1:]).split(splitBy)
+                            self.opOps.append(word)
+                            self.replace(f'{word} {splitBy.join(arg)}', "")
+                            yield (word, arg[1].strip())
+                        else:
+                            self.opOps.append(word)
+                            arg = l[l.index(word) + 1: l.index(word) + paramCount + 1]
+                            self.replace(f'{word} {" ".join(arg)}', "")
+                            yield (word, arg)
                 else:
                     try:
                         self.opOps.append(word)
