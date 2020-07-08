@@ -329,17 +329,19 @@ async def randomFace(msg, content, cmd="randomface"):
 async def alphabet(msg, content, cmd="alphabet"):
     send = string.ascii_lowercase
     content = Content(content)
-    if content.testOps("--vowels"): send = "aeiou(y)"
-    if content.testOps("--consonants"):
+    if content @ "--vowels": send = "aeiou(y)"
+    if content @ "--consonants":
         send = "".join([x for x in string.ascii_lowercase if x not in "aeiou"])
     if random.random() > .98: send = send[::-1]
     return await msg.channel.send(send)
 
 async def unicodeChar(msg, content, cmd="unicodechar"):
     content = Content(content)
-    if "-sep" in content:
-        sep = content.split("-sep ")[1]
-        content = content.split(" ")[0]
+    for op, param in content.opsWithParams():
+        if op == "-sep":
+            try: sep = {r'\t': "\t", r"\n": "\n"}[param]
+            except: sep = param
+            break
     else: sep = "\n"
     try: amount = int(content)
     except: amount = 1
@@ -347,9 +349,11 @@ async def unicodeChar(msg, content, cmd="unicodechar"):
 
 async def serverEmote(msg, content, cmd="serveremote"):
     content = Content(content)
-    if "-sep" in content:
-        sep = content.split("-sep ")[1]
-        content = content.split(" ")[0]
+    for op, param in content.opsWithParams():
+        if op == "-sep":
+            try: sep = {r'\t': "\t", r"\n": "\n"}[param]
+            except: sep = param
+            break
     else: sep = "\n"
     try: amount = int(content)
     except: amount = 1
@@ -675,12 +679,14 @@ async def count(msg, content, cmd="count"):
 async def choose(msg, content, cmd="choose"):
     content = Content(content)
     opOps = list(content.opsWithParams())
-    sep="\n"
+    embed = discord.Embed(title="picks")
+    sep = " | "
     picks = 1
     for op, param in opOps:
         if op == "-picks": picks = int(param)
-        if op == "-sep": sep = param
-    print(content)
+        if op == "-sep": 
+            try: sep = {r'\n': "\n", r'\t': "\t"}[param]
+            except: sep = param
     options = content.split("|", key=lambda x: x.strip())
     return await msg.channel.send(sep.join([random.choice(options) for _ in range(picks)]))
 

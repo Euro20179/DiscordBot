@@ -35,10 +35,8 @@ class Content:
         return split if not pastIndex else splitBy.join(split[pastIndex:])
 
     def replace(self, string, repWith, ret=False):
-        if not ret:
-            self.string = self.string.replace(string, repWith)
-        else:
-            return self.string.replace(string, repWith)
+        if not ret: self.string = self.string.replace(string, repWith)
+        else: return self.string.replace(string, repWith)
     
     def strip(self, other=None):
         return self.string.strip(other) if other else self.string.strip()
@@ -86,6 +84,9 @@ class Content:
                         yield(word, None)
 
     def getUser(self, msg, index):
+        """
+        index is the index where the user should be when content is split by spaces
+        """
         try: c = str(self.split(" ")[index].strip())
         except: return msg.author
         c = c.replace("!", "")[2:-1] if "<@" in c else c
@@ -94,6 +95,9 @@ class Content:
         return user if user else msg.author
 
     def toSet(self, split=" ", pastIndex=None, key=None):
+        """
+        returns a set split by split
+        """
         return set(self.split(" ", pastIndex=pastIndex, key=key))
 
     def suitibleForEval(self):

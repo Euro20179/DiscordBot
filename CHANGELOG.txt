@@ -1,3 +1,12 @@
+5.0-rc2 (7/8/2020)
+
+*choose sep now defaults to |
+*cmds with sep that now support \n and \t
+    *choose
+    *ucodechar
+    *serveremote
+
+====================================================================
 5.0-rc1  (7/8/2020)
 
 ADDITIONS:
