@@ -2592,7 +2592,7 @@ async def imgBand(msg, content, cmd="imgband"):
     band = []
     for b in bands:
         if b.strip() == "r": band.append(r)
-        elif b.strip() == "g": band.append(g)
+        elif b.stripmm() == "g": band.append(g)
         elif b.strip() == 'b': band.append(B)
         elif b.strip() == "a": band.append(a)
     for n, b in enumerate(band):
@@ -2601,3 +2601,59 @@ async def imgBand(msg, content, cmd="imgband"):
         with open(f'{msg.author.id}{n}.png', "rb") as i:
             await msg.channel.send(file=discord.File(i, filename=f'{msg.author.id}{n}.png'))
         os.remove(f'{msg.author.id}{n}.png')
+
+async def play(msg, content, cmd="play"):
+    global queue
+    song = content[len(cmd) + 2:]
+    if song:
+        await msg.channel.send("wait 4 years")
+        with youtube_dl.YoutubeDL({"format": "bestaudio/best", "postprocessors": [{"key": "FFmpegExtractAudio", "preferredcodec": "mp3"}]}) as dl:
+            dl.download([song])
+    vc = msg.author.voice.channel
+    for f in os.listdir("./"):
+        if f.endswith(".mp3"):
+            shutil.move(f, queuePath)
+            queue.append(f)
+    await msg.channel.send("added to queue yay very nice wow cool")
+    if vc != None:
+        try:
+            VC = await vc.connect()
+            queue.setVC(VC)
+        except:
+            pass
+        source = discord.FFmpegPCMAudio(source=f'./queue/{queue[0]}')
+        VC = queue.VC
+        if not VC.is_playing():
+            VC.play(source, after=lambda x: queue.next())
+    else:
+        await msg.channel.send('smh you gotta be in a channel bro 😂😂😂😂😂😂😂😂😂😂😂😂')
+
+async def clearQ(msg, content, cmd="clearqueue"):
+    global queue
+    queue.clear()
+    return await msg.channel.send("cleared")
+        
+async def disconnect(msg, content, cmd="dc"):
+    global queue
+    VC = queue.VC
+    if VC:
+        await VC.disconnect()
+        queue.setVC(None)
+        queue.clear()
+    else:
+        return await msg.channel.send("not in vc, you silly goose")
+
+async def nowPlaying(msg, content, cmd="np"):
+    return await msg.channel.send(queue.nowPlaying())
+
+async def skip(msg, content, cmd="skip"):
+    global queue
+    try:
+        queue.VC.stop()
+    except Exception as e:
+        return await msg.channel.send(e)
+    return await msg.channel.send("skipperoonied")
+
+async def getQueue(msg, content, cmd="queue"):
+    global queue
+    return await msg.channel.send(str(queue))
