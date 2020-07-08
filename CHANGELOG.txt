@@ -4,6 +4,7 @@ ADDITIONS:
 *-wait now works with -e in echo
 *-sep to choose
 *--nofit to rotate
+*— should now work for most of the args that need --
 
 CHANGES:
 *lvlmsg now only accepts --see and --get
