@@ -488,6 +488,47 @@
     ]
   },
   {
+    "cat": "MUSIC",
+    "desc": "commands reltating to music",
+    "cmds": [
+      {
+        "name": "play",
+        "params": "<song url>",
+        "desc": "plays song",
+        "date": "7/7/2020"
+      },
+      {
+        "name": "skip",
+        "params": null,
+        "desc": "skips song",
+        "date": "7/7/2020",
+        "aliases":[
+          "s"
+        ]
+      },
+      {
+        "name": "clearq",
+        "params": null,
+        "desc": "clears the queue",
+        "date": "7/7/2020"
+      },
+      {
+        "name": "q",
+        "params": null,
+        "desc": "gets the queue",
+        "date": "7/7/2020"
+      },
+      {
+        "name": "dc",
+        "desc": "disconnects from vc",
+        "date": "7/7/2020",
+        "aliases":[
+          "disconnect"
+        ]
+      }
+    ]
+  },
+  {
     "cat": "CUSTOMCMDS",
     "desc": "cmds relating to custom cmds",
     "cmds": [

@@ -1,3 +1,15 @@
+4.15-rc1 (7/7/2020)
+
+ADDITIONS:
+*MUSIC category
+*play, only accepts urls
+*skip
+*disconnect/dc
+*q
+*np
+*clearq, clears q
+
+====================================================================
 4.14.1 (7/7/2020)
 
 ADDITIONS:

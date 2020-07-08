@@ -334,7 +334,16 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
         "imgband": imgBand,
         "fileinfo": fileInfo,
         "embedtotext": embedInfo,
-        "textinfo": textInfo
+        "textinfo": textInfo,
+        "play": play,
+        "dc": disconnect,
+        "disconnect": disconnect,
+        "clearq": clearQ,
+        "np": nowPlaying,
+        "nowplaying": nowPlaying,
+        "skip": skip,
+        "s": skip,
+        "q": getQueue
     }
 
     CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()

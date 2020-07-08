@@ -8,15 +8,16 @@ import json
 import tracemalloc
 import requests
 import bs4 as bs
-import os
+import os, shutil
 import math
 import statistics
 import re
 import sys
+import youtube_dl
 from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont, ImageChops
 
 DELETE = "--delete"
-VERSION = "4.14.1"
+VERSION = "4.15"
 Stop = False
 
 playingGuessingGame = {}
@@ -42,10 +43,78 @@ itemDataFilePath = f'{DISEXT}/itemsData.json'
 botModsFilePath = f'{DISEXT}/botMods.txt'
 itemsFilePath = f'items.json'
 pingResponseFilePath = f'{DISEXT}/pingresponse.json'
+queuePath = "./queue"
 EUROID = 334538784043696130
 client = commands.Bot(command_prefix=fakePrefix)
 
 tracemalloc.start()
+
+class Queue:
+    def __init__(self, VC=None):
+        self.songs = []
+        self.VC = VC
+        self.i = -1
+
+    def setVC(self, VC):
+        self.VC = VC
+
+    def skip(self):
+        if not self.VC:
+            raise Exception("not in vc")
+        try:
+            self.VC.stop()
+        except:
+            raise Exception("could not be completed :pensive:")
+
+    def append(self, song):
+        self.songs.append(song)
+
+    def next(self):
+        os.remove(f'{queuePath}/{self.songs[0]}')
+        self.songs.pop(0)
+        if len(self) > 0:
+            source = discord.FFmpegPCMAudio(source=f'./queue/{queue[0]}')
+            if not self.VC.is_playing():
+                self.VC.play(source, after=lambda x: self.next())
+
+    def nowPlaying(self):
+        return self[0].split("-")[0]
+
+    def clear(self):
+        for f in os.listdir(queuePath):
+            os.remove(f'{queuePath}/{f}')
+        self.songs.clear()
+
+    def skip(self):
+        os.remove(f'{queuePath}/{queue[0]}')
+
+    def __getitem__(self, n):
+        return self.songs[n]
+
+    def __len__(self):
+        return len(self.songs)
+
+    def __add__(self, other):
+        self.songs += [other]
+
+    def __repr__(self):
+        return str(self.songs)
+
+    def __str__(self):
+        return "\n".join([x.split("-")[0] for x in self.songs])
+
+    def __int__(self):
+        return len(self)
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        self.i += 1
+        if self.i > len(self) - 1: raise StopIteration
+        return self.songs[self.i]
+
+queue = Queue()
 
 async def returnMessage(msg, content, author=client.user):
     msg.content = content
