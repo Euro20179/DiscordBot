@@ -707,11 +707,27 @@ async def mostRoles(msg, content, cmd="mostroles"):
     return await msg.channel.send("\n".join(top))
 
 async def clear(msg, content, cmd="clear"):
-    amnt = int(content[len(cmd) + 2:])
+    content = Content(content)
+    user = None
+    length = None
+    for op, param in content.opsWithParams():
+        if op == "-user":
+            user = content.getUser(msg, content=param)
+        if op == "-len":
+            length = param
+    amnt = int(content)
     if isBot(msg, client): return await msg.channel.send("nope")
     perms = msg.author.guild_permissions.manage_messages
     if perms and msg.author.id != 579117856994623498:
-        await msg.channel.purge(limit=amnt)
+        print(user, length)
+        if user and length: await msg.channel.purge(limit=amnt, check=lambda x: len(x.content) < int(length) and x.author == user)
+        elif user: 
+            print("user")
+            await msg.channel.purge(limit=amnt, check=lambda x: x.author == user)
+        elif length: 
+            print("length")
+            await msg.channel.purge(limit=amnt, check=lambda x: len(x.content) > int(length))
+        else: await msg.channel.purge(limit=amnt)
     else:
         await msg.channel.send(f"{msg.author.mention} you can't do that")
         for _ in range(random.randint(10, 15)):
@@ -1672,17 +1688,34 @@ async def fileInfo(msg, content, cmd="fileinfo"):
     return await embedToReadableDict(msg, embed)
 
 async def textInfo(msg, content, cmd="textinfo"):
+    text = Content(content)
+    Re = False
+    sep = " "
+    for op, param in text.opsWithParams():
+        if op in ("-re", "-regex"):
+            Re = True
     try:
         att, filename, url = await getImg(msg, NotFromChat=True)
         await saveImg(filename, url)
         with open(filename, "r") as f:
-            text = f.read()
+            text = Content(f.read(), removeCmd=False)
     except:
-        text = content[len(cmd) + 2:]
-    RankWords = False
-    if testInContent(text, "--rankwords") and text == content[len(cmd) + 2:]:
-        text = text.replace("--rankwords", "")
-        RankWords = True
+        pass
+    if Re:
+        find = re.findall(str(param), str(text))
+        try: return await msg.channel.send(sep.join(find))        
+        except Exception as e:
+            print(e)
+            if type(e) is discord.errors.HTTPException:
+                if not find:
+                    return await msg.channel.send("did not find any match")
+                else:
+                    with open("match.txt", "w") as f:
+                        f.write(sep.join(find))
+                    with open("match.txt", "rb") as f:
+                        return await msg.channel.send("message too long", file=discord.File(f, "match.txt"))
+    RankWords = False if not text @ "--rankwords" else True
+    text = str(text)
     if not RankWords:
         charCount = len(text)
         wordCount = len(text.split(" "))
