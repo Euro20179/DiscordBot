@@ -1,3 +1,24 @@
+4.15
+
+ADDITIONS:
+*piracyisbad
+
+====================================================================
+4.15-rc2 (7/7/2020)
+
+ADDITIONS:
+*piracyisbad
+
+REMOVED:
+*MUSIC category
+*play
+*skip
+*disconnect/dc
+*q
+*np
+*clearq, clears q
+
+====================================================================
 4.15-rc1 (7/7/2020)
 
 ADDITIONS:
