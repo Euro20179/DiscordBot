@@ -97,7 +97,7 @@ async def spam(msg, messages, message, BlockStop=False):
         if Stop and not BlockStop:
             Stop = False
             return await msg.channel.send(await stop("Stopped"))
-        msg = await msg.channel.send(random.choice(message).replace("{count}", str(i + 1)))
+        msg = await msg.channel.send(random.choice(message).replace("{count}", str(i + 1)).replace("{rcount}", str(int(messages) - i)))
         await asyncio.sleep(random.uniform(.7, 1.3))
     return msg
 
