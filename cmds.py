@@ -710,9 +710,9 @@ async def clear(msg, content, cmd="clear"):
     content = Content(content)
     user = None
     length = None
-    for op, param in content.opsWithParams():
+    for op, param in content.opsWithParams({"user": (slice(0,None,None), " ")}):
         if op == "-user":
-            user = content.getUser(msg, content=param)
+            user = content.getUser(msg, content=" ".join(param))
         if op == "-len":
             length = param
     amnt = int(content)
@@ -722,10 +722,8 @@ async def clear(msg, content, cmd="clear"):
         print(user, length)
         if user and length: await msg.channel.purge(limit=amnt, check=lambda x: len(x.content) < int(length) and x.author == user)
         elif user: 
-            print("user")
             await msg.channel.purge(limit=amnt, check=lambda x: x.author == user)
         elif length: 
-            print("length")
             await msg.channel.purge(limit=amnt, check=lambda x: len(x.content) > int(length))
         else: await msg.channel.purge(limit=amnt)
     else:
