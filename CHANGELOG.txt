@@ -31,6 +31,9 @@ CHANGES:
 *color now works better with /{}
 *-color is now seperate from -palette in convertimg
 
+FIXES:
+*help sometimes didn't work properly
+
 TECHNICAL:
 *completely changed how the bot parses commands
 
