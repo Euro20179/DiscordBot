@@ -158,7 +158,9 @@ async def levelMessage(msg, content, cmd="lvlmsg"):
         data = json.load(j)
         userData = data[str(msg.author.id)]
         if changeTo.testOps("--see", "--get", "--s", "--g"):
-            return await msg.channel.send(await formatLevelMessage(msg, userData["message"], userData["level"]))
+            content = Content(userData["message"], removeCmd=False)
+            content.formatMessage(msg, {"{level}": userData['level'], "{xp}": userData["xp"]}, removeCmd=False)
+            return await msg.channel.send(str(content))
         if not Yes:
             await msg.channel.send("type y to change message, type n to cancel")
             try: yn = (await client.wait_for('message', check=lambda message: message.author == msg.author, timeout=60.0)).content.lower()
@@ -587,6 +589,7 @@ async def rand(msg, content, cmd="rand"):
                 res = random.randint(low, high)
                 if Even and res % 2 != 0: continue					
                 if Odd and res % 2 == 0: continue
+                else: break
         else:
             res = random.uniform(float(low), float(high))
             if r: res = round(res, r)
