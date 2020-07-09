@@ -42,6 +42,7 @@ ADDITIONS:
 
 FIXES:
 *in some weird circumstances rand wouldn't work properly, i have no idea what said circumstances are
+*help sometimes didn't work properly
 
 ====================================================================
 5.0-rc9 (7/9/2020)

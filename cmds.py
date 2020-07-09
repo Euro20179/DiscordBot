@@ -77,6 +77,7 @@ async def hlp(msg, content, cmd="help"):
                         addedBy = c.get("addedby")
                         editedBy = c.get("editedby")
                         if aliases: aliases = ",\n".join(f'``{x}``' for x in aliases)
+                        break
             try: 
                 if params: embed.add_field(name="params", value=f'``{params}``', inline=False)
                 embed.add_field(name="description", value=f'``{desc}``', inline=False)
