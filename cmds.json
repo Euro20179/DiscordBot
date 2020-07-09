@@ -1,7 +1,7 @@
 [
   { 
     "cat": "KEY",
-    "desc": "<> required parameter, [] optional parameter, () option, lets you do\n[serveremote 10 -sep --1 [serveremote",
+    "desc": "<> required parameter, [] optional parameter, () option, (FORMATS) formats special phrases with something\ndo [help formats",
     "cmds": []
   },
   {
@@ -103,7 +103,7 @@
       },
       {
         "name": "lvlmsg",
-        "params": "<message> (--see/--get/--s/--g) (--f/--y) SPECIAL WORDS: {author}, {channel}, {emote}, {level}",
+        "params": "<message> (--see/--get/--s/--g) (--f/--y) (FORMATS (level, xp))",
         "desc": "sets your level up message to <message>\n--see shows the message\n--f auto confirms\n{author}: pings you\n{channel}: the current channel\n{emote} randoms server emote\n{level} the level you leveld up to\nif see or get, shows your level up message\nif message is none it wont say when you level up",
         "date": "5/29/2020"
       }
@@ -156,7 +156,7 @@
       },
       {
         "name": "echo",
-        "params": "<message> (-e [color]) (-wait <time>) (--nodel) (--tts)",
+        "params": "<message> (-e [color]) (-wait <time>) (--nodel) (--tts) (FORMATS (echo))",
         "desc": "sends <message> and deletes your message\n-e embeds it\n--delete doesn't delete your message",
         "date": "12/14/19"
       },
@@ -498,7 +498,7 @@
     "cmds": [
       {
         "name": "customcmd",
-        "params": "<cmd name>|<say> (--locked)",
+        "params": "<cmd name>|<say> (--locked) (FORMATS when using the command)",
         "desc": "when [<cmd name> is typed it'll say <say> --locked only allows botmods to change a command\n{content} will replace with the message of who did cmd\n{version} will replace with the bot's version\n{uptime} will replace with the bot's uptime",
         "date": "6/11/2020",
         "aliases": ["accmd", "customcommand"]
@@ -839,6 +839,12 @@
         "params": "(--s)",
         "desc": "says the uptime of the bot",
         "date": "6/26/2020"
+      },
+      {
+        "name": "formats",
+        "params": null,
+        "desc": "{version}: bot's version\n{content}: content of message\n{author}: author of the message\n{uptime}: uptime of the bot\n{channel}: channel the message was sent in\nsome commands have special formats which will be listed with the help of that command",
+        "date": "7/9/2020"
       }
     ]
   },
