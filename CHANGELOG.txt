@@ -13,6 +13,13 @@ ADDITIONS:
 *-re to textinfo
 *-user and -len to clear
 *[timeit is now an anymessage comamnd
+*formatting for lvlmsg and customCmds now apply to every command
+*anything that formats in customcmds will format in lvlmsg
+*additions to formatting in lvlmsg
+    *content
+    *version
+    *xp
+    *uptime
 
 ADDEDBACK:
 *--delete to echo except now it's --nodel
@@ -25,6 +32,21 @@ CHANGES:
 
 TECHNICAL:
 *completely changed how the bot parses commands
+
+====================================================================
+5.0-rc9
+
+ADDITIONS:
+*formatting for lvlmsg and customcmds will now be the same
+*anything that formats in customcmds will format in lvlmsg
+*additions to formatting in lvlmsg
+    *content
+    *version
+    *xp
+    *uptime
+
+FIXES:
+*rand [<low> <high>]
 
 ====================================================================
 5.0-rc-8

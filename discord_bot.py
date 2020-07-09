@@ -339,12 +339,14 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
         "piracyisbad": ytdl
     }
 
-    CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
     case = cmds.get(cmd)
     if case:
         content = await case(msg, content, cmd=cmd)
+        Iscmd = True
+    
+    CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
 
-    elif cmd == "botmods": 
+    if cmd == "botmods": 
         BOTMODS = reloadBOTMODS()
         content = await oneLineCmd(msg, "\n".join([(await getUserInContent(msg, f'ok {i}', "ok")).name for i in BOTMODS[:-1]]))
     elif cmd == "tof": content = await oneLineCmd(msg, 9 / 5 * float(splitContent(content, cmd + " ", index=1)) + 32)
@@ -372,7 +374,9 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
         CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
     elif cmd == "customcmdlist": await customCmdList(msg, content, cmd=cmd)
     elif cmd in CUSTOMCMDS.keys(): 
-        content = CUSTOMCMDS[cmd].replace("{content}", content[len(cmd) + 2:]).replace("{version}", VERSION).replace("{author}", msg.author.mention).replace("{uptime}", str((await formatSeconds(time.time() - UPTIME))[0]))       
+        content = Content(CUSTOMCMDS[cmd], removeCmd=False)
+        content.formatMessage(msg)
+        content = content.string
         interpateCount = len(content.split("{"))
         if len(content.split("}")) != interpateCount:
             if len(content.split("}")) < len(content.split("{")):
@@ -385,7 +389,7 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
             cmds = cmds[:-1]
             try: cmd = cmds[0]
             except IndexError: break
-            mssg = await runCommand(msg, f'{PREFIX}{cmd.strip("_")}', cmd=cmd.split(" ")[0].strip().strip("_"))
+            mssg = await runCommand(msg, f'{PREFIX}{cmd.strip("_")}', cmd=cmd.split(" ")[0].strip().strip("_"), DoFirst=True)
             await mssg.delete()
             content = content.replace("{" + cmd + "}", mssg.content)
         content = await oneLineCmd(msg, content)
