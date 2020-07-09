@@ -139,7 +139,7 @@ async def echo(msg, content, cmd="echo"):
             try: await asyncio.sleep(float(param))
             except: return await msg.channel.send("-wait must be float")
     if random.random() > .99: await msg.author.send("the secret message dm euro for a doubley secret role, if you tell anyone how you got this the role will be taken away\nif you already have the role, you may choose to dm a screenshot of this message to someone, and they have the chance to get the role")	
-    return await msg.channel.send(str(c))
+    return await msg.channel.send(str(c), tts=True if c @ "--tts" else False)
 
 async def timers(msg, content, cmd="timers"):
     embed = discord.Embed(title="Timers")
@@ -583,7 +583,7 @@ async def rand(msg, content, cmd="rand"):
         if not isInt(r): return await msg.channel.send("you are not rounding to a whole number")				
         if float(low) >= float(high): return await msg.channel.send("Low must be lower than high")
 
-        if low and high:
+        if isInt(low) and isInt(high):
             while True:
                 if Stop: await msg.channel.send(await stop("stopped picking a number"))
                 res = random.randint(low, high)

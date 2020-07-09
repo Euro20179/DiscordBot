@@ -20,6 +20,7 @@ ADDITIONS:
     *version
     *xp
     *uptime
+*--tts for echo
 
 ADDEDBACK:
 *--delete to echo except now it's --nodel
@@ -34,7 +35,16 @@ TECHNICAL:
 *completely changed how the bot parses commands
 
 ====================================================================
-5.0-rc9
+5.0-rc10 (7/9/2020)
+
+ADDITIONS:
+*--tts for echo
+
+FIXES:
+*in some weird circumstances rand wouldn't work properly, i have no idea what said circumstances are
+
+====================================================================
+5.0-rc9 (7/9/2020)
 
 ADDITIONS:
 *formatting for lvlmsg and customcmds will now be the same
@@ -49,7 +59,7 @@ FIXES:
 *rand [<low> <high>]
 
 ====================================================================
-5.0-rc-8
+5.0-rc-8 (7/8/2020)
 
 ADDITIONS:
 *timeit is now an anymessage command
@@ -61,7 +71,7 @@ TECHNICAL:
 *small amount of code cleanup
 
 ====================================================================
-5.0-rc7
+5.0-rc7 (7/8/2020)
 
 ADDITIONS:
 *{rcount} to spam
@@ -128,7 +138,7 @@ TECHNICAL:
 *completely changed how the bot parses commands
 
 ====================================================================
-4.15
+4.15 (7/7/2020)
 
 ADDITIONS:
 *piracyisbad
