@@ -21,7 +21,8 @@ ADDITIONS:
     *xp
     *uptime
 *--tts for echo
-
+*help FORMATS
+*formatting is more generalized
 ADDEDBACK:
 *--delete to echo except now it's --nodel
 
@@ -33,9 +34,28 @@ CHANGES:
 
 FIXES:
 *help sometimes didn't work properly
+*accmd and eccmd are more lenient
 
 TECHNICAL:
 *completely changed how the bot parses commands
+
+====================================================================
+5.0-rc11 (7/9/2020)
+
+ADDITIONS:
+*anything that uses formatting now also has
+    *fhalf: replaces with the first half of the message
+*help FORMATS
+*echo now formats the message with
+    *version
+    *content (does some weird stuff)
+    *author
+    *uptime
+    *channel
+    *echo (replaces itself with the content of the message, does even weirder stuff than content)
+
+FIXES:
+*accmd and eccmd are more lenient
 
 ====================================================================
 5.0-rc10_2 (7/9/2020)
@@ -1271,7 +1291,6 @@ ADDITIONS:
 *a few more cmds work with >> and --1
 
 CHANGES:
-*healing is now 70 instead of 90 coins
 *custom cmds are on their own file
 *gary types for [covid now
 *mmoney now actually shows your balance

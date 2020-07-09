@@ -126,6 +126,7 @@ async def ping(msg, content, cmd="ping"):
 
 async def echo(msg, content, cmd="echo"):
     c = Content(content)
+    c.formatMessage(msg, {"{echo}": Content(content.replace(" {echo} ", "").replace(" {echo}", "").replace("{echo} ", "").replace("{echo}", ""))})
     if not c @ "--nodel":
         try: await msg.delete()
         except: pass
@@ -1158,7 +1159,7 @@ async def addCustomCmd(msg, content, cmd="customcmd"):
     content = Content(content)
     Locked = False if not content @ "--lock" else True
     c = content.split("|")
-    name = c.pop(0)
+    name = c.pop(0).strip()
     say = c.pop(0)
     if " " in name: return await msg.channel.send("no spaces in command names")
     with open(customcmdsFilePath, "r+") as j:
@@ -1532,7 +1533,7 @@ async def editCustomCmd(msg, content, cmd="eccmd"):
     global BOTMODS
     BOTMODS = reloadBOTMODS()
     content = Content(content)
-    lookFor = content.split("|")[0]
+    lookFor = content.split("|")[0].strip()
     changeTo = content.split("|", pastIndex=1)
     with open(customcmdsFilePath, "r+") as j:
         data = json.load(j)
