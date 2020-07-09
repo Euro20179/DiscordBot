@@ -12,6 +12,10 @@ ADDITIONS:
 *--least to commandusage
 *-re to textinfo
 *-user and -len to clear
+*[timeit is now an anymessage comamnd
+
+ADDEDBACK:
+*--delete to echo except now it's --nodel
 
 CHANGES:
 *choose sep now defaults to |
@@ -21,6 +25,18 @@ CHANGES:
 
 TECHNICAL:
 *completely changed how the bot parses commands
+
+====================================================================
+5.0-rc-8
+
+ADDITIONS:
+*timeit is now an anymessage command
+
+ADDEDBACK:
+*--delete for echo except now it's --nodel
+
+TECHNICAL:
+*small amount of code cleanup
 
 ====================================================================
 5.0-rc7

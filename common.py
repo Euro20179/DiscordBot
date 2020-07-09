@@ -18,7 +18,7 @@ from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont
 from Content import Content
 
 DELETE = "--delete"
-VERSION = "5.0-rc7"
+VERSION = "5.0-rc8"
 Stop = False
 
 playingGuessingGame = {}
@@ -211,6 +211,7 @@ async def giveXP(msg : discord.Message)->None:
                         await msg.channel.send(disp)
                 required = round((1000 * level) * 1.1)
                 userInfo = {"level": level, "xp": xp, "required": required, "lastTalked": lastTalked, "message": levelUpMessage}
+            else: return
             data[authorId] = userInfo
         else:
             data[authorId] = BASICINFO
