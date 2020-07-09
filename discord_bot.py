@@ -410,7 +410,7 @@ async def on_message(msg):
     if "[timeit" in content:
         timeThisMessageTime = time.time()
         TimeThisMessage = True
-        content = content.replace("[timeit", "")
+        content = content.replace("[timeit", "").strip()
     else: TimeThisMessage = False
     Iscmd = False
     if msg.author.id == 311621977339068418 and msg.channel.id not in (658815060646297659, 715043261110288415):
