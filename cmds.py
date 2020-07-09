@@ -125,9 +125,9 @@ async def ping(msg, content, cmd="ping"):
 
 async def echo(msg, content, cmd="echo"):
     c = Content(content)
-    try: await msg.delete()
-    except: pass
-    ops = c.opsWithParams()
+    if not c @ "--nodel":
+        try: await msg.delete()
+        except: pass
     for op, param in c.opsWithParams({"test": (..., '"')}):
         if op == "-e":
             if param: color = int(param, 16)

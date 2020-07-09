@@ -14,47 +14,9 @@ async def on_ready():
     BOTMODS = reloadBOTMODS()
     print(f"ONLINE\nversion: {VERSION}")
 
-async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
+async def runBotModCmd(msg, content, cmd):
     global CUSTOMCMDS, CATS, CMDLIST, BOTMODS
-    DOFIRST = f'--{layer} ' #DEPRICATED
-    if DOFIRST in content: #DEPRICATED
-        c = await runCommand(msg, content.split(DOFIRST)[1], splitContent(content, DOFIRST, index=1).split(" ")[0][1:], layer=layer + 1, DoFirst=True) #DEPRICATED
-        await c.delete() #DEPRICATED
-        content = f'{content.split(f" {DOFIRST}")[0]} {c.content}'#DEPRICATED
-        msg = c #DEPRICATED
-        layer += 1 #DEPRICATED 
-
-    if "/{" in content:
-        interpateCount = len(content.split("/{"))
-        if len(content.split("}")) != interpateCount:
-            if len(content.split("}")) < len(content.split("{")):
-                return await msg.channel.send("Syntax Error missing }")
-            return await msg.channel.send("Syntax Error missing /{")
-        while True:
-            cmds = [x.split("}")[0] for x in content.split("/{")]
-            if not cmds: break
-            cmds.reverse()
-            cmds = cmds[:-1]
-            try: cmd = cmds[0]
-            except IndexError: break
-            mssg = await runCommand(msg, f'{PREFIX}{cmd.strip("_")}', cmd=cmd.split(" ")[0].strip().strip("_"), DoFirst=True)
-            await mssg.delete()
-            content = content.replace("/{" + cmd + "}", mssg.content)
-        return await runCommand(msg, f'{content}', content.split(" ")[0][1:])
-
-    with open(commandusageFilePath, "r+") as j:
-        data = json.load(j)
-        try: data[cmd] += 1
-        except: data[cmd] = 1
-        clearFile(j)
-        json.dump(data, j)
-        
-    if cmd == "timeit":
-        start = time.time()
-        await runCommand(msg, content.replace(f'{PREFIX}timeit ', ""), splitContent(content, "timeit ", index=1).split(" ")[0][1:])
-        return await msg.channel.send(time.time() - start)
-
-    elif cmd == "ADDMONEY" and msg.author.id == EUROID:
+    if cmd == "ADDMONEY" and msg.author.id == EUROID:
         user = await getUserInContent(msg, content.split(", ")[0], cmd)
         amnt = content.split(", ")[1]
         await addMoney(user, float(amnt))
@@ -85,16 +47,6 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
     elif cmd == "ENDPLS" and str(msg.author.id) in BOTMODS:
         await msg.channel.send("Logging out")
         await client.logout()
-
-    elif cmd == "bans":
-        if not testInContent(content, "--raw"):
-            with open(bannedFilePath, "r+") as bannedJ:
-                data = json.load(bannedJ)
-                mssg = "".join([f'{(await client.fetch_user(int(user))).name}: {data[user]}\n' for user in data.keys()])
-                try: return await msg.channel.send(mssg)
-                except: pass
-        with open(bannedFilePath, "rb") as bannedJ:
-            return await msg.channel.send(file=discord.File(bannedJ, "bans.json"))
 
     elif cmd == "BAN" and str(msg.author.id) in BOTMODS:
         user = await getUserInContent(msg, " ".join(content.split(" ")[0:2]), cmd)
@@ -154,6 +106,54 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
             clearFile(j)
             json.dump(data, j)
             return await msg.channel.send("changed")
+
+async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
+    global CUSTOMCMDS, CATS, CMDLIST, BOTMODS
+    DOFIRST = f'--{layer} ' #DEPRICATED
+    if DOFIRST in content: #DEPRICATED
+        c = await runCommand(msg, content.split(DOFIRST)[1], splitContent(content, DOFIRST, index=1).split(" ")[0][1:], layer=layer + 1, DoFirst=True) #DEPRICATED
+        await c.delete() #DEPRICATED
+        content = f'{content.split(f" {DOFIRST}")[0]} {c.content}'#DEPRICATED
+        msg = c #DEPRICATED
+        layer += 1 #DEPRICATED 
+
+    if "/{" in content:
+        interpateCount = len(content.split("/{"))
+        if len(content.split("}")) != interpateCount:
+            if len(content.split("}")) < len(content.split("{")):
+                return await msg.channel.send("Syntax Error missing }")
+            return await msg.channel.send("Syntax Error missing /{")
+        while True:
+            cmds = [x.split("}")[0] for x in content.split("/{")]
+            if not cmds: break
+            cmds.reverse()
+            cmds = cmds[:-1]
+            try: cmd = cmds[0]
+            except IndexError: break
+            mssg = await runCommand(msg, f'{PREFIX}{cmd.strip("_")}', cmd=cmd.split(" ")[0].strip().strip("_"), DoFirst=True)
+            await mssg.delete()
+            content = content.replace("/{" + cmd + "}", mssg.content)
+        return await runCommand(msg, f'{content}', content.split(" ")[0][1:])
+
+    with open(commandusageFilePath, "r+") as j:
+        data = json.load(j)
+        try: data[cmd] += 1
+        except: data[cmd] = 1
+        clearFile(j)
+        json.dump(data, j)
+
+    if cmd.isupper():
+        await runBotModCmd(msg, content, cmd)
+
+    elif cmd == "bans":
+        if not testInContent(content, "--raw"):
+            with open(bannedFilePath, "r+") as bannedJ:
+                data = json.load(bannedJ)
+                mssg = "".join([f'{(await client.fetch_user(int(user))).name}: {data[user]}\n' for user in data.keys()])
+                try: return await msg.channel.send(mssg)
+                except: pass
+        with open(bannedFilePath, "rb") as bannedJ:
+            return await msg.channel.send(file=discord.File(bannedJ, "bans.json"))
 
     cmds = {
         "echo": echo,
@@ -407,22 +407,26 @@ async def on_message(msg):
     global Stop, playingGuessingGame
     global blueCheck, neutral
     content = msg.content
+    if "[timeit" in content:
+        timeThisMessageTime = time.time()
+        TimeThisMessage = True
+        content = content.replace("[timeit", "")
+    else: TimeThisMessage = False
     Iscmd = False
     if msg.author.id == 311621977339068418 and msg.channel.id not in (658815060646297659, 715043261110288415):
         await msg.delete()
-    if "[" in content:
-        if testInContent(content, "[delete"): 
+    if "[" in content and PREFIX != content[0]:
+        if "[delete" in content: 
             await msg.delete() #deletes message if requested or myustiak sent it
-        if testInContent(content, "[delin "):
-            t = splitContent(content, "[delin", index=1).strip()
+        elif "[delin" in content:
+            t = content.split("[delin")[1]
             try: await asyncio.sleep(float(t))
             except: return await msg.channel.send("NaN")
             await msg.delete()
             Iscmd = True
-        s = testInContent(content, "[rw", "[reactwith")
-        if s and "[dr" not in content:
+        elif "[rw" in content and "[dr" not in content:
             c = splitContent(content, s, index=1).strip()
-            if testInContent(c, " "):
+            if " " in c:
                 split = splitContent(c, " ")
                 for s in split:
                     if s in client.emojis: await msg.add_reaction(discord.utils.get(client.emojis, id=int(s.split(":")[2][:-1])))
@@ -434,7 +438,7 @@ async def on_message(msg):
     if not content: 
         return
         
-    if (msg.channel.id == 427973752647712768 or testInContent(content, f"{PREFIX}chkx")) and "[dr" not in content:
+    if (msg.channel.id == 427973752647712768 or (f'{PREFIX}chkx' in content and "[dr" not in content)):
         await msg.add_reaction(blueCheck)
         await msg.add_reaction(neutral)
         await msg.add_reaction("❌")
@@ -464,7 +468,7 @@ async def on_message(msg):
 
         cmd = getCmd(content)
 
-        if testInContent(content, " <<<"):
+        if "<<<" in content:
             f = msg.attachments[0]
             filename, url = f.filename, f.url
             await saveImg(filename, url)
@@ -479,17 +483,16 @@ async def on_message(msg):
         if not cmd: return
         WriteToFile = False
 
-        if TICDelete(content): 
+        if DELETE in content: 
             content = content.replace(" --delete", "")
             await msg.delete()
 
-        if testInContent(content, "--cmddelete"):
+        if "--cmddelete" in content:
             content = content.replace(" --cmddelete", " --delete")
 
         if testInContent(content, ">>> "):
             WriteToFile = splitContent(content, ">>> ")[1]
             content = content.replace(f">>> {WriteToFile}", "")
-
 
         if msg.mention_everyone:
             return await msg.channel.send("NO")
@@ -511,7 +514,7 @@ async def on_message(msg):
             await stop()
             return
 
-        if cmd == "guessinggame":
+        elif cmd == "guessinggame":
             c = splitContent(content, cmd)[1]
             if testInContent(content, "--bet"):
                 Bet = True
@@ -606,6 +609,8 @@ async def on_message(msg):
             return await msg.channel.send(f'YOU WIN\nYou won with {tempLives} left!')
         else: await msg.channel.send(f'{msg.author.mention}\nLives left: {tempLives}\nKnown word: {tempDisp}\nguesses: {" ".join(tempGuessed)}')
         playingHangman[msg.author.id] = {"word": tempWord, "lives": tempLives, "disp": tempDisp, "guessed": tempGuessed}
+
+    if TimeThisMessage: return await msg.channel.send(f'it took {time.time() - timeThisMessageTime} process the message')
 
 @client.event
 async def on_voice_state_update(member, before, after):

@@ -9,6 +9,11 @@
     "desc": "can be applied to any message",
     "cmds": [
       {
+        "name": "[timeit",
+        "params": null,
+        "desc": "times how long it takes to process the message you sent"
+      },
+      {
         "name": "[chkx",
         "params": null,
         "desc": "reacts with check, neutral, x",
@@ -151,7 +156,7 @@
       },
       {
         "name": "echo",
-        "params": "<message> (-e [color]) (-wait <time>)",
+        "params": "<message> (-e [color]) (-wait <time>) (--nodel)",
         "desc": "sends <message> and deletes your message\n-e embeds it\n--delete doesn't delete your message",
         "date": "12/14/19"
       },

@@ -69,14 +69,11 @@ class Content:
                     paramCount = paramcount.get(word.strip("-"))
                     if paramCount:
                         if isinstance(paramCount, tuple):
-                            print(paramCount[0])
                             index = paramCount[0] if paramCount[0] else 1
                             splitBy = paramCount[1]
                             arg = " ".join(l[n + 1:]).split(splitBy)
                             self.opOps.append(word)
                             self.replace(f'{word} {splitBy.join(arg)}', "")
-                            print(arg[index])
-                            print(arg)
                             yield (word, arg[index].strip()) if not isinstance(index, slice) else (word, arg[index])
                         else:
                             self.opOps.append(word)
