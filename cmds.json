@@ -156,7 +156,7 @@
       },
       {
         "name": "echo",
-        "params": "<message> (-e [color]) (-wait <time>) (--nodel)",
+        "params": "<message> (-e [color]) (-wait <time>) (--nodel) (--tts)",
         "desc": "sends <message> and deletes your message\n-e embeds it\n--delete doesn't delete your message",
         "date": "12/14/19"
       },
