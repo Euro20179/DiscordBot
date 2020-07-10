@@ -17,7 +17,7 @@ import youtube_dl
 from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont, ImageChops
 
 DELETE = "--delete"
-VERSION = "5.0-rc17"
+VERSION = "5.0-rc18"
 Stop = False
 
 playingGuessingGame = {}
@@ -385,7 +385,11 @@ class Content:
             try: c = str(self.split(" ")[index].strip())
             except: return msg.author
         else:
-            try: c = str(content)
+            try: 
+                if not content:
+                    c = str(self)
+                else:
+                    c = str(content)
             except: return msg.author
         c = c.replace("!", "")[2:-1] if "<@" in c else c
         if not c: c = str(msg.author.id)

@@ -231,7 +231,7 @@ async def getUserData(user):
 
 async def level(msg, content, cmd="level"):
     content = Content(content)
-    user = content.getUser(msg, 0)
+    user = content.getUser(msg)
     userData = await getUserData(user.id)
     with open(levelingDataFilePath, "r") as f:
         data = json.load(f)
