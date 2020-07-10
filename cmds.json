@@ -683,7 +683,7 @@
       },
       {
         "name": "emoteusage",
-        "params": "[emote] (--least)",
+        "params": "[emote] (-top <top>) (--least)",
         "desc": "gives the most used emotes",
         "date": "7/10/2020"
       },

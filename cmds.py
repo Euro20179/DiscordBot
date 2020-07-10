@@ -2591,6 +2591,11 @@ async def embedCmd(msg, content, cmd="embed"):
 
 async def emoteUsage(msg, content, cmd="emoteusage"):
     content = Content(content)
+    top = 10
+    for op, param in content.opsWithParams():
+        if op == "-top":
+            top = int(param)
+            break
     with open(emoteUsageFilePath, "r") as j:
         data = json.load(j)
         data = sorted(data.items(), key=lambda x: x[1], reverse=True if not content @ "--least" else False)
@@ -2600,5 +2605,5 @@ async def emoteUsage(msg, content, cmd="emoteusage"):
             except: usage = None
             return await msg.channel.send(usage)
         else:
-            emotes = [f'{f"<:{(await msg.guild.fetch_emoji(int(k))).name}:{int(k)}>"}: {i}' for k, i in data]
+            emotes = [f'{f"<:{(await msg.guild.fetch_emoji(int(k[0]))).name}:{int(k[0])}>"}: {k[1]}' for n, k in enumerate(data) if n < top]
             return await msg.channel.send("\n".join(emotes))
