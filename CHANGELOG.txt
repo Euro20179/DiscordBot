@@ -25,12 +25,15 @@ ADDITIONS:
 *formatting is more generalized
 ADDEDBACK:
 *--delete to echo except now it's --nodel
+*botmods now accepts a user, shows what commands they can use
+*botmods has raw, gives the json file
 
 CHANGES:
 *choose sep now defaults to |
 *round now rounds to 2 instead of 3
 *color now works better with /{}
 *-color is now seperate from -palette in convertimg
+*botmods is now command based instead of being a botmod or not
 
 FIXES:
 *help sometimes didn't work properly
@@ -38,6 +41,13 @@ FIXES:
 
 TECHNICAL:
 *completely changed how the bot parses commands
+
+====================================================================
+5.0-rc13 (7/9/2020)
+
+CHANGES:
+*you can now specify which user you want to see with botmods
+*botmods now has raw
 
 ====================================================================
 5.0-rc12 (7/9/2020)

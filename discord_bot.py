@@ -16,6 +16,7 @@ async def on_ready():
 
 async def runBotModCmd(msg, content, cmd):
     global CUSTOMCMDS, CATS, CMDLIST, BOTMODS
+    if isBot(msg, client): return
     if cmd == "ADDMONEY" and msg.author.id == EUROID:
         user = await getUserInContent(msg, content.split(", ")[0], cmd)
         amnt = content.split(", ")[1]
@@ -345,7 +346,8 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
         "embedtotext": embedInfo,
         "textinfo": textInfo,
         "ytdl": ytdl,
-        "piracyisbad": ytdl
+        "piracyisbad": ytdl,
+        "botmods": botMods
     }
 
     case = cmds.get(cmd)
@@ -355,10 +357,7 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
     if case:
         content = await case(msg, content, cmd=cmd)
         Iscmd = True
-    
-    if cmd == "botmods": 
-        BOTMODS = reloadBOTMODS()
-        content = await oneLineCmd(msg, "\n".join([f'{await getUserInContent(msg, "ok " + k, "ok")}: {i}' for k, i in BOTMODS.items()]))
+
     elif cmd == "tof": content = await oneLineCmd(msg, 9 / 5 * float(splitContent(content, cmd + " ", index=1)) + 32)
     elif cmd == "avatar": content = await oneLineCmd(msg, (await getUserInContent(msg, content, cmd)).avatar_url)
     elif cmd == "fetchuser": content = await oneLineCmd(msg, (await client.fetch_user(int(splitContent(content, f'{cmd} ', index=1)))).name)
@@ -465,8 +464,8 @@ async def on_message(msg):
     if f"<@!{client.user.id}>" in content and client.user.id not in playingHangman.keys():
         await msg.channel.send(random.choice((discord.utils.find(lambda e: e.name.lower() == "watching1", client.emojis), discord.utils.find(lambda e: e.name.lower() == "pinged", client.emojis))))
         
-    if PREFIX != "]": await giveXP(msg)
-    if PREFIX != "]": await reduceXP(msg)
+    await giveXP(msg)
+    await reduceXP(msg)
 
     if msg.mentions and not isBot(msg, client):
         usersPinged = {str(user.id) for user in msg.mentions}
