@@ -2564,6 +2564,7 @@ async def embedCmd(msg, content, cmd="embed"):
     color=image=thumbnail=author = None
     title = content.split("|")[0]
     content.replace(f'{title} ', "")
+    content = Content(content.split("|", pastIndex=1), removeCmd=False)
     for op, param in content.opsWithParams({"author": (slice(0,None,None), " ")}):
         if op == "-color":
             color = param
