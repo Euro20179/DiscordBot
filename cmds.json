@@ -875,7 +875,7 @@
         "params": "<youtube url>",
         "desc": "does something :)))",
         "date": "7/7/2020"
-      }
+      },
       {
         "name": "status",
         "params": "<message>",
