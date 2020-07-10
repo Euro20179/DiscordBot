@@ -881,7 +881,7 @@ async def hexBinOct(msg, content, cmd="hex"):
     ans = list(map(lambda n: str(hex(n)).replace(repWith, ""), num))
     return await msg.channel.send(", ".join(ans))
 
-async def response(msg, content, cmd="response", doFirst=False):
+async def response(msg, content, cmd="response"):
     global Stop
     if Stop: Stop = False
     if isBot(msg, client): return "is bot"
@@ -2553,13 +2553,52 @@ async def botMods(msg, content, cmd="botmods"):
     if content @ "--raw":
         with open(botModsFilePath, "rb") as f:
             return await msg.channel.send(file=discord.File(f, "botmods.json"))
-    else:
-        with open(botModsFilePath, "r") as j:
-            data = json.load(j)
-            if content:
-                try:
-                    return await msg.channel.send("\n".join(data.get(str(content.getUser(msg).id))))
-                except:
-                    return await msg.channel.send("None")
-            else:
-                return await msg.channel.send("\n".join([f'{await getUserInContent(msg, "ok " + k, "ok")}: {i}' for k, i in BOTMODS.items()]))
+    with open(botModsFilePath, "r") as j:
+        data = json.load(j)
+        if content:
+            try: return await msg.channel.send("\n".join(data.get(str(content.getUser(msg).id))))
+            except: return await msg.channel.send("None")
+        else: return await msg.channel.send("\n".join([f'{await getUserInContent(msg, "ok " + k, "ok")}: {i}' for k, i in BOTMODS.items()]))
+
+async def embedCmd(msg, content, cmd="embed"):
+    content = Content(content)
+    color=image=thumbnail=author = None
+    title = content.split(" ")[0]
+    content.replace(f'{title} ', "")
+    for op, param in content.opsWithParams({"author": (slice(0,None,None), " ")}):
+        if op == "-color":
+            color = param
+        elif op == "-image":
+            image = param
+        elif op == "-thumbnail":
+            thumbnail = param
+        elif op == "-author":
+            author = Content(" ".join(param), removeCmd=False)
+            list(author.opsWithParams())
+            author = str(author)
+    content.formatMessage(msg, {"{title}": title, "{color}": color, "{author}": author})
+    embed = discord.Embed(title=title, color=discord.Color(int(color, 16)) if color else discord.Color(0x000000))
+    if image: embed.set_image(url=image)
+    if thumbnail: embed.set_thumbnail(url=thumbnail)
+    if author: embed.set_author(name=author)
+    split = content.split("|")
+    for n, field in enumerate(split):
+        name, value = field.split(",")
+        value = Content(value, removeCmd=False)
+        Inline = True if not value @ "--ninline" else False
+        embed.add_field(name=name, value=str(value), inline=Inline)
+    return await msg.channel.send(embed=embed)
+
+async def emoteUsage(msg, content, cmd="emoteusage"):
+    content = Content(content)
+    with open(emoteUsageFilePath, "r") as j:
+        data = json.load(j)
+        data = sorted(data.items(), key=lambda x: x[1], reverse=True if not content @ "--least" else False)
+        if content:
+            data = {k: i for k, i in data}
+            try: usage = data[str(re.findall(r'[0-9]{18}', str(content))[0])]
+            except: usage = None
+            return await msg.channel.send(usage)
+        else:
+            emotes = [f'{f"<:{(await msg.guild.fetch_emoji(int(k))).name}:{int(k)}>"}: {i}' for k, i in data]
+            return await msg.channel.send("\n".join(emotes))

@@ -348,13 +348,13 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
         "textinfo": textInfo,
         "ytdl": ytdl,
         "piracyisbad": ytdl,
-        "botmods": botMods
+        "botmods": botMods,
+        "embed": embedCmd,
+        "emoteusage": emoteUsage
     }
 
     case = cmds.get(cmd)
     
-    CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
-
     if case:
         content = await case(msg, content, cmd=cmd)
         Iscmd = True
@@ -477,6 +477,17 @@ async def on_message(msg):
                     u = findMember(user, msg)
                     if str(u.status) in data[user]["when"] or "all" in data[user]["when"]:
                         await msg.channel.send(data[user]["response"].replace("{author}", msg.author.mention))      
+
+    emotes = re.findall(r'<:[A-Za-z]{1,100}:[0-9]{18}>', str(content))
+    if emotes and not msg.author.bot:
+        with open(emoteUsageFilePath, "r+") as j:
+            data = json.load(j)
+            for emote in emotes:
+                emoteId = re.findall(r'[0-9]{18}', emote)[0]
+                try: data[str(emoteId)] += 1
+                except: data[str(emoteId)] = 1
+            clearFile(j)
+            json.dump(data, j)
 
     if content[0] in PREFIX:
 

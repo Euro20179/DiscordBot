@@ -161,6 +161,12 @@
         "date": "12/14/19"
       },
       {
+        "name": "embed",
+        "params": "<title> *<fields <title>, <value> (--ninline)> (sep with |) (-color <color) (-image <img url>) (-thumbnail <img url>) (-author <name>) (FORMATS (title, color, author))",
+        "desc": "makes an embed with a title of title\nex: [embed hi field1, value1 | field2, value2",
+        "date": "7/10/2020"
+      },
+      {
         "name": "8ball",
         "params": "[question] (-e [color])",
         "desc": "the magic 8 ball ooooo spooky",
@@ -674,6 +680,12 @@
         "params": "<pokemon pokedex #/name>",
         "desc": "gets info on pokemon",
         "date": "6/2/2020"
+      },
+      {
+        "name": "emoteusage",
+        "params": "[emote] (--least)",
+        "desc": "gives the most used emotes",
+        "date": "7/10/2020"
       },
       {
         "name": "hasrole",
