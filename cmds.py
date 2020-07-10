@@ -624,24 +624,30 @@ async def family(msg, content, cmd="family"):
     with open("family.txt", "r") as f: await oneLineCmd(msg, f.read())
 
 async def mballreply(msg, content, cmd="mballreply"):
+    global BOTMODS
+    BOTMODS = reloadBOTMODS()
     mssg = Content(content)
-    if userHasRole(msg, "mballresponseadder"):
-        with open(mballresponseFilePath, "a") as f:
-            f.write(mssg + "\n")
-        return await msg.channel.send("message added")				
+    if str(msg.author.id) in BOTMODS.keys():
+        if cmd in BOTMODS[str(msg.author.id)]:
+            with open(mballresponseFilePath, "a") as f:
+                f.write(mssg + "\n")
+            return await msg.channel.send("message added")				
     else: return await msg.channel.send("you don't have perms")
 
 async def mballDel(msg, content, cmd="8brdel"):
+    global BOTMODS
+    BOTMODS = reloadBOTMODS()
     reply = str(Content(content))
-    if userHasRole(msg, "mballresponseadder"):
-        with open(mballresponseFilePath, "r+") as f:
-            replies = f.read().split("\n")
-            if reply in replies:
-                replies.remove(reply)
-                clearFile(f)
-                f.write("\n".join(replies))
-                await msg.channel.send(f'removed message: {reply}')
-            else: await msg.channel.send("not a message")
+    if str(msg.author.id) in BOTMODS.keys():
+        if cmd in BOTMODS[str(msg.author.id)]:
+            with open(mballresponseFilePath, "r+") as f:
+                replies = f.read().split("\n")
+                if reply in replies:
+                    replies.remove(reply)
+                    clearFile(f)
+                    f.write("\n".join(replies))
+                    await msg.channel.send(f'removed message: {reply}')
+                else: await msg.channel.send("not a message")
     else: await msg.channel.send("you don't have perms")
 
 async def count(msg, content, cmd="count"):
@@ -1184,7 +1190,7 @@ async def addCustomCmd(msg, content, cmd="customcmd"):
 async def removeCustomCmd(msg, content, cmd="removecustomcmd"):
     global CATS, CMDLIST, CUSTOMCMDS
     perms = msg.author.guild_permissions.manage_messages
-    if not perms and not userHasRole(msg, "mballresponseadder"):
+    if not perms and str(msg.author.id) not in BOTMODS.keys():
         return await msg.channel.send("you cannot do that")
     name = content[len(cmd) + 2:].split()
     with open(customcmdsFilePath, "r+") as j:
@@ -1539,7 +1545,8 @@ async def editCustomCmd(msg, content, cmd="eccmd"):
         data = json.load(j)
         for command in data:
             if command["name"] == lookFor:
-                if not command.get("Locked") or str(msg.author.id) in BOTMODS or str(msg.author.id) == command.get("addedby"):
+                if not command.get("Locked") or str(msg.author.id) in BOTMODS.keys() or str(msg.author.id) == command.get("addedby"):
+                    if cmd not in BOTMODS[str(msg.author.id)]: return await msg.channel.send("cannot change that command it's locked")
                     if "--lock" in changeTo:
                         if not command.get("Locked"):
                             command["Locked"] = True

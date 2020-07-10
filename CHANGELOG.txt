@@ -40,6 +40,13 @@ TECHNICAL:
 *completely changed how the bot parses commands
 
 ====================================================================
+5.0-rc12 (7/9/2020)
+
+CHANGES:
+*changed how the botmod system works
+*it is now command based
+
+====================================================================
 5.0-rc11 (7/9/2020)
 
 ADDITIONS:

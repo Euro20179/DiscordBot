@@ -22,90 +22,99 @@ async def runBotModCmd(msg, content, cmd):
         await addMoney(user, float(amnt))
         return await msg.channel.send(f'{float(amnt)} removed from {user.name}')
 
-    elif cmd == "ADDBOTMOD" and msg.author.id == EUROID:
-        user = await getUserInContent(msg, content, cmd)
+    elif cmd == "ALLOW" and msg.author.id == EUROID:
+        user = await getUserInContent(msg, content.split("|")[0], cmd)
         with open(botModsFilePath, "r+") as f:
-            if f.read():
-                MODS = f.read().split("\n")
-                if user.id in MODS:
-                    return await msg.channel.send(f'{user.name} already a mod')
-            f.write(f'{user.id}\n')
-        BOTMODS = reloadBOTMODS()
-        return await msg.channel.send(f'added {user.name} as a bot mod')
-
-    elif cmd == "REMOVEBOTMOD" and msg.author.id == EUROID:
-        user = await getUserInContent(msg, content, cmd)
-        with open(botModsFilePath, "r+") as f:
-            MODS = f.read().split("\n")
-            try: MODS.remove(str(user.id))
-            except: return await msg.channel.send(f'{user.name} not a mod')
-            clearFile(f)
-            f.write("\n".join(MODS))
-        BOTMODS = reloadBOTMODS()
-        return await msg.channel.send(f'removed {user.name} from bot mod')
-
-    elif cmd == "ENDPLS" and str(msg.author.id) in BOTMODS:
-        await msg.channel.send("Logging out")
-        await client.logout()
-
-    elif cmd == "BAN" and str(msg.author.id) in BOTMODS:
-        user = await getUserInContent(msg, " ".join(content.split(" ")[0:2]), cmd)
-        banFrom = splitContent(content, " ", index=2)
-        with open(bannedFilePath, "r+") as bannedJ:
-            data = json.load(bannedJ)
-            if data.get(str(user.id)):
-                data[str(user.id)].append(banFrom)
-            else: data[str(user.id)] = [banFrom]
-            clearFile(bannedJ)
-            json.dump(data, bannedJ)
-            return await msg.channel.send(f'banned {user.name} from {banFrom}')
-
-    elif cmd == "UNBAN" and str(msg.author.id) in BOTMODS:
-        user = await getUserInContent(msg, " ".join(content.split(" ")[0:2]), cmd)
-        unbanFrom = splitContent(content, " ", index=2)
-        with open(bannedFilePath, "r+") as bannedJ:
-            data = json.load(bannedJ)
-            if data.get(str(user.id)):
-                data[str(user.id)].remove(unbanFrom)
-            else: return await msg.channel.send("did not find user")
-            clearFile(bannedJ)
-            json.dump(data, bannedJ)
-            return await msg.channel.send(f'unbanned {user.name} from {unbanFrom}')
-
-    elif cmd == "CHANGELVLMSG" and str(msg.author.id) in BOTMODS:
-        user = await getUserInContent(msg, content, cmd)
-        with open(levelingDataFilePath, "r+") as j:
-            data = json.load(j)
-            try:
-                await msg.channel.send("to what?") 
-                changeTo = await client.wait_for("message", check=lambda message: message.author.id == msg.author.id, timeout=60.0)
-            except: return await msg.channel.send("failed")
-            userData = data[str(user.id)]
-            userData["message"] = changeTo.content
-            clearFile(j)
-            json.dump(data, j)
-            return await msg.channel.send("changed")
-
-    elif cmd == "CHANGEPR" and str(msg.author.id) in BOTMODS:
-        user = await getUserInContent(msg, content, cmd)
-        with open(pingResponseFilePath, "r+") as j:
-            data = json.load(j)
-            try:
-                await msg.channel.send("to what?") 
-                changeTo = await client.wait_for("message", check=lambda message: message.author.id == msg.author.id, timeout=60.0)
-            except Exception as e: 
-                print(e)
-                return await msg.channel.send("failed")
-            if changeTo.content.lower() == "none":
-                del data[str(user.id)]
+            data = json.load(f)
+            if str(user.id) in data.keys():
+                data[str(user.id)].append(content.split("|")[1].strip())
             else:
+                data[str(user.id)] = [content.split("|")[1].strip()]
+            clearFile(f)
+            json.dump(data, f)
+            await msg.channel.send(f'{user.name} can now use {content.split("|")[1]}')
+            BOTMODS = reloadBOTMODS()
+
+    elif cmd == "DISALLOW" and msg.author.id == EUROID:
+        user = await getUserInContent(msg, content.split("|")[0], cmd)
+        with open(botModsFilePath, "r+") as f:
+            data = json.load(f)
+            if str(user.id) in data.keys():
+                data[str(user.id)].remove(content.split("|")[1].strip())
+            clearFile(f)
+            json.dump(data, f)
+            await msg.channel.send(f'{user.name} can not use {content.split("|")[1]}')
+            BOTMODS = reloadBOTMODS()
+
+    elif cmd == "ENDPLS" and str(msg.author.id) in BOTMODS.keys():
+        if cmd in BOTMODS[str(msg.author.id)]:
+            await msg.channel.send("Logging out")
+            await client.logout()
+
+    elif cmd == "BAN" and str(msg.author.id) in BOTMODS.keys():
+        if cmd in BOTMODS[str(msg.author.id)]:
+            user = await getUserInContent(msg, " ".join(content.split(" ")[0:2]), cmd)
+            banFrom = splitContent(content, " ", index=2)
+            with open(bannedFilePath, "r+") as bannedJ:
+                data = json.load(bannedJ)
                 if data.get(str(user.id)):
-                    data[str(user.id)]["response"] = changeTo.content
+                    data[str(user.id)].append(banFrom)
+                else: data[str(user.id)] = [banFrom]
+                clearFile(bannedJ)
+                json.dump(data, bannedJ)
+                return await msg.channel.send(f'banned {user.name} from {banFrom}')
+
+    elif cmd == "UNBAN" and str(msg.author.id) in BOTMODS.keys():
+        if cmd in BOTMODS[str(msg.author.id)]:
+            user = await getUserInContent(msg, " ".join(content.split(" ")[0:2]), cmd)
+            unbanFrom = splitContent(content, " ", index=2)
+            with open(bannedFilePath, "r+") as bannedJ:
+                data = json.load(bannedJ)
+                if data.get(str(user.id)):
+                    data[str(user.id)].remove(unbanFrom)
+                else: return await msg.channel.send("did not find user")
+                clearFile(bannedJ)
+                json.dump(data, bannedJ)
+                return await msg.channel.send(f'unbanned {user.name} from {unbanFrom}')
+
+    elif cmd == "CHANGELVLMSG" and str(msg.author.id) in BOTMODS.keys():
+        if cmd in BOTMODS[str(msg.author.id)]:
+            user = await getUserInContent(msg, content, cmd)
+            with open(levelingDataFilePath, "r+") as j:
+                data = json.load(j)
+                try:
+                    await msg.channel.send("to what?") 
+                    changeTo = await client.wait_for("message", check=lambda message: message.author.id == msg.author.id, timeout=60.0)
+                except: return await msg.channel.send("failed")
+                userData = data[str(user.id)]
+                userData["message"] = changeTo.content
+                clearFile(j)
+                json.dump(data, j)
+                return await msg.channel.send("changed")
+
+    elif cmd == "CHANGEPR" and str(msg.author.id) in BOTMODS.keys():
+        if cmd in BOTMODS[str(msg.author.id)]:
+            user = await getUserInContent(msg, content, cmd)
+            with open(pingResponseFilePath, "r+") as j:
+                data = json.load(j)
+                try:
+                    await msg.channel.send("to what?") 
+                    changeTo = await client.wait_for("message", check=lambda message: message.author.id == msg.author.id, timeout=60.0)
+                except Exception as e: 
+                    print(e)
+                    return await msg.channel.send("failed")
+                if changeTo.content.lower() == "none":
+                    del data[str(user.id)]
                 else:
-                    data[str(user.id)] = {"response": changeTo.content, "when": ["offline"]}
-            clearFile(j)
-            json.dump(data, j)
-            return await msg.channel.send("changed")
+                    if data.get(str(user.id)):
+                        data[str(user.id)]["response"] = changeTo.content
+                    else:
+                        data[str(user.id)] = {"response": changeTo.content, "when": ["offline"]}
+                clearFile(j)
+                json.dump(data, j)
+                return await msg.channel.send("changed")
+
+    return await msg.channel.send("you cannot do that")
 
 async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
     global CUSTOMCMDS, CATS, CMDLIST, BOTMODS
@@ -143,7 +152,7 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
         json.dump(data, j)
 
     if cmd.isupper():
-        await runBotModCmd(msg, content, cmd)
+        return await runBotModCmd(msg, content, cmd)
 
     elif cmd == "bans":
         if not testInContent(content, "--raw"):
@@ -340,15 +349,16 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
     }
 
     case = cmds.get(cmd)
+    
+    CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
+
     if case:
         content = await case(msg, content, cmd=cmd)
         Iscmd = True
     
-    CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
-
     if cmd == "botmods": 
         BOTMODS = reloadBOTMODS()
-        content = await oneLineCmd(msg, "\n".join([(await getUserInContent(msg, f'ok {i}', "ok")).name for i in BOTMODS[:-1]]))
+        content = await oneLineCmd(msg, "\n".join([f'{await getUserInContent(msg, "ok " + k, "ok")}: {i}' for k, i in BOTMODS.items()]))
     elif cmd == "tof": content = await oneLineCmd(msg, 9 / 5 * float(splitContent(content, cmd + " ", index=1)) + 32)
     elif cmd == "avatar": content = await oneLineCmd(msg, (await getUserInContent(msg, content, cmd)).avatar_url)
     elif cmd == "fetchuser": content = await oneLineCmd(msg, (await client.fetch_user(int(splitContent(content, f'{cmd} ', index=1)))).name)
@@ -455,8 +465,8 @@ async def on_message(msg):
     if f"<@!{client.user.id}>" in content and client.user.id not in playingHangman.keys():
         await msg.channel.send(random.choice((discord.utils.find(lambda e: e.name.lower() == "watching1", client.emojis), discord.utils.find(lambda e: e.name.lower() == "pinged", client.emojis))))
         
-    await giveXP(msg)
-    await reduceXP(msg)
+    if PREFIX != "]": await giveXP(msg)
+    if PREFIX != "]": await reduceXP(msg)
 
     if msg.mentions and not isBot(msg, client):
         usersPinged = {str(user.id) for user in msg.mentions}
