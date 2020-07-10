@@ -2545,3 +2545,21 @@ async def ytdl(msg, content, cmd="ytdl"):
             with open(f, "rb") as mp3:
                 return await msg.channel.send(file=discord.File(mp3, "song.mp3"))
             os.remove(f)
+
+async def botMods(msg, content, cmd="botmods"):
+    global BOTMODS
+    BOTMODS = reloadBOTMODS()
+    content = Content(content)
+    if content @ "--raw":
+        with open(botModsFilePath, "rb") as f:
+            return await msg.channel.send(file=discord.File(f, "botmods.json"))
+    else:
+        with open(botModsFilePath, "r") as j:
+            data = json.load(j)
+            if content:
+                try:
+                    return await msg.channel.send("\n".join(data.get(str(content.getUser(msg).id))))
+                except:
+                    return await msg.channel.send("None")
+            else:
+                return await msg.channel.send("\n".join([f'{await getUserInContent(msg, "ok " + k, "ok")}: {i}' for k, i in BOTMODS.items()]))
