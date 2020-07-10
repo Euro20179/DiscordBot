@@ -2605,5 +2605,10 @@ async def emoteUsage(msg, content, cmd="emoteusage"):
             except: usage = None
             return await msg.channel.send(usage)
         else:
-            emotes = [f'{f"<:{(await msg.guild.fetch_emoji(int(k[0]))).name}:{int(k[0])}>"}: {k[1]}' for n, k in enumerate(data) if n < top]
+            emotes = []
+            for n, k in enumerate(data):
+                if n > top: break
+                try: emote = (await msg.guild.fetch_emoji(int(k[0]))).name
+                except discord.errors.NotFound as e: continue
+                emotes.append(f'<:{emote}:{int(k[0])}>: {k[1]}')
             return await msg.channel.send("\n".join(emotes))

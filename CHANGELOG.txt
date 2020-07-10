@@ -46,6 +46,12 @@ TECHNICAL:
 *completely changed how the bot parses commands
 
 ====================================================================
+5.0-rc19 (7/10/2020)
+
+FIXES:
+*emoteusage will still work even if it can't find a particular emote
+
+====================================================================
 5.0-rc18 (7/10/2020)
 
 FIXES:
