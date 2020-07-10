@@ -51,6 +51,9 @@ TECHNICAL:
 CHANGES:
 *emoteusage defaults to top 10
 
+FIXES:
+*emotes with - or _ wouldnt' be counted
+
 ====================================================================
 5.0-rc14 (7/10/2020)
 

@@ -478,7 +478,7 @@ async def on_message(msg):
                     if str(u.status) in data[user]["when"] or "all" in data[user]["when"]:
                         await msg.channel.send(data[user]["response"].replace("{author}", msg.author.mention))      
 
-    emotes = re.findall(r'<:[A-Za-z]{1,100}:[0-9]{18}>', str(content))
+    emotes = re.findall(r'<:[A-Za-z-_]{1,100}:[0-9]{18}>', str(content))
     if emotes and not msg.author.bot:
         with open(emoteUsageFilePath, "r+") as j:
             data = json.load(j)
