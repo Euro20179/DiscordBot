@@ -46,7 +46,13 @@ TECHNICAL:
 *completely changed how the bot parses commands
 
 ====================================================================
-5.0-rc14 (7/9/2020)
+5.0-rc15 (7/10/2020)
+
+CHANGES:
+*emoteusage defaults to top 10
+
+====================================================================
+5.0-rc14 (7/10/2020)
 
 ADDITIONS:
 *embed, makes an embed
