@@ -2562,7 +2562,7 @@ async def botMods(msg, content, cmd="botmods"):
 async def embedCmd(msg, content, cmd="embed"):
     content = Content(content)
     color=image=thumbnail=author = None
-    title = content.split(" ")[0]
+    title = content.split("|")[0]
     content.replace(f'{title} ', "")
     for op, param in content.opsWithParams({"author": (slice(0,None,None), " ")}):
         if op == "-color":
