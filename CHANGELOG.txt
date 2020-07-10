@@ -23,6 +23,9 @@ ADDITIONS:
 *--tts for echo
 *help FORMATS
 *formatting is more generalized
+*embed, makes an embed
+*emoteusage, gets most used emotes
+
 ADDEDBACK:
 *--delete to echo except now it's --nodel
 *botmods now accepts a user, shows what commands they can use
@@ -41,6 +44,16 @@ FIXES:
 
 TECHNICAL:
 *completely changed how the bot parses commands
+
+====================================================================
+5.0-rc14 (7/9/2020)
+
+ADDITIONS:
+*embed, makes an embed
+*emoteusage
+
+TECHNICAL:
+*removed a costly task that happened every command
 
 ====================================================================
 5.0-rc13 (7/9/2020)

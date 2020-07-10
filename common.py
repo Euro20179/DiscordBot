@@ -17,7 +17,7 @@ import youtube_dl
 from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont, ImageChops
 
 DELETE = "--delete"
-VERSION = "5.0-rc13"
+VERSION = "5.0-rc14"
 Stop = False
 
 playingGuessingGame = {}
@@ -43,16 +43,12 @@ itemDataFilePath = f'{DISEXT}/itemsData.json'
 botModsFilePath = f'{DISEXT}/botMods.json'
 itemsFilePath = f'items.json'
 pingResponseFilePath = f'{DISEXT}/pingresponse.json'
+emoteUsageFilePath = f'{DISEXT}/emoteusage.json'
 queuePath = "./queue"
 EUROID = 334538784043696130
 client = commands.Bot(command_prefix=fakePrefix)
 
 tracemalloc.start()
-
-async def returnMessage(msg, content, author=client.user):
-    msg.content = content
-    msg.author = author
-    return msg
 
 def reloadBOTMODS():
     global BOTMODS
@@ -300,6 +296,9 @@ class Content:
         self.opOps = []
 
     def calcOps(self):
+        """
+        calculates -- options without yielding
+        """
         if not self.split(" ") or ("--" not in self and "—" not in self): return []
         for word in reversed(self.split(" ")):
             if "--" in word or "—" in word:
@@ -344,7 +343,8 @@ class Content:
 
     def opsWithParams(self, paramcount : dict =None):
         """
-        paramcount could be {'-param': arg_num}
+        paramcount could be {'param': arg_num}
+        or {'param': (index, split)}
         """
         l = self.split(" ")
         if not l[0]: return [(None, None)]
@@ -402,7 +402,6 @@ class Content:
         return False if self.toSet() & {"help(", "quit()", "exit()", "os.", "token", "input(", "sys.", "__import__('os')", '__import__("os")',} else True
     
     def formatMessage(self, msg, kwargs=None, removeCmd=True):
-        print(self, msg.content, msg)
         if "{emote}" in self:
             new = [x if x.strip() != "{emote}" else str(random.choice(msg.guild.emojis)) for x in self.split(" ")]
             self.string = " ".join(new)
