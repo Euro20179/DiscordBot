@@ -249,7 +249,7 @@ async def level(msg, content, cmd="level"):
     embed.add_field(name="rank #", value=pos)
     embed.add_field(name="xp needed", value=required - xp)
     embed.add_field(name="approx minutes", value=round((required - xp) / 57.5)) #TODO format this
-    embed.add_field(name="level up mesage", value=str(content.formatMessage(msg, ret=True)), inline=False)
+    embed.add_field(name="level up mesage", value=str(Content(message, removeCmd=False).formatMessage(msg, kwargs={"{level}": level, "{xp}": xp}, removeCmd=False, ret=True)), inline=False)
     msg = await msg.channel.send(embed=embed)
     return await embedToReadableDict(msg, embed) 
 
