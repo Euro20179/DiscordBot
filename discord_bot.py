@@ -478,16 +478,17 @@ async def on_message(msg):
                     if str(u.status) in data[user]["when"] or "all" in data[user]["when"]:
                         await msg.channel.send(data[user]["response"].replace("{author}", msg.author.mention))      
 
-    emotes = re.findall(r'<:[A-Za-z-_]{1,100}:[0-9]{18}>', str(content))
-    if emotes and not msg.author.bot:
-        with open(emoteUsageFilePath, "r+") as j:
-            data = json.load(j)
-            for emote in emotes:
-                emoteId = re.findall(r'[0-9]{18}', emote)[0]
-                try: data[str(emoteId)] += 1
-                except: data[str(emoteId)] = 1
-            clearFile(j)
-            json.dump(data, j)
+    if "<:" in content and ">" in content:
+        emotes = re.findall(r'<:[A-Za-z-_]{1,100}:[0-9]{18}>', str(content))
+        if emotes and not msg.author.bot:
+            with open(emoteUsageFilePath, "r+") as j:
+                data = json.load(j)
+                for emote in emotes:
+                    emoteId = re.findall(r'[0-9]{18}', emote)[0]
+                    try: data[str(emoteId)] += 1
+                    except: data[str(emoteId)] = 1
+                clearFile(j)
+                json.dump(data, j)
 
     if content[0] in PREFIX:
 
@@ -639,12 +640,13 @@ async def on_message(msg):
 
 @client.event
 async def on_raw_reaction_add(payload):
-    with open(emoteUsageFilePath, "r+") as j:
-        data = json.load(j)
-        try: data[str(payload.emoji.id)] += 1
-        except: data[str(payload.emoji.id)] = 1
-        clearFile(j)
-        json.dump(data, j)
+    if payload.emoji.is_custom_emoji():
+        with open(emoteUsageFilePath, "r+") as j:
+            data = json.load(j)
+            try: data[str(payload.emoji.id)] += 1
+            except: data[str(payload.emoji.id)] = 1
+            clearFile(j)
+            json.dump(data, j)
 
 @client.event
 async def on_voice_state_update(member, before, after):
