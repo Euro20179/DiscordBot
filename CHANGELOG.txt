@@ -25,6 +25,7 @@ ADDITIONS:
 *formatting is more generalized
 *embed, makes an embed
 *emoteusage, gets most used emotes
+*fetchemote
 
 ADDEDBACK:
 *--delete to echo except now it's --nodel
@@ -46,37 +47,44 @@ TECHNICAL:
 *completely changed how the bot parses commands
 
 ====================================================================
-5.0-rc20 (7/10/2020)
+5.0-rc1 (7/10/2020)
+
+ADDITIONS:
+*fetchemote
+*emoteusage --raw
+
+====================================================================
+5.0_b.20 (7/10/2020)
 
 FIXES:
 *lvl/rank/level now formats your lvlmsg properly
 
 ====================================================================
-5.0-rc19 (7/10/2020)
+5.0_b.19 (7/10/2020)
 
 FIXES:
 *emoteusage will still work even if it can't find a particular emote
 
 ====================================================================
-5.0-rc18 (7/10/2020)
+5.0_b.18 (7/10/2020)
 
 FIXES:
 *rank [user]
 
 ====================================================================
-5.0-rc17 (7/10/2020)
+5.0_b.17 (7/10/2020)
 
 TECHNICAL:
 *everything is slightly faster than rc16
 
 ====================================================================
-5.0-rc16 (7/10/2020)
+5.0_b.16 (7/10/2020)
 
 ADDITIONS:
 *emotes used in reaction count for emoteusage
 
 ====================================================================
-5.0-rc15 (7/10/2020)
+5.0_b.15.1 (7/10/2020)
 
 CHANGES:
 *emoteusage defaults to top 10
@@ -85,7 +93,7 @@ FIXES:
 *emotes with - or _ wouldnt' be counted
 
 ====================================================================
-5.0-rc14 (7/10/2020)
+5.0_b.15 (7/10/2020)
 
 ADDITIONS:
 *embed, makes an embed
@@ -95,21 +103,21 @@ TECHNICAL:
 *removed a costly task that happened every command
 
 ====================================================================
-5.0-rc13 (7/9/2020)
+5.0_b.14 (7/9/2020)
 
 CHANGES:
 *you can now specify which user you want to see with botmods
 *botmods now has raw
 
 ====================================================================
-5.0-rc12 (7/9/2020)
+5.0_b.13 (7/9/2020)
 
 CHANGES:
 *changed how the botmod system works
 *it is now command based
 
 ====================================================================
-5.0-rc11 (7/9/2020)
+5.0_b.12 (7/9/2020)
 
 ADDITIONS:
 *anything that uses formatting now also has
@@ -127,13 +135,13 @@ FIXES:
 *accmd and eccmd are more lenient
 
 ====================================================================
-5.0-rc10_2 (7/9/2020)
+5.0_b.11 (7/9/2020)
 
 FIXES:
 *help sometimes didn't work properly
 
 ====================================================================
-5.0-rc10 (UNRELEASED) (7/9/2020)
+5.0_b.10 (UNRELEASED) (7/9/2020)
 
 ADDITIONS:
 *--tts for echo
@@ -142,7 +150,7 @@ FIXES:
 *in some weird circumstances rand wouldn't work properly, i have no idea what said circumstances are
 
 ====================================================================
-5.0-rc9 (7/9/2020)
+5.0_b.9 (7/9/2020)
 
 ADDITIONS:
 *formatting for lvlmsg and customcmds will now be the same
@@ -157,7 +165,7 @@ FIXES:
 *rand [<low> <high>]
 
 ====================================================================
-5.0-rc-8 (7/8/2020)
+5.0-rc_b.8 (7/8/2020)
 
 ADDITIONS:
 *timeit is now an anymessage command
@@ -169,26 +177,26 @@ TECHNICAL:
 *small amount of code cleanup
 
 ====================================================================
-5.0-rc7 (7/8/2020)
+5.0_b.7 (7/8/2020)
 
 ADDITIONS:
 *{rcount} to spam
 
 ====================================================================
-5.0-rc6 (7/8/2020)
+5.0_b.6 (7/8/2020)
 
 FIXES:
 *giving a name for -user in clear was broken
 
 ====================================================================
-5.0-rc5 (7/8/2020)
+5.0_b.5 (7/8/2020)
 
 ADDITIONS:
 *-re to textinfo, give it a regularexpression and it will return a list of results seperated with a space
 *-user and -len to clear
 
 ====================================================================
-5.0-rc4 (7/8/2020)
+5.0_b.4 (7/8/2020)
 
 ADDITIONS:
 *--least for commandusage
@@ -200,13 +208,13 @@ ADDEDBACK:
 *--s, and --g for lvlmsg
 
 ====================================================================
-5.0-rc3 (7/8/2020)
+5.0_b.3 (7/8/2020)
 
 FIXES:
 *-- wouldn't work properly
 
 ====================================================================
-5.0-rc2 (7/8/2020)
+5.0_b.2 (7/8/2020)
 
 ADDITIONS:
 *cmds with sep that now support \n and \t
@@ -218,7 +226,7 @@ CHANGES:
 *choose sep now defaults to |
 
 ====================================================================
-5.0-rc1  (7/8/2020)
+5.0_b.1  (7/8/2020)
 
 ADDITIONS:
 *-wait now works with -e in echo

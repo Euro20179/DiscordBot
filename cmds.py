@@ -2592,6 +2592,8 @@ async def embedCmd(msg, content, cmd="embed"):
 async def emoteUsage(msg, content, cmd="emoteusage"):
     content = Content(content)
     top = 10
+    if content @ "--raw":
+        with open(emoteUsageFilePath, "rb") as f: return await msg.channel.send(file=discord.File(f, "emoteusage.json"))
     for op, param in content.opsWithParams():
         if op == "-top":
             top = int(param)
