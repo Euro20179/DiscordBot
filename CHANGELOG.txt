@@ -46,6 +46,12 @@ TECHNICAL:
 *completely changed how the bot parses commands
 
 ====================================================================
+5.0-rc16 (7/10/2020)
+
+ADDITIONS:
+*emotes used in reaction count for emoteusage
+
+====================================================================
 5.0-rc15 (7/10/2020)
 
 CHANGES:

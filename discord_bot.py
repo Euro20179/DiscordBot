@@ -638,6 +638,15 @@ async def on_message(msg):
     if TimeThisMessage: return await msg.channel.send(f'it took {time.time() - timeThisMessageTime} process the message')
 
 @client.event
+async def on_raw_reaction_add(payload):
+    with open(emoteUsageFilePath, "r+") as j:
+        data = json.load(j)
+        try: data[str(payload.emoji.id)] += 1
+        except: data[str(payload.emoji.id)] = 1
+        clearFile(j)
+        json.dump(data, j)
+
+@client.event
 async def on_voice_state_update(member, before, after):
     if not before.channel and after.channel:
         role = discord.utils.get(member.guild.roles, name="vc")
