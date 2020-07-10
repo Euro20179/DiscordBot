@@ -17,7 +17,7 @@ import youtube_dl
 from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont, ImageChops
 
 DELETE = "--delete"
-VERSION = "5.0-rc19"
+VERSION = "5.0-rc20"
 Stop = False
 
 playingGuessingGame = {}
@@ -157,12 +157,6 @@ async def formatSeconds(t, layer="seconds", stopAt=None, rec=0):
         t /= cases[layer][1]
         t, layer = await formatSeconds(t, layer=cases[layer][0], stopAt=stopAt, rec=rec + 1)
     return t, layer
-
-async def formatLevelMessage(msg, message, level): #gives the levelmessage with the keywords replaced
-    if "{emote}" in message:
-        new = [x if x != "{emote}" else str(random.choice(client.emojis)) for x in message.split(" ")]
-        message = " ".join(new)
-    return message.replace("{author}", msg.author.mention).replace("{level}", str(level)).replace("{channel}", msg.channel.mention)
 
 async def formatDateTime(createdAt : datetime.datetime)->str:
     return f'{createdAt.month}/{createdAt.day}/{createdAt.year}\nat {createdAt.hour}:{createdAt.minute}:{createdAt.second}'
@@ -405,7 +399,7 @@ class Content:
     def suitibleForEval(self):
         return False if self.toSet() & {"help(", "quit()", "exit()", "os.", "token", "input(", "sys.", "__import__('os')", '__import__("os")',} else True
     
-    def formatMessage(self, msg, kwargs=None, removeCmd=True):
+    def formatMessage(self, msg, kwargs=None, removeCmd=True, ret=False):
         if "{emote}" in self:
             new = [x if x.strip() != "{emote}" else str(random.choice(msg.guild.emojis)) for x in self.split(" ")]
             self.string = " ".join(new)
@@ -419,6 +413,7 @@ class Content:
             for k, i in kwargs.items():
                 print(self)
                 self.replace(str(k), str(i))
+        if ret: return self
 
     def __len__(self):
         return len(self.string)

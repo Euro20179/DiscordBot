@@ -46,6 +46,12 @@ TECHNICAL:
 *completely changed how the bot parses commands
 
 ====================================================================
+5.0-rc20 (7/10/2020)
+
+FIXES:
+*lvl/rank/level now formats your lvlmsg properly
+
+====================================================================
 5.0-rc19 (7/10/2020)
 
 FIXES:
