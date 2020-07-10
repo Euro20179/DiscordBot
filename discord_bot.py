@@ -35,7 +35,7 @@ async def runBotModCmd(msg, content, cmd):
             json.dump(data, f)
             await msg.channel.send(f'{user.name} can now use {content.split("|")[1]}')
             BOTMODS = reloadBOTMODS()
-
+            return
     elif cmd == "DISALLOW" and msg.author.id == EUROID:
         user = await getUserInContent(msg, content.split("|")[0], cmd)
         with open(botModsFilePath, "r+") as f:
@@ -46,12 +46,13 @@ async def runBotModCmd(msg, content, cmd):
             json.dump(data, f)
             await msg.channel.send(f'{user.name} can not use {content.split("|")[1]}')
             BOTMODS = reloadBOTMODS()
+            return
 
     elif cmd == "ENDPLS" and str(msg.author.id) in BOTMODS.keys():
         if cmd in BOTMODS[str(msg.author.id)]:
             await msg.channel.send("Logging out")
             await client.logout()
-
+            return
     elif cmd == "BAN" and str(msg.author.id) in BOTMODS.keys():
         if cmd in BOTMODS[str(msg.author.id)]:
             user = await getUserInContent(msg, " ".join(content.split(" ")[0:2]), cmd)
