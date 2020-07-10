@@ -46,6 +46,12 @@ TECHNICAL:
 *completely changed how the bot parses commands
 
 ====================================================================
+5.0-rc17 (7/10/2020)
+
+TECHNICAL:
+*everything is slightly faster than rc16
+
+====================================================================
 5.0-rc16 (7/10/2020)
 
 ADDITIONS:
