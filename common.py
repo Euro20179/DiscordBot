@@ -17,7 +17,7 @@ import youtube_dl
 from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont, ImageChops
 
 DELETE = "--delete"
-VERSION = "5.0-rc18"
+VERSION = "5.0-rc19"
 Stop = False
 
 playingGuessingGame = {}
