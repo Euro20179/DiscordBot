@@ -730,7 +730,6 @@ async def clear(msg, content, cmd="clear"):
     if isBot(msg, client): return await msg.channel.send("nope")
     perms = msg.author.guild_permissions.manage_messages
     if perms and msg.author.id != 579117856994623498:
-        print(user, length)
         if user and length: await msg.channel.purge(limit=amnt, check=lambda x: len(x.content) < int(length) and x.author == user)
         elif user: 
             await msg.channel.purge(limit=amnt, check=lambda x: x.author == user)

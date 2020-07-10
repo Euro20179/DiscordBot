@@ -411,7 +411,6 @@ class Content:
         self.replace("{fhalf}", self[0:(len(self) - 7) // 2])
         if kwargs:
             for k, i in kwargs.items():
-                print(self)
                 self.replace(str(k), str(i))
         if ret: return self
 
