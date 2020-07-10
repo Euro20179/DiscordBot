@@ -47,6 +47,12 @@ TECHNICAL:
 *completely changed how the bot parses commands
 
 ====================================================================
+5.0-rc2 (7/10/2020)
+
+CHANGES:
+*use | to sep title from fields in embed
+
+====================================================================
 5.0-rc1 (7/10/2020)
 
 ADDITIONS:

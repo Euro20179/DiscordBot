@@ -162,7 +162,7 @@
       },
       {
         "name": "embed",
-        "params": "<title> *<fields <title>, <value> (--ninline)> (sep with |) (-color <color) (-image <img url>) (-thumbnail <img url>) (-author <name>) (FORMATS (title, color, author))",
+        "params": "<title> | *<fields <title>, <value> (--ninline)> (sep with |) (-color <color) (-image <img url>) (-thumbnail <img url>) (-author <name>) (FORMATS (title, color, author))",
         "desc": "makes an embed with a title of title\nex: [embed hi field1, value1 | field2, value2",
         "date": "7/10/2020"
       },
@@ -875,13 +875,7 @@
         "params": "<youtube url>",
         "desc": "does something :)))",
         "date": "7/7/2020"
-      },
-      {
-        "name": "embedtotext",
-        "params": "<embed>",
-        "desc": "converts an embed to text",
-        "date": "7/7/2020"
-      },
+      }
       {
         "name": "status",
         "params": "<message>",

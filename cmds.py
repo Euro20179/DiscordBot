@@ -730,7 +730,6 @@ async def clear(msg, content, cmd="clear"):
     if isBot(msg, client): return await msg.channel.send("nope")
     perms = msg.author.guild_permissions.manage_messages
     if perms and msg.author.id != 579117856994623498:
-        print(user, length)
         if user and length: await msg.channel.purge(limit=amnt, check=lambda x: len(x.content) < int(length) and x.author == user)
         elif user: 
             await msg.channel.purge(limit=amnt, check=lambda x: x.author == user)
@@ -2563,7 +2562,7 @@ async def botMods(msg, content, cmd="botmods"):
 async def embedCmd(msg, content, cmd="embed"):
     content = Content(content)
     color=image=thumbnail=author = None
-    title = content.split(" ")[0]
+    title = content.split("|")[0]
     content.replace(f'{title} ', "")
     for op, param in content.opsWithParams({"author": (slice(0,None,None), " ")}):
         if op == "-color":

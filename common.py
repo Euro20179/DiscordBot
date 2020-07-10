@@ -17,7 +17,7 @@ import youtube_dl
 from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont, ImageChops
 
 DELETE = "--delete"
-VERSION = "5.0-rc1"
+VERSION = "5.0-rc2"
 Stop = False
 
 playingGuessingGame = {}
@@ -411,7 +411,6 @@ class Content:
         self.replace("{fhalf}", self[0:(len(self) - 7) // 2])
         if kwargs:
             for k, i in kwargs.items():
-                print(self)
                 self.replace(str(k), str(i))
         if ret: return self
 
