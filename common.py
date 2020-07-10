@@ -17,7 +17,7 @@ import youtube_dl
 from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont, ImageChops
 
 DELETE = "--delete"
-VERSION = "5.0-rc11"
+VERSION = "5.0-rc12"
 Stop = False
 
 playingGuessingGame = {}
@@ -40,7 +40,7 @@ bannedFilePath = f"{DISEXT}/banned.json"
 timersPath = f"{DISEXT}/timers.json"
 moneyDataFilePath = f'{DISEXT}/moneyData.json'
 itemDataFilePath = f'{DISEXT}/itemsData.json'
-botModsFilePath = f'{DISEXT}/botMods.txt'
+botModsFilePath = f'{DISEXT}/botMods.json'
 itemsFilePath = f'items.json'
 pingResponseFilePath = f'{DISEXT}/pingresponse.json'
 queuePath = "./queue"
@@ -57,7 +57,7 @@ async def returnMessage(msg, content, author=client.user):
 def reloadBOTMODS():
     global BOTMODS
     with open(botModsFilePath, "r") as f:
-        BOTMODS = f.read().split("\n")
+        BOTMODS = json.load(f)
     return BOTMODS
 
 async def saveImg(filename, url):
