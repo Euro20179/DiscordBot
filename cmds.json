@@ -683,8 +683,8 @@
       },
       {
         "name": "emoteusage",
-        "params": "[emote] (-top <top>) (--least)",
-        "desc": "gives the most used emotes",
+        "params": "[emote] (-top <top>) (--least) (--raw)",
+        "desc": "gives the moswt used emotes",
         "date": "7/10/2020"
       },
       {
@@ -979,6 +979,12 @@
         "params": "<channel id>",
         "desc": "gives the name of <channel id> (must be an id)",
         "date": "7/1/2020"
+      },
+      {
+        "name": "fetchemote",
+        "params": "<emote id>",
+        "desc": "gets the emoji of the emote id",
+        "date": "7/10/2020"
       },
       {
         "name": "imscared",

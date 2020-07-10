@@ -358,7 +358,7 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
     if case:
         content = await case(msg, content, cmd=cmd)
         Iscmd = True
-
+    elif cmd == "fetchemote": content = await msg.channel.send(await msg.guild.fetch_emoji(int(Content(content))))
     elif cmd == "tof": content = await oneLineCmd(msg, 9 / 5 * float(splitContent(content, cmd + " ", index=1)) + 32)
     elif cmd == "avatar": content = await oneLineCmd(msg, (await getUserInContent(msg, content, cmd)).avatar_url)
     elif cmd == "fetchuser": content = await oneLineCmd(msg, (await client.fetch_user(int(splitContent(content, f'{cmd} ', index=1)))).name)
