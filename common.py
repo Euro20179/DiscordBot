@@ -16,8 +16,10 @@ import sys
 import youtube_dl
 from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont, ImageChops
 
+#TODO: emoteusage should type, and return txt file if the message is too long to send in chat
+
 DELETE = "--delete"
-VERSION = "5.0-rc2"
+VERSION = "5.0"
 Stop = False
 
 playingGuessingGame = {}
