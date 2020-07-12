@@ -315,7 +315,7 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
         msg = c #DEPRICATED
         layer += 1 #DEPRICATED 
 
-    if "/{" in content:
+    if "/{" in content and "\\" != content[content.index("/{") - 1]:
         interpateCount = len(content.split("/{"))
         if len(content.split("}")) != interpateCount:
             if len(content.split("}")) < len(content.split("{")):

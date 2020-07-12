@@ -19,7 +19,7 @@ from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont
 #TODO: emoteusage should type, and return txt file if the message is too long to send in chat
 
 DELETE = "--delete"
-VERSION = "5.0"
+VERSION = "5.0.1"
 Stop = False
 
 playingGuessingGame = {}
@@ -399,7 +399,7 @@ class Content:
         return set(self.split(" ", pastIndex=pastIndex, key=key))
 
     def suitibleForEval(self):
-        return False if self.toSet() & {"help(", "quit()", "exit()", "os.", "token", "input(", "sys.", "__import__('os')", '__import__("os")',} else True
+        return False if self.toSet() & {"help(", "quit()", "exit()", "os.", "token", "input(", "sys.", "__import__(",} else True
     
     def formatMessage(self, msg, kwargs=None, removeCmd=True, ret=False):
         if "{emote}" in self:
