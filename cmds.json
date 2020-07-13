@@ -682,12 +682,6 @@
         "date": "6/2/2020"
       },
       {
-        "name": "calendar",
-        "params": "<year> <month>",
-        "desc": "gives a calendar of the month of year",
-        "date": "7/13/2020"
-      },
-      {
         "name": "emoteusage",
         "params": "[emote] (-top <top>) (--least) (--raw)",
         "desc": "gives the moswt used emotes",
