@@ -2614,3 +2614,12 @@ async def emoteUsage(msg, content, cmd="emoteusage"):
                 except discord.errors.NotFound as e: continue
                 emotes.append(f'<:{emote}:{int(k[0])}>: {k[1]}')
             return await msg.channel.send("\n".join(emotes))
+
+async def genCalendar(msg, content, cmd="calendar"):
+    content = Content(content)
+    monthsToNum = {"january": 1, "jan": 1, "feb": 2, "february": 2, "march": 3, "mar": 3, "apr": 4, "april": 4, "may": 5, "june": 6, "july": 7, "august": 8, "aug": 8, "sept": 9, "sep": 9, "september": 9, "october": 10, "oct": 10, "nov": 11, "november": 11, "december": 12, "dec": 12}
+    year = content.split(" ")[0]
+    if year in monthsToNum.keys():
+        year = monthsToNum[year]
+    month = content.split(" ")[1]
+    return await msg.channel.send(calendar.TextCalendar().formatmonth(int(year), int(month)))
