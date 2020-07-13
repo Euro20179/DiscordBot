@@ -2608,9 +2608,22 @@ async def emoteUsage(msg, content, cmd="emoteusage"):
             return await msg.channel.send(usage)
         else:
             emotes = []
-            for n, k in enumerate(data):
-                if n > top: break
-                try: emote = (await msg.guild.fetch_emoji(int(k[0]))).name
-                except discord.errors.NotFound as e: continue
-                emotes.append(f'<:{emote}:{int(k[0])}>: {k[1]}')
-            return await msg.channel.send("\n".join(emotes))
+            try: 
+                File = content @ "--file"
+                for n, k in enumerate(data):
+                    if n > top and not File: break
+                    try: emote = (await msg.guild.fetch_emoji(int(k[0]))).name
+                    except discord.errors.NotFound as e: continue
+                    emotes.append(f'<:{emote}:{int(k[0])}>: {k[1]}')
+                if File: raise FileException("wanted file")
+                return await msg.channel.send("\n".join(emotes))
+            except Exception as e:
+                if not isinstance(e, FileException):
+                    await msg.channel.send("too long here's a text file")
+                else: await msg.channel.send("file requested")
+                with open("EMOTEFILE.txt", "w") as f:
+                    for emote in emotes:
+                        f.write(f'{emote.split(":")[1]}\n')
+                with open("EMOTEFILE.txt", "rb") as f:
+                    await msg.channel.send(file=discord.File(f, "emoteusage.txt"))
+                os.remove("EMOTEFILE.txt")

@@ -683,7 +683,7 @@
       },
       {
         "name": "emoteusage",
-        "params": "[emote] (-top <top>) (--least) (--raw)",
+        "params": "[emote] (-top <top>) (--least) (--raw) (--file)",
         "desc": "gives the moswt used emotes",
         "date": "7/10/2020"
       },
