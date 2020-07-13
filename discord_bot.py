@@ -185,8 +185,7 @@ CMDS = {
     "piracyisbad": ytdl,
     "botmods": botMods,
     "embed": embedCmd,
-    "emoteusage": emoteUsage,
-    "calendar": genCalendar
+    "emoteusage": emoteUsage
 }
 
 @client.event

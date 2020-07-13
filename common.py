@@ -14,13 +14,12 @@ import statistics
 import re
 import sys
 import youtube_dl
-import calendar
 from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont, ImageChops
 
 #TODO: emoteusage should type, and return txt file if the message is too long to send in chat
 
 DELETE = "--delete"
-VERSION = "5.1"
+VERSION = "5.1_B"
 Stop = False
 
 playingGuessingGame = {}
