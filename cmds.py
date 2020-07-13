@@ -2623,7 +2623,7 @@ async def emoteUsage(msg, content, cmd="emoteusage"):
                 else: await msg.channel.send("file requested")
                 with open("EMOTEFILE.txt", "w") as f:
                     for emote in emotes:
-                        f.write(f'{emote.split(":")[1]}\n')
+                        f.write(f'{emote.split(":")[1]}: {emote.split(":")[-1]}\n')
                 with open("EMOTEFILE.txt", "rb") as f:
                     await msg.channel.send(file=discord.File(f, "emoteusage.txt"))
                 os.remove("EMOTEFILE.txt")
