@@ -805,7 +805,7 @@ async def channelInfo(msg, content, cmd="cc"):
         channel = discord.utils.find(lambda x: x.mention == str(content), msg.guild.channels)
     embed = discord.Embed(title=channel.name)
     created = channel.created_at
-    diff = datetime.datetime.now() - created
+    diff = datetime.datetime.utcnow() - created
     pinCount = len(await channel.pins())
     if pinCount != 0: 
         if ":" in str(diff).split(" ")[0]:
