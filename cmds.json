@@ -127,7 +127,7 @@
       },
       {
         "name": "edit",
-        "params": "*<message> (-t <time>) (sep with |) (spaces on either side will be registered as spaces)\n(operators:\n+:add\n-:subtract\n*:multiply\n<<:add to beginnging\n%v>>v2: replace v with v2 do MSG for v if you want to replace the whole message)",
+        "params": "*<message> (-t <time>) (sep with |) (spaces on either side will be registered as spaces)\n(operators:\n+:add\n-:subtract\n*:multiply\n<<:add to beginnging\n%v>>v2: replace v with v2 do MSG for v if you want to replace the whole message\n^pos>>insert val: inserts val at pos\n;starts a new message put --delete to delete the old one)",
         "desc": "-t is the time in between edits, defaults to .7 seconds\nexample: [edit hi,*2\nhi->hihi\nexample 2: [edit :,),),)\n:->:)->:))->:)))",
         "date": "6/30/2020"
       },
