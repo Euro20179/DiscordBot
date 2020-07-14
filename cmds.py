@@ -13,11 +13,10 @@ async def hlp(msg, content, cmd="help"):
     global CATS, CMDLIST, CUSTOMCMDS
     CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
     c = Content(content)
-    opParams = tuple(c.opsWithParams())
     added = False
     Raw = True if c @ "--raw" else False
     File = True if c @ "--file" else False
-    for op, param in opParams:
+    for op, param in c.opsWithParams():
         if op == "-added":
             added = param
     cat = str(c).upper()
@@ -550,11 +549,9 @@ async def roleInfo(msg, content, cmd="roleinfo"):
         return await msg.channel.send("role not found")
 
 async def roleCount(msg, content, cmd="rolecount"):
-    c = Content(content).string
-    Showroles = False
-    if "--showroles" in c:
-        Showroles = True
-        c = c.replace("--showroles", "")
+    c = Content(content)
+    Showroles = c @ "--showroles"
+    c = c.string
     c = c.replace("!", "")[2:-1] if "<@" in c else c
     if not c: c = str(msg.author.id)
     m = findMember(c, msg)

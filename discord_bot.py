@@ -427,7 +427,7 @@ async def on_message(msg):
         content = content.replace("[timeit", "").strip()
     else: TimeThisMessage = False
     Iscmd = False
-    if msg.author.id == 311621977339068418 and msg.channel.id not in (732071485564256377, 715043261110288415):
+    if msg.author.id == 311621977339068418 and msg.channel.id not in (658815060646297659, 715043261110288415):
         await msg.delete()
     if "[" in content and PREFIX != content[0]:
         if "[delete" in content: 
