@@ -964,25 +964,25 @@
       },
       {
         "name": "fetchuser",
-        "params": "<userid>",
+        "params": "*<userid> (sep with space)",
         "desc": "says the nick_name of <userid> (must be an id)",
         "date": "5/30/2020"
       },
       {
         "name": "fetchrole",
-        "params": "<role id>",
+        "params": "*<role id>",
         "desc": "says the name of <role id> (must be an id)",
         "date": "6/3/2020"
       },
       {
         "name": "fetchchannel",
-        "params": "<channel id>",
+        "params": "*<channel id>",
         "desc": "gives the name of <channel id> (must be an id)",
         "date": "7/1/2020"
       },
       {
         "name": "fetchemote",
-        "params": "<emote id>",
+        "params": "*<emote id>",
         "desc": "gets the emoji of the emote id",
         "date": "7/10/2020"
       },

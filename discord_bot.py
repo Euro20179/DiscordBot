@@ -90,7 +90,7 @@ CMDS = {
     "userinfo": userInfo, 
     "msginfo": messageInfo,
     "messageinfo": messageInfo,
-    "fetchrole": fetchRole, 
+    "fetchrole": fetchSomething, 
     "categoryinfo": categoryInfo, 
     "alphabet": alphabet,   
     "alpha": alphabet,   
@@ -187,7 +187,11 @@ CMDS = {
     "embed": embedCmd,
     "emoteusage": emoteUsage,
     "tok": toKelvin,
-    "guessinggame": guessingGame
+    "guessinggame": guessingGame,
+    "fetchuser": fetchSomething,
+    "fetchchannel": fetchSomething,
+    "fetchemote": fetchSomething,
+    "fetchemoji": fetchSomething
 }
 
 @client.event
@@ -360,11 +364,8 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
     if case:
         content = await case(msg, content, cmd=cmd)
         Iscmd = True
-    elif cmd == "fetchemote": content = await msg.channel.send(await msg.guild.fetch_emoji(int(Content(content))))
     elif cmd == "tof": content = await oneLineCmd(msg, 9 / 5 * float(splitContent(content, cmd + " ", index=1)) + 32)
     elif cmd == "avatar": content = await oneLineCmd(msg, (await getUserInContent(msg, content, cmd)).avatar_url)
-    elif cmd == "fetchuser": content = await oneLineCmd(msg, (await client.fetch_user(int(splitContent(content, f'{cmd} ', index=1)))).name)
-    elif cmd == "fetchchannel": content = await oneLineCmd(msg, (await client.fetch_channel(int(splitContent(content, f'{cmd} ', index=1)))).name)
     elif cmd == "toc": content = await oneLineCmd(msg, 5 / 9 * (float(splitContent(content, cmd + " ", index=1)) - 32))
     elif cmd in ["thepenguincommand", "tpc", "thewavecommand", "twc"]: await oneLineCmd(msg, random.choice(("very nice!", "very cool!", "<:TiredPuffle:707773683854213140>")))
     elif cmd == "reverse": content = await oneLineCmd(msg, splitContent(content, f'{cmd} ')[1][::-1])

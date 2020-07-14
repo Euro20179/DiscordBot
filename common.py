@@ -339,7 +339,7 @@ class Content:
         return False
     
     def ops(self):
-        self.calcOps()
+        if not self.ops_: self.calcOps()
         for op in self.ops_:
             yield op
 
