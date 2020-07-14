@@ -949,7 +949,7 @@ async def messageInfo(msg, content, cmd="messageinfo"):
     if not msg.content:
         return await msg.channel.send("sorry that message doesn't exist")
     embed = discord.Embed(title="message info")
-    embed.add_field(name="is tts", value=msg.tts)
+    embed.add_field(name="is tts", value="¯\_(ツ)_/¯")
     embed.add_field(name="author", value=msg.author.mention)
     embed.add_field(name="content", value=msg.content)
     embed.add_field(name="channel", value=msg.channel.mention)
