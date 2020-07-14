@@ -514,7 +514,7 @@ async def on_message(msg):
             await msg.delete()
 
         if "--cmddelete" in content:
-            content = content.replace(" --cmddelete", " --delete")
+            content = content.replace("--cmddelete", " --delete")
 
         if testInContent(content, ">>> "):
             WriteToFile = splitContent(content, ">>> ")[1]
