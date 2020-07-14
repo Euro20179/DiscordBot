@@ -509,11 +509,11 @@ async def on_message(msg):
         if not cmd: return
         WriteToFile = False
 
-        if "--delete" in content: 
+        if " --delete" in content: 
             content = content.replace("--delete", "")
             await msg.delete()
 
-        if "--cmddelete" in content:
+        if " --cmddelete" in content:
             content = content.replace("--cmddelete", " --delete")
 
         if testInContent(content, ">>> "):
