@@ -14,12 +14,13 @@ import statistics
 import re
 import sys
 import youtube_dl
+from typing import List, Tuple
 from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont, ImageChops
 
 #TODO: emoteusage should type, and return txt file if the message is too long to send in chat
 
 DELETE = "--delete"
-VERSION = "5.1.1"
+VERSION = "5.1.2"
 Stop = False
 
 playingGuessingGame = {}
@@ -280,8 +281,17 @@ async def addMoney(member, amnt):
         clearFile(j)
         json.dump(data, j)
 
+class Option:
+    """
+    option in command that starts with --
+    """
+class OpOption:
+    """
+    option in command that starts with -
+    """
+
 class Content:
-    def __init__(self, string, removeCmd=True):
+    def __init__(self, string : str, removeCmd : bool = True):
         if removeCmd:
             split = string.split(" ")
             self.string = " ".join(split[1:])
@@ -304,7 +314,7 @@ class Content:
                 if foo == self.string:
                     self.replace(word, "")
 
-    def split(self, splitBy, pastIndex=None, key=None):
+    def split(self, splitBy : str, pastIndex : int = None, key=None):
         split = self.string.split(splitBy)
         if key:
             for n, s in enumerate(split):
@@ -315,17 +325,17 @@ class Content:
                     if not transformation: split.pop(n)
         return split if not pastIndex else splitBy.join(split[pastIndex:])
 
-    def replace(self, string, repWith, ret=False):
+    def replace(self, string : str, repWith : str, ret : bool = False):
         if not ret: self.string = self.string.replace(string, repWith)
         else: return self.string.replace(string, repWith)
     
-    def strip(self, other=None):
+    def strip(self, other : str = None):
         return self.string.strip(other) if other else self.string.strip()
 
     def lower(self):
         return self.string.lower()
     
-    def testOps(self, *ops):
+    def testOps(self, *ops : List[Option, ]):
         if not self.ops_: self.calcOps()
         for op in ops:
             if op in self.opOps or op in self.ops_:
@@ -337,7 +347,7 @@ class Content:
         for op in self.ops_:
             yield op
 
-    def opsWithParams(self, paramcount : dict =None):
+    def opsWithParams(self, paramcount : dict = None):
         """
         paramcount could be {'param': arg_num}
         or {'param': (index, split)}
@@ -467,3 +477,4 @@ class Content:
 
     def __int__(self):
         return int(self.string)
+        
