@@ -19,7 +19,6 @@ from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont
 
 #TODO: emoteusage should type, and return txt file if the message is too long to send in chat
 
-DELETE = "--delete"
 VERSION = "5.2"
 Stop = False
 
@@ -232,9 +231,6 @@ def testInContent(content : str, *testfor)->str:
         if x.lower() in content.lower():
             return x
     return ""
-
-def TICDelete(content : str)->bool:
-    return DELETE in content
 
 def getCmd(content : str)->str:
     return content.split(" ")[0][1:]				

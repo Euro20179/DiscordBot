@@ -509,8 +509,8 @@ async def on_message(msg):
         if not cmd: return
         WriteToFile = False
 
-        if DELETE in content: 
-            content = content.replace(" --delete", "")
+        if "--delete" in content: 
+            content = content.replace("--delete", "")
             await msg.delete()
 
         if "--cmddelete" in content:
@@ -536,7 +536,6 @@ async def on_message(msg):
 
         #ongoing events			
         if cmd == "stop":
-            if TICDelete(content): await msg.message.delete()
             await stop()
             return
 
