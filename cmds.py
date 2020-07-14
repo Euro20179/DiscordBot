@@ -651,14 +651,13 @@ async def count(msg, content, cmd="count"):
     try: await msg.delete()
     except: pass
     content = Content(content)
-    content.calcOps()
     channel = discord.utils.get(msg.guild.channels, name="counting")
     highest = int(max([x.content.replace("*", "").replace("_", "").replace("`", "").strip(".") async for x in channel.history(limit=3)])) + 1
     async for x in channel.history(limit=1):
         if x.author == client.user: return ""
     text = f'.{highest}.'
     fancy = ""
-    for op in content.ops_:
+    for op in content.ops():
         if op == "--i":
             fancy += "*"
         if op == "--b":
@@ -1048,9 +1047,15 @@ async def userInfo(msg, content, cmd="userinfo"):
     embed.set_thumbnail(url=user.avatar_url)
     await msg.channel.send(embed=embed)
 
-async def fetchRole(msg, content, cmd="fetchrole"):
-    role = msg.guild.get_role(int(Content(content)))
-    return await msg.channel.send(role.name)
+async def fetchSomething(msg, content, cmd="fetchrole"):
+    content = Content(content)
+    func = {"fetchrole": msg.guild.get_role,
+    "fetchuser": client.fetch_user,
+    "fetchchannel": client.fetch_channel,
+    "fetchemote": msg.guild.fetch_emoji}[content.cmd[1:]]
+    await func(int(content.split(" ")[0]))
+    fetches = [(await func(int(x.strip()))).name for x in content.split(" ")]
+    return await msg.channel.send("\n".join(fetches))
 
 async def categoryInfo(msg, content, cmd="categoryinfo"):
     content = Content(content).string
