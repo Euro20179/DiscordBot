@@ -2643,3 +2643,33 @@ async def toKelvin(msg, content, cmd="tok"):
         ans = float(content[:-1]) + 273
 
     return await msg.channel.send(str(ans))
+
+async def guessingGame(msg, content, cmd="guessinggame"):
+        c = Content(content)
+        Bet = c @ "--bet"
+        LOW, HIGH, LIVES = 1, 100, 5
+        if len(c) > 0:
+            c = c.split(" ")
+            HIGH = int(c[0])
+            c.pop(0)
+            if len(c) >= 1: LIVES = int(c[0])
+        STARTLIVES = LIVES
+        ans = random.randint(LOW, HIGH)
+        await msg.channel.send("guess")
+        while True:
+            try: c = (await client.wait_for("message", check=lambda mssg: mssg.author == msg.author and (mssg.content.isnumeric() or mssg.content.lower() in ["stop", "giveup", "cancel"]), timeout=60.0)).content.lower()
+            except: return await msg.channel.send("waited too long")
+            if c in ["stop", "giveup", "cancel"]:
+                return await msg.channel.send(embed=discord.Embed(title=f'{msg.author.display_name} YOU LOSE\nTHE ANSWER WAS {ans}', color=discord.Color.from_rgb(100, 0, 0)))
+            LIVES -= 1
+            if int(c) == ans:
+                say = f"YOU WIN\nWITH {LIVES} LIVES LEFT" if not Bet else f'YOU WIN\nWITH {LIVES} LIVES LEFT\nYou earned {(int(ans) // STARTLIVES)}'
+                if Bet: await addMoney(msg.author, (int(ans) // STARTLIVES))
+                rv = await msg.channel.send(embed=discord.Embed(title=say, color=discord.Color.from_rgb(0, 255, 0)))
+                return await embedToReadableDict(rv, rv.embeds[0])
+            elif LIVES <= 0:
+                say = f"YOU LOSE\nTHE ANSWER WAS {ans}" if not Bet else f'YOU LOSE\nTHE ANSWER WAS {ans}\nYOU LOSE {(int(ans) // STARTLIVES)}'
+                if Bet: await addMoney(msg.author, -(int(ans) // STARTLIVES))
+                rv = await msg.channel.send(embed=discord.Embed(title=say, color=discord.Color.from_rgb(255, 0, 0)))
+                return await embedToReadableDict(rv, rv.embeds[0])
+            await msg.channel.send(f"{msg.author.mention} too high" if int(c) > ans else f"{msg.author.mention} too low\nguess\nyou have {LIVES} lives left")
