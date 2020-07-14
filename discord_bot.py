@@ -186,7 +186,8 @@ CMDS = {
     "botmods": botMods,
     "embed": embedCmd,
     "emoteusage": emoteUsage,
-    "tok": toKelvin
+    "tok": toKelvin,
+    "guessinggame": guessingGame
 }
 
 @client.event
@@ -535,26 +536,9 @@ async def on_message(msg):
                     if cmd in userData or "ALL" in userData:
                         return await msg.channel.send(f"You cannot use {cmd}")
 
-        #ongoing events			
         if cmd == "stop":
             await stop()
             return
-
-        elif cmd == "guessinggame":
-            c = splitContent(content, cmd)[1]
-            if testInContent(content, "--bet"):
-                Bet = True
-                c = c.replace(" --bet", "")
-            else: Bet = False
-            low, high, lives = 1, 100, 5
-            if len(c) > 0:
-                c = c.split(" ")
-                c.pop(0)
-                high = int(c[0])
-                if len(c) >= 2: lives = int(c[1])
-            ans = random.randint(low, high)
-            playingGuessingGame[msg.author.id] = {"ans": ans, "lives": lives, "startLives": lives, "bet": Bet}
-            return await msg.channel.send("guess")
 
         elif cmd == "reactiontime":
             await msg.channel.send("i will say GO and you have to send something as fast as possible (probably prepare the message before hand)")
@@ -571,34 +555,7 @@ async def on_message(msg):
             if WriteToFile:
                 await writeToFile(msg, content.content, WriteToFile)
                 await content.delete()
-
-    if playingGuessingGame.get(msg.author.id):
-        c = msg.content
-        ans = playingGuessingGame[msg.author.id]["ans"]
-        lives = playingGuessingGame[msg.author.id]["lives"]
-        startLives = playingGuessingGame[msg.author.id]["startLives"]
-        Bet = playingGuessingGame[msg.author.id]["bet"]
-        if c in ["stop", "giveup", "cancel"]:
-            await msg.channel.send(embed=discord.Embed(title=f'{msg.author.display_name} YOU LOSE\nTHE ANSWER WAS {ans}', color=discord.Color.from_rgb(100, 0, 0)))
-            del playingGuessingGame[msg.author.id]
-        elif isInt(c):
-            lives -= 1
-            if int(content) == ans:
-                say = f"YOU WIN\nWITH {lives} LIVES LEFT" if not Bet else f'YOU WIN\nWITH {lives} LIVES LEFT\nYou earned {(int(ans) // startLives)}'
-                await msg.channel.send(embed=discord.Embed(title=say, color=discord.Color.from_rgb(0, 255, 0)))
-                del playingGuessingGame[msg.author.id]
-                if Bet: await addMoney(msg.author, (int(ans) // startLives))
-                return str(ans)
-            elif lives <= 0:
-                say = f"YOU LOSE\nTHE ANSWER WAS {ans}" if not Bet else f'YOU LOSE\nTHE ANSWER WAS {ans}\nYOU LOSE {(int(ans) // startLives)}'
-                await msg.channel.send(embed=discord.Embed(title=say, color=discord.Color.from_rgb(255, 0, 0)))
-                del playingGuessingGame[msg.author.id]
-                if Bet: await addMoney(msg.author, -(int(ans) // startLives))
-                return str(ans)
-            await msg.channel.send(f"{msg.author.mention} too high" if int(c) > ans else f"{msg.author.mention} too low")
-        playingGuessingGame[msg.author.id]["lives"] = lives
-        await msg.channel.send(f"guess\nyou have {lives} lives left")
-
+                
     if playingHangman.get(msg.author.id):
         tempWord = playingHangman[msg.author.id]["word"]
         if content in ["QUIT", "STOP", "CANCEL", "END"]:
