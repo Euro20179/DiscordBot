@@ -668,6 +668,12 @@
         "params": "<temp (celcius)>",
         "desc": "gives the fahrenheit temp of <temp>",
         "date": "5/26/2020"
+      },
+      {
+        "name": "tok",
+        "params": "<temp> (add f for fareighneight and c for celcius at the end of temp)",
+        "desc": "calculates kelvin\nex: [tok 60f",
+        "date": "7/14/2020"
       }
     ]
   },

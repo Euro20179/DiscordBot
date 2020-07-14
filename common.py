@@ -19,7 +19,7 @@ from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont
 
 #TODO: emoteusage should type, and return txt file if the message is too long to send in chat
 
-VERSION = "5.2"
+VERSION = "5.2.1"
 Stop = False
 
 playingGuessingGame = {}
@@ -473,4 +473,6 @@ class Content:
 
     def __int__(self):
         return int(self.string)
-        
+
+    def __float__(self):
+        return float(self.string)  
