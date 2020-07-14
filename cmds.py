@@ -2634,3 +2634,12 @@ async def emoteUsage(msg, content, cmd="emoteusage"):
                 with open("EMOTEFILE.txt", "rb") as f:
                     await msg.channel.send(file=discord.File(f, "emoteusage.txt"))
                 os.remove("EMOTEFILE.txt")
+
+async def toKelvin(msg, content, cmd="tok"):
+    content = Content(content)
+    if content[-1] == "f":
+        ans = (9 / 5 * float(content[:-1]) + 32) + 273
+    elif content[-1] == "c":
+        ans = float(content[:-1]) + 273
+
+    return await msg.channel.send(str(ans))
