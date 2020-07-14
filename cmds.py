@@ -942,7 +942,7 @@ async def messageInfo(msg, content, cmd="messageinfo"):
     if msg.channel_mentions:
         fetchFrom = msg.channel_mentions[0]
         content = content.replace(fetchFrom.mention,  "", ret=True).strip()
-    if content.isnumeric():
+    if content.string.isnumeric():
         try: msg = await fetchFrom.fetch_message(content)
         except discord.errors.NotFound:
             return await msg.channel.send("sorry that message wasn't found")
