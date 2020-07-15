@@ -1,3 +1,22 @@
+5.5 (7/15/2020)
+
+ADDITIONS:
+*--printable, --punctuation, and --oct to alphabet
+*-after <letter> to alphabet
+
+CHANGES:
+*in comproles seperate each user with |
+
+FIXES:
+*-options work better now?
+*-author, -color, -thumbnail, -image should work in embed
+*imgband b1+b2
+
+TECHNICAL:
+*removed unused or redundant code + optimizations
+*lots of syntax sugar
+
+====================================================================
 5.4.1 (7/14/2020)
 
 ADDITIONS:

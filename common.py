@@ -14,12 +14,13 @@ import statistics
 import re
 import sys
 import youtube_dl
+from typing import Tuple
 from typing import List, Tuple
 from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont, ImageChops
 
 #TODO: emoteusage should type, and return txt file if the message is too long to send in chat
 
-VERSION = "5.4.1"
+VERSION = "5.5"
 Stop = False
 
 playingGuessingGame = {}
@@ -312,7 +313,7 @@ class Content:
                     if not transformation: split.pop(n)
         return split if not pastIndex else splitBy.join(split[pastIndex:])
 
-    def replace(self, string : str, repWith : str, ret : bool =False):
+    def replace(self, string : str, repWith : str, ret : bool =False): #doesn't return anything unless specified
         if not ret: self.string = self.string.replace(string, repWith)
         else: return self.string.replace(string, repWith)
     
@@ -340,7 +341,7 @@ class Content:
         or {'param': (index, split)}
         """
         l = self.split(" ")
-        if not l[0]: return [(None, None)]
+        if not l[0] and len(l) < 2: return [(None, None)]
         for n, word in enumerate(l):
             if not word: continue
             if "-" == word[0] and word[1] != "-":
@@ -384,7 +385,7 @@ class Content:
                 else:
                     c = str(content)
             except: return msg.author
-        c = c.replace("!", "")[2:-1] if "<@" in c else c
+        c = c.replace("!", "")[2:-1] if "<@" in c else c #extracts the id from string if the string is a mention
         if not c: c = str(msg.author.id)
         user = discord.utils.find(lambda m: str(m.id) == c or str(m.display_name.split("#")[0].lower()) == c.lower() or m.name.lower() == c.lower(), msg.guild.members)
         return user if user else msg.author
@@ -455,16 +456,6 @@ class Content:
         foo[index] = other
         self.string = "".join(foo)
 
-    def __aiter__(self):
-        return self
-
-    async def __anext__(self):
-        self._i += 1
-        if self._i == len(self): 
-            self._i = -1
-            raise StopAsyncIteration
-        return self.string[self._i]
-
     def __iter__(self):
         return self
 
@@ -480,3 +471,35 @@ class Content:
 
     def __float__(self):
         return float(self.string)  
+
+    def __case__(self, case):
+        return self @ case
+
+class switch:
+    def __init__(self, value):
+        self.value = value
+        otherDir = dir(value)
+        if "__case__" in otherDir:
+            self.__case__ = value.__case__
+        else: self.__case__ = False
+        del otherDir
+
+    def start(self):
+        return self
+
+    def end(self):
+        del self
+
+    def __call__(self, other, func : Tuple["func", "args"] =None, *args, **kwargs):
+        if self.__case__: return self.__case__(other, *args, **kwargs)
+        elif not isinstance(other, list): return self.value == other
+        else: return self.value in other
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, type, value, traceback):
+        self.end()
+   
+class FileException(Exception):
+    pass
