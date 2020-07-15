@@ -1626,11 +1626,15 @@ async def editCmd(msg, content, cmd="edit"):
             repWith = edits[0].split(">>")[1]
             await editable.edit(content=editable.content.replace(rep if rep != "MSG" else editable.content, repWith))
         elif token == "insert":
-            pos = edits[0].split("^")[1].split(">>")[0]
-            repWith = edits[0].split(">>")[1]
-            l = [x for x in editable.content]
-            l.insert(int(pos), repWith)
-            await editable.edit(content="".join(l))
+            pos = edits[0].split("^")[1]
+            splitW = "<<" if "<<" in pos else "="
+            pos = pos.split(splitW)[0]
+            repWith = edits[0].split(splitW)[1]
+            foo = Content(editable.content, removeCmd=False)
+            if splitW == "<<":
+                foo.insert(int(pos), repWith)
+            else: foo[int(pos)] = repWith
+            await editable.edit(content="".join(foo))
         elif token == "insertBeggining" and edits[0][1] == "<": 
             await editable.edit(content=f'{edits[0][2:]}' + editable.content)
         elif token == "newmessage":

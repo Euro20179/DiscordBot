@@ -1,3 +1,13 @@
+5.4.1 (7/14/2020)
+
+ADDITIONS:
+*^ now supports assigning pos to smth instead of just inserting before
+    *do ^pos=val instead of ^pos<<val
+
+CHANGES:
+*^pos>>val is now ^pos<<val in edit
+
+====================================================================
 5.4.0.2 (7/14/2020)
 
 e a s t e r  e g g s

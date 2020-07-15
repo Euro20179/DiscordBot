@@ -8,7 +8,7 @@ import json
 import tracemalloc
 import requests
 import bs4 as bs
-import os, shutil
+import os
 import math
 import statistics
 import re
@@ -19,7 +19,7 @@ from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont
 
 #TODO: emoteusage should type, and return txt file if the message is too long to send in chat
 
-VERSION = "5.4.0.2"
+VERSION = "5.4.1"
 Stop = False
 
 playingGuessingGame = {}
@@ -277,15 +277,6 @@ async def addMoney(member, amnt):
         clearFile(j)
         json.dump(data, j)
 
-class Option:
-    """
-    option in command that starts with --
-    """
-class OpOption:
-    """
-    option in command that starts with -
-    """
-
 class Content:
     def __init__(self, string : str, removeCmd : bool = True):
         if removeCmd:
@@ -311,7 +302,7 @@ class Content:
                     self.replace(word, "")
 
     def split(self, splitBy : str, pastIndex : int = None, key=None):
-        split = self.string.split(splitBy)
+        split = self.string.split(splitBy) if splitBy else list(self.string)
         if key:
             for n, s in enumerate(split):
                 transformation = key(s)
@@ -321,17 +312,17 @@ class Content:
                     if not transformation: split.pop(n)
         return split if not pastIndex else splitBy.join(split[pastIndex:])
 
-    def replace(self, string : str, repWith : str, ret : bool = False):
+    def replace(self, string : str, repWith : str, ret : bool =False):
         if not ret: self.string = self.string.replace(string, repWith)
         else: return self.string.replace(string, repWith)
     
-    def strip(self, other : str = None):
+    def strip(self, other : str =None):
         return self.string.strip(other) if other else self.string.strip()
 
     def lower(self):
         return self.string.lower()
     
-    def testOps(self, *ops : List[Option, ]):
+    def testOps(self, *ops):
         if not self.ops_: self.calcOps()
         for op in ops:
             if op in self.opOps or op in self.ops_:
@@ -343,7 +334,7 @@ class Content:
         for op in self.ops_:
             yield op
 
-    def opsWithParams(self, paramcount : dict = None):
+    def opsWithParams(self, paramcount : dict =None):
         """
         paramcount could be {'param': arg_num}
         or {'param': (index, split)}
@@ -422,17 +413,25 @@ class Content:
                 self.replace(str(k), str(i))
         if ret: return self
 
+    def insert(self, index, other):
+        foo = list(self)
+        foo.insert(index, other)
+        self.string = "".join(foo)
+
     def __len__(self):
         return len(self.string)
 
     def __repr__(self):
-        return self.string
+        return str(self)
 
     def __str__(self):
         return self.string
 
     def __add__(self, other):
         return self.string + other
+
+    def __iadd__(self, other):
+        return self + other
 
     def __contains__(self, other):
         return other in self.string
@@ -450,6 +449,11 @@ class Content:
         except Exception as e: 
             print(e)
             return None
+
+    def __setitem__(self, index, other):
+        foo = self.split("")
+        foo[index] = other
+        self.string = "".join(foo)
 
     def __aiter__(self):
         return self
