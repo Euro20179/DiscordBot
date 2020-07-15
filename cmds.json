@@ -758,7 +758,7 @@
       },
       {
         "name": "comproles",
-        "params": "<member1> <member2>",
+        "params": "<member1> | <member2>",
         "desc": "compares the roles of both members",
         "date": "5/5/2020",
         "aliases": [
@@ -890,11 +890,12 @@
       },
       {
         "name": "alphabet",
-        "params": "(--vowels) (--consonants)",
+        "params": "(-after <letter>) (-before <letter>) (--vowels) (--consonants) (--printable) (--punctuation) (--oct)",
         "desc": "gives the alphabet\n--vowels only vowels\nconsonants only consonants",
         "date": "11/9/19",
         "aliases": [
-          "alpha"
+          "alpha",
+          "beta"
         ]
       },
       {

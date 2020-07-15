@@ -1,9 +1,5 @@
 from common import *
 
-class FileException(Exception):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
 async def stop(*args, **kwargs)->None: #similar to how raise StopIteration works, it stops whatever is happening
     global Stop
     Stop = True
@@ -130,15 +126,16 @@ async def echo(msg, content, cmd="echo"):
         try: await msg.delete()
         except: pass
     for op, param in c.opsWithParams({"test": (..., '"')}):
-        if op == "-e":
-            if param: color = int(param, 16)
-            else: color = 0x000000
-            embed = discord.Embed(title=str(c), color=discord.Color(color))
-            await msg.channel.send(embed=embed)			
-            return await embedToReadableDict(msg, embed)
-        if op == "-wait":
-            try: await asyncio.sleep(float(param))
-            except: return await msg.channel.send("-wait must be float")
+        with switch(op) as case:
+            if case("-e"):
+                if param: color = int(param, 16)
+                else: color = 0x000000
+                embed = discord.Embed(title=str(c), color=discord.Color(color))
+                await msg.channel.send(embed=embed)			
+                return await embedToReadableDict(msg, embed)
+            elif case("-wait"):
+                try: await asyncio.sleep(float(param))
+                except: return await msg.channel.send("-wait must be float")
     if random.random() > .99: await msg.author.send("the secret message dm euro for a doubley secret role, if you tell anyone how you got this the role will be taken away\nif you already have the role, you may choose to dm a screenshot of this message to someone, and they have the chance to get the role")	
     return await msg.channel.send(str(c), tts=True if c @ "--tts" else False)
 
@@ -218,9 +215,7 @@ async def iq(msg, content, cmd="iq"):
 async def shrug(msg, content, cmd="shrug"):
     msg = await msg.channel.send(content=r"¯\_(ツ)_/¯")
     await asyncio.sleep(.3)
-    await msg.edit(content=r"¯\\-(ツ)-/¯")
-    await asyncio.sleep(.3)
-    await msg.edit(content=r"¯\_(ツ)_/¯")
+    await msg.edit(content=r"¯\\-(ツ)-/¯") ;"THEN"; await asyncio.sleep(.3) ;"THEN"; await msg.edit(content=r"¯\_(ツ)_/¯")
     return msg
 
 async def getUserData(user):
@@ -254,7 +249,6 @@ async def level(msg, content, cmd="level"):
 
 async def leaderboard(msg, content, cmd="top"):
     content = Content(content)
-    content.calcOps()
     if content @ "--raw":
         with open(levelingDataFilePath, "rb") as f:
             return await msg.channel.send(file=discord.File(f, levelingDataFilePath))
@@ -280,10 +274,9 @@ async def leaderboard(msg, content, cmd="top"):
         await msg.channel.send(embed=embed)
 
 async def magicBall(msg, content, cmd="8ball"):
-    opOps = Content(content).opsWithParams()
     with open(mballresponseFilePath, "r") as f:
         responses = f.read().split("\n")
-    for op, param in opOps:
+    for op, param in Content.opsWithParams():
         if op == "-e":
             return await msg.channel.send(embed=discord.Embed(title=random.choice(responses), color=int(param, 16) if param else 0x000000))
     return await msg.channel.send(random.choice(responses))
@@ -313,9 +306,7 @@ async def spamCmd(msg, content, cmd="spam"):
     else: return await msg.channel.send(random.choice(("done", "Done")))
 
 async def randomFace(msg, content, cmd="randomface"):
-    BROWS = (">", "|")
-    EYES = (":", ";")
-    MOUTHS = (")", "(", "{", "}", "[", "]", "p", "P", "d", "l", "C", "c")
+    BROWS = (">", "|") ;"AND"; EYES = (":", ";") ;"AND"; MOUTHS = (")", "(", "{", "}", "[", "]", "p", "P", "d", "l", "C", "c")
     if random.random() >= .995:
         return await msg.channel.send("()-()\n ___")
     if random.random() >= .8:
@@ -326,9 +317,17 @@ async def randomFace(msg, content, cmd="randomface"):
 async def alphabet(msg, content, cmd="alphabet"):
     send = string.ascii_lowercase
     content = Content(content)
-    if content @ "--vowels": send = "aeiou(y)"
-    if content @ "--consonants":
-        send = "".join([x for x in string.ascii_lowercase if x not in "aeiou"])
+    with switch(content) as case:
+        if case("--vowels"): send = "aeiou(y)"
+        elif case("--consonants"): send = "".join([x for x in string.ascii_lowercase if x not in "aeiou"])
+        elif case("--printable"): send = string.printable
+        elif case("--punctuation"): send = string.punctuation
+        elif case("--oct"): send = string.octdigits
+    for op, param in content.opsWithParams():
+        if op == "-after":
+            send = send.split(param)[1]
+        elif op == "-before":
+            send = send.split(param)[0]
     if random.random() > .98: send = send[::-1]
     return await msg.channel.send(send)
 
@@ -386,7 +385,7 @@ async def spacer(msg, content, cmd="spacer"):
     return await oneLineCmd(msg, word)
 
 async def upperLower(msg, content, cmd="upperlower"):
-    mssg = content[len(cmd) + 2:]
+    mssg = Content(content).string
     try: await msg.delete()
     except: pass
 
@@ -571,7 +570,6 @@ async def rand(msg, content, cmd="rand"):
     global Stop
     if Stop: Stop = False
     content = Content(content)
-    content.calcOps()
     Even = False if not content @ "--even" else True
     Odd = False if not content @ "--odd" else True
     content = content.split(" ")
@@ -597,15 +595,9 @@ async def rand(msg, content, cmd="rand"):
 
 async def compareRoles(msg, content, cmd="compareroles"):
     embed = discord.Embed(name="Role Comparison")
-    c = Content(content).split(" ")
-    user1 = str(c[0].strip()) 
-    user2 = str(c[1].strip())
-    if "<@" in user1:
-        user1 = str(user1).replace("!", "")[2:-1]
-    if "<@" in user2:
-        user2 = str(user2).replace("!", "")[2:-1]
-    u1name = findMember(user1, msg)
-    u2name = findMember(user2, msg)
+    c = Content(content)
+    u1name = c.getUser(msg, content=c.split("|")[0].strip())
+    u2name = c.getUser(msg, content=c.split("|")[1].strip())
     if u1name and u2name:
         roles1 = {role.mention for role in u1name.roles}
         roles2 = {role.mention for role in u2name.roles}
@@ -615,7 +607,7 @@ async def compareRoles(msg, content, cmd="compareroles"):
         embed.add_field(name=u1name, value="".join(roles1 - roles2), inline=False)
         embed.add_field(name=u2name, value="".join(roles2 - roles1), inline=False)
         await msg.channel.send(embed=embed)
-    else: await msg.channel.send("invalid name(s)")
+    else: return await msg.channel.send("invalid name(s)")
 
 async def family(msg, content, cmd="family"):
     with open("family.txt", "r") as f: await oneLineCmd(msg, f.read())
@@ -657,15 +649,14 @@ async def count(msg, content, cmd="count"):
         if x.author == client.user: return ""
     text = f'.{highest}.'
     fancy = ""
-    for op in content.ops():
-        if op == "--i":
-            fancy += "*"
-        if op == "--b":
-            fancy += "**"
-        if op == "--u":
-            fancy += "__"
-        if op == "--all":
-            fancy += "***__"
+    if content @ "--i":
+        fancy += "*"
+    if content @ "--b":
+        fancy += "**"
+    if content @ "--u":
+        fancy += "__"
+    if content @ "--all":
+        fancy += "***__"
     text = fancy + text + fancy[::-1]
     if "-e" in content:
         if "-c" in content:
@@ -682,7 +673,7 @@ async def choose(msg, content, cmd="choose"):
     picks = 1
     for op, param in opOps:
         if op == "-picks": picks = int(param)
-        if op == "-sep": 
+        elif op == "-sep": 
             try: sep = {r'\n': "\n", r'\t': "\t"}[param]
             except: sep = param
     options = content.split("|", key=lambda x: x.strip())
@@ -694,7 +685,7 @@ async def mball(msg, content, cmd="8ball"):
 
 async def pigLatin(msg, content, cmd="piglatin"):
     content = Content(content)
-    if content.testOps("--kc"):
+    if content @ "--kc":
         content = content.lower()
     m = [x for x in content.split(" ") if x]
     for n, word in enumerate(m):
@@ -2359,24 +2350,19 @@ async def line(msg, content, cmd="line"):
     os.remove(filename)
 
 async def point(msg, content, cmd="point"):
-    content = content[len(cmd) + 2:]
+    content = Content(content)
     att, filename, url = await getImg(msg)
     if "https://" in content:
-        content = content.replace(url, '')
+        content.replace(url, '')
     await saveImg(filename, url)
     with Image.open(filename) as img:
         draw = ImageDraw.Draw(img)
-        params = content.split(" ")
-        XYS = params[0:]
         FR=FG=FB=OR=OG=OB = None
-        if "-fill" in params:
-            FR, FG, FB = params[params.index("-fill") + 1 : params.index("-fill") + 4]
-            XYS.remove(FR)
-            XYS.remove(FG)
-            XYS.remove(FB)
-            XYS.remove("-fill")
+        for op, param in content.opsWithParams({"fill": 3}):
+            if op == "-fill":
+                FR, FG, FB = param
         newXYS = [""]
-        for XY in XYS:
+        for XY in content.strip().split(" "):
             if len(newXYS[-1]) % 2 != 0:
                 newXYS[-1].append(int(XY))
             else:
@@ -2524,8 +2510,7 @@ async def sortImg(msg, content, cmd="sortimg"):
     os.remove(filename)
 
 async def imgBand(msg, content, cmd="imgband"):
-    content = content[len(cmd) + 2:].split(" ")
-    content = " ".join(content[0])
+    content = Content(content)
     content = content.split("+")
     att, filename, url = await getImg(msg)
     if "https://" in content:
@@ -2538,7 +2523,7 @@ async def imgBand(msg, content, cmd="imgband"):
     band = []
     for b in bands:
         if b.strip() == "r": band.append(r)
-        elif b.stripmm() == "g": band.append(g)
+        elif b.strip() == "g": band.append(g)
         elif b.strip() == 'b': band.append(B)
         elif b.strip() == "a": band.append(a)
     for n, b in enumerate(band):
@@ -2550,7 +2535,7 @@ async def imgBand(msg, content, cmd="imgband"):
 
 async def ytdl(msg, content, cmd="ytdl"):
     global queue
-    song = content[len(cmd) + 2:]
+    song = Content(content).string
     if song:
         await msg.channel.send("wait 4 years")
         with youtube_dl.YoutubeDL({"format": "bestaudio/best", "postprocessors": [{"key": "FFmpegExtractAudio", "preferredcodec": "mp3"}]}) as dl:
@@ -2582,16 +2567,14 @@ async def embedCmd(msg, content, cmd="embed"):
     content.replace(f'{title} ', "")
     content = Content(content.split("|", pastIndex=1), removeCmd=False)
     for op, param in content.opsWithParams({"author": (slice(0,None,None), " ")}):
-        if op == "-color":
-            color = param
-        elif op == "-image":
-            image = param
-        elif op == "-thumbnail":
-            thumbnail = param
-        elif op == "-author":
-            author = Content(" ".join(param), removeCmd=False)
-            list(author.opsWithParams())
-            author = str(author)
+        with switch(op) as case:
+            if case("-color"): color = param
+            elif case("-image"): image = param
+            elif case("-thumbnail"): thumbnail = param
+            elif case("-author"):
+                author = Content(" ".join(param), removeCmd=False)
+                list(author.opsWithParams())
+                author = str(author)
     content.formatMessage(msg, {"{title}": title, "{color}": color, "{author}": author})
     embed = discord.Embed(title=title, color=discord.Color(int(color, 16)) if color else discord.Color(0x000000))
     if image: embed.set_image(url=image)
@@ -2607,16 +2590,15 @@ async def embedCmd(msg, content, cmd="embed"):
 
 async def emoteUsage(msg, content, cmd="emoteusage"):
     content = Content(content)
-    top = 10
     if content @ "--raw":
         with open(emoteUsageFilePath, "rb") as f: return await msg.channel.send(file=discord.File(f, "emoteusage.json"))
     for op, param in content.opsWithParams():
         if op == "-top":
             top = int(param)
             break
+    else: top = 10
     with open(emoteUsageFilePath, "r") as j:
-        data = json.load(j)
-        data = sorted(data.items(), key=lambda x: x[1], reverse=True if not content @ "--least" else False)
+        data = sorted(json.load(j).items(), key=lambda x: x[1], reverse=True if not content @ "--least" else False)
         if content:
             data = {k: i for k, i in data}
             try: usage = data[str(re.findall(r'[0-9]{18}', str(content))[0])]
