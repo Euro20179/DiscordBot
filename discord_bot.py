@@ -323,11 +323,6 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
 
 
     if "/{" in content and "\\" != content[content.index("/{") - 1] and "cmd/{" not in content:
-        interpateCount = len(content.split("/{"))
-        if len(content.split("}")) != interpateCount and cmd not in ["for", "if"]:
-            if len(content.split("}")) < len(content.split("{")):
-                return await msg.channel.send("Syntax Error missing }")
-            return await msg.channel.send("Syntax Error missing /{")
         while True:
             cmds = [x.split("}")[0] for x in content.split("/{")]
             if not cmds: break
@@ -415,11 +410,6 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
             content = Content(CUSTOMCMDS[cmd], removeCmd=False)
             content.formatMessage(msg)
             content = content.string.strip()
-            interpateCount = len(content.split("{"))
-            if len(content.split("}")) != interpateCount and "for" not in content and "if" not in content:
-                if len(content.split("}")) < len(content.split("{")):
-                    return await msg.channel.send("Syntax Error missing }")
-                return await msg.channel.send("Syntax Error missing {")
             while True:
                 cmds = [x.split("}")[0] for x in content.split("{")]
                 if "if" in content: break
