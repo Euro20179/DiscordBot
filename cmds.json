@@ -885,7 +885,7 @@
       {
         "name": "formats",
         "params": null,
-        "desc": "{version}: bot's version\n{content}: content of message\n{author}: author of the message\n{uptime}: uptime of the bot\n{channel}: channel the message was sent in\nsome commands have special formats which will be listed with the help of that command",
+        "desc": "{version}: bot's version\n{content}: content of message\n{author}: ping the author of the message\n{authorn} the author's name\n{uptime}: uptime of the bot\n{channel}: mention of the channel the message was sent in\n{channeln}: name of the channel\nsome commands have special formats which will be listed with the help of that command",
         "date": "7/9/2020"
       }
     ]
@@ -1044,7 +1044,7 @@
       },
       {
         "name": "pingresponse",
-        "params": "<message> (-WHEN <offline/online/idle/dnd/all>)",
+        "params": "<message> (-WHEN <offline/online/idle/dnd/all>) (FORMATS)",
         "desc": "when someone pings you the bot will say <message>\n{author} mentions the person who pinged\nif you want to have more than just one of -WHEN sep with space do all for all of them",
         "date": "7/1/2020"
       }

@@ -1,3 +1,11 @@
+5.6.3 (7/16/2020)
+
+ADDITIONS:
+*{authorn} to anything that formats
+*{channeln} to anything that formats
+*pingresponse now formats
+
+====================================================================
 5.6.2 (7/16/2020)
 
 CHANGES:
