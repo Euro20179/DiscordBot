@@ -570,28 +570,25 @@ async def rand(msg, content, cmd="rand"):
     global Stop
     if Stop: Stop = False
     content = Content(content)
-    Even = False if not content @ "--even" else True
-    Odd = False if not content @ "--odd" else True
+    Even = content @ "--even"
+    Odd = content @ "--odd"
     content = content.split(" ")
+    low = 1
+    high = 10
+    r = 0
     if len(content) > 1:
-        r = int(content[2].strip()) if len(content) == 3 else 15
-        low, high = int(content[0]), int(content[1])
+        r = int(content[2].strip()) if len(content) == 3 else 0
+        low, high = float(content[0]), float(content[1])
 
         if not isInt(r): return await msg.channel.send("you are not rounding to a whole number")				
         if float(low) >= float(high): return await msg.channel.send("Low must be lower than high")
-
-        if isInt(low) and isInt(high):
-            while True:
-                if Stop: await msg.channel.send(await stop("stopped picking a number"))
-                res = random.randint(low, high)
-                if Even and res % 2 != 0: continue					
-                if Odd and res % 2 == 0: continue
-                else: break
-        else:
-            res = random.uniform(float(low), float(high))
-            if r: res = round(res, r)
-    else: res = random.randint(1, 10)
-    return await msg.channel.send(res)
+    while True:
+        if Stop: await msg.channel.send(await stop("stopped picking a number"))
+        res = random.uniform(low, high)
+        if Even and int(round(res, r)) % 2 != 0 and r == 0: continue					
+        if Odd and int(round(res, r)) % 2 == 0 and r == 0: continue
+        else: break
+    return await msg.channel.send(round(res, r))
 
 async def compareRoles(msg, content, cmd="compareroles"):
     embed = discord.Embed(name="Role Comparison")
