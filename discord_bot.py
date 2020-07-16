@@ -321,10 +321,6 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
         msg = c #DEPRICATED
         layer += 1 #DEPRICATED 
 
-    if ";" in content:
-        for cmd in content.split(";"):
-            print(cmd)
-            await runCommand(msg, cmd.strip(), cmd.strip().split(" ")[0].strip().strip(PREFIX))
 
     if "/{" in content and "\\" != content[content.index("/{") - 1] and "cmd/{" not in content:
         interpateCount = len(content.split("/{"))
@@ -344,6 +340,11 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
             content = content.replace("/{" + cmd + "}", mssg.content)
         return await runCommand(msg, f'{content}', content.split(" ")[0][1:])
 
+    if ";" in content:
+        for cmd in content.split(";"):
+            print(cmd)
+            await runCommand(msg, cmd.strip(), cmd.strip().split(" ")[0].strip().strip(PREFIX))
+            
     if "cmd/{" in content:
         content = content.replace("cmd/{", "/{")
 
