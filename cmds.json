@@ -94,7 +94,7 @@
         "date": "7/15/2020"
       },
       {
-        "name": "*<cmd> (sep with ;)",
+        "name": "*<cmd> (sep with \\;)",
         "prams": "(--notyet)",
         "desc": "executes each command seperated with a ; one after the other",
         "date": "7/15/2020"
