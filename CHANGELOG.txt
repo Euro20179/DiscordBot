@@ -1,3 +1,13 @@
+5.6 (7/15/2020)
+
+ADDITIONS:
+*if cmd
+*for cmd
+*cmd/{} use that when you want /{} when the command is executed instead of whent the message is sent
+*use a ; to seperate different commands
+*SYNTAX category
+
+====================================================================
 5.5.0.1 (7/15/2020)
 
 ADDITIONS:
