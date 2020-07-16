@@ -366,6 +366,7 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
             for cmd in content.split(";"):
                 if cmd.strip() == "}": break
                 content = await runCommand(msg, cmd.strip(), cmd.strip().split(" ")[0].strip().strip(PREFIX))
+        Iscmd = True
 
     elif ";;" in content and "--notyet" not in content:
         content = Content(content, removeCmd=False)
@@ -374,6 +375,7 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
         for cmd in content.split("\;"):
             print(cmd)
             content = await runCommand(msg, cmd.strip(), cmd.strip().split(" ")[0].strip().strip(PREFIX))
+        Iscmd = True
     elif "--notyet" in content:
         content = content.replace("--notyet", "")
     case = CMDS.get(cmd)
@@ -381,7 +383,7 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
     if case:
         content = await case(msg, content, cmd=cmd)
         Iscmd = True
-    else:
+    elif not case:
         case = switch(cmd).start()
         if case("tof"): content = await oneLineCmd(msg, 9 / 5 * float(splitContent(content, cmd + " ", index=1)) + 32)
         elif case("avatar"): content = await oneLineCmd(msg, (await getUserInContent(msg, content, cmd)).avatar_url)
@@ -423,7 +425,7 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
         case.end()
         Iscmd = True
 
-    if cmd not in CMDLIST and not Iscmd: 
+    elif not Iscmd: 
         with open(commandusageFilePath, "r+") as j:
             data = json.load(j)
             del data[cmd]
