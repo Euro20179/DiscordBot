@@ -494,7 +494,9 @@ async def on_message(msg):
                 if data.get(user):
                     u = findMember(user, msg)
                     if str(u.status) in data[user]["when"] or "all" in data[user]["when"]:
-                        await msg.channel.send(data[user]["response"].replace("{author}", msg.author.mention))      
+                        c = Content(data[user]["response"], removeCmd=False)
+                        c = c.formatMessage(msg, ret=True)
+                        await msg.channel.send(c)      
 
     if "<:" in content and ">" in content:
         emotes = re.findall(r'<:[A-Za-z-_]{1,100}:[0-9]{18}>', str(content))
