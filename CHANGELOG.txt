@@ -1,10 +1,16 @@
-5.6.5 (7/15/2020)
+5.6.6 (7/16/3030)
+
+FIXES:
+*--cmddelete didn't work properly
+
+====================================================================
+5.6.5 (7/16/2020)
 
 CHANGES:
 *use () instead of {} for if statements
 
 ====================================================================
-5.6.4 (7/15/2020)
+5.6.4 (7/16/2020)
 
 CHANGES:
 *SARCASTICQUOTES is now a global variable you can use it in calc
