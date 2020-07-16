@@ -367,7 +367,7 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
                 if cmd.strip() == "}": break
                 content = await runCommand(msg, cmd.strip(), cmd.strip().split(" ")[0].strip().strip(PREFIX))
 
-    elif "\;" in content and "--notyet" not in content:
+    elif ";;" in content and "--notyet" not in content:
         content = Content(content, removeCmd=False)
         content.calcOps()
         content = content.string
@@ -477,7 +477,7 @@ async def on_message(msg):
 
     if random.random() >= .9995: 
         if isBot(msg, client): return
-        await msg.channel.send(random.choice(("mhm", "interesting", "fascinating", "very cool")))
+        await msg.channel.send(random.choice(SARCASTICQUOTES))
 
     if f"<@!{client.user.id}>" in content and client.user.id not in playingHangman.keys():
         await msg.channel.send(random.choice((discord.utils.find(lambda e: e.name.lower() == "watching1", client.emojis), discord.utils.find(lambda e: e.name.lower() == "pinged", client.emojis))))
