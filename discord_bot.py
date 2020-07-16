@@ -324,7 +324,7 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
 
     if "/{" in content and "\\" != content[content.index("/{") - 1] and "cmd/{" not in content:
         interpateCount = len(content.split("/{"))
-        if len(content.split("}")) != interpateCount:
+        if len(content.split("}")) != interpateCount and cmd not in ["for", "if"]:
             if len(content.split("}")) < len(content.split("{")):
                 return await msg.channel.send("Syntax Error missing }")
             return await msg.channel.send("Syntax Error missing /{")
@@ -365,24 +365,22 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
             return await msg.channel.send(file=discord.File(bannedJ, "bans.json"))
 
     elif cmd == "if":
-        res = await calc(msg, content.split(";")[0].strip(), cmd, ReturnRes=True)
+        res = await calc(msg, content.split("{")[0].strip(), cmd, ReturnRes=True)
+        content = "{".join(content.split("{")[1:])
         if res:
-            content = content.split(";")[1].strip()
-            content = await runCommand(msg, content, cmd=Content(content).cmd.strip(PREFIX))
+            for cmd in content.split(";"):
+                if cmd.strip() == "}": break
+                content = await runCommand(msg, cmd.strip(), cmd.strip().split(" ")[0].strip().strip(PREFIX))
 
-    elif cmd == "for":
-        split = " ".join(content.split(" ")[1:])
-        split = split.split(";")
-        var = int(split[0])
-        expr = split[1]
-        send = [str(eval(expr)) for x in range(int(var))]
-        content = await msg.channel.send("\n".join(send))
-
-    elif ";" in content and cmd not in ["accmd", "addcustomcommand", "eccmd", "editcustomcmd"]:
+    elif ";" in content and "--notyet" not in content:
+        content = Content(content, removeCmd=False)
+        content.calcOps()
+        content = content.string
         for cmd in content.split(";"):
             print(cmd)
             content = await runCommand(msg, cmd.strip(), cmd.strip().split(" ")[0].strip().strip(PREFIX))
-
+    elif "--notyet" in content:
+        content = content.replace("--notyet", "")
     case = CMDS.get(cmd)
     
     if case:
@@ -418,7 +416,7 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
             content.formatMessage(msg)
             content = content.string
             interpateCount = len(content.split("{"))
-            if len(content.split("}")) != interpateCount:
+            if len(content.split("}")) != interpateCount and cmd not in ["for", "if"]:
                 if len(content.split("}")) < len(content.split("{")):
                     return await msg.channel.send("Syntax Error missing }")
                 return await msg.channel.send("Syntax Error missing {")
