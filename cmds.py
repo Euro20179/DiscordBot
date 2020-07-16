@@ -1066,13 +1066,15 @@ async def spamStop(msg, content, cmd="spamstop"):
         await msg.channel.send(f'{PREFIX}stop')
         await asyncio.sleep(random.uniform(.3, 1.2))
 
-async def calc(msg, content, cmd="calc"):
+async def calc(msg, content, cmd="calc", ReturnRes=False):
     content = Content(content)
     if not content.suitibleForEval():
         return await msg.channel.send('nice try')
     else: 
         try:
-            return await msg.channel.send(eval(str(content)))
+            rv = eval(str(content))
+            if not ReturnRes: return await msg.channel.send(rv)
+            else: return rv
         except Exception as e:
             print(e)
             return await msg.channel.send(str(type(e)).split(' ')[1].split("'")[1].strip("'"))

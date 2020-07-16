@@ -321,7 +321,12 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
         msg = c #DEPRICATED
         layer += 1 #DEPRICATED 
 
-    if "/{" in content and "\\" != content[content.index("/{") - 1]:
+    if ";" in content:
+        for cmd in content.split(";"):
+            print(cmd)
+            await runCommand(msg, cmd.strip(), cmd.strip().split(" ")[0].strip().strip(PREFIX))
+
+    if "/{" in content and "\\" != content[content.index("/{") - 1] and "cmd/{" not in content:
         interpateCount = len(content.split("/{"))
         if len(content.split("}")) != interpateCount:
             if len(content.split("}")) < len(content.split("{")):
@@ -338,6 +343,9 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
             await mssg.delete()
             content = content.replace("/{" + cmd + "}", mssg.content)
         return await runCommand(msg, f'{content}', content.split(" ")[0][1:])
+
+    if "cmd/{" in content:
+        content = content.replace("cmd/{", "/{")
 
     with open(commandusageFilePath, "r+") as j:
         data = json.load(j)
@@ -358,6 +366,21 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
                 except: pass
         with open(bannedFilePath, "rb") as bannedJ:
             return await msg.channel.send(file=discord.File(bannedJ, "bans.json"))
+
+    elif cmd == "if":
+        res = await calc(msg, content.split(";")[0].strip(), cmd, ReturnRes=True)
+        if res:
+            content = content.split(";")[1].strip()
+            content = await runCommand(msg, content, cmd=Content(content).cmd.strip(PREFIX))
+        else: return content
+
+    elif cmd == "for":
+        split = " ".join(content.split(" ")[1:])
+        split = split.split(";")
+        var = int(split[0])
+        expr = split[1]
+        send = [str(eval(expr)) for x in range(int(var))]
+        content = await msg.channel.send("\n".join(send))
 
     case = CMDS.get(cmd)
     
@@ -409,16 +432,17 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
                 await mssg.delete()
                 content = content.replace("{" + cmd + "}", mssg.content)
             content = await oneLineCmd(msg, content)
+        case.end()
+        Iscmd = True
 
-        elif cmd not in CMDLIST and not Iscmd: 
-            with open(commandusageFilePath, "r+") as j:
-                data = json.load(j)
-                del data[cmd]
-                clearFile(j)
-                json.dump(data, j)
-            content = await msg.channel.send(f'{cmd} {random.choice(("is not a thing", "does not exist"))}')
-        return content
-        case.stop()
+    if cmd not in CMDLIST and not Iscmd: 
+        with open(commandusageFilePath, "r+") as j:
+            data = json.load(j)
+            del data[cmd]
+            clearFile(j)
+            json.dump(data, j)
+        content = await msg.channel.send(f'{cmd} {random.choice(("is not a thing", "does not exist"))}')
+    return content
 
 @client.event
 async def on_message(msg):
