@@ -412,7 +412,6 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
             content = content.string.strip()
             while True:
                 cmds = [x.split("}")[0] for x in content.split("{")]
-                if "if" in content: break
                 cmds.reverse()
                 cmds = cmds[:-1]
                 try: cmd = cmds[0]
