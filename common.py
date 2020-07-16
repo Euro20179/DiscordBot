@@ -20,7 +20,7 @@ from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont
 
 #TODO: emoteusage should type, and return txt file if the message is too long to send in chat
 
-VERSION = "5.6.3"
+VERSION = "5.6.4"
 Stop = False
 
 playingGuessingGame = {}
@@ -50,6 +50,7 @@ emoteUsageFilePath = f'{DISEXT}/emoteusage.json'
 queuePath = "./queue"
 EUROID = 334538784043696130
 client = commands.Bot(command_prefix=fakePrefix)
+SARCASTICQUOTES = ("mhm", "interesting", "fascinating", "very cool")
 
 tracemalloc.start()
 

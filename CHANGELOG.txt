@@ -1,3 +1,10 @@
+5.6.4 (7/15/2020)
+
+CHANGES:
+*SARCASTICQUOTES is now a global variable you can use it in calc
+*do ;; instead of \; for *<cmd> ;
+
+====================================================================
 5.6.3 (7/16/2020)
 
 ADDITIONS:
