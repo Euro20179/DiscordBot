@@ -372,7 +372,7 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
         content = Content(content, removeCmd=False)
         content.calcOps()
         content = content.string
-        for cmd in content.split("\;"):
+        for cmd in content.split(";;"):
             print(cmd)
             content = await runCommand(msg, cmd.strip(), cmd.strip().split(" ")[0].strip().strip(PREFIX))
         Iscmd = True
