@@ -416,7 +416,7 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
             content.formatMessage(msg)
             content = content.string
             interpateCount = len(content.split("{"))
-            if len(content.split("}")) != interpateCount and cmd not in ["for", "if"]:
+            if len(content.split("}")) != interpateCount and "for" not in cmd and "if" not in cmd:
                 if len(content.split("}")) < len(content.split("{")):
                     return await msg.channel.send("Syntax Error missing }")
                 return await msg.channel.send("Syntax Error missing {")
