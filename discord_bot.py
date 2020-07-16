@@ -384,6 +384,7 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
         content = await case(msg, content, cmd=cmd)
         Iscmd = True
     elif not case:
+        startContent = content
         case = switch(cmd).start()
         if case("tof"): content = await oneLineCmd(msg, 9 / 5 * float(splitContent(content, cmd + " ", index=1)) + 32)
         elif case("avatar"): content = await oneLineCmd(msg, (await getUserInContent(msg, content, cmd)).avatar_url)
@@ -421,11 +422,11 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
                 mssg = await runCommand(msg, f'{PREFIX}{cmd.strip("_")}', cmd=cmd.split(" ")[0].strip().strip("_"), DoFirst=True)
                 await mssg.delete()
                 content = content.replace("{" + cmd + "}", mssg.content)
-            content = await oneLineCmd(msg, content)
+            content = await one6LineCmd(msg, content)
         case.end()
-        Iscmd = True
-
-    elif not Iscmd: 
+        if content != startContent:
+            Iscmd = True
+    if not Iscmd: 
         with open(commandusageFilePath, "r+") as j:
             data = json.load(j)
             del data[cmd]

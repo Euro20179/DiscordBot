@@ -492,7 +492,7 @@ class switch:
 
     def end(self):
         del self
-
+        
     def __call__(self, other, func : Tuple["func", "args"] =None, *args, **kwargs):
         if self.__case__: return self.__case__(other, *args, **kwargs)
         elif not isinstance(other, list): return self.value == other
