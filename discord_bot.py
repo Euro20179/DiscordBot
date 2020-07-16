@@ -360,11 +360,11 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
             return await msg.channel.send(file=discord.File(bannedJ, "bans.json"))
 
     elif cmd == "if":
-        res = await calc(msg, content.split("{")[0].strip(), cmd, ReturnRes=True)
-        content = "{".join(content.split("{")[1:])
+        res = await calc(msg, content.split("(")[0].strip(), cmd, ReturnRes=True)
+        content = "(".join(content.split("(")[1:])
         if res:
             for cmd in content.split(";"):
-                if cmd.strip() == "}": break
+                if cmd.strip() == ")": break
                 content = await runCommand(msg, cmd.strip(), cmd.strip().split(" ")[0].strip().strip(PREFIX))
         Iscmd = True
 
