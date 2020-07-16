@@ -422,7 +422,7 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
                 mssg = await runCommand(msg, f'{PREFIX}{cmd.strip("_")}', cmd=cmd.split(" ")[0].strip().strip("_"), DoFirst=True)
                 await mssg.delete()
                 content = content.replace("{" + cmd + "}", mssg.content)
-            content = await one6LineCmd(msg, content)
+            content = await oneLineCmd(msg, content)
         case.end()
         if content != startContent:
             Iscmd = True
