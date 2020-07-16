@@ -372,11 +372,11 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
                 if cmd.strip() == "}": break
                 content = await runCommand(msg, cmd.strip(), cmd.strip().split(" ")[0].strip().strip(PREFIX))
 
-    elif ";" in content and "--notyet" not in content:
+    elif "\;" in content and "--notyet" not in content:
         content = Content(content, removeCmd=False)
         content.calcOps()
         content = content.string
-        for cmd in content.split(";"):
+        for cmd in content.split("\;"):
             print(cmd)
             content = await runCommand(msg, cmd.strip(), cmd.strip().split(" ")[0].strip().strip(PREFIX))
     elif "--notyet" in content:
