@@ -1,3 +1,19 @@
+5.6.1 (7/15/2020)
+
+ADDITIONS:
+*do --notyet, for ; if you don't want it to activate yet
+*break, use it to exit a for loop
+
+CHANGES:
+*if now is used like this
+    if expr{
+        cmd;
+    }
+
+REMOVED:
+*for
+
+====================================================================
 5.6 (7/15/2020)
 
 ADDITIONS:

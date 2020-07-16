@@ -89,19 +89,13 @@
     "cmds": [
       {
         "name": "if",
-        "params": "<expr> ; <command>",
-        "desc": "if expr is true it does the command\nex: [if 5 > 4 ; [serveremote",
-        "date": "7/15/2020"
-      },
-      {
-        "name": "for",
-        "params": "<range> ; <expr>",
-        "desc": "evaluates <expr> <range> times",
+        "params": "<expr>{ *<command>;}",
+        "desc": "if expr is true it does the command\nex: [if 5 > 4{serveremote;}",
         "date": "7/15/2020"
       },
       {
         "name": "*<cmd> (sep with ;)",
-        "prams": null,
+        "prams": "(--notyet)",
         "desc": "executes each command seperated with a ; one after the other",
         "date": "7/15/2020"
       }
