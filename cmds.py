@@ -2585,7 +2585,8 @@ async def embedCmd(msg, content, cmd="embed"):
         value = Content(value, removeCmd=False)
         Inline = True if not value @ "--ninline" else False
         embed.add_field(name=name, value=str(value), inline=Inline)
-    return await msg.channel.send(embed=embed)
+    mssg = await msg.channel.send(embed=embed)
+    return await embedToReadableDict(mssg, embed)
 
 async def emoteUsage(msg, content, cmd="emoteusage"):
     content = Content(content)
