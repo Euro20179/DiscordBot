@@ -89,7 +89,7 @@
     "cmds": [
       {
         "name": "if",
-        "params": "<expr>{ *<command>;}",
+        "params": "<expr>( *<command>;)",
         "desc": "if expr is true it does the command\nex: [if 5 > 4{serveremote;}",
         "date": "7/15/2020"
       },
