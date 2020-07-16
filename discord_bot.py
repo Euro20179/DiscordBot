@@ -414,15 +414,15 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
         elif case(list(CUSTOMCMDS.keys())): 
             content = Content(CUSTOMCMDS[cmd], removeCmd=False)
             content.formatMessage(msg)
-            content = content.string
+            content = content.string.strip()
             interpateCount = len(content.split("{"))
-            if len(content.split("}")) != interpateCount and "for" not in cmd and "if" not in cmd:
+            if len(content.split("}")) != interpateCount and "for" not in content and "if" not in content:
                 if len(content.split("}")) < len(content.split("{")):
                     return await msg.channel.send("Syntax Error missing }")
                 return await msg.channel.send("Syntax Error missing {")
             while True:
                 cmds = [x.split("}")[0] for x in content.split("{")]
-                if not cmds: break
+                if "if" in content: break
                 cmds.reverse()
                 cmds = cmds[:-1]
                 try: cmd = cmds[0]
