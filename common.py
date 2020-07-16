@@ -20,7 +20,7 @@ from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont
 
 #TODO: emoteusage should type, and return txt file if the message is too long to send in chat
 
-VERSION = "5.6.5"
+VERSION = "5.6.6"
 Stop = False
 
 playingGuessingGame = {}
@@ -296,7 +296,7 @@ class Content:
         """
         if not self.split(" ") or ("--" not in self and "—" not in self): return []
         for word in reversed(self.split(" ")):
-            if "--" in word or "—" in word:
+            if ("--" in word or "—" in word) and word.strip() != "--delete":
                 self.ops_.append(word)
                 foo = self.string
                 self.replace(f' {word}', "")
