@@ -340,10 +340,6 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
             content = content.replace("/{" + cmd + "}", mssg.content)
         return await runCommand(msg, f'{content}', content.split(" ")[0][1:])
 
-    elif ";" in content:
-        for cmd in content.split(";"):
-            print(cmd)
-            await runCommand(msg, cmd.strip(), cmd.strip().split(" ")[0].strip().strip(PREFIX))
 
     if "cmd/{" in content:
         content = content.replace("cmd/{", "/{")
@@ -373,7 +369,6 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
         if res:
             content = content.split(";")[1].strip()
             content = await runCommand(msg, content, cmd=Content(content).cmd.strip(PREFIX))
-        else: return content
 
     elif cmd == "for":
         split = " ".join(content.split(" ")[1:])
@@ -382,6 +377,11 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
         expr = split[1]
         send = [str(eval(expr)) for x in range(int(var))]
         content = await msg.channel.send("\n".join(send))
+
+    elif ";" in content and cmd not in ["accmd", "addcustomcommand", "eccmd", "editcustomcmd"]:
+        for cmd in content.split(";"):
+            print(cmd)
+            content = await runCommand(msg, cmd.strip(), cmd.strip().split(" ")[0].strip().strip(PREFIX))
 
     case = CMDS.get(cmd)
     
