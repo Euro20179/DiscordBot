@@ -2664,3 +2664,19 @@ async def guessingGame(msg, content, cmd="guessinggame"):
                 rv = await msg.channel.send(embed=discord.Embed(title=say, color=discord.Color.from_rgb(255, 0, 0)))
                 return await embedToReadableDict(rv, rv.embeds[0])
             await msg.channel.send(f"{msg.author.mention} too high" if int(c) > ans else f"{msg.author.mention} too low\nguess\nyou have {LIVES} lives left")
+
+async def flashEmote(msg, content, cmd="flashemote"):
+    content = Content(content)
+    for op, param in content.opsWithParams():
+        if op in ["-time", "-t"]:
+            sleepFor = float(param)
+            break
+    else: sleepFor = .5
+    split = content.split(" ")
+    emote = split[0] if split[0] else random.choice(msg.guild.emojis)
+    try: times = int(split[1])
+    except: times = 5
+    editable = await msg.channel.send(emote)
+    for x in range(times):
+        await asyncio.sleep(sleepFor)
+        await editable.edit(content=f'{emote}' if editable.content == f'{emote} _ _' else f'{emote} _ _')

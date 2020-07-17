@@ -144,6 +144,12 @@
         "date": "6/19/2020"
       },
       {
+        "name": "flashemote",
+        "params": "[emote] [times] (-t <seconds>)",
+        "desc": "idk how to describe it just try it lol",
+        "date": "7/16/2020"
+      },
+      {
         "name": "shrug",
         "params": null,
         "desc": "shrugs",

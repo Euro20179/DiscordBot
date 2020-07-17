@@ -20,7 +20,7 @@ from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont
 
 #TODO: emoteusage should type, and return txt file if the message is too long to send in chat
 
-VERSION = "5.6.8"
+VERSION = "5.7"
 Stop = False
 
 playingGuessingGame = {}
@@ -391,14 +391,17 @@ class Content:
         user = discord.utils.find(lambda m: str(m.id) == c or str(m.display_name.split("#")[0].lower()) == c.lower() or m.name.lower() == c.lower(), msg.guild.members)
         return user if user else msg.author
 
-    def toSet(self, split=" ", pastIndex=None, key=None):
+    def toSet(self, spl=" ", pastIndex=None, key=None):
         """
         returns a set split by split
         """
-        return set(self.split(" ", pastIndex=pastIndex, key=key))
+        return set(self.split(spl, pastIndex=pastIndex, key=key))
 
     def suitibleForEval(self):
-        return False if self.toSet() & {"help(", "quit()", "exit()", "os.", "token", "input(", "sys.", "__import__(",} else True
+        if "help(" in self or "quit()" in self or "exit()" in self or "os." in self or \
+            "token" in self or "input(" in self or "sys." in self or "__import__(os)" in self or \
+            "time.sleep" in self: return False
+        return True
     
     def formatMessage(self, msg, kwargs=None, removeCmd=True, ret=False):
         if "{emote}" in self:
