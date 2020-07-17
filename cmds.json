@@ -561,7 +561,10 @@
         "name": "customcmdlist",
         "params": "(--raw) (--file)",
         "desc": "lists the custom cmds",
-        "date": "6/11/2020"
+        "date": "6/11/2020",
+        "aliases":[
+          "ccmdlist"
+        ]
       },
       {
         "name": "dccmd",
