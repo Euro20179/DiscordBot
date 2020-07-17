@@ -589,7 +589,7 @@ async def rand(msg, content, cmd="rand"):
         if Even and int(round(res, r)) % 2 != 0 and r == 0: continue					
         if Odd and int(round(res, r)) % 2 == 0 and r == 0: continue
         else: break
-    return await msg.channel.send(round(res, r))
+    return await msg.channel.send(int(round(res, r)) if r == 0 else round(res, r))
 
 async def compareRoles(msg, content, cmd="compareroles"):
     embed = discord.Embed(name="Role Comparison")
