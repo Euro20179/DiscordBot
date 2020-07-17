@@ -82,6 +82,12 @@
         "date": "7/15/2020"
       },
       {
+        "name": "else",
+        "params": "must follow an if statement(*<cmd>;)",
+        "desc": "if the if statement fails it will do the else statemnet",
+        "date": "7/17/2020"
+      },
+      {
         "name": "wait",
         "params": "<seconds>",
         "desc": "waits that many seconds",
