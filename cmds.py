@@ -277,7 +277,7 @@ async def leaderboard(msg, content, cmd="top"):
 async def magicBall(msg, content, cmd="8ball"):
     with open(mballresponseFilePath, "r") as f:
         responses = f.read().split("\n")
-    for op, param in Content.opsWithParams():
+    for op, param in Content(content).opsWithParams():
         if op == "-e":
             return await msg.channel.send(embed=discord.Embed(title=random.choice(responses), color=int(param, 16) if param else 0x000000))
     return await msg.channel.send(random.choice(responses))
