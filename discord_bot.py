@@ -362,7 +362,9 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
             return await msg.channel.send(file=discord.File(bannedJ, "bans.json"))
 
     elif cmd == "if":
-        res = await calc(msg, content.split("(")[0].strip(), cmd, ReturnRes=True)
+        if Content(content.split("(")[0].strip()).suitibleForEval():
+            res = await calc(msg, content.split("(")[0].strip(), cmd, ReturnRes=True)
+        else: return await msg.channel.send("nice try")
         content = "(".join(content.split("(")[1:])
         if res:
             for cmd in content.split(";"):
