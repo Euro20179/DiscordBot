@@ -191,7 +191,8 @@ CMDS = {
     "fetchuser": fetchSomething,
     "fetchchannel": fetchSomething,
     "fetchemote": fetchSomething,
-    "fetchemoji": fetchSomething
+    "fetchemoji": fetchSomething,
+    "flashemote": flashEmote
 }
 
 @client.event
