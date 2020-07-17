@@ -93,7 +93,8 @@ async def spam(msg, messages, message, BlockStop=False):
         if Stop and not BlockStop:
             Stop = False
             return await msg.channel.send(await stop("Stopped"))
-        msg = await msg.channel.send(random.choice(message).replace("{count}", str(i + 1)).replace("{rcount}", str(int(messages) - i)))
+        send = Content(random.choice(message), removeCmd=False).formatMessage(msg, {"{count}": str(i + 1), "{rcount}": str(int(messages) - i)}, ret=True)
+        msg = await msg.channel.send(str(send))
         await asyncio.sleep(random.uniform(.7, 1.3))
     return msg
 
@@ -962,7 +963,7 @@ async def typeFor(msg, content, cmd="type"):
         return await msg.channel.send("sorry thats too long")
     async with msg.channel.typing():
         await asyncio.sleep(timeToType)
-    return await msg.channel.send(f'typed for {timeToType} seconds')
+    return await msg.channel.send(f'typed for {timeToType} seconds') if not content @ "--nosend" else msg
 
 async def sendBlank(msg, content, cmd="sendblank"):
     content = Content(content)
@@ -2680,3 +2681,6 @@ async def flashEmote(msg, content, cmd="flashemote"):
     for x in range(times):
         await asyncio.sleep(sleepFor)
         await editable.edit(content=f'{emote}' if editable.content == f'{emote} _ _' else f'{emote} _ _')
+
+async def waitCmd(msg, content, cmd="wait"):
+    await asyncio.sleep(float(Content(content).string.strip()))
