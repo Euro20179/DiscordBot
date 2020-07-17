@@ -412,7 +412,7 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
         elif case(["removecustomcmd", "delcustomcmd", "dccmd", "rccmd"]): 
             content = await removeCustomCmd(msg, content, cmd=cmd)
             CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
-        elif case("customcmdlist"): await customCmdList(msg, content, cmd=cmd)
+        elif case(["customcmdlist", "ccmdlist"]): content = await customCmdList(msg, content, cmd=cmd)
         elif case(list(CUSTOMCMDS.keys())): 
             content = Content(CUSTOMCMDS[cmd], removeCmd=False)
             content.formatMessage(msg)

@@ -1,3 +1,12 @@
+5.7.3 (7/16/2020)
+
+ADDITIONS:
+*ccmd as an alias to customcmdlist
+
+FIXES:
+*customcmdlist wouldn't register as a command
+
+====================================================================
 5.7.2 (7/16/2020)
 
 ADDITIONS:
