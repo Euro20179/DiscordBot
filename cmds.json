@@ -115,10 +115,7 @@
         "name": "cmd/{}",
         "params": "cmd <> [] ()",
         "desc": "same as /{} but for when you want it to execute with the command instaed of with the message",
-        "date": "7/15/2020",
-        "aliases":[
-          "\\/{}"
-        ]
+        "date": "7/15/2020"
       }
     ]
   },
@@ -184,7 +181,7 @@
       },
       {
         "name": "duplicator",
-        "params": "[times] <message>",
+        "params": "[times] <message> (-sep <seperator> (\\s, \\t, \\n work))",
         "desc": "duplicates your <message> [times] times defaults to 2",
         "date": "6/13/2020",
         "aliases":["duplicate"]

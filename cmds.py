@@ -1493,10 +1493,17 @@ async def inventory(msg, content, cmd="inv"):
 async def duplicator(msg, content, cmd="duplicator"):
     t = Content(content)
     times = 2
+    for op, param in t.opsWithParams():
+        if op == "-sep":
+            param = param.replace(r"\t", "\t").replace("\s", " ").replace(r"\n", "\n")
+            sep = param
+            t = Content(t.strip(), removeCmd=False)
+            break
+    else: sep = " "
     if t.split(" ")[0].isnumeric():
         times = int(t.split(" ")[0])
         t = t.replace(f'{times}', "", ret=True).strip()
-    try: return await msg.channel.send(f'{t} '*times)
+    try: return await msg.channel.send(f'{t}{sep}'*times)
     except: return await msg.channel.send("message too long, try reducing the number of duplications")
 
 async def customCmdList(msg, content, cmd="customcmdlist"):
