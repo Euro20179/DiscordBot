@@ -368,6 +368,13 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
         content = "(".join(content.split("(")[1:])
         if res:
             for cmd in content.split(";"):
+                if cmd.strip()[0] == ")": break
+                content = await runCommand(msg, cmd.strip(), cmd.strip().split(" ")[0].strip().strip(PREFIX))
+        elif not res and "else" in content:
+            elseStmnt = content.split(")")[-2].strip() + ")"
+            expr = Content(elseStmnt.split("(")[0])
+            content = "(".join(elseStmnt.split("(")[1:])
+            for cmd in content.split(";"):
                 if cmd.strip() == ")": break
                 content = await runCommand(msg, cmd.strip(), cmd.strip().split(" ")[0].strip().strip(PREFIX))
         Iscmd = True
