@@ -958,12 +958,13 @@ async def messageInfo(msg, content, cmd="messageinfo"):
 
 async def typeFor(msg, content, cmd="type"):
     content = Content(content)
-    timeToType = int(content) if content else 5
+    Send = not content @ "--nosend"
+    timeToType = int(content.strip()) if content.strip() else 5
     if timeToType > 420:
         return await msg.channel.send("sorry thats too long")
     async with msg.channel.typing():
         await asyncio.sleep(timeToType)
-    return await msg.channel.send(f'typed for {timeToType} seconds') if not content @ "--nosend" else msg
+    return await msg.channel.send(f'typed for {timeToType} seconds') if Send else msg
 
 async def sendBlank(msg, content, cmd="sendblank"):
     content = Content(content)
