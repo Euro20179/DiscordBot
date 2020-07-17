@@ -59,18 +59,6 @@
         "date": "6/11/2020"
       },
       {
-        "name": "/{}",
-        "params": "cmd <> [] ()",
-        "desc": "does the cmd inside of /{} first\nadd _ to the end of a command if 2+ commands are the same and you want diff resultes\nask euro",
-        "date": "6/13/2020"
-      },
-      {
-        "name": "cmd/{}",
-        "params": "cmd <> [] ()",
-        "desc": "same as /{} but for when you want it to execute with the command instaed of with the message",
-        "date": "7/15/2020"
-      },
-      {
         "name": "--1 (DEPRECATED)",
         "params": "cmd <> [] ()",
         "desc": "similar to /{}\nask euro"
@@ -94,10 +82,43 @@
         "date": "7/15/2020"
       },
       {
+        "name": "wait",
+        "params": "<seconds>",
+        "desc": "waits that many seconds",
+        "date": "7/16/2020"
+      },
+      {
         "name": "*<cmd> (sep with ;;)",
         "prams": "(--notyet)",
         "desc": "executes each command seperated with a ;; one after the other",
         "date": "7/15/2020"
+      },
+      {
+        "name": "calc",
+        "params": "<equation>",
+        "desc": "gives the answer to <equation>\nsome things will not work as intended ie:\n ** is power instead of ^",
+        "date": "5/23/2020",
+        "aliases": [
+          "eval",
+          "result",
+          "equation",
+          "findans"
+        ]
+      },
+      {
+        "name": "/{}",
+        "params": "cmd <> [] ()",
+        "desc": "does the cmd inside of /{} first\nadd _ to the end of a command if 2+ commands are the same and you want diff resultes\nask euro",
+        "date": "6/13/2020"
+      },
+      {
+        "name": "cmd/{}",
+        "params": "cmd <> [] ()",
+        "desc": "same as /{} but for when you want it to execute with the command instaed of with the message",
+        "date": "7/15/2020",
+        "aliases":[
+          "\\/{}"
+        ]
       }
     ]
   },
@@ -207,7 +228,7 @@
       },
       {
         "name": "spam",
-        "params": "<amount> <message> OR (-random <op1>|<op2>)\n{count} will say what message it's on\n{rcount} will say how many messages left",
+        "params": "<amount> <message> OR (-random <op1>|<op2>)\n(FORMATS, (count, rcount))",
         "desc": "spams <message> <amount> times\n-random sends op1 or op2 randomly each time",
         "date": "11/6/19"
       },
@@ -670,12 +691,6 @@
         "date": "5/21/2020"
       },
       {
-        "name": "calc",
-        "params": "<equation>",
-        "desc": "gives the answer to <equation>\nsome things will not work as intended ie:\n ** is power instead of ^",
-        "date": "5/23/2020"
-      },
-      {
         "name": "hex",
         "params": "*<num> (sep with |)",
         "desc": "gives the hexidecimal form of each <num> (base 16)",
@@ -1014,7 +1029,6 @@
       {
         "name": "fetchemote",
         "params": "*<emote id>",
-        "params": "*<emote id>",
         "desc": "gets the emoji of the emote id",
         "date": "7/10/2020"
       },
@@ -1032,7 +1046,7 @@
       },
       {
         "name": "typefor",
-        "params": "[time]",
+        "params": "[time] (--nosend)",
         "desc": "types for [time] defaults to 5 seconds",
         "date": "6/1/2020"
       },
