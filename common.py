@@ -399,7 +399,7 @@ class Content:
 
     def suitibleForEval(self):
         if "help(" in self or "quit()" in self or "exit()" in self or "os." in self or \
-            "token" in self or "input(" in self or "sys." in self or "__import__(os)" in self or \
+            "token" in self or "input(" in self or "sys." in self or "__import__(os" in self or \
             "time.sleep" in self: return False
         return True
     
