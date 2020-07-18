@@ -193,7 +193,8 @@ CMDS = {
     "fetchemote": fetchSomething,
     "fetchemoji": fetchSomething,
     "flashemote": flashEmote,
-    "wait": waitCmd
+    "wait": waitCmd,
+    "bans": bans
 }
 
 @client.event
@@ -350,16 +351,6 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
 
     if cmd.isupper():
         return await runBotModCmd(msg, content, cmd)
-
-    elif cmd == "bans":
-        if not testInContent(content, "--raw"):
-            with open(bannedFilePath, "r+") as bannedJ:
-                data = json.load(bannedJ)
-                mssg = "".join([f'{(await client.fetch_user(int(user))).name}: {data[user]}\n' for user in data.keys()])
-                try: return await msg.channel.send(mssg)
-                except: pass
-        with open(bannedFilePath, "rb") as bannedJ:
-            return await msg.channel.send(file=discord.File(bannedJ, "bans.json"))
 
     elif cmd == "if":
         if Content(content.split("(")[0].strip()).suitibleForEval():
