@@ -279,10 +279,12 @@ async def leaderboard(msg, content, cmd="top"):
 async def magicBall(msg, content, cmd="8ball"):
     with open(mballresponseFilePath, "r") as f:
         responses = f.read().split("\n")
+    choice = Content(random.choice(responses), removeCmd=False)
+    choice.formatMessage(msg, {"{question}": str(Content(content))})
     for op, param in Content(content).opsWithParams():
         if op == "-e":
-            return await msg.channel.send(embed=discord.Embed(title=random.choice(responses), color=int(param, 16) if param else 0x000000))
-    return await msg.channel.send(random.choice(responses))
+            return await msg.channel.send(embed=discord.Embed(title=choice, color=int(param, 16) if param else 0x000000))
+    return await msg.channel.send(choice)
 
 async def spamCmd(msg, content, cmd="spam"):
     global Stop

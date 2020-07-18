@@ -20,7 +20,7 @@ from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont
 
 #TODO: emoteusage should type, and return txt file if the message is too long to send in chat
 
-VERSION = "5.8"
+VERSION = "5.8.2"
 Stop = False
 
 playingGuessingGame = {}
@@ -28,7 +28,7 @@ playingHangman = {}
 playingDB = []
 
 #CONSTS
-PREFIX = "]"
+PREFIX = ["]"]
 UPTIME = time.time()
 fakePrefix = PREFIX
 token = "NjQxNzk1NjU2Mzc3MTcyMDAw.XcNk8g.HEvnaXjuXFQhN1iilaaffbiPcoo"

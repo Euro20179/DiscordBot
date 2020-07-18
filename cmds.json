@@ -222,7 +222,7 @@
       },
       {
         "name": "8ball",
-        "params": "[question] (-e [color])",
+        "params": "[question] (-e [color]) (FORMATS (question))",
         "desc": "the magic 8 ball ooooo spooky",
         "date": "11/6/19",
         "aliases": [
@@ -962,7 +962,7 @@
       },
       {
         "name": "mballreply",
-        "params": "<reply> (only available to those who write good replies)",
+        "params": "<reply> (only available to those who write good replies) (FORMATS (question))",
         "desc": "adds <reply> to the list of 8ball replies",
         "date": "1/29/2020"
       },
