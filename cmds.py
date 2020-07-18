@@ -160,6 +160,8 @@ async def levelMessage(msg, content, cmd="lvlmsg"):
             content = Content(userData["message"], removeCmd=False)
             content.formatMessage(msg, {"{level}": userData['level'], "{xp}": userData["xp"]}, removeCmd=False)
             return await msg.channel.send(str(content))
+        if changeTo.testOps("--dontsee"):
+            return await msg.channel.send("uh, ok then")
         if not Yes:
             await msg.channel.send("type y to change message, type n to cancel")
             try: yn = (await client.wait_for('message', check=lambda message: message.author == msg.author, timeout=60.0)).content.lower()
@@ -2692,3 +2694,13 @@ async def flashEmote(msg, content, cmd="flashemote"):
 
 async def waitCmd(msg, content, cmd="wait"):
     await asyncio.sleep(float(Content(content).string.strip()))
+
+async def bans(msg, content, cmd="bans"):
+    if not testInContent(content, "--raw"):
+        with open(bannedFilePath, "r+") as bannedJ:
+            data = json.load(bannedJ)
+            mssg = "".join([f'{(await client.fetch_user(int(user))).name}: {data[user]}\n' for user in data.keys()])
+            try: return await msg.channel.send(mssg)
+            except: pass
+    with open(bannedFilePath, "rb") as bannedJ:
+        return await msg.channel.send(file=discord.File(bannedJ, "bans.json"))
