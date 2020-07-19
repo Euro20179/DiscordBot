@@ -340,8 +340,7 @@ async def unicodeChar(msg, content, cmd="unicodechar"):
     content = Content(content)
     for op, param in content.opsWithParams():
         if op == "-sep":
-            try: sep = {r'\t': "\t", r"\n": "\n"}[param]
-            except: sep = param
+            sep = sep.replace(r'\t', "\t").replace(r"\n", "\n").replace("\s", " ")
             break
     else: sep = "\n"
     try: amount = int(content)
@@ -352,8 +351,7 @@ async def serverEmote(msg, content, cmd="serveremote"):
     content = Content(content)
     for op, param in content.opsWithParams():
         if op == "-sep":
-            try: sep = {r'\t': "\t", r"\n": "\n"}[param]
-            except: sep = param
+            sep = sep.replace(r'\t', "\t").replace(r"\n", "\n").replace("\s", " ")
             break
     else: sep = "\n"
     try: amount = int(content)
@@ -383,8 +381,7 @@ async def spacer(msg, content, cmd="spacer"):
     if "-sep" in c:
         sep = content.split("-sep ")[1]
         c = c.split("-sep")[0]
-        if sep == r"\n": sep = "\n"
-        if sep == r"\t": sep = "\t"
+        sep = sep.replace(r"\n", "\n").replace(r"\t", "\t").replace(r"\s", " ")
     add = sep * int(spaces)
     word = add.join(c)
     return await oneLineCmd(msg, word)
