@@ -132,13 +132,13 @@ async def echo(msg, content, cmd="echo"):
                 if param: color = int(param, 16)
                 else: color = 0x000000
                 embed = discord.Embed(title=str(c), color=discord.Color(color))
-                await msg.channel.send(embed=embed)			
+                await msg.channel.send(embed=embed) if not c @ "--dm" else await msg.author.send(embed=embed)			
                 return await embedToReadableDict(msg, embed)
             elif case("-wait"):
                 try: await asyncio.sleep(float(param))
                 except: return await msg.channel.send("-wait must be float")
     if random.random() > .99: await msg.author.send("the secret message dm euro for a doubley secret role, if you tell anyone how you got this the role will be taken away\nif you already have the role, you may choose to dm a screenshot of this message to someone, and they have the chance to get the role")	
-    return await msg.channel.send(str(c), tts=True if c @ "--tts" else False)
+    return await msg.channel.send(str(c), tts=True if c @ "--tts" else False) if not c @ "--dm" else await msg.author.send(str(c), tts=True if c @ "--tts" else False)
 
 async def timers(msg, content, cmd="timers"):
     embed = discord.Embed(title="Timers")

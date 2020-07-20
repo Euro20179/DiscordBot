@@ -210,7 +210,7 @@
       },
       {
         "name": "echo",
-        "params": "<message> (-e [color]) (-wait <time>) (--nodel) (--tts) (FORMATS (echo))",
+        "params": "<message> (-e [color]) (-wait <time>) (--dm) (--nodel) (--tts) (FORMATS (echo))",
         "desc": "sends <message> and deletes your message\n-e embeds it\n--delete doesn't delete your message",
         "date": "12/14/19"
       },

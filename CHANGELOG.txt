@@ -1,3 +1,13 @@
+5.8.4 (7/20/2020)
+
+ADDITIONS:
+*--dm to echo
+*? prefix
+
+FIXES:
+*commands that format should work in dms now
+
+====================================================================
 5.8.3 (7/19/2020)
 
 FIXES:

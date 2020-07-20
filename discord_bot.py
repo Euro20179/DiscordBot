@@ -380,8 +380,8 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
         Iscmd = True
     elif "--notyet" in content:
         content = content.replace("--notyet", "")
-    case = CMDS.get(cmd)
     
+    case = CMDS.get(cmd)
     if case:
         content = await case(msg, content, cmd=cmd)
         Iscmd = True
