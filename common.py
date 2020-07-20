@@ -20,7 +20,7 @@ from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont
 
 #TODO: emoteusage should type, and return txt file if the message is too long to send in chat
 
-VERSION = "5.8.2"
+VERSION = "5.8.4"
 Stop = False
 
 playingGuessingGame = {}
@@ -28,7 +28,7 @@ playingHangman = {}
 playingDB = []
 
 #CONSTS
-PREFIX = ["]"]
+PREFIX = ["]", "?"]
 UPTIME = time.time()
 fakePrefix = PREFIX
 token = "NjQxNzk1NjU2Mzc3MTcyMDAw.XcNk8g.HEvnaXjuXFQhN1iilaaffbiPcoo"
@@ -412,8 +412,8 @@ class Content:
         self.replace("{authorn}", msg.author.name)
         self.replace("{author}", msg.author.mention)
         self.replace("{uptime}", str(time.time() - UPTIME))
-        self.replace("{channeln}", msg.channel.name)
-        self.replace("{channel}", msg.channel.mention)
+        if not isinstance(msg.channel, discord.DMChannel): self.replace("{channeln}", msg.channel.name)
+        if not isinstance(msg.channel, discord.DMChannel): self.replace("{channel}", msg.channel.mention)
         self.replace("{fhalf}", self[0:(len(self) - 7) // 2])
         if kwargs:
             for k, i in kwargs.items():
