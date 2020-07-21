@@ -194,7 +194,8 @@ CMDS = {
     "fetchemoji": fetchSomething,
     "flashemote": flashEmote,
     "wait": waitCmd,
-    "bans": bans
+    "bans": bans,
+    "reactiontime": reactionTime
 }
 
 @client.event
@@ -561,17 +562,7 @@ async def on_message(msg):
         if cmd == "stop":
             await stop()
             return
-
-        elif cmd == "reactiontime":
-            await msg.channel.send("i will say GO and you have to send something as fast as possible (probably prepare the message before hand)")
-            await asyncio.sleep(random.uniform(1.5, 6))
-            start = time.time()
-            await msg.channel.send("GO")
-            try: await client.wait_for("message", check=lambda message: message.author == msg.author, timeout=60.0)
-            except asyncio.TimeoutError: return await msg.channel.send(f"{msg.author} ran out of time to react")
-            else: 
-                end = time.time()
-                return await msg.channel.send(f'your reaction time {end - start}')
+            
         else: 
             content = await runCommand(msg, content, cmd, Iscmd=Iscmd)
             if WriteToFile:
