@@ -340,7 +340,7 @@ async def unicodeChar(msg, content, cmd="unicodechar"):
     content = Content(content)
     for op, param in content.opsWithParams():
         if op == "-sep":
-            sep = sep.replace(r'\t', "\t").replace(r"\n", "\n").replace("\s", " ")
+            sep = param.replace(r'\t', "\t").replace(r"\n", "\n").replace("\s", " ")
             break
     else: sep = "\n"
     try: amount = int(content)
@@ -351,7 +351,7 @@ async def serverEmote(msg, content, cmd="serveremote"):
     content = Content(content)
     for op, param in content.opsWithParams():
         if op == "-sep":
-            sep = sep.replace(r'\t', "\t").replace(r"\n", "\n").replace("\s", " ")
+            sep = param.replace(r'\t', "\t").replace(r"\n", "\n").replace("\s", " ")
             break
     else: sep = "\n"
     try: amount = int(content)
@@ -2703,3 +2703,14 @@ async def bans(msg, content, cmd="bans"):
             except: pass
     with open(bannedFilePath, "rb") as bannedJ:
         return await msg.channel.send(file=discord.File(bannedJ, "bans.json"))
+
+async def reactionTime(msg, content, cmd="reactiontime"):
+    await msg.channel.send("i will say GO and you have to send something as fast as possible (probably prepare the message before hand)")
+    await asyncio.sleep(random.uniform(1.5, 6))
+    start = time.time()
+    await msg.channel.send("GO")
+    try: await client.wait_for("message", check=lambda message: message.author == msg.author, timeout=60.0)
+    except asyncio.TimeoutError: return await msg.channel.send(f"{msg.author} ran out of time to react")
+    else: 
+        end = time.time()
+        return await msg.channel.send(f'your reaction time {end - start}')

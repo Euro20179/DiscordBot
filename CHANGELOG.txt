@@ -1,9 +1,18 @@
+5.8.5 (7/22/2020)
+
+FIXES:
+*-sep was broken for a couple commands
+
+TECHNICAL:
+*reactiontime is now it's own command
+
+====================================================================
 5.8.4.1 (7/21/2020)
 
 FIXES:
 *emoteusage now works with emotes that have numbers in them
 
-====================================================================
+=======================================no=============================
 5.8.4 (7/20/2020)
 
 ADDITIONS:
