@@ -503,7 +503,7 @@ async def on_message(msg):
                         await msg.channel.send(c)      
 
     if "<:" in content and ">" in content:
-        emotes = re.findall(r'<:[A-Za-z-_]{1,100}:[0-9]{18}>', str(content))
+        emotes = re.findall(r'<:[A-Za-z-_0-9]{1,100}:[0-9]{18}>', str(content))
         if emotes and not msg.author.bot:
             with open(emoteUsageFilePath, "r+") as j:
                 data = json.load(j)
