@@ -59,11 +59,6 @@
         "date": "6/11/2020"
       },
       {
-        "name": "--1 (DEPRECATED)",
-        "params": "cmd <> [] ()",
-        "desc": "similar to /{}\nask euro"
-      },
-      {
         "name": "--cmddelete",
         "params": null,
         "desc": "--delete, but if you want it to apply to a command the blue circle says",
