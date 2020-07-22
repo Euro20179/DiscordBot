@@ -73,6 +73,10 @@ async def addMoney(member, amnt):
         clearFile(j)
         json.dump(data, j)
 
+async def hasPerms(userId, command):
+    global BOTMODS
+    return command in BOTMODS.get(userId) if type(BOTMODS.get(userId)) is list else False
+
 def reloadBOTMODS():
     global BOTMODS
     with open(botModsFilePath, "r") as f:

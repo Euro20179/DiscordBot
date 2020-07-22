@@ -1544,19 +1544,18 @@ async def editCustomCmd(msg, content, cmd="eccmd"):
         for command in data:
             if command["name"] == lookFor:
                 if command.get("Locked"):
-                    if not str(msg.author.id) in BOTMODS.keys() and not str(msg.author.id) == command.get("addedby"):
+                    if not await hasPerms(str(msg.author.id), cmd) and not str(msg.author.id) == command.get("addedby"):
                         return await msg.channel.send("cannot change that command it's locked")
+                if "--lock" in changeTo:
+                    if not command.get("Locked"):
+                        command["Locked"] = True
+                    else: command["Locked"] ^= True
                 else:
-                    if "--lock" in changeTo:
-                        if not command.get("Locked"):
-                            command["Locked"] = True
-                        else: command["Locked"] ^= True
-                    else:
-                        command["desc"] = changeTo
-                    if command.get("editedby"): 
-                        if str(msg.author.id) not in command["editedby"]:
-                            command["editedby"] += [str(msg.author.id)]
-                    else: command["editedby"] = [str(msg.author.id)]
+                    command["desc"] = changeTo
+                if command.get("editedby"): 
+                    if str(msg.author.id) not in command["editedby"]:
+                        command["editedby"] += [str(msg.author.id)]
+                else: command["editedby"] = [str(msg.author.id)]
                 break
         else: return await msg.channel.send("command doesn't exist")
         clearFile(j)

@@ -249,12 +249,12 @@ async def runBotModCmd(msg, content, cmd):
             BOTMODS = reloadBOTMODS()
             return
 
-    elif cmd == "ENDPLS" and str(msg.author.id) in BOTMODS.keys():
+    elif cmd == "ENDPLS" and await hasPerms(str(msg.author.id), cmd):
         if cmd in BOTMODS[str(msg.author.id)]:
             await msg.channel.send("Logging out")
             await client.logout()
             return
-    elif cmd == "BAN" and str(msg.author.id) in BOTMODS.keys():
+    elif cmd == "BAN" and await hasPerms(str(msg.author.id), cmd):
         if cmd in BOTMODS[str(msg.author.id)]:
             user = await getUserInContent(msg, " ".join(content.split(" ")[0:2]), cmd)
             banFrom = splitContent(content, " ", index=2)
@@ -267,7 +267,7 @@ async def runBotModCmd(msg, content, cmd):
                 json.dump(data, bannedJ)
                 return await msg.channel.send(f'banned {user.name} from {banFrom}')
 
-    elif cmd == "UNBAN" and str(msg.author.id) in BOTMODS.keys():
+    elif cmd == "UNBAN" and await hasPerms(str(msg.author.id), cmd):
         if cmd in BOTMODS[str(msg.author.id)]:
             user = await getUserInContent(msg, " ".join(content.split(" ")[0:2]), cmd)
             unbanFrom = splitContent(content, " ", index=2)
@@ -280,7 +280,7 @@ async def runBotModCmd(msg, content, cmd):
                 json.dump(data, bannedJ)
                 return await msg.channel.send(f'unbanned {user.name} from {unbanFrom}')
 
-    elif cmd == "CHANGELVLMSG" and str(msg.author.id) in BOTMODS.keys():
+    elif cmd == "CHANGELVLMSG" and await hasPerms(str(msg.author.id), cmd):
         if cmd in BOTMODS[str(msg.author.id)]:
             user = await getUserInContent(msg, content, cmd)
             with open(levelingDataFilePath, "r+") as j:
@@ -295,7 +295,7 @@ async def runBotModCmd(msg, content, cmd):
                 json.dump(data, j)
                 return await msg.channel.send("changed")
 
-    elif cmd == "CHANGEPR" and str(msg.author.id) in BOTMODS.keys():
+    elif cmd == "CHANGEPR" and await hasPerms(str(msg.author.id), cmd):
         if cmd in BOTMODS[str(msg.author.id)]:
             user = await getUserInContent(msg, content, cmd)
             with open(pingResponseFilePath, "r+") as j:
