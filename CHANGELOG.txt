@@ -1,4 +1,16 @@
-5.8.5 (7/22/2020)
+5.8.6 (7/22/2020)
+
+FIXES:
+*xp would still go down even though your level wouldn't
+*emoteusage is way faster (hopefuly)
+*lock on customcmds didn't work properly
+
+TECHNICAL:
+*family is now a variable instead of a text file
+*upgraded from discord.py v1.3.3 to v1.3.4
+
+====================================================================
+5.8.5 (7/21/2020)
 
 FIXES:
 *-sep was broken for a couple commands
