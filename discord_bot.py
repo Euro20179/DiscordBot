@@ -321,14 +321,6 @@ async def runBotModCmd(msg, content, cmd):
 
 async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
     global CUSTOMCMDS, CATS, CMDLIST, BOTMODS
-    DOFIRST = f'--{layer} ' #DEPRICATED
-    if DOFIRST in content: #DEPRICATED
-        c = await runCommand(msg, content.split(DOFIRST)[1], splitContent(content, DOFIRST, index=1).split(" ")[0][1:], layer=layer + 1, DoFirst=True) #DEPRICATED
-        await c.delete() #DEPRICATED
-        content = f'{content.split(f" {DOFIRST}")[0]} {c.content}'#DEPRICATED
-        msg = c #DEPRICATED
-        layer += 1 #DEPRICATED 
-
 
     if "/{" in content and "\\" != content[content.index("/{") - 1] and "cmd/{" not in content:
         while True:
@@ -339,10 +331,10 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
             try: cmd = cmds[0]
             except IndexError: break
             mssg = await runCommand(msg, f'{PREFIX}{cmd.strip("_")}', cmd=cmd.split(" ")[0].strip().strip("_"), DoFirst=True)
-            await mssg.delete()
-            content = content.replace("/{" + cmd + "}", mssg.content)
+            if mssg.embeds and "userinfo" not in cmd:
+                content = content.replace("/{" + cmd + "}", (await embedToReadableDict(msg, msg.embeds)).content)
+            else: content = content.replace("/{" + cmd + "}", str(mssg.content))
         return await runCommand(msg, f'{content}', content.split(" ")[0][1:])
-
 
     if "cmd/{" in content:
         content = content.replace("cmd/{", "/{")
@@ -393,21 +385,21 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
     elif not case:
         startContent = content
         case = switch(cmd).start()
-        if case("tof"): content = await msg.channel.send(9 / 5 * float(splitContent(content, cmd + " ", index=1)) + 32)
+        if case("tof"): content = await returnMsg(msg, 9 / 5 * float(Content(content)) + 32)
         elif case("wait"): await asyncio.sleep(float(Content(content).string.strip()))
-        elif case("family"): content = await msg.channel.send(FAMILY)
-        elif case("avatar"): content = await msg.channel.send((await getUserInContent(msg, content, cmd)).avatar_url)
-        elif case("toc"): content = await msg.channel.send(5 / 9 * (float(splitContent(content, cmd + " ", index=1)) - 32))
-        elif case(["thepenguincommand", "tpc", "thewavecommand", "twc"]): content = await msg.channel.send(random.choice(("very nice!", "very cool!", "<:TiredPuffle:707773683854213140>")))
-        elif case("reverse"): content = await msg.channel.send(splitContent(content, f'{cmd} ')[1][::-1])
-        elif case("imscared"): content = await msg.channel.send(random.choice(("don't be :smiling_imp:", "oh it's ok :)))))))))))))))))", "just don't pay attention of the sounds coming from your attic.....\nit's ok", "it's ok... he's comming :)")))
-        elif case("doihavecovid"): content = await msg.channel.send("yes" if random.random() < .995 else "no")
-        elif case(["ship", "boat", "boip"]): content = await msg.channel.send("DISCLAIMER: I DO NOT SUPPORT SHIPPING PEOPLE IN ANY WAY, HOWEVER MY MASTER SEEMS TO HAVE OTHER PLANS" if random.random() >= .985 else f'{splitContent(content, ", ")[0].replace("[" + cmd + " ", "")[0:len(splitContent(content, ", ")[0].replace("[" + cmd + " ", "")) // 2]}{splitContent(content, ", ")[1][len(splitContent(content, ", ")[1]) // 2:]}')
-        elif case(["ttc", "thetroycommand"]): content = await msg.channel.send(random.choice(("meow", "7", "**7**", "*7*", "mo", "<:TiredPuffle:707773683854213140>", "nnn")))
-        elif case("longmessage"): content = await msg.channel.send("```````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````hI```````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````")
-        elif case(["wiki", "wikipedia"]): content = await msg.channel.send(f'https://en.wikipedia.org/wiki/Special:Search?search={content[len(cmd) + 2:].replace(" ", "_")}')
+        elif case("family"): content = await returnMsg(msg, FAMILY)
+        elif case("avatar"): content = await returnMsg(msg, (await getUserInContent(msg, content, cmd)).avatar_url)
+        elif case("toc"): content = await returnMsg(msg, 5 / 9 * (float(splitContent(content, cmd + " ", index=1)) - 32))
+        elif case(["thepenguincommand", "tpc", "thewavecommand", "twc"]): content = await returnMsg(msg, random.choice(("very nice!", "very cool!", "<:TiredPuffle:707773683854213140>")))
+        elif case("reverse"): content = await returnMsg(msg, splitContent(content, f'{cmd} ')[1][::-1])
+        elif case("imscared"): content = await returnMsg(msg, random.choice(("don't be :smiling_imp:", "oh it's ok :)))))))))))))))))", "just don't pay attention of the sounds coming from your attic.....\nit's ok", "it's ok... he's comming :)")))
+        elif case("doihavecovid"): content = await returnMsg(msg, "yes" if random.random() < .995 else "no")
+        elif case(["ship", "boat", "boip"]): content = await returnMsg(msg, "DISCLAIMER: I DO NOT SUPPORT SHIPPING PEOPLE IN ANY WAY, HOWEVER MY MASTER SEEMS TO HAVE OTHER PLANS" if random.random() >= .985 else f'{splitContent(content, ", ")[0].replace("[" + cmd + " ", "")[0:len(splitContent(content, ", ")[0].replace("[" + cmd + " ", "")) // 2]}{splitContent(content, ", ")[1][len(splitContent(content, ", ")[1]) // 2:]}')
+        elif case(["ttc", "thetroycommand"]): content = await returnMsg(msg, random.choice(("meow", "7", "**7**", "*7*", "mo", "<:TiredPuffle:707773683854213140>", "nnn")))
+        elif case("longmessage"): content = await returnMsg(msg, "```````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````hI```````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````")
+        elif case(["wiki", "wikipedia"]): content = await returnMsg(msg, f'https://en.wikipedia.org/wiki/Special:Search?search={content[len(cmd) + 2:].replace(" ", "_")}')
         elif case("upupdowndownleftrightleftright"):
-            return await msg.channel.send("what do you think this is some arcade machine with secret codes, lol")
+            return await returnMsg(msg, "what do you think this is some arcade machine with secret codes, lol")
         elif case(["eccmd", "editcustomcmd"]):
             content = await editCustomCmd(msg, content, cmd=cmd)
             CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
@@ -429,9 +421,10 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
                 try: cmd = cmds[0]
                 except IndexError: break
                 mssg = await runCommand(msg, f'{PREFIX}{cmd.strip("_")}', cmd=cmd.split(" ")[0].strip().strip("_"), DoFirst=True)
-                await mssg.delete()
-                content = content.replace("{" + cmd + "}", mssg.content)
-            content = await oneLineCmd(msg, content)
+                if mssg.embeds and "userinfo" not in cmd:
+                    content = content.replace("{" + cmd + "}", (await embedToReadableDict(msg, msg.embeds)).content)
+                else: content = content.replace("{" + cmd + "}", str(mssg.content))
+            content = await returnMsg(msg, content)
         case.end()
         if content != startContent:
             Iscmd = True
@@ -441,8 +434,17 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
             del data[cmd]
             clearFile(j)
             json.dump(data, j)
-        content = await msg.channel.send(f'{cmd} {random.choice(("is not a thing", "does not exist"))}')
-    return content
+        content = await returnMsg(msg, f'{cmd} {random.choice(("is not a thing", "does not exist"))}')
+    
+    if not DoFirst and content: 
+        if content.embeds:
+            return await msg.channel.send(embed=content.embeds if content.embeds else None, tts=content.tts)
+        elif content.attachments:
+            return await msg.channel.send(file=content.attachments if content.attachments else None, tts=content.tts)
+        else:
+            return await msg.channel.send(content.content, tts=content.tts)
+
+    else: return content
 
 @client.event
 async def on_message(msg):
