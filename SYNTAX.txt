@@ -1,0 +1,89 @@
+if
+
+params: <expr>( *<command>;)
+
+Description: if expr is true it does the command
+ex: [if 5 > 4{serveremote;}
+
+Aliases: None
+
+Added: 7/15/2020
+
+
+
+else
+
+params: must follow an if statement(*<cmd>;)
+
+Description: if the if statement fails it will do the else statemnet
+
+Aliases: None
+
+Added: 7/17/2020
+
+
+
+wait
+
+params: <seconds>
+
+Description: waits that many seconds
+
+Aliases: None
+
+Added: 7/16/2020
+
+
+
+*<cmd> (sep with ;;)
+
+params: (--notyet)
+
+Description: executes each command seperated with a ;; one after the other
+
+Aliases: None
+
+Added: 7/15/2020
+
+
+
+calc
+
+params: <equation>
+
+Description: gives the answer to <equation>
+some things will not work as intended ie:
+ ** is power instead of ^
+
+Aliases: ['eval', 'result', 'equation', 'findans']
+
+Added: 5/23/2020
+
+
+
+/{}
+
+params: cmd <> [] ()
+
+Description: does the cmd inside of /{} first
+add _ to the end of a command if 2+ commands are the same and you want diff resultes
+ask euro
+
+Aliases: None
+
+Added: 6/13/2020
+
+
+
+cmd/{}
+
+params: cmd <> [] ()
+
+Description: same as /{} but for when you want it to execute with the command instaed of with the message
+
+Aliases: None
+
+Added: 7/15/2020
+
+
+

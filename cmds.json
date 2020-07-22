@@ -95,7 +95,7 @@
       },
       {
         "name": "*<cmd> (sep with ;;)",
-        "prams": "(--notyet)",
+        "params": "(--notyet)",
         "desc": "executes each command seperated with a ;; one after the other",
         "date": "7/15/2020"
       },

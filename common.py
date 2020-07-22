@@ -20,7 +20,7 @@ from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont
 
 #TODO: emoteusage should type, and return txt file if the message is too long to send in chat
 
-VERSION = "5.8.8"
+VERSION = "6.0_b.1"
 Stop = False
 
 playingGuessingGame = {}
@@ -63,6 +63,13 @@ Atahan ---- Peanut                Poptoppete--------------Natalie               
 """
 
 tracemalloc.start()
+
+async def returnMsg(msg, content=None, embed=None, file=None, tts=False):
+    msg.content = content
+    msg.embeds = embed if not embed else embed
+    msg.tts = tts
+    msg.attachments = file
+    return msg
 
 async def addMoney(member, amnt):
     with open(moneyDataFilePath, "r+") as j:
@@ -283,7 +290,7 @@ async def oneLineCmd(msg : discord.Message, say : str, delete=True, sendMsg=True
 class Content:
     def __init__(self, string : str, removeCmd : bool = True):
         if removeCmd:
-            split = string.split(" ")
+            split = str(string).split(" ")
             self.string = " ".join(split[1:])
             self.cmd = split[0]
         else: self.string = string
