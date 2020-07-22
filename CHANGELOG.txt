@@ -2,7 +2,6 @@
 
 REMOVED:
 *--1 (finally)
-*embeds no longer work with /{} or {} in customcmds
 
 FIXES:
 *{} in custom cmds and /{} now won't send to chat then immediately get deleted
@@ -12,11 +11,17 @@ TECHNICAL:
 *completely changed how it handles sending messages
 
 ====================================================================
-6.0_b.1
+6.0_b.2 (7/22/2020)
+
+FIXES:
+*if and ;; work better
+*count doesn't work with /{} now
+
+====================================================================
+6.0_b.1 (7/22/2020)
 
 REMOVED:
 *--1 (finally)
-*embeds no longer work with /{} or {} in customcmds
 
 FIXES:
 *{} in custom cmds and /{} now won't send to chat then immediately get deleted

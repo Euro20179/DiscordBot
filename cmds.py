@@ -652,7 +652,6 @@ async def count(msg, content, cmd="count"):
         else: color = 0x000000
         mssg = await channel.send(embed=discord.Embed(title=f'.{highest}.', color=discord.Color(color)))
     else: mssg = await channel.send(text)
-    return await returnMsg(msg, mssg.content, embed=mssg.embeds[0] if mssg.embeds else None)
 
 async def choose(msg, content, cmd="choose"):
     content = Content(content)
