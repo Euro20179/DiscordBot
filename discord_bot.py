@@ -218,6 +218,11 @@ async def runBotModCmd(msg, content, cmd):
         await addMoney(user, float(amnt))
         return await msg.channel.send(f'{float(amnt)} removed from {user.name}')
 
+    elif cmd == "RESETEMOJIUSAGE" and msg.author.id == EUROID:
+        with open(emoteUsageFilePath, "w") as f:
+            f.write("{}")
+        return await msg.channel.send("reset")
+
     elif cmd == "ALLOW" and msg.author.id == EUROID:
         user = await getUserInContent(msg, content.split("|")[0], cmd)
         with open(botModsFilePath, "r+") as f:
