@@ -2564,7 +2564,7 @@ async def botMods(msg, content, cmd="botmods"):
         if content:
             try: return await msg.channel.send("\n".join(data.get(str(content.getUser(msg).id))))
             except: return await msg.channel.send("None")
-        else: return await msg.channel.send("\n".join([f'{await getUserInContent(msg, "ok " + k, "ok")}: {i}' for k, i in BOTMODS.items()]))
+        else: return await msg.channel.send("\n".join([f'{await getUserInContent(msg, "ok " + k, "ok")}: {", ".join(i)}' for k, i in BOTMODS.items()]))
 
 async def embedCmd(msg, content, cmd="embed"):
     content = Content(content)
@@ -2693,7 +2693,7 @@ async def bans(msg, content, cmd="bans"):
     if not testInContent(content, "--raw"):
         with open(bannedFilePath, "r+") as bannedJ:
             data = json.load(bannedJ)
-            mssg = "".join([f'{(await client.fetch_user(int(user))).name}: {data[user]}\n' for user in data.keys()])
+            mssg = "".join([f'{(await client.fetch_user(int(user))).name}: {" ".join(data[user])}\n' for user in data.keys()])
             try: return await msg.channel.send(mssg)
             except: pass
     with open(bannedFilePath, "rb") as bannedJ:

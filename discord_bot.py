@@ -185,6 +185,7 @@ CMDS = {
     "botmods": botMods,
     "embed": embedCmd,
     "emoteusage": emoteUsage,
+    "emojiusage": emoteUsage,
     "tok": toKelvin,
     "guessinggame": guessingGame,
     "fetchuser": fetchSomething,

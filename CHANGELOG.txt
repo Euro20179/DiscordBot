@@ -1,3 +1,13 @@
+5.8.8 (7/22/2020)
+
+ADDITIONS:
+*emojiusage alias for emoteusage
+
+CHANGES:
+*bans is layed out nicer
+*botmods is layed out nicer
+
+====================================================================
 5.8.7 (7/22/2020)
 
 ADMINISTRATIVE:
