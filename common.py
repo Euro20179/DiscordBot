@@ -20,7 +20,7 @@ from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont
 
 #TODO: emoteusage should type, and return txt file if the message is too long to send in chat
 
-VERSION = "5.8.5"
+VERSION = "5.8.6"
 Stop = False
 
 playingGuessingGame = {}
@@ -50,8 +50,28 @@ queuePath = "./queue"
 EUROID = 334538784043696130
 client = commands.Bot(command_prefix=fakePrefix)
 SARCASTICQUOTES = ("mhm", "interesting", "fascinating", "very cool")
+FAMILY = """
+Atahan ---- Peanut                Poptoppete--------------Natalie                          Fool (the godfather)
+                 |                                                            |           | 
+            Kirsten (disowned)  ----------------------------- Iboy   Yavuz                                   Pen ----------------------- Troy
+                                                 |                                                                                              |                 |
+                                           Alison ----------------------------------------------------Sulli          Ghostly---------Cam(Tree)
+                                                          |       |        |             |                |                    |         |                                    |        |
+                                                       Euro May Wave Random  Custom BIS--Pals Fire                  Igor(Groot) levi------hilal
+                                                                                                                              |                                                                 |     |
+                                                                                                                           marios                          krogee (disowned) jabe
+"""
 
 tracemalloc.start()
+
+async def addMoney(member, amnt):
+    with open(moneyDataFilePath, "r+") as j:
+        data = json.load(j)
+        if data.get(str(member.id)):
+            data[str(member.id)] += amnt
+        else: data[str(member.id)] = amnt
+        clearFile(j)
+        json.dump(data, j)
 
 def reloadBOTMODS():
     global BOTMODS
@@ -189,14 +209,7 @@ async def giveXP(msg : discord.Message)->None:
                 levelUpMessage = userInfo.get("message")
                 if not levelUpMessage: levelUpMessage = '{author} you have leveled up to level {level}, very cool'
                 if xp >= required:
-                    with open(moneyDataFilePath, "r+") as j:		
-                        moneyData = json.load(j)
-                        give = int((level + 1) * 2)
-                        if moneyData.get(authorId):
-                            moneyData[authorId] += give
-                        else: moneyData[authorId] = give
-                        clearFile(j)
-                        json.dump(moneyData, j)
+                    await addMoney(msg.author, int((level + 1) * 2))
                     level += 1; xp //= 2 #gives level; reduces xp
                     disp = Content(levelUpMessage, removeCmd=False)
                     disp.formatMessage(msg, {"{level}": level, "{xp}": xp}, removeCmd=False)
@@ -221,7 +234,7 @@ async def reduceXP(msg : discord.Message)->None:
             if time.time() - data[user]["lastTalked"] >= 1209600:
                 if data[user]["xp"] > 1:
                     data[user]["xp"] -= random.randint(0, 1)
-                if data[user]["xp"] <= (data[user]["level"] * 1000) // 2 and data[user]["level"] > 0:
+                if data[user]["xp"] <= (data[user]["level"] * 1000) // 2 and data[user]["level"] > 1:
                     data[user]["level"] -= 1
                     data[user]["xp"] = (data[user]["level"] * 1000) - 1
         clearFile(f)
@@ -246,12 +259,6 @@ def splitContent(content : str, *split, index=None, func=None)->str:
             elif index: ret = content.split(x)[index]
             return ret
     return ""
-
-def isInt(testee : str)->bool:
-    try: 
-        int(testee)
-        return True
-    except:	return False
     
 def userHasRole(msg : discord.Message, *roles)->bool:
     return True if discord.utils.find(lambda r: r.name in roles, msg.author.roles) else False
@@ -268,15 +275,6 @@ async def oneLineCmd(msg : discord.Message, say : str, delete=True, sendMsg=True
     else:
         msg.content = say
         return msg
-
-async def addMoney(member, amnt):
-    with open(moneyDataFilePath, "r+") as j:
-        data = json.load(j)
-        if data.get(str(member.id)):
-            data[str(member.id)] += amnt
-        else: data[str(member.id)] = amnt
-        clearFile(j)
-        json.dump(data, j)
 
 class Content:
     def __init__(self, string : str, removeCmd : bool = True):

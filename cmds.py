@@ -581,8 +581,8 @@ async def rand(msg, content, cmd="rand"):
     if len(content) > 1:
         r = int(content[2].strip()) if len(content) == 3 else 0
         low, high = float(content[0]), float(content[1])
-
-        if not isInt(r): return await msg.channel.send("you are not rounding to a whole number")				
+        try: int(r) 
+        except: return await msg.channel.send("you are not rounding to a whole number")				
         if float(low) >= float(high): return await msg.channel.send("Low must be lower than high")
     while True:
         if Stop: await msg.channel.send(await stop("stopped picking a number"))
@@ -607,9 +607,6 @@ async def compareRoles(msg, content, cmd="compareroles"):
         embed.add_field(name=u2name, value="".join(roles2 - roles1), inline=False)
         await msg.channel.send(embed=embed)
     else: return await msg.channel.send("invalid name(s)")
-
-async def family(msg, content, cmd="family"):
-    with open("family.txt", "r") as f: await oneLineCmd(msg, f.read())
 
 async def mballreply(msg, content, cmd="mballreply"):
     global BOTMODS
@@ -1516,7 +1513,7 @@ async def customCmdList(msg, content, cmd="customcmdlist"):
     else: 
         try:
             if content @ "--file": raise FileException("wanted file")
-            content = await oneLineCmd(msg, "\n".join([f'{x}: {y}' for x, y in CUSTOMCMDS.items()]))
+            content = await msg.channel.send("\n".join([f'{x}: {y}' for x, y in CUSTOMCMDS.items()]))
         except:
             write = ""
             with open(customcmdsFilePath, "r") as j:
@@ -1546,20 +1543,20 @@ async def editCustomCmd(msg, content, cmd="eccmd"):
         data = json.load(j)
         for command in data:
             if command["name"] == lookFor:
-                if not command.get("Locked") or str(msg.author.id) in BOTMODS.keys() or str(msg.author.id) == command.get("addedby"):
-                    if cmd not in BOTMODS[str(msg.author.id)]: return await msg.channel.send("cannot change that command it's locked")
+                if command.get("Locked"):
+                    if not str(msg.author.id) in BOTMODS.keys() and not str(msg.author.id) == command.get("addedby"):
+                        return await msg.channel.send("cannot change that command it's locked")
+                else:
                     if "--lock" in changeTo:
                         if not command.get("Locked"):
                             command["Locked"] = True
-                        else:
-                            command["Locked"] = command["Locked"]^True
+                        else: command["Locked"] ^= True
                     else:
                         command["desc"] = changeTo
                     if command.get("editedby"): 
                         if str(msg.author.id) not in command["editedby"]:
                             command["editedby"] += [str(msg.author.id)]
                     else: command["editedby"] = [str(msg.author.id)]
-                else: return await msg.channel.send("cannot change that command it's locked")
                 break
         else: return await msg.channel.send("command doesn't exist")
         clearFile(j)
@@ -2618,11 +2615,12 @@ async def emoteUsage(msg, content, cmd="emoteusage"):
             emotes = []
             try: 
                 File = content @ "--file"
+                emojiIds = [x.id for x in client.emojis]
                 for n, k in enumerate(data):
-                    if n > top and not File: break
-                    try: emote = (await msg.guild.fetch_emoji(int(k[0]))).name
-                    except discord.errors.NotFound as e: continue
-                    emotes.append(f'<:{emote}:{int(k[0])}>: {k[1]}')
+                    if (n > top and not File) and len(emotes) >= top: break
+                    try: emote = client.emojis[emojiIds.index(int(k[0]))]
+                    except Exception as e: print(e); continue
+                    emotes.append(f'<:{emote.name}:{emote.id}>: {k[1]}')
                 if File: raise FileException("wanted file")
                 return await msg.channel.send("\n".join(emotes))
             except Exception as e:
@@ -2690,9 +2688,6 @@ async def flashEmote(msg, content, cmd="flashemote"):
     for x in range(times):
         await asyncio.sleep(sleepFor)
         await editable.edit(content=f'{emote}' if editable.content == f'{emote} _ _' else f'{emote} _ _')
-
-async def waitCmd(msg, content, cmd="wait"):
-    await asyncio.sleep(float(Content(content).string.strip()))
 
 async def bans(msg, content, cmd="bans"):
     if not testInContent(content, "--raw"):
