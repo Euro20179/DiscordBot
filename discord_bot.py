@@ -324,6 +324,8 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False, Wri
 
     if "/{" in content and "\\" != content[content.index("/{") - 1] and "cmd/{" not in content:
         while True:
+            if len(content.split("{")) != len(content.split("}")):
+                return await msg.channel.send("syntax error missing { or }")
             cmds = [x.split("}")[0] for x in content.split("/{")]
             if not cmds: break
             cmds.reverse()
@@ -415,6 +417,8 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False, Wri
             content.formatMessage(msg)
             content = content.string.strip()
             while True:
+                if len(content.split("{")) != len(content.split("}")):
+                    return await msg.channel.send("syntax error missing { or }")
                 cmds = [x.split("}")[0] for x in content.split("{")]
                 cmds.reverse()
                 cmds = cmds[:-1]
@@ -446,7 +450,15 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False, Wri
         elif content.attachments:
             return await msg.channel.send(file=content.attachments if content.attachments else None, tts=content.tts)
         else:
-            return await msg.channel.send(content.content, tts=content.tts)
+            try: return await msg.channel.send(content.content, tts=content.tts)
+            except discord.errors.HTTPException:
+                await msg.channel.send("too long here's a file")
+                with open("file.txt", "w", encoding="utf-8") as f:
+                    f.write(content.content)
+                with open("file.txt", "rb") as f:
+                    return await msg.channel.send(file=discord.File(f, f'{cmd}.txt'))
+                os.remove("file.txt")
+
 
     else: return content
 

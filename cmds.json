@@ -304,16 +304,13 @@
         "date": "12/19/19"
       },
       {
-        "name": "complexmessage",
-        "params": "<send>, <filename.ext>, <content>",
-        "desc": "sends <filename.ext> with <content> inside the file to <send>\n<send> can either be yes (to send to chat) or dm (to send to your dms)",
-        "date": "1/5/2020"
-      },
-      {
         "name": "mesage",
-        "params": "<send>, <filename>.txt, <content>",
+        "params": "<send>| <filename[.ext]>.txt| <content>",
         "desc": "sends <filename>.txt withe <content> to <send> (send is same as complexmessage)",
-        "date": "1/5/20?"
+        "date": "1/5/20?",
+        "aliases":[
+          "complexmessage"
+        ]
       },
       {
         "name": "sanity",

@@ -362,8 +362,10 @@ async def writeRoles(msg, content, cmd="doesnothing"):
             for y in x.roles:
                 try: f.write(f'{y.name}\n')
                 except: f.write(f'{y.id}\n')
-    with open(f'.\\roles\\{filename}.txt', "rb") as f:
-        await returnMsg(msg, file=discord.File(f, f'{filename}.txt'))
+    with open(f'{filename}.txt', "rb") as f:
+        mssg = await returnMsg(msg, file=discord.File(f, f'{filename}.txt'))
+        os.remove(f'{filename}.txt')
+        return mssg
 
 async def spacer(msg, content, cmd="spacer"):
     try: await msg.delete()
@@ -450,17 +452,17 @@ async def complexMessage(msg, content, cmd="complexmessage"):
         filename = content[1]
         mssg = content[2]
     except: return await returnMsg(msg, "make sure you give and seperate each paremeter with a '|'")
-
+    ext = "txt" if "." not in filename else filename.split(".")[1]
+    if ext == "txt": filename += ".txt"
     dm = (send == "dm")
     send = dm^True
 
-    if cmd == "message": filename = f'{filename}.txt'
-
-    with open(f'.\\message\\{filename}', "w") as f:
+    with open(filename, "w") as f:
         f.write(mssg)
-    with open(f'.\\message\\{filename}', 'rb') as f:
-        if send: return await returnMsg(msg, file=discord.File(f, filename))
+    with open(filename, 'rb') as f:
+        if send: await msg.channel.send(file=discord.File(f, filename))
         if dm: await msg.author.send(file=discord.File(f, filename))
+    os.remove(filename)
 
 async def sanity(msg, content, cmd="sanity"):
     c = Content(content)
@@ -669,7 +671,7 @@ async def choose(msg, content, cmd="choose"):
 
 async def mball(msg, content, cmd="8ball"):
     with open(mballresponseFilePath, "rb") as f:
-        await returnMsg(msg, file=discord.File(f, "mballresponse.txt"))
+        return await returnMsg(msg, file=discord.File(f, "mballresponse.txt"))
 
 async def pigLatin(msg, content, cmd="piglatin"):
     content = Content(content)
