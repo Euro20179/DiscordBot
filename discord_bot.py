@@ -448,7 +448,7 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
 
 @client.event
 async def on_message(msg):
-    global Stop, playingGuessingGame
+    global Stop
     global blueCheck, neutral
     content = msg.content
         

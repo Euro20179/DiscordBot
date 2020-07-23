@@ -121,7 +121,7 @@ async def ping(msg, content, cmd="ping"):
 
 async def echo(msg, content, cmd="echo"):
     c = Content(content)
-    c.formatMessage(msg, {"{echo}": Content(content.replace(" {echo} ", "").replace(" {echo}", "").replace("{echo} ", "").replace("{echo}", ""))})
+    c.formatMessage(msg, {"{echo}": Content(content.replace("{echo}", ""))})
     if not c @ "--nodel":
         try: await msg.delete()
         except: pass
@@ -556,7 +556,7 @@ async def roleCount(msg, content, cmd="rolecount"):
             embed = discord.Embed(title=f"{m.name}'s Roles", color=m.color)
             embed.add_field(name="Count", value=roleCount)
             embed.add_field(name="Roles", value="".join(roles))
-            return await returnMsg(msg, embed=embed)
+            await msg.channel.send(embed=embed)
         else: return await returnMsg(msg, roleCount)		
     else: return await returnMsg(msg, "User not found")
 
