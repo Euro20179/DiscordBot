@@ -222,7 +222,7 @@
       },
       {
         "name": "embed",
-        "params": "<title> | *<fields <title>, <value> (--ninline)> (sep with |) (-color <color) (-image <img url>) (-thumbnail <img url>) (-author <name>) (FORMATS (title, color, author))",
+        "params": "<embed title> | *<fields <title>, <value> (--ninline)> (sep with |) (-color <color) (-image <img url>) (-thumbnail <img url>) (-author <name>) (FORMATS (title, color, author))",
         "desc": "makes an embed with a title of title\nex: [embed hi field1, value1 | field2, value2",
         "date": "7/10/2020"
       },
@@ -887,7 +887,7 @@
       },
       {
         "name": "help",
-        "params": "[cmd/category] (-added <date>) (--file)",
+        "params": "[cmd/category] (-added <date>) (--file) (--all/--allh)",
         "desc": "gives help on command, or lists cmds in category, --file gives a file\n-added lists the commands added on <date>",
         "date": "11/6/19"
       },

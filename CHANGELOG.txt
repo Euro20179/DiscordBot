@@ -2,6 +2,7 @@
 
 ADDITIONS:
 *limit of 10000000 on coin and weightedcoin
+*--all and --allh to help
 
 READDED:
 *for loop  
@@ -30,7 +31,13 @@ TECHNICAL:
 *completely changed how it handles sending messages
 
 ====================================================================
-6.0-rc5
+6.0-rc6 (7/23/2020)
+
+ADDITIONS:
+*--all and *--allh to help, gives a text file of all the commands or html
+
+====================================================================
+6.0-rc5 (7/23/2020)
 
 ADDITIONS:
 *limit on for of 10000000
@@ -40,7 +47,7 @@ FIXES:
 *for
 
 ====================================================================
-6.0-rc4
+6.0-rc4 (7/23/2020)
 
 READDED:
 *for loop  
@@ -54,7 +61,7 @@ FIXES:
 *flashemote doesn't send twice
 
 ====================================================================
-6.0-rc3
+6.0-rc3 (7/23/2020)
 
 CHANGES:
 *complexmessage and message are now exactly the same
@@ -66,7 +73,7 @@ FIXES:
 *something else i forget
 
 ====================================================================
-6.0-rc2
+6.0-rc2 (7/23/2020)
 
 FIXES:
 *>>> doesn't send to chat first, meaning it can write messages longer than 2k characters
