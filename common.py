@@ -14,13 +14,12 @@ import statistics
 import re
 import sys
 import youtube_dl
-from typing import Tuple
-from typing import List, Tuple
+from typing import List, Tuple, overload
 from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont, ImageChops
 
 #TODO: emoteusage should type, and return txt file if the message is too long to send in chat
 
-VERSION = "6.0"
+VERSION = "6.1"
 Stop = False
 
 playingHangman = {}
@@ -406,6 +405,18 @@ class Content:
             "time.sleep" in self: return False
         return True
     
+    @overload
+    def whitespaceFormat(self):
+        self.replace(r'\t', "\t")
+        self.replace(r'\n', "\n")
+        self.replace('\s', " ")
+        self.replace('\z', "")
+        self.replace(r'\b', "\b")
+
+    @staticmethod
+    def whitespaceFormat(string):
+        return string.replace(r'\t', "\t").replace(r'\n', "\n").replace("\s", " ").replace("\z", "").replace(r'\b', "\b")
+
     def formatMessage(self, msg, kwargs=None, removeCmd=True, ret=False):
         if "{emote}" in self:
             new = [x if x.strip() != "{emote}" else str(random.choice(msg.guild.emojis)) for x in self.split(" ")]

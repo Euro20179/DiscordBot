@@ -1,3 +1,12 @@
+6.1 (7/23/2020)
+
+ADDITIONS:
+*anything that formats whitespace is now consistant
+
+CHANGES:
+*moved fonts to INFO section
+
+====================================================================
 6.0 (7/23/2020)
 
 ADDITIONS:

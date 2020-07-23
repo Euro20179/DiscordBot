@@ -369,7 +369,7 @@ async def unicodeChar(msg, content, cmd="unicodechar"):
     content = Content(content)
     for op, param in content.opsWithParams():
         if op == "-sep":
-            sep = param.replace(r'\t', "\t").replace(r"\n", "\n").replace("\s", " ")
+            sep = Content.whitespaceFormat(param)
             break
     else: sep = "\n"
     try: amount = int(content)
@@ -380,7 +380,7 @@ async def serverEmote(msg, content, cmd="serveremote"):
     content = Content(content)
     for op, param in content.opsWithParams():
         if op == "-sep":
-            sep = param.replace(r'\t', "\t").replace(r"\n", "\n").replace("\s", " ")
+            sep = Content.whitespaceFormat(param)
             break
     else: sep = "\n"
     try: amount = int(content)
@@ -412,7 +412,7 @@ async def spacer(msg, content, cmd="spacer"):
     if "-sep" in c:
         sep = content.split("-sep ")[1]
         c = c.split("-sep")[0]
-        sep = sep.replace(r"\n", "\n").replace(r"\t", "\t").replace(r"\s", " ")
+        sep = Content.whitespaceFormat(sep)
     add = sep * int(spaces)
     word = add.join(c)
     return await returnMsg(msg, word)
@@ -692,8 +692,7 @@ async def choose(msg, content, cmd="choose"):
     for op, param in opOps:
         if op == "-picks": picks = int(param)
         elif op == "-sep": 
-            try: sep = {r'\n': "\n", r'\t': "\t"}[param]
-            except: sep = param
+            sep = Content.whitespaceFormat(param)
     options = content.split("|", key=lambda x: x.strip())
     return await returnMsg(msg, sep.join([random.choice(options) for _ in range(picks)]))
 
@@ -1509,8 +1508,7 @@ async def duplicator(msg, content, cmd="duplicator"):
     times = 2
     for op, param in t.opsWithParams():
         if op == "-sep":
-            param = param.replace(r"\t", "\t").replace("\s", " ").replace(r"\n", "\n")
-            sep = param
+            sep = Content.whitespaceFormat(param)
             t = Content(t.strip(), removeCmd=False)
             break
     else: sep = " "
