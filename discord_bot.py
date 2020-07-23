@@ -369,6 +369,19 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False, Wri
                 content = await runCommand(msg, cmd.strip(), cmd.strip().split(" ")[0].strip().strip(PREFIX), DoFirst=True)
         Iscmd = True
 
+    elif cmd == "for":
+        content = Content(content)
+        times = content.split("(")[0]
+        stuff = content.strip(f'{times}(').strip().split(";")
+        res = []
+        for i in range(int(times)):
+            for cmd in stuff:
+                if cmd == ")": break
+                content = await runCommand(msg, f'{PREFIX}{cmd.strip()}', cmd.strip().split(" ")[0], DoFirst=True) 
+                res.append(str(content.content))
+        content = await returnMsg(msg, "\n".join(res))       
+        Iscmd = True
+
     elif ";;" in content and "--notyet" not in content:
         content = Content(content, removeCmd=False)
         content.calcOps()
@@ -458,7 +471,6 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False, Wri
                 with open("file.txt", "rb") as f:
                     return await msg.channel.send(file=discord.File(f, f'{cmd}.txt'))
                 os.remove("file.txt")
-
 
     else: return content
 
