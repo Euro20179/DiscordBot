@@ -376,7 +376,7 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False, Wri
         res = []
         for i in range(int(times)):
             for cmd in stuff:
-                cmd = cmd.replace("{i}", "i")
+                cmd = cmd.replace("{i}", i)
                 if cmd == ")": break
                 content = await runCommand(msg, f'{PREFIX}{cmd.strip()}', cmd.strip().split(" ")[0], DoFirst=True) 
                 res.append(str(content.content))
