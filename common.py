@@ -297,7 +297,7 @@ class Content:
         self.ops_ = []
         self.opOps = []
 
-    def calcOps(self):
+    def calcOps(self, rep=True):
         """
         calculates -- options without yielding
         """
@@ -306,8 +306,8 @@ class Content:
             if ("--" in word or "—" in word) and word.strip() != "--delete":
                 self.ops_.append(word)
                 foo = self.string
-                self.replace(f' {word}', "")
-                if foo == self.string:
+                if rep: self.replace(f' {word}', "")
+                if foo == self.string and rep:
                     self.replace(word, "")
 
     def split(self, splitBy : str, pastIndex : int = None, key=None):
