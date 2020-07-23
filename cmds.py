@@ -578,7 +578,7 @@ async def rand(msg, content, cmd="rand"):
         except: return await returnMsg(msg, "you are not rounding to a whole number")				
         if float(low) >= float(high): return await returnMsg(msg, "Low must be lower than high")
     while True:
-        if Stop: await msg.channel.send(await stop("stopped picking a number"))
+        if Stop: return await returnMsg(await stop("stopped picking a number"))
         res = random.uniform(low, high)
         if Even and int(round(res, r)) % 2 != 0 and r == 0: continue					
         if Odd and int(round(res, r)) % 2 == 0 and r == 0: continue
@@ -880,7 +880,7 @@ async def stopwatch(msg, content, cmd="stopwatch"):
             t = await formatSeconds(time.time() - running)
             await msg.channel.send(embed=discord.Embed(title=str(round(t[0], 2)) + f' {t[1]}'))
             del data[str(msg.author.id)]
-            return await msg.channel.send("timer stopped")
+            return await returnMsg(msg, "timer stopped")
         elif stopAt:
             stopAt = list(stopAt)[0]
             t, layer = await formatSeconds(time.time() - running, stopAt=stopAt)
@@ -971,7 +971,6 @@ async def hangman(msg, content, cmd="hangman"):
     mssg = await msg.channel.send(disp)
     try: await client.wait_for("message", check=lambda message: message.author.id == user.id, timeout=90.0)
     except: return await returnMsg(msg, "user did not respond in 1.5 minutes")
-    else: return mssg
 
 async def serverInfo(msg, content, cmd="serverinfo"):
     roles = msg.guild.roles
@@ -997,7 +996,7 @@ async def serverInfo(msg, content, cmd="serverinfo"):
     embed.add_field(name="owner", value=msg.guild.owner.mention)
     embed.add_field(name="creation time", value=await formatDateTime(creation))
     embed.add_field(name="age", value=t - creation)
-    await msg.channel.send(embed=embed)
+    return await returnMsg(msg, embed=embed)
 
 async def userInfo(msg, content, cmd="userinfo"):
     user = (await getUserInContent(msg, content, cmd))
@@ -1115,9 +1114,10 @@ async def whoHasRole(msg, content, cmd="hasrole"):
         if Raw: raise FileException("wanted file")
         embed = discord.Embed(title=role.name, color=role.color)   
         embed.add_field(name="has", value="\n".join(has))
-        return await returnMsg(msg, embed=embed)
+        await msg.channel.send(embed=embed)
+        msg.content = "\n".join([user.name for user in msg.channel.guild.members if role in user.roles])
+        return msg
     except Exception as e:
-        print(e)
         if not has:
             return await returnMsg(msg, f'no one has {role.name}')
         if type(e) != FileException:
@@ -1150,7 +1150,7 @@ async def addCustomCmd(msg, content, cmd="customcmd"):
         else:
             d = datetime.datetime.now().strftime("%m/%d/%y")
         data.append({"name": name, "desc": say, "params": params, "date": d, "Locked": Locked, "addedby": str(msg.author.id), "editedby": []})
-        mssg = await returnCmd(msg, "added")
+        mssg = await returnMsg(msg, "added")
         clearFile(j)
         json.dump(data, j)
     CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
