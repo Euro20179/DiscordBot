@@ -135,7 +135,6 @@ async def echo(msg, content, cmd="echo"):
             elif case("-wait"):
                 try: await asyncio.sleep(float(param))
                 except: return await returnMsg(msg, "-wait must be float")
-    if random.random() > .99: await msg.author.send("the secret message dm euro for a doubley secret role, if you tell anyone how you got this the role will be taken away\nif you already have the role, you may choose to dm a screenshot of this message to someone, and they have the chance to get the role")	
     return await returnMsg(msg, str(c), tts=True if c @ "--tts" else False) if not c @ "--dm" else await returnMsg(msg, str(c), tts=True if c @ "--tts" else False)
 
 async def timers(msg, content, cmd="timers"):
