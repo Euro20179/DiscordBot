@@ -1,5 +1,8 @@
 6.0
 
+ADDITIONS:
+*limit of 10000000 on coin and weightedcoin
+
 READDED:
 *for loop  
     *for times(
@@ -25,6 +28,16 @@ FIXES:
 
 TECHNICAL:
 *completely changed how it handles sending messages
+
+====================================================================
+6.0-rc5
+
+ADDITIONS:
+*limit on for of 10000000
+*10000000 limit for coin and weightedcoin
+
+FIXES:
+*for
 
 ====================================================================
 6.0-rc4

@@ -1,4 +1,3 @@
-from common import *
 from cmds import *
 
 CMDS = {
@@ -374,13 +373,16 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False, Wri
         times = content.split("(")[0]
         stuff = content.strip(f'{times}(').strip().split(";")
         res = []
-        for i in range(int(times)):
-            for cmd in stuff:
-                cmd = cmd.replace("{i}", i)
-                if cmd == ")": break
-                content = await runCommand(msg, f'{PREFIX}{cmd.strip()}', cmd.strip().split(" ")[0], DoFirst=True) 
-                res.append(str(content.content))
-        content = await returnMsg(msg, "\n".join(res))       
+        if int(times) > 10000000:
+            content = await returnMsg(msg, "too long")
+        else:
+            for i in range(int(times)):
+                for cmd in stuff:
+                    cmd = cmd.replace("{i}", str(i))
+                    if cmd == ")": break
+                    content = await runCommand(msg, f'{PREFIX}{cmd.strip()}', cmd.strip().split(" ")[0], DoFirst=True) 
+                    res.append(str(content.content))
+            content = await returnMsg(msg, "\n".join(res))       
         Iscmd = True
 
     elif ";;" in content and "--notyet" not in content:
@@ -481,10 +483,10 @@ async def on_message(msg):
     global blueCheck, neutral
     content = msg.content
         
-    if "[timeit" in content:
+    if f"{PREFIX}timeit" in content:
         timeThisMessageTime = time.time()
         TimeThisMessage = True
-        content = content.replace("[timeit", "").strip()
+        content = content.replace(f"{PREFIX}timeit", "").strip()
     else: TimeThisMessage = False
     Iscmd = False
     if msg.author.id == 311621977339068418 and msg.channel.id not in (732071485564256377, 715043261110288415):

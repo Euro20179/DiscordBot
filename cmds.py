@@ -487,20 +487,16 @@ async def coin(msg, content, cmd="coin"):
             add = random.randint(1, 3) if res == bet else random.randint(-3, -1)
             await addMoney(msg.author, add)
             title += f'\nYOU WON {add}' if res == bet else f'\nYOU LOSE {abs(add)}'
-        else:
-            results = {}
-            i = 0
-            while i <= int(bet):
-                while True:
-                    f = random.random()
-                    if f != .5: break
-                flip = "heads" if f > .5 else "tails"
-                try: results[flip] += 1
-                except: results[flip] = 1
-                i += 1
-            embed = discord.Embed(title=f'Heads: {results["heads"]}\nTails: {results["tails"]}', color=0x00aa00)
+        elif int(bet) < 10000000:
+            heads = 0
+            tails = 0
+            for _ in range(int(bet)):
+                flip = "heads" if random.random() > .5 else "tails"
+                if flip == "heads": heads += 1
+                else: tails += 1
+            embed = discord.Embed(title=f'Heads: {heads}\nTails: {tails}', color=0x00aa00)
             return await returnMsg(msg, embed=embed)
-    else:  color = 0xff00ff if res == "heads" else 0x0000ff
+    color = 0xff00ff if res == "heads" else 0x0000ff
     embed = discord.Embed(title=title, color=color)
     return await returnMsg(msg, embed=embed)
 
@@ -515,7 +511,7 @@ async def weightedCoin(msg, content, cmd="weightedcoin"):
     if headsOdds > 1 or headsOdds < 0:
         return await returnMsg(msg, "odds must be less than 1 and greater than 0")
     results = {}
-    if int(flips) > 1:
+    if int(flips) > 1 and int(flips) < 10000000:
         for _ in range(int(flips)):
             while True:
                 f = random.random()
