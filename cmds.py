@@ -525,8 +525,7 @@ async def coin(msg, content, cmd="coin"):
             heads = 0
             tails = 0
             for _ in range(int(bet)):
-                flip = "heads" if random.random() > .5 else "tails"
-                if flip == "heads": heads += 1
+                if random.random() > .5: heads += 1
                 else: tails += 1
             embed = discord.Embed(title=f'Heads: {heads}\nTails: {tails}', color=0x00aa00)
             return await returnMsg(msg, embed=embed)
@@ -544,16 +543,13 @@ async def weightedCoin(msg, content, cmd="weightedcoin"):
     except: return await returnMsg(msg, "not a number")
     if headsOdds > 1 or headsOdds < 0:
         return await returnMsg(msg, "odds must be less than 1 and greater than 0")
-    results = {}
     if int(flips) > 1 and int(flips) < 10000000:
+        heads = 0
+        tails = 0
         for _ in range(int(flips)):
-            while True:
-                f = random.random()
-                if f != .5: break
-            flip = "heads" if f <= headsOdds else "tails"
-            try: results[flip] += 1
-            except: results[flip] = 1
-        embed = discord.Embed(title=f'Heads: {results["heads"]}\nTails: {results["tails"]}', color=0x00ff00)
+            if random.random() > .5: heads += 1
+            else: tails += 1
+        embed = discord.Embed(title=f'Heads: {heads}\nTails: {tails}', color=0x00ff00)
     else:
         ans = "heads" if random.random() <= headsOdds else "tails"
         embed = discord.Embed(title=ans, color=0xff00ff if ans == "heads" else 0x0000ff)

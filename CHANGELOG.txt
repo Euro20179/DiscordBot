@@ -1,9 +1,10 @@
-6.0
+6.0 (7/23/2020)
 
 ADDITIONS:
 *limit of 10000000 on coin and weightedcoin
 *--all and --allh to help
 *stop to flashemote
+*--html to top/leadeboard
 
 READDED:
 *for loop  
