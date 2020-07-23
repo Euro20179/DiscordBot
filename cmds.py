@@ -489,13 +489,15 @@ async def coin(msg, content, cmd="coin"):
             title += f'\nYOU WON {add}' if res == bet else f'\nYOU LOSE {abs(add)}'
         else:
             results = {}
-            for _ in range(int(bet)):
+            i = 0
+            while i <= int(bet):
                 while True:
                     f = random.random()
                     if f != .5: break
                 flip = "heads" if f > .5 else "tails"
                 try: results[flip] += 1
                 except: results[flip] = 1
+                i += 1
             embed = discord.Embed(title=f'Heads: {results["heads"]}\nTails: {results["tails"]}', color=0x00aa00)
             return await returnMsg(msg, embed=embed)
     else:  color = 0xff00ff if res == "heads" else 0x0000ff
