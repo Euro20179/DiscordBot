@@ -13,6 +13,13 @@ TECHNICAL:
 *completely changed how it handles sending messages
 
 ====================================================================
+6.0_b.4
+
+FIXES:
+*accmd doesn't send twice
+*whohas doesn't send twice
+
+====================================================================
 6.0_b.3 (7/22/2020)
 
 CHANGES:
