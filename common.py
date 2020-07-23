@@ -20,7 +20,7 @@ from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont
 
 #TODO: emoteusage should type, and return txt file if the message is too long to send in chat
 
-VERSION = "6.0-rc2"
+VERSION = "6.0-rc3"
 Stop = False
 
 playingHangman = {}
@@ -170,11 +170,11 @@ async def writeToFile(msg, content, F):
         ext = F.split(".")[1]
         F = F.replace(f".{ext}", "")
     else: ext = "txt"
-    with open(f"{F}.{ext}", "w", encoding="utf-8", errors="replace") as f:
+    with open(f"file.{ext}", "w", encoding="utf-8", errors="replace") as f:
         f.write(content)
-    with open(f"{F}.{ext}", "rb") as f:
+    with open(f"file.{ext}", "rb") as f:
         await msg.channel.send(file=discord.File(f, f"{F}.{ext}"))
-    os.remove(f'{F}.{ext}')
+    os.remove(f'file.{ext}')
 
 async def removeFromList(l, *args):
     for arg in args: l.remove(arg)
