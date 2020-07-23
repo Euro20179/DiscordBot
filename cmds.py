@@ -38,6 +38,8 @@ async def hlp(msg, content, cmd="help"):
                 embed.add_field(name=f'{cmd["name"]}', value=f'``{cmd["desc"]}``', inline=False)
         try:
             if File: raise Exception("wanted file")
+            if len(embed) > 6000:
+                raise Exception("too long")
             return await returnMsg(msg, embed=embed)
         except Exception as e:
             print(e)
@@ -116,7 +118,6 @@ async def ping(msg, content, cmd="ping"):
         endEdit = time.time()
         await mssg.edit(content=mssg.content + f'\nMessage edit time: ``{(endEdit - startEdit) * 1000}`` ms')
         await mssg.edit(content=mssg.content + f'\nTotal execute time ``{(time.time() - startFunction) * 1000}`` ms')
-        return mssg
 
 async def echo(msg, content, cmd="echo"):
     c = Content(content)
@@ -1161,7 +1162,7 @@ async def removeCustomCmd(msg, content, cmd="removecustomcmd"):
     perms = msg.author.guild_permissions.manage_messages
     if not perms and str(msg.author.id) not in BOTMODS.keys():
         return await returnMsg(msg, "you cannot do that")
-    name = content[len(cmd) + 2:].split()
+    name = content[len(cmd) + 2:].split(" ")
     with open(customcmdsFilePath, "r+") as j:
         data = json.load(j)
         for cmd in data:
@@ -1295,8 +1296,9 @@ async def deathBattle(msg, users, going, notGoing, responseTime, damageMsgs, hea
             await msg.channel.send("you can't go above the limit\npicking damage")
             damage = round(random.gauss(25, 5), 0)
         else:
-            damage = round(random.gauss(-24, 5), 0)
+            damage = round(random.gauss(-24 + users[going]["healstreak"], 5), 0)
             await temp.delete()
+        users[going]["healstreak"] += 1
     elif AH == 'stop':
         await addMoney(going, -20)
         await removeFromList(playingDB, going, notGoing) 
@@ -1307,8 +1309,12 @@ async def deathBattle(msg, users, going, notGoing, responseTime, damageMsgs, hea
             users[going]["health"] -= damage
         else:
             users[notGoing]["health"] -= damage
-    if CustomMessage: move = CustomMessage
-    elif damage > 0: move = random.choice(damageMsgs).replace("{attaker}", going.mention).replace("{aked}", notGoing.mention).replace("{damage}", str(damage))
+    if CustomMessage: 
+        users[going]["healstreak"] = 0
+        move = CustomMessage
+    elif damage > 0: 
+        users[going]["healstreak"] = 0
+        move = random.choice(damageMsgs).replace("{attaker}", going.mention).replace("{aked}", notGoing.mention).replace("{damage}", str(damage))
     else: move = random.choice(healMsgs).replace("{attaker}", going.mention).replace("{aked}", notGoing.mention).replace("{damage}", str(abs(damage)))
 
     ED = embed.to_dict()
@@ -1354,11 +1360,11 @@ async def INIT_deathBattle(msg, content, cmd="deathbatte"):
         content = splitContent(content, " -t")[0]
     user2 = await getUserInContent(msg, content, cmd)
     if msg.author in playingDB:
-        return await msg.channel.send(f'{msg.author.name} is in a game')
+        return await returnMsg(msg, f'{msg.author.name} is in a game')
     if user2 in playingDB:
-        return await msg.channel.send(f'{user2.name} is in a game')
+        return await returnMsg(msg, f'{user2.name} is in a game')
     if msg.author == client.user or user2 == client.user:
-        return await msg.channel.send("I cannot play sadly :((((((")
+        return await returnMsg(msg, "I cannot play sadly :((((((")
     with open(levelingDataFilePath, "r") as j:
         data = json.load(j)
         b1 = data[str(msg.author.id)]["level"] // 3
@@ -1379,8 +1385,8 @@ async def INIT_deathBattle(msg, content, cmd="deathbatte"):
         if items:
             i2 = items
         else: i2 = []
-    users = {msg.author: {"user": msg.author, "health": 100 + b1, "items": i1},
-             user2: {"user": user2, "health": 100 + b2, "items": i2}}
+    users = {msg.author: {"user": msg.author, "health": 100 + b1, "items": i1, "healstreak": 0},
+             user2: {"user": user2, "health": 100 + b2, "items": i2, "healstreak": 0}}
     users[second]["health"] += 15
     embed.add_field(name="MOVE", value="START", inline=False)
     for user in users.values():
