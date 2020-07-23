@@ -319,7 +319,7 @@ async def runBotModCmd(msg, content, cmd):
 
     return await msg.channel.send("you cannot do that")
 
-async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
+async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False, WriteToFile=False):
     global CUSTOMCMDS, CATS, CMDLIST, BOTMODS
 
     if "/{" in content and "\\" != content[content.index("/{") - 1] and "cmd/{" not in content:
@@ -352,7 +352,7 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
     elif cmd == "if":
         if Content(content.split("(")[0].strip()).suitibleForEval():
             res = await calc(msg, content.split("(")[0].strip(), cmd, ReturnRes=True)
-        else: return await msg.channel.send("nice try")
+        else: return await returnMsg(msg, "nice try")
         content = "(".join(content.split("(")[1:])
         if res:
             for cmd in content.split(";"):
@@ -437,7 +437,11 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False):
         content = await returnMsg(msg, f'{cmd} {random.choice(("is not a thing", "does not exist"))}')
     
     if not DoFirst and content: 
-        if content.embeds:
+        if WriteToFile:
+            if content.embeds:
+                content.content = (await embedToReadableDict(msg, msg.embeds)).content
+            await writeToFile(msg, content.content, WriteToFile)
+        elif content.embeds:
             return await msg.channel.send(embed=content.embeds if content.embeds else None, tts=content.tts)
         elif content.attachments:
             return await msg.channel.send(file=content.attachments if content.attachments else None, tts=content.tts)
@@ -466,7 +470,7 @@ async def on_message(msg):
         elif "[delin" in content:
             t = content.split("[delin")[1]
             try: await asyncio.sleep(float(t))
-            except: return await msg.channel.send("NaN")
+            except: return await returnMsg(msg, "NaN")
             await msg.delete()
             Iscmd = True
         elif "[rw" in content and "[dr" not in content:
@@ -572,10 +576,7 @@ async def on_message(msg):
             return
             
         else: 
-            content = await runCommand(msg, content, cmd, Iscmd=Iscmd)
-            if WriteToFile:
-                await writeToFile(msg, content.content, WriteToFile)
-                await content.delete()
+            content = await runCommand(msg, content, cmd, Iscmd=Iscmd, WriteToFile=WriteToFile)
                 
     if playingHangman.get(msg.author.id):
         tempWord = playingHangman[msg.author.id]["word"]

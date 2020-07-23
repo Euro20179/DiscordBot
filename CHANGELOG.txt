@@ -8,12 +8,21 @@ FIXES:
 *a bunch of commands that should've worked with /{} now do
 *dccmd multiple cmds
 *dccmd multiple cmds
+*>>> doesn't send to chat first, meaning it can write messages longer than 2k characters
+*added <<< to help menu
 
 TECHNICAL:
 *completely changed how it handles sending messages
 
 ====================================================================
-6.0-rc1
+6.0-rc2
+
+FIXES:
+*>>> doesn't send to chat first, meaning it can write messages longer than 2k characters
+*added <<< to help menu
+
+====================================================================
+6.0-rc1 (7/23/2020)
 
 *basically nothing has changed
 

@@ -55,7 +55,7 @@
       {
         "name": ">>>",
         "params": "<filename>",
-        "desc": "writes the answer to <filename>",
+        "desc": "writes the result to <filename>",
         "date": "6/11/2020"
       },
       {
@@ -63,6 +63,11 @@
         "params": null,
         "desc": "--delete, but if you want it to apply to a command the blue circle says",
         "date": "7/1/2020"
+      },
+      {
+        "name": "<<<",
+        "params": "<file>",
+        "desc": "puts the text from the file in place of <<<, it can be longer than 2k chars but it's really only useful for textinfo"
       }
     ]
   },
