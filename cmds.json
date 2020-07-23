@@ -1,7 +1,7 @@
 [
   { 
     "cat": "KEY",
-    "desc": "<> required parameter, [] optional parameter, () option, (FORMATS) formats special phrases with something\ndo [help formats",
+    "desc": "<> required parameter, [] optional parameter, () option, (FORMATS) formats special phrases with something (WHITESPACE FORMATS) formats whitespaces\ndo [help formats and [help whitespaceformats",
     "cmds": []
   },
   {
@@ -193,7 +193,7 @@
       },
       {
         "name": "duplicator",
-        "params": "[times] <message> (-sep <seperator> (\\s, \\t, \\n work))",
+        "params": "[times] <message> (-sep <seperator> (WHITESPACE FORMATS))",
         "desc": "duplicates your <message> [times] times defaults to 2",
         "date": "6/13/2020",
         "aliases":["duplicate"]
@@ -271,7 +271,7 @@
       },
       {
         "name": "unicodechar",
-        "params": "[amount]  (-sep <sepby>)",
+        "params": "[amount]  (-sep <sepby> (WHITESPACEFORMATS))",
         "desc": "sends [amount] of unicode chars, defaults to 1",
         "date": "11/9/19",
         "aliases": [
@@ -280,12 +280,12 @@
       },
       {
         "name": "spacer",
-        "params": "<spaces> <message> (-sep <sepby>)",
+        "params": "<spaces> <message> (-sep <sepby> (WHITESPACEFORMATS))",
         "desc": "sends <message> with <spaces> amount of spaces in between each letter\nif -sep is specified it'll seperate with that instead of spaces\nif sep is \\n it'll seperate by a new line"
       },
       {
         "name": "serveremote",
-        "params": "[amount] (-sep <sepby>)",
+        "params": "[amount] (-sep <sepby> (WHITESPACEFORMATS))",
         "desc": "sends [amount] of random server emotes, defaults to 1",
         "date": "11/9/19"
       },
@@ -536,12 +536,6 @@
         "date": "7/6/2020"
       },
       {
-        "name": "fonts",
-        "params": null,
-        "desc": "andale_mono\narial\narial_black\narial_bold\narial_bold_italic\narial_italic\ncomic_sans_ms\ncomic_sans_ms_bold\ncourier_new\ncourier_new_bold\ncourier_new_bold_italic\ncourier_new_italic\ngeorgia\ngeorgia_bold\ngeorgia_bold_italic\nimpact\ntimes_new_roman\ntimes_new_roman_bold\ntimes_new_roman_bold_italic\ntimes_new_roman_italic\ntrebuchet_ms\ntrebuchet_ms_bold\ntrebuchet_ms_bold_italic\ntrebuchet_ms_italic\nverdana\nverdana_bold\nverdana_bold_italic\nverdana_italic\nwbdings",
-        "date": "7/6/2020"
-      },
-      {
         "name": "sortimg",
         "params": "<sort by> <img>",
         "desc": "sorts image by sort by\nsort by can be wtb, btw, r, g, b, custom\ncustom you give python code for example:\npx[0] will sort by red, px[0] <= px[1] will sort if red is <= green",
@@ -677,7 +671,7 @@
       },
       {
         "name": "choose",
-        "params": "*<from> (sep with |) (-picks <amount>) (-sep <sep by>)",
+        "params": "*<from> (sep with |) (-picks <amount>) (-sep <sep by> (WHITESPACEFORMATS))",
         "desc": "chooses -picks amount of <from>, defaults to 1 pick",
         "date": "5/6/2020"
       },
@@ -920,6 +914,18 @@
         "params": null,
         "desc": "{version}: bot's version\n{content}: content of message\n{author}: ping the author of the message\n{authorn} the author's name\n{uptime}: uptime of the bot\n{channel}: mention of the channel the message was sent in\n{channeln}: name of the channel\nsome commands have special formats which will be listed with the help of that command",
         "date": "7/9/2020"
+      },
+      {
+        "name": "whitespaceformats",
+        "params": null,
+        "desc": "\\n: new line\n\\t: tab\n\\s: space\n\\z: blank space\n\\b: backspace",
+        "date": "7/23/2020"
+      },      
+      {
+        "name": "fonts",
+        "params": null,
+        "desc": "andale_mono\narial\narial_black\narial_bold\narial_bold_italic\narial_italic\ncomic_sans_ms\ncomic_sans_ms_bold\ncourier_new\ncourier_new_bold\ncourier_new_bold_italic\ncourier_new_italic\ngeorgia\ngeorgia_bold\ngeorgia_bold_italic\nimpact\ntimes_new_roman\ntimes_new_roman_bold\ntimes_new_roman_bold_italic\ntimes_new_roman_italic\ntrebuchet_ms\ntrebuchet_ms_bold\ntrebuchet_ms_bold_italic\ntrebuchet_ms_italic\nverdana\nverdana_bold\nverdana_bold_italic\nverdana_italic\nwbdings",
+        "date": "7/6/2020"
       }
     ]
   },
