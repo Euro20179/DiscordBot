@@ -1113,6 +1113,7 @@ async def whoHasRole(msg, content, cmd="hasrole"):
         if Raw: raise FileException("wanted file")
         embed = discord.Embed(title=role.name, color=role.color)   
         embed.add_field(name="has", value="\n".join(has))
+        if len(embed) >= 1024: raise Exception("too long")
         return await returnMsg(msg, embed=embed)
     except Exception as e:
         if not has:
