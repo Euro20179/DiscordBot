@@ -2676,6 +2676,8 @@ async def guessingGame(msg, content, cmd="guessinggame"):
             await msg.channel.send(f"{msg.author.mention} too high" if int(c) > ans else f"{msg.author.mention} too low\nguess\nyou have {LIVES} lives left")
 
 async def flashEmote(msg, content, cmd="flashemote"):
+    global Stop
+    if Stop: Stop = False
     content = Content(content)
     for op, param in content.opsWithParams():
         if op in ["-time", "-t"]:
@@ -2688,6 +2690,9 @@ async def flashEmote(msg, content, cmd="flashemote"):
     except: times = 5
     editable = await msg.channel.send(emote)
     for x in range(times):
+        if Stop:
+            Stop = False
+            return await returnMsg(msg, await stop("Stopped"))
         await asyncio.sleep(sleepFor)
         await editable.edit(content=f'{emote}' if editable.content == f'{emote} _ _' else f'{emote} _ _')
 

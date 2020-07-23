@@ -3,6 +3,7 @@
 ADDITIONS:
 *limit of 10000000 on coin and weightedcoin
 *--all and --allh to help
+*stop to flashemote
 
 READDED:
 *for loop  
@@ -29,6 +30,12 @@ FIXES:
 
 TECHNICAL:
 *completely changed how it handles sending messages
+
+====================================================================
+6.0-rc8
+
+ADDITIONS:
+*stop to flashemote
 
 ====================================================================
 6.0-rc7
