@@ -31,6 +31,7 @@ async def hlp(msg, content, cmd="help"):
                         f.write(f'<p style="border-bottom: 1px dashed black;">name: {cmd["name"]}<br />params: {str(cmd.get("params")).replace("<", "&lt;").replace(">", "&gt;")}<br />description: {cmd.get("desc")}<br />date added: {cmd.get("date")}<br />aliases: {cmd.get("aliases")}<br /></p>')
         with open(f"help.{'txt' if c @ '--all' else 'html'}", "rb") as f:
             mssg = await returnMsg(msg, file=discord.File(f, f"help.{'txt' if c @ '--all' else 'html'}"))
+        os.remove(f"help.{'txt' if c @ '--all' else 'html'}")
         return mssg
     for op, param in c.opsWithParams():
         if op == "-added":
