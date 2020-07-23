@@ -1115,10 +1115,9 @@ async def whoHasRole(msg, content, cmd="hasrole"):
         if Raw: raise FileException("wanted file")
         embed = discord.Embed(title=role.name, color=role.color)   
         embed.add_field(name="has", value="\n".join(has))
-        await msg.channel.send(embed=embed)
-        msg.content = "\n".join([user.name for user in msg.channel.guild.members if role in user.roles])
-        return msg
+        return await returnMsg(msg, embed=embed)
     except Exception as e:
+        print(e)
         if not has:
             return await returnMsg(msg, f'no one has {role.name}')
         if type(e) != FileException:
@@ -1151,7 +1150,7 @@ async def addCustomCmd(msg, content, cmd="customcmd"):
         else:
             d = datetime.datetime.now().strftime("%m/%d/%y")
         data.append({"name": name, "desc": say, "params": params, "date": d, "Locked": Locked, "addedby": str(msg.author.id), "editedby": []})
-        mssg = await msg.channel.send("added")
+        mssg = await returnCmd(msg, "added")
         clearFile(j)
         json.dump(data, j)
     CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
