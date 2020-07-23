@@ -297,7 +297,8 @@ async def leaderboard(msg, content, cmd="top"):
             with open("top.html", "w") as html:
                 html.write("<html>\n<head>\n<meta charset='utf-8'><style>p:hover{font-size:1.5em;background-color:#ff0;}\np:active{font-size:2.5em;text-align:center;}</style></head><body style='font-family:arial;font-size:20px;'>")
                 for n, user in enumerate(users):
-                    html.write(f'<p style="border-bottom: 1px solid red;border-top: 1px solid red;">{n + 1}: User: {user[0].name} <br />Level: {user[1]} <br /> Xp: {user[2]}')
+                    if user[0]:
+                        html.write(f'<p style="border-bottom: 1px solid red;border-top: 1px solid red;">{n + 1}: User: {user[0].name} <br />Level: {user[1]} <br /> Xp: {user[2]}')
                 html.write("</body>\n</html>")
             with open("top.html", "rb") as html:
                 msg = await returnMsg(msg, file=discord.File(html, "top.html"))
