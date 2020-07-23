@@ -281,18 +281,28 @@ async def leaderboard(msg, content, cmd="top"):
         data = json.load(f)
         users = [(discord.utils.get(msg.guild.members, id=int(user)), int(data[user]["level"]), int(data[user]["xp"])) for user in data.keys()]
         users.sort(key=lambda x: (x[1] ** 10) + (x[2] / 1000), reverse=True)
-        embed = discord.Embed(title=f"Top {top}", color=users[0][0].color)
         firstPlaceRole = discord.utils.get(msg.guild.roles, id=713979970287829033)
-        for n, user in enumerate(users):
-            if not user[0]: continue
-            if firstPlaceRole in user[0].roles:
-                await user[0].remove_roles(firstPlaceRole)
-            if n > top - 1: break
-            embed.add_field(name=str(n + 1), value=f'{user[0].mention}\nLevel: {user[1]}\nXp: {user[2]}')
-
         if firstPlaceRole not in users[0][0].roles:
             await users[0][0].add_roles(firstPlaceRole)
-        return await returnMsg(msg, embed=embed)
+        if not content @ "--html":
+            embed = discord.Embed(title=f"Top {top}", color=users[0][0].color)
+            for n, user in enumerate(users):
+                if not user[0]: continue
+                if firstPlaceRole in user[0].roles:
+                    await user[0].remove_roles(firstPlaceRole)
+                if n > top - 1: break
+                embed.add_field(name=str(n + 1), value=f'{user[0].mention}\nLevel: {user[1]}\nXp: {user[2]}')
+            return await returnMsg(msg, embed=embed)
+        else:
+            with open("top.html", "w") as html:
+                html.write("<html>\n<head>\n<meta charset='utf-8'><style>p:hover{font-size:1.5em;background-color:#ff0;}\np:active{font-size:2.5em;text-align:center;}</style></head><body style='font-family:arial;font-size:20px;'>")
+                for n, user in enumerate(users):
+                    html.write(f'<p style="border-bottom: 1px solid red;border-top: 1px solid red;">{n + 1}: User: {user[0].name} <br />Level: {user[1]} <br /> Xp: {user[2]}')
+                html.write("</body>\n</html>")
+            with open("top.html", "rb") as html:
+                msg = await returnMsg(msg, file=discord.File(html, "top.html"))
+            os.remove("top.html")
+            return msg
 
 async def magicBall(msg, content, cmd="8ball"):
     with open(mballresponseFilePath, "r") as f:

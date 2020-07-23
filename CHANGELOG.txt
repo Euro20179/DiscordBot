@@ -33,6 +33,12 @@ TECHNICAL:
 *completely changed how it handles sending messages
 
 ====================================================================
+6.0-rc10
+
+ADDITIONS:
+*--html to top, creates an html file
+
+====================================================================
 6.0-rc9
 
 FIXES:

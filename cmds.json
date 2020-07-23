@@ -147,7 +147,7 @@
       },
       {
         "name": "top",
-        "params": "[top]",
+        "params": "[top] (--html)",
         "desc": "gives the top 10 on the leveling leaderboard\nif to is specified gives the top [top]",
         "date": "5/23/2020",
         "aliases": [
