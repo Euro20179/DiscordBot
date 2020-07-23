@@ -562,7 +562,7 @@
       {
         "name": "customcmd",
         "params": "<cmd name>|<say> (--locked) (FORMATS when using the command)",
-        "desc": "when [<cmd name> is typed it'll say <say> --locked only allows botmods to change a command\n{content} will replace with the message of who did cmd\n{version} will replace with the bot's version\n{uptime} will replace with the bot's uptime",
+        "desc": "when [<cmd name> is typed it'll say <say> --locked only allows botmods to change a command",
         "date": "6/11/2020",
         "aliases": ["accmd", "customcommand"]
       },
