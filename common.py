@@ -20,10 +20,9 @@ from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont
 
 #TODO: emoteusage should type, and return txt file if the message is too long to send in chat
 
-VERSION = "6.0_b.6"
+VERSION = "6.0-rc1"
 Stop = False
 
-playingGuessingGame = {}
 playingHangman = {}
 playingDB = []
 
@@ -388,11 +387,7 @@ class Content:
             try: c = str(self.split(" ")[index].strip())
             except: return msg.author
         else:
-            try: 
-                if not content:
-                    c = str(self)
-                else:
-                    c = str(content)
+            try: c = str(self) if not content else str(content)
             except: return msg.author
         c = c.replace("!", "")[2:-1] if "<@" in c else c #extracts the id from string if the string is a mention
         if not c: c = str(msg.author.id)
@@ -503,11 +498,16 @@ class switch:
 
     def end(self):
         del self
+
+    @staticmethod
+    def __case__(value, other):
+        if isinstance(other, list) or isinstance(other, tuple):
+            return value in other
         
     def __call__(self, other, func : Tuple["func", "args"] =None, *args, **kwargs):
         if self.__case__: return self.__case__(other, *args, **kwargs)
         elif not isinstance(other, list): return self.value == other
-        else: return self.value in other
+        else: return switch.__case__(self.value, other)
 
     def __enter__(self):
         return self

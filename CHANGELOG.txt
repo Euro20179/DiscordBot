@@ -13,19 +13,24 @@ TECHNICAL:
 *completely changed how it handles sending messages
 
 ====================================================================
-6.0_b.6
+6.0-rc1
+
+*basically nothing has changed
+
+====================================================================
+6.0_b.6 (7/22/2020)
 
 FIXES:
 *if whohas was too long it wouldn't send a txt file
 
 ====================================================================
-6.0_b.5
+6.0_b.5 (7/22/2020)
 
 FIXES:
 *many similar to 6.0_b.4
 
 ====================================================================
-6.0_b.4
+6.0_b.4 (7/22/2020)
 
 FIXES:
 *accmd doesn't send twice
