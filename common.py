@@ -20,7 +20,7 @@ from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont
 
 #TODO: emoteusage should type, and return txt file if the message is too long to send in chat
 
-VERSION = "6.0-rc4"
+VERSION = "6.0-rc5"
 Stop = False
 
 playingHangman = {}

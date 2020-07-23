@@ -77,7 +77,7 @@
     "cmds": [
       {
         "name": "for",
-        "params": "<times>( *<commands>;)",
+        "params": "<times (limit of 10000000)>( *<commands>;)",
         "desc": "for times do the commands end each command with ;",
         "date": "7/23/2020"
       },
@@ -671,7 +671,7 @@
     "cmds": [
       {
         "name": "weightedcoin",
-        "params": "<heads odds> [times]",
+        "params": "<heads odds> [times (limit of 10000000)]",
         "desc": "flips a weighted coin\n[times]: the amount of flips",
         "date": "6/30/2020"
       },
@@ -683,7 +683,7 @@
       },
       {
         "name": "coin",
-        "params": "[h/t/flips]",
+        "params": "[h/t/flips (limit of 10000000)]",
         "desc": "flips a coin, if bet is specified it'll say if you won or lost\ngiving heads/tails will indicate you want to bet\ngiving a number for [] will flip that many times",
         "date": "1/18/2020"
       },
