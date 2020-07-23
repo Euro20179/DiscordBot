@@ -1,5 +1,12 @@
 6.0
 
+READDED:
+*for loop  
+    *for times(
+        cmd;
+        cmd;
+    )
+
 REMOVED:
 *--1 (finally)
 
@@ -18,6 +25,20 @@ FIXES:
 
 TECHNICAL:
 *completely changed how it handles sending messages
+
+====================================================================
+6.0-rc4
+
+READDED:
+*for loop  
+    *for times(
+        cmd;
+        cmd;
+    )
+
+
+FIXES:
+*flashemote doesn't send twice
 
 ====================================================================
 6.0-rc3

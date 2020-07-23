@@ -1048,6 +1048,10 @@ async def calc(msg, content, cmd="calc", ReturnRes=False):
     if not content.suitibleForEval():
         return await returnMsg(msg, 'nice try')
     else: 
+        if str(content) in ["1 + 1", "1+1"]:
+            return await returnMsg(msg, "1 + 1 = window")
+        elif str(content) in ["2 + 2", "2+2"]:
+            return await returnMsg(msg, "2 + 2 = fish")
         try:
             rv = eval(str(content))
             if not ReturnRes: return await returnMsg(msg, rv)
@@ -2667,7 +2671,6 @@ async def flashEmote(msg, content, cmd="flashemote"):
     for x in range(times):
         await asyncio.sleep(sleepFor)
         await editable.edit(content=f'{emote}' if editable.content == f'{emote} _ _' else f'{emote} _ _')
-    return await returnMsg(msg, editable.content)
 
 async def bans(msg, content, cmd="bans"):
     if not testInContent(content, "--raw"):
