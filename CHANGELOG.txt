@@ -27,9 +27,16 @@ FIXES:
 *dccmd multiple cmds
 *>>> doesn't send to chat first, meaning it can write messages longer than 2k characters
 *added <<< to help menu
+*lvlmsg now uses -- properly
 
 TECHNICAL:
 *completely changed how it handles sending messages
+
+====================================================================
+6.0-rc9
+
+FIXES:
+*lvlmsg now uses -- in cmds instead of in the lvlmsg command when appropriate
 
 ====================================================================
 6.0-rc8

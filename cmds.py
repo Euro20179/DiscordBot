@@ -169,7 +169,9 @@ async def timers(msg, content, cmd="timers"):
 async def levelMessage(msg, content, cmd="lvlmsg"):
     if isBot(msg, client): return await returnMsg(msg, "easter e g g")
     changeTo = Content(content)
+    changeTo.calcOps(rep=False)
     yn=Yes = changeTo @ "--y"
+    if Yes: changeTo.replace("--y", "")
     with open(levelingDataFilePath, "r+") as j:
         data = json.load(j)
         userData = data[str(msg.author.id)]
