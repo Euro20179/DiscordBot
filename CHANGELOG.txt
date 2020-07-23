@@ -31,6 +31,13 @@ TECHNICAL:
 *completely changed how it handles sending messages
 
 ====================================================================
+6.0-rc7
+
+FIXES:
+*help --allh works properly
+*help is less redundant in some places
+
+====================================================================
 6.0-rc6 (7/23/2020)
 
 ADDITIONS:

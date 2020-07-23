@@ -15,7 +15,7 @@ async def hlp(msg, content, cmd="help"):
     if c.testOps("--all", "--allh"):
         with open('cmds.json', "r") as j:
             data = json.load(j)
-        with open(f"help.{'txt' if c @ '--all' else 'html'}", "w") as f:
+        with open(f"help.{'txt' if c @ '--all' else 'html'}", "w", encoding="utf-8") as f:
             if c @ "--all":
                 for cat in data:
                     f.write(cat["cat"] + '\n')
@@ -26,15 +26,11 @@ async def hlp(msg, content, cmd="help"):
                 f.write("<html>\n<head>\n<meta charset='utf-8'>\n</head>\n<body style='font-family:arial;font-size:20px;'>")
                 for cat in data:
                     f.write(f'<p style="color:red;">{cat["cat"]}</p>')
-                    f.write(f'<p style="color:red;border-bottom: 1px solid black;">{cat["desc"]}</p>')
+                    f.write(f'<p style="border-bottom: 1px solid black;color:red;">{cat["desc"]}</p>')
                     for cmd in cat["cmds"]:
-                        if cmd.get("params"):
-                            params = "".join([str(p).replace("<", "&lt;").replace(">", "&gt;") for p in cmd.get("params")])
-                        else: params = "None"
-                        f.write(f'<p style="border-bottom: 1px dashed black;>name: {cmd["name"]}<br />params: {params}<br />description: {cmd.get("desc")}<br />date added: {cmd.get("date")}<br />aliases: {cmd.get("aliases")}<br /></p>')
+                        f.write(f'<p style="border-bottom: 1px dashed black;">name: {cmd["name"]}<br />params: {str(cmd.get("params")).replace("<", "&lt;").replace(">", "&gt;")}<br />description: {cmd.get("desc")}<br />date added: {cmd.get("date")}<br />aliases: {cmd.get("aliases")}<br /></p>')
         with open(f"help.{'txt' if c @ '--all' else 'html'}", "rb") as f:
             mssg = await returnMsg(msg, file=discord.File(f, f"help.{'txt' if c @ '--all' else 'html'}"))
-        os.remove(f"help.{'txt' if c @ '--all' else 'html'}")
         return mssg
     for op, param in c.opsWithParams():
         if op == "-added":
