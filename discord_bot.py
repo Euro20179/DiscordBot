@@ -194,7 +194,12 @@ CMDS = {
     "flashemote": flashEmote,
     "bans": bans,
     "reactiontime": reactionTime,
-    "editmsg": editMsg
+    "editmsg": editMsg,
+    "iscountingmessedup": isCountingMessedUp,
+    "icmu": isCountingMessedUp,
+    "weather": getWeather,
+    "baseballscore": getBaseballScore,
+    "baseball": getBaseballScore
 }
 
 @client.event
@@ -221,6 +226,11 @@ async def runBotModCmd(msg, content, cmd):
 
     elif cmd == "RESETEMOJIUSAGE" and msg.author.id == EUROID:
         with open(emoteUsageFilePath, "w") as f:
+            f.write("{}")
+        return await msg.channel.send("reset")
+
+    elif cmd == "RESETCMDUSAGE" and msg.author.id == EUROID:
+        with open(commandusageFilePath, "w") as f:
             f.write("{}")
         return await msg.channel.send("reset")
 
@@ -317,7 +327,7 @@ async def runBotModCmd(msg, content, cmd):
                 json.dump(data, j)
                 return await msg.channel.send("changed")
 
-    return await msg.channel.send("you cannot do that")
+    return await msg.channel.send("you cannot do that or the command doesn't exist who knows")
 
 async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False, WriteToFile=False):
     global CUSTOMCMDS, CATS, CMDLIST, BOTMODS
@@ -348,7 +358,7 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False, Wri
         clearFile(j)
         json.dump(data, j)
 
-    if cmd.isupper():
+    if cmd.isupper() and (await hasPerms(str(msg.author.id), cmd) or msg.author.id == EUROID):
         return await runBotModCmd(msg, content, cmd)
 
     elif cmd == "if":
@@ -405,7 +415,7 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False, Wri
         startContent = content
         case = switch(cmd).start()
         if case("tof"): content = await returnMsg(msg, 9 / 5 * float(Content(content)) + 32)
-        elif case("wait"): await asyncio.sleep(float(Content(content).string.strip()))
+        elif case("wait"): await asyncio.sleep(float(Content(content).string.strip())); Iscmd = True
         elif case("family"): content = await returnMsg(msg, FAMILY)
         elif case("avatar"): content = await returnMsg(msg, (await getUserInContent(msg, content, cmd)).avatar_url)
         elif case("toc"): content = await returnMsg(msg, 5 / 9 * (float(splitContent(content, cmd + " ", index=1)) - 32))
