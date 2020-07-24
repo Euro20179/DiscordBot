@@ -77,7 +77,7 @@
     "cmds": [
       {
         "name": "for",
-        "params": "<times (limit of 10000000)>( *<commands>;)",
+        "params": "<times (limit of 1000)>( *<commands>;)",
         "desc": "for times do the commands end each command with ;",
         "date": "7/23/2020"
       },
