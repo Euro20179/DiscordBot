@@ -114,9 +114,9 @@ async def spam(msg, messages, message, BlockStop=False):
         if Stop and not BlockStop:
             Stop = False
             return await returnMsg(msg, await stop("Stopped"))
-        send = Content(random.choice(message), removeCmd=False).formatMessage(msg, {"{count}": str(i + 1), "{rcount}": str(int(messages) - i)}, ret=True)
+        send = Content(random.choice(message), removeCmd=False).formatMessage(msg, {"{count}": str(i + 1), "{rcount}": str(int(messages) - i), "{lauthor}": [u.author.name async for u in msg.channel.history(limit=1)][0]}, ret=True)
         msg = await msg.channel.send(str(send))
-        await asyncio.sleep(random.uniform(.7, 1.3))
+        await asyncio.sleep(random.uniform(.5, .7))
     return msg
 
 async def ping(msg, content, cmd="ping"):
@@ -264,7 +264,8 @@ async def level(msg, content, cmd="level"):
         embed.add_field(name=k, value=i)
     embed.add_field(name="rank #", value=pos)
     embed.add_field(name="xp needed", value=required - xp)
-    embed.add_field(name="approx minutes", value=round((required - xp) / 57.5)) #TODO format this
+    time, layer = await formatSeconds(((required - xp) / 57.5), layer="minutes")
+    embed.add_field(name="approx time", value=f'{round(time, 5)} {layer}') #TODO format this
     embed.add_field(name="level up mesage", value=str(Content(message, removeCmd=False).formatMessage(msg, kwargs={"{level}": level, "{xp}": xp}, removeCmd=False, ret=True)), inline=False)
     return await returnMsg(msg, embed=embed)
 
@@ -279,7 +280,7 @@ async def leaderboard(msg, content, cmd="top"):
         except: return await returnMsg(msg, "NaN")
     with open(levelingDataFilePath, "r") as f:
         data = json.load(f)
-        users = [(discord.utils.get(msg.guild.members, id=int(user)), int(data[user]["level"]), int(data[user]["xp"])) for user in data.keys()]
+        users = [(discord.utils.get(msg.guild.members, id=int(user)), int(data[user]["level"]), int(data[user]["xp"]), int(data[user]["required"])) for user in data.keys()]
         users.sort(key=lambda x: (x[1] ** 10) + (x[2] / 1000), reverse=True)
         firstPlaceRole = discord.utils.get(msg.guild.roles, id=713979970287829033)
         if firstPlaceRole not in users[0][0].roles:
@@ -295,10 +296,11 @@ async def leaderboard(msg, content, cmd="top"):
             return await returnMsg(msg, embed=embed)
         else:
             with open("top.html", "w") as html:
-                html.write("<html>\n<head>\n<meta charset='utf-8'><style>p:hover{font-size:1.5em;background-color:#ff0;}\np:active{font-size:2.5em;text-align:center;}</style></head><body style='font-family:arial;font-size:20px;'>")
+                html.write("<html>\n<head>\n<meta charset='utf-8'><style>p:hover{background-color:#ddd;color:black}\np:active{font-size:2em;}\np {border-bottom: 1px dashed red; color:white;}</style></head><body style='font-family:arial;font-size:20px;background-color:#333'>")
                 for n, user in enumerate(users):
                     if user[0]:
-                        html.write(f'<p style="border-bottom: 1px solid red;border-top: 1px solid red;">{n + 1}: User: {user[0].name} <br />Level: {user[1]} <br /> Xp: {user[2]}')
+                        time, layer = await formatSeconds(((user[3] - user[2]) / 57.5), layer="minutes")
+                        html.write(f'<p>{n + 1}: User: {user[0].name} <br />Level: {user[1]} <br /> Xp: {user[2]} <br /> Required: {user[3]} <br /> Xp Needed: {user[3] - user[2]} <br /> Approx time: {time} {layer}')
                 html.write("</body>\n</html>")
             with open("top.html", "rb") as html:
                 msg = await returnMsg(msg, file=discord.File(html, "top.html"))
@@ -969,7 +971,7 @@ async def messageInfo(msg, content, cmd="messageinfo"):
 async def typeFor(msg, content, cmd="type"):
     content = Content(content)
     Send = not content @ "--nosend"
-    timeToType = int(content.strip()) if content.strip() else 5
+    timeToType = float(content.strip()) if content.strip() else 5
     if timeToType > 420:
         return await returnMsg(msg, "sorry thats too long")
     async with msg.channel.typing():
@@ -2645,11 +2647,9 @@ async def emoteUsage(msg, content, cmd="emoteusage"):
 
 async def toKelvin(msg, content, cmd="tok"):
     content = Content(content)
-    if content[-1] == "f":
-        ans = (9 / 5 * float(content[:-1]) + 32) + 273
-    elif content[-1] == "c":
-        ans = float(content[:-1]) + 273
-
+    t = "f" if "f" in content else "c"
+    content = content.string.replace(t, "").strip()
+    ans = (9 / 5 * float(content) + 32) + 273 if t == "f" else float(content) + 273
     return await returnMsg(msg, str(ans))
 
 async def guessingGame(msg, content, cmd="guessinggame"):
@@ -2732,3 +2732,82 @@ async def editMsg(msg, content, cmd="editmsg"):
     msg = await msg.channel.fetch_message(int(msgId))
     repWith.formatMessage(msg, {"{msg}": msg.content})
     await msg.edit(content=repWith)
+
+async def isCountingMessedUp(msg, content, cmd="isCountingMessedUp"):
+    channel = await client.fetch_channel(468874244021813258)
+    last = 23701
+    async with msg.channel.typing():
+        async for mssg in channel.history(limit=100000):
+            c = mssg.content
+            if c and c[-1] == ".":
+                try: num = int(c.strip().replace("*", "").replace("_", "").replace("`", "").strip(".")) 
+                except: continue
+                if num > last + 1:
+                    await msg.channel.send(f'{msg.author.mention} {num} is messed up')
+                last = num
+            else: last -= 1
+    return await returnMsg(msg, "done")
+
+async def getWeather(msg, content, cmd="weather"):
+    content = Content(content)
+    if not content:
+        return await returnMsg(msg, "But like where?")
+    request = requests.get(f"https://www.google.com/search?q={content}+weather")
+    try:
+        soup = bs.BeautifulSoup(request.text, features="html.parser")
+        tempurature = soup.find_all("div", {"class": "BNeawe iBp4i AP7Wnd"})[1].text
+        temp = int(tempurature.split("°")[0])
+        condition = soup.find_all("div", {"class": "BNeawe tAd8D AP7Wnd"})[0].text
+        condition = condition.split("AM" if "AM" in condition else "PM")[1]
+        location = soup.find_all("span", {"class": "BNeawe tAd8D AP7Wnd"})[0].text
+        celcius = f'{5 / 9 * (float(tempurature.split("°")[0]) - 32)}°C'
+    except:
+        return await returnMsg(msg, "failed")
+    if "Pleasanton, CA" in location: return await returnMsg(msg, "failed")
+    r = int(255 * ((temp) / 134))
+    b = int(0 + (1 - (temp / 134)) * 255)
+    embed = discord.Embed(title=location, color=discord.Color.from_rgb(r, 0, b))
+    embed.add_field(name="Current weather (F)", value=tempurature)
+    embed.add_field(name="Current weather (C)", value=celcius)
+    embed.add_field(name="Overhead", value=condition, inline=False)
+    return await returnMsg(msg, embed=embed)
+
+async def getBaseballScore(msg, content, cmd="baseballscore"):
+    content = Content(content)
+    if not content: return await returnMsg(msg, "smh man what team")
+    request = requests.get(f"https://www.google.com/search?q={content}+game")
+    soup = bs.BeautifulSoup(request.text, features="html.parser")
+    span = soup.find_all("span", {"class": "rQMQod AWuZUe"})
+    inning = span[0].text if span else "NONE"
+    if inning != "NONE":
+        teams = soup.find_all("div", {"class": "BNeawe s3v9rd AP7Wnd lRVwie"})[1:3]
+        scores = soup.find_all("div", {"class": "BNeawe deIvCb AP7Wnd"})[1:3]
+        t1 = (teams[0].text, int(scores[0].text))
+        t2 = (teams[1].text, int(scores[1].text))
+        color = (int(255 * (t1[1] / (t2[1] + t1[1]))), 0, int(255 * (t2[1] / (t2[1] + t1[1])))) if t1[1] != 0 and t2[1] != 0 else (int(255 * ((t1[1] + t2[1]) / 46)), 0, 0)
+        embed = discord.Embed(title=f'{t1[0]} @ {t2[0]}', color=discord.Color.from_rgb(*color))
+        embed.add_field(name="Inning", value=inning)
+        embed.add_field(name="Score", value=f'{t1[1]} TO {t2[1]}')
+    else:
+        try:
+            time = soup.find_all("span", {"class": "r0bn4c rQMQod"})[0:2]
+            time = f'{time[0].text}, {time[1].text}'
+            teams = soup.find_all("div", {"class": "BNeawe s3v9rd AP7Wnd lRVwie"})[1:3]
+            t1 = teams[0].text
+            t2 = teams[1].text
+            if "yesterday" in time.lower():
+                raise Exception("Yesterday's game")
+            embed = discord.Embed(title=f'{t1} @ {t2} {time} (PACIFIC TIME)')
+        except Exception as e:
+            winner = soup.find_all("span", {"class": "FCUp0c rQMQod"})[0]
+            loser = soup.find_all("div", {"class": "BNeawe s3v9rd AP7Wnd lRVwie"})[2]
+            scores = soup.find_all("div", {"class": "BNeawe deIvCb AP7Wnd"})[1:3]
+            t1 = (winner.text, int(scores[0].text))
+            t2 = (loser.text, int(scores[1].text))
+            color = (int(255 * (t1[1] / (t2[1] + t1[1]))), 0, int(255 * (t2[1] / (t2[1] + t1[1])))) if t1[1] != 0 and t2[1] != 0 else (int(255 * ((t1[1] + t2[1]) / 46)), 0, 0)
+            embed = discord.Embed(title=f'{t1[0]} WON against {t2[0]}', color=discord.Color.from_rgb(*color))
+            embed.add_field(name=f"{t1[0]}'s score", value=str(t1[1]))
+            embed.add_field(name=f"{t2[0]}'s score", value=str(t2[1]))
+
+    await msg.channel.send(embed=embed)
+    #TODO: FINISH THIS

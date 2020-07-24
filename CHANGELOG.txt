@@ -1,3 +1,23 @@
+6.2 (7/24/2020)
+
+ADDITIONS:
+*iscountimgmessedup/icmu
+*weather, gives the weather in a given location
+*top --html now has a bunch more information
+*{lauthor} to spam, says the last person that talked's name
+*lvl now formats the time so you don't have to yourself
+
+CHANGES:
+*all caps cmds will now only register as a botmod cmd when you have perms to that command (hopefuly)
+*you now don't have to specify c/f at the end of the temp in tok it can be anywhere, it also now defaults to celcius
+*top --html no longer increases size when you hover, it just turns yellow
+    *when click it just gets big, no longer centers
+    *it's also a much smaller file
+
+FXIES:
+*typefor accepts float
+
+====================================================================
 6.1.2 (7/23/2020)
 
 ADDITIONS:

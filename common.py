@@ -17,9 +17,7 @@ import youtube_dl
 from typing import List, Tuple, overload
 from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont, ImageChops
 
-#TODO: emoteusage should type, and return txt file if the message is too long to send in chat
-
-VERSION = "6.1.2"
+VERSION = "6.2"
 Stop = False
 
 playingHangman = {}

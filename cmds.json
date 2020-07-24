@@ -174,6 +174,12 @@
         "date": "6/19/2020"
       },
       {
+        "name": "baseball",
+        "params": "<team>",
+        "desc": "if the team is playing, gets game inning and score if not playing, says who they are going to play against and when (PST)",
+        "date": "7/24/2020"
+      },
+      {
         "name": "flashemote",
         "params": "[emote] [times] (-t <seconds>)",
         "desc": "idk how to describe it just try it lol",
@@ -237,14 +243,14 @@
       },
       {
         "name": "spam",
-        "params": "<amount> <message> OR (-random <op1>|<op2>)\n(FORMATS, (count, rcount))",
+        "params": "<amount> <message> OR (-random <op1>|<op2>)\n(FORMATS, (count, rcount, lauthor))",
         "desc": "spams <message> <amount> times\n-random sends op1 or op2 randomly each time",
         "date": "11/6/19"
       },
       {
         "name": "randomface",
         "params": "",
-        "desc": "sends a random face ie: :]",
+        "desc": "sends a random face",
         "aliases": [
           "rface"
         ]
@@ -719,8 +725,8 @@
       },
       {
         "name": "tok",
-        "params": "<temp> (add f for fareighneight and c for celcius at the end of temp)",
-        "desc": "calculates kelvin\nex: [tok 60f",
+        "params": "<temp> [from (f/c)]",
+        "desc": "calculates kelvin\nex: [tok 60 f",
         "date": "7/14/2020"
       }
     ]
@@ -734,6 +740,21 @@
         "params": "<pokemon pokedex #/name>",
         "desc": "gets info on pokemon",
         "date": "6/2/2020"
+      },
+      {
+        "name": "icmu",
+        "params": null,
+        "desc": "checks if counting is messed up",
+        "date": "7/24/2020",
+        "aliases":[
+          "iscountingmessedup"
+        ]
+      },
+      {
+        "name": "weather",
+        "params": "<location>",
+        "desc": "checks the wether in location",
+        "date": "7/24/2020"
       },
       {
         "name": "emoteusage",
