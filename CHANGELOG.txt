@@ -1,3 +1,9 @@
+6.2.2 (7/24/2020)
+
+FIXES:
+*when the text is too long it would *ALWYAS* send a file now
+
+====================================================================
 6.2.1 (7/24/2020)
 
 ADDITIONS:
