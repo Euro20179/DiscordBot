@@ -373,7 +373,7 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False, Wri
         times = content.split("(")[0]
         stuff = content.strip(f'{times}(').strip().split(";")
         res = []
-        if int(times) > 10000000:
+        if int(times) > 1000:
             content = await returnMsg(msg, "too long")
         else:
             for i in range(int(times)):
@@ -557,6 +557,7 @@ async def on_message(msg):
     if content[0] in PREFIX:
 
         cmd = getCmd(content)
+        content = content.replace("—", "--")
 
         if "<<<" in content:
             f = msg.attachments[0]
