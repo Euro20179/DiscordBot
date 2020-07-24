@@ -1,3 +1,12 @@
+6.2.1 (7/24/2020)
+
+ADDITIONS:
+*stop works for icmu
+
+FIXES:
+*counting won't say the first num is broken
+
+====================================================================
 6.2 (7/24/2020)
 
 ADDITIONS:
@@ -6,6 +15,7 @@ ADDITIONS:
 *top --html now has a bunch more information
 *{lauthor} to spam, says the last person that talked's name
 *lvl now formats the time so you don't have to yourself
+*baseball
 
 CHANGES:
 *all caps cmds will now only register as a botmod cmd when you have perms to that command (hopefuly)

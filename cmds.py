@@ -2734,10 +2734,15 @@ async def editMsg(msg, content, cmd="editmsg"):
     await msg.edit(content=repWith)
 
 async def isCountingMessedUp(msg, content, cmd="isCountingMessedUp"):
+    global Stop
     channel = await client.fetch_channel(468874244021813258)
-    last = 23701
+    last = 10000000000000000000
+    if Stop: Stop = False
     async with msg.channel.typing():
         async for mssg in channel.history(limit=100000):
+            if Stop:
+                Stop = False
+                return await returnMsg(msg, await stop("stopped"))
             c = mssg.content
             if c and c[-1] == ".":
                 try: num = int(c.strip().replace("*", "").replace("_", "").replace("`", "").strip(".")) 
