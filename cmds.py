@@ -2809,5 +2809,4 @@ async def getBaseballScore(msg, content, cmd="baseballscore"):
             embed.add_field(name=f"{t1[0]}'s score", value=str(t1[1]))
             embed.add_field(name=f"{t2[0]}'s score", value=str(t2[1]))
 
-    await msg.channel.send(embed=embed)
-    #TODO: FINISH THIS
+    return await returnMsg(msg, embed=embed)
