@@ -480,7 +480,7 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False, Wri
             try: return await msg.channel.send(content.content, tts=content.tts)
             except discord.errors.HTTPException:
                 await msg.channel.send("too long here's a file")
-                with open("file.txt", "w", encoding="utf-8") as f:
+                with open("file.txt", "w", encoding="utf-8", errors="ignore") as f:
                     f.write(content.content)
                 with open("file.txt", "rb") as f:
                     return await msg.channel.send(file=discord.File(f, f'{cmd}.txt'))
