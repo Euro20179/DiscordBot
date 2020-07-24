@@ -2723,3 +2723,12 @@ async def reactionTime(msg, content, cmd="reactiontime"):
     else: 
         end = time.time()
         return await returnMsg(msg, f'your reaction time {end - start}')
+
+async def editMsg(msg, content, cmd="editmsg"):
+    await msg.delete()
+    content = Content(content)
+    msgId = content.split(" ")[0]
+    repWith = Content(" ".join(content.split(" ")[1:]).strip(), removeCmd=False)
+    msg = await msg.channel.fetch_message(int(msgId))
+    repWith.formatMessage(msg, {"{msg}": msg.content})
+    await msg.edit(content=repWith)

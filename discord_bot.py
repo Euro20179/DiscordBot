@@ -193,7 +193,8 @@ CMDS = {
     "fetchemoji": fetchSomething,
     "flashemote": flashEmote,
     "bans": bans,
-    "reactiontime": reactionTime
+    "reactiontime": reactionTime,
+    "editmsg": editMsg
 }
 
 @client.event
