@@ -940,6 +940,12 @@
         "date": "11/6/19"
       },
       {
+        "name": "editmsg",
+        "params": "<new message> (FORMATS (msg))",
+        "desc": "edits a message the bot sent",
+        "date": "7/23/2020"
+      },
+      {
         "name": "ytdl",
         "params": "<youtube url>",
         "desc": "does something :)))",
