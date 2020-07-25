@@ -193,8 +193,11 @@ async def levelMessage(msg, content, cmd="lvlmsg"):
         return await returnMsg(msg, "CANCELLED")
 
 async def cmdUsage(msg, content, cmd="commandusage"):
+    global commandUsage
     content = Content(content)
     top = 10
+    with open(commandusageFilePath, "w") as j:
+        json.dump(commandUsage, j)
     for op in content.opsWithParams():
         if "-top" == op[0]:
             top = int(op[1])
@@ -799,6 +802,7 @@ async def serverIcon(msg, content, cmd="servericon"):
 async def channelInfo(msg, content, cmd="cc"):
     channel = msg.channel
     content = Content(content)
+    content.calcOps()
     if content:
         channel = discord.utils.find(lambda x: x.mention == str(content), msg.guild.channels)
     embed = discord.Embed(title=channel.name)

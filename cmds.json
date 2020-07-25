@@ -870,7 +870,7 @@
         "desc": "gives info about [channel] defaults to current channel",
         "date": "5/26/2020",
         "aliases": [
-          "channlinfo",
+          "channelinfo",
           "ci"
         ]
       },

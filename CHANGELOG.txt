@@ -1,3 +1,10 @@
+6.2.4 (7/25/2020)
+
+TECHNICAL:
+*cmdusage is stored in ram then written to a file on shutoff, or calling of cmduse
+*every command should be slightly faster
+
+====================================================================
 6.2.3 (7/24/2020)
 
 ADDITIONS:

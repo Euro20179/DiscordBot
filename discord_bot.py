@@ -216,6 +216,11 @@ async def on_ready():
     BOTMODS = reloadBOTMODS()
     print(f"ONLINE\nversion: {VERSION}")
 
+@client.event
+async def on_disconnect():
+    with open(commandusageFilePath, "w") as j:
+        json.dump(commandUsage, j)
+
 async def runBotModCmd(msg, content, cmd):
     global CUSTOMCMDS, CATS, CMDLIST, BOTMODS
     if isBot(msg, client): return
@@ -331,7 +336,7 @@ async def runBotModCmd(msg, content, cmd):
     return await msg.channel.send("you cannot do that or the command doesn't exist who knows")
 
 async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False, WriteToFile=False):
-    global CUSTOMCMDS, CATS, CMDLIST, BOTMODS
+    global CUSTOMCMDS, CATS, CMDLIST, BOTMODS, commandUsage
 
     if "/{" in content and "\\" != content[content.index("/{") - 1] and "cmd/{" not in content:
         while True:
@@ -352,12 +357,8 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False, Wri
     if "cmd/{" in content:
         content = content.replace("cmd/{", "/{")
 
-    with open(commandusageFilePath, "r+") as j:
-        data = json.load(j)
-        try: data[cmd] += 1
-        except: data[cmd] = 1
-        clearFile(j)
-        json.dump(data, j)
+    try: commandUsage[cmd] += 1
+    except: commandUsage[cmd] = 1
 
     if cmd.isupper() and (await hasPerms(str(msg.author.id), cmd) or msg.author.id == EUROID):
         return await runBotModCmd(msg, content, cmd)
@@ -461,11 +462,7 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False, Wri
         if content != startContent:
             Iscmd = True
     if not Iscmd: 
-        with open(commandusageFilePath, "r+") as j:
-            data = json.load(j)
-            del data[cmd]
-            clearFile(j)
-            json.dump(data, j)
+        del commandUsage[cmd]
         content = await returnMsg(msg, f'{cmd} {random.choice(("is not a thing", "does not exist"))}')
     
     if not DoFirst and content: 
@@ -538,9 +535,6 @@ async def on_message(msg):
 
     if f"<@!{client.user.id}>" in content and client.user.id not in playingHangman.keys():
         await msg.channel.send(random.choice((discord.utils.find(lambda e: e.name.lower() == "watching1", client.emojis), discord.utils.find(lambda e: e.name.lower() == "pinged", client.emojis))))
-        
-    await giveXP(msg)
-    await reduceXP(msg)
 
     if msg.mentions and not isBot(msg, client):
         usersPinged = {str(user.id) for user in msg.mentions}
@@ -552,19 +546,7 @@ async def on_message(msg):
                     if str(u.status) in data[user]["when"] or "all" in data[user]["when"]:
                         c = Content(data[user]["response"], removeCmd=False)
                         c = c.formatMessage(msg, ret=True)
-                        await msg.channel.send(c)      
-
-    if "<:" in content and ">" in content:
-        emotes = re.findall(r'<:[A-Za-z-_0-9]{1,100}:[0-9]{18}>', str(content))
-        if emotes and not msg.author.bot:
-            with open(emoteUsageFilePath, "r+") as j:
-                data = json.load(j)
-                for emote in emotes:
-                    emoteId = re.findall(r'[0-9]{18}', emote)[0]
-                    try: data[str(emoteId)] += 1
-                    except: data[str(emoteId)] = 1
-                clearFile(j)
-                json.dump(data, j)
+                        await msg.channel.send(c)     
 
     if content[0] in PREFIX:
 
@@ -654,6 +636,21 @@ async def on_message(msg):
             return await msg.channel.send(f'YOU WIN\nYou won with {tempLives} left!')
         else: await msg.channel.send(f'{msg.author.mention}\nLives left: {tempLives}\nKnown word: {tempDisp}\nguesses: {" ".join(tempGuessed)}')
         playingHangman[msg.author.id] = {"word": tempWord, "lives": tempLives, "disp": tempDisp, "guessed": tempGuessed}
+
+    if "<:" in msg.content and ">" in msg.content:
+        emotes = re.findall(r'<:[A-Za-z-_0-9]{1,100}:[0-9]{18}>', str(content))
+        if emotes and not msg.author.bot:
+            with open(emoteUsageFilePath, "r+") as j:
+                data = json.load(j)
+                for emote in emotes:
+                    emoteId = re.findall(r'[0-9]{18}', emote)[0]
+                    try: data[str(emoteId)] += 1
+                    except: data[str(emoteId)] = 1
+                clearFile(j)
+                json.dump(data, j)
+
+    await giveXP(msg)
+    await reduceXP(msg)
 
     if TimeThisMessage: return await msg.channel.send(f'it took {time.time() - timeThisMessageTime} process the message')
 
