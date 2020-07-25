@@ -175,9 +175,13 @@
       },
       {
         "name": "baseball",
-        "params": "<team>",
+        "params": "<team> (--totalcolor)",
         "desc": "if the team is playing, gets game inning and score if not playing, says who they are going to play against and when (PST)",
-        "date": "7/24/2020"
+        "date": "7/24/2020",
+        "aliases": [
+          "baseballscore",
+          "mlb"
+        ]
       },
       {
         "name": "flashemote",
@@ -962,7 +966,7 @@
       },
       {
         "name": "editmsg",
-        "params": "<new message> (FORMATS (msg))",
+        "params": "<new message> (--nodel) (FORMATS (msg)) (WHITESPACE FORMATS)",
         "desc": "edits a message the bot sent",
         "date": "7/23/2020"
       },

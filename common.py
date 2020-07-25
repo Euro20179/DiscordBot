@@ -17,7 +17,7 @@ import youtube_dl
 from typing import List, Tuple, overload
 from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont, ImageChops
 
-VERSION = "6.2.2"
+VERSION = "6.2.3"
 Stop = False
 
 playingHangman = {}
@@ -42,6 +42,7 @@ botModsFilePath = f'{DISEXT}/botMods.json'
 itemsFilePath = f'items.json'
 pingResponseFilePath = f'{DISEXT}/pingresponse.json'
 emoteUsageFilePath = f'{DISEXT}/emoteusage.json'
+userAchievementsFilePath = f'{DISEXT}/userachievements.json'
 queuePath = "./queue"
 EUROID = 334538784043696130
 client = commands.Bot(command_prefix=fakePrefix)
@@ -57,7 +58,6 @@ Atahan ---- Peanut                Poptoppete--------------Natalie               
                                                                                                                               |                                                                 |     |
                                                                                                                            marios                          krogee (disowned) jabe
 """
-
 tracemalloc.start()
 
 async def returnMsg(msg, content=None, embed=None, file=None, tts=False):

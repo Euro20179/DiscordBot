@@ -1,3 +1,12 @@
+6.2.3 (7/24/2020)
+
+ADDITIONS:
+*mlb as alias to baseball
+*--totalcolor to mlb, bases the color off the total score, instead of how well 1 team is doing
+*--nodel to editmsg
+*editmsg now formats whitespace
+
+====================================================================
 6.2.2 (7/24/2020)
 
 FIXES:
