@@ -17,7 +17,7 @@ import youtube_dl
 from typing import List, Tuple, overload
 from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont, ImageChops
 
-VERSION = "6.2.3"
+VERSION = "6.2.4"
 Stop = False
 
 playingHangman = {}
@@ -59,6 +59,9 @@ Atahan ---- Peanut                Poptoppete--------------Natalie               
                                                                                                                            marios                          krogee (disowned) jabe
 """
 tracemalloc.start()
+
+with open(commandusageFilePath, "r") as j:
+    commandUsage = json.load(j)
 
 async def returnMsg(msg, content=None, embed=None, file=None, tts=False):
     msg.content = content
