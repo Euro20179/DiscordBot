@@ -2561,8 +2561,10 @@ async def ytdl(msg, content, cmd="ytdl"):
     for f in os.listdir("./"):
         if f.endswith(".mp3"):
             with open(f, "rb") as mp3:
-                return await msg.channel.send(file=discord.File(mp3, "song.mp3"))
+                rv = await returnMsg(msg, file=discord.File(mp3, "song.mp3"))
             os.remove(f)
+            await giveAchievements(msg, "pirate")
+            return rv
 
 async def botMods(msg, content, cmd="botmods"):
     global BOTMODS
@@ -2725,12 +2727,13 @@ async def reactionTime(msg, content, cmd="reactiontime"):
         return await returnMsg(msg, f'your reaction time {end - start}')
 
 async def editMsg(msg, content, cmd="editmsg"):
-    await msg.delete()
     content = Content(content)
+    if not content @ "--nodel": await msg.delete()
     msgId = content.split(" ")[0]
     repWith = Content(" ".join(content.split(" ")[1:]).strip(), removeCmd=False)
     msg = await msg.channel.fetch_message(int(msgId))
     repWith.formatMessage(msg, {"{msg}": msg.content})
+    repWith.whitespaceFormat()
     await msg.edit(content=repWith)
 
 async def isCountingMessedUp(msg, content, cmd="isCountingMessedUp"):
@@ -2779,6 +2782,7 @@ async def getWeather(msg, content, cmd="weather"):
 
 async def getBaseballScore(msg, content, cmd="baseballscore"):
     content = Content(content)
+    content.calcOps()
     if not content: return await returnMsg(msg, "smh man what team")
     request = requests.get(f"https://www.google.com/search?q={content}+game")
     soup = bs.BeautifulSoup(request.text, features="html.parser")
@@ -2789,10 +2793,12 @@ async def getBaseballScore(msg, content, cmd="baseballscore"):
         scores = soup.find_all("div", {"class": "BNeawe deIvCb AP7Wnd"})[1:3]
         t1 = (teams[0].text, int(scores[0].text))
         t2 = (teams[1].text, int(scores[1].text))
-        color = (int(255 * (t1[1] / (t2[1] + t1[1]))), 0, int(255 * (t2[1] / (t2[1] + t1[1])))) if t1[1] != 0 and t2[1] != 0 else (int(255 * ((t1[1] + t2[1]) / 46)), 0, 0)
+        color = (int(255 * (t1[1] / (t2[1] + t1[1]))), 0, int(255 * (t2[1] / (t2[1] + t1[1])))) if (t1[1] != 0 and t2[1] != 0) and not content @ "--totalcolor" else (int(255 * ((t1[1] + t2[1]) / 46)), 0, int(255 * (1 - ((t1[1] + t2[1]) / 46))))
         embed = discord.Embed(title=f'{t1[0]} @ {t2[0]}', color=discord.Color.from_rgb(*color))
         embed.add_field(name="Inning", value=inning)
         embed.add_field(name="Score", value=f'{t1[1]} TO {t2[1]}')
+        if t1[1] == 7 and t2[1] == 7 and str(inning) == "7":
+            await giveAchievements(msg.author.id, "7th 7-7")
     else:
         try:
             time = soup.find_all("span", {"class": "r0bn4c rQMQod"})[0:2]
@@ -2809,7 +2815,7 @@ async def getBaseballScore(msg, content, cmd="baseballscore"):
             scores = soup.find_all("div", {"class": "BNeawe deIvCb AP7Wnd"})[1:3]
             t1 = (winner.text, int(scores[0].text))
             t2 = (loser.text, int(scores[1].text))
-            color = (int(255 * (t1[1] / (t2[1] + t1[1]))), 0, int(255 * (t2[1] / (t2[1] + t1[1])))) if t1[1] != 0 and t2[1] != 0 else (int(255 * ((t1[1] + t2[1]) / 46)), 0, 0)
+            color = (int(255 * (t1[1] / (t2[1] + t1[1]))), 0, int(255 * (t2[1] / (t2[1] + t1[1])))) if (t1[1] != 0 and t2[1] != 0) or not content @ "--totalcolor" else (int(255 * ((t1[1] + t2[1]) / 46)), 0, 0)
             embed = discord.Embed(title=f'{t1[0]} WON against {t2[0]}', color=discord.Color.from_rgb(*color))
             embed.add_field(name=f"{t1[0]}'s score", value=str(t1[1]))
             embed.add_field(name=f"{t2[0]}'s score", value=str(t2[1]))

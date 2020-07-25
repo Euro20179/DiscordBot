@@ -199,7 +199,8 @@ CMDS = {
     "icmu": isCountingMessedUp,
     "weather": getWeather,
     "baseballscore": getBaseballScore,
-    "baseball": getBaseballScore
+    "baseball": getBaseballScore,
+    "mlb": getBaseballScore
 }
 
 @client.event
