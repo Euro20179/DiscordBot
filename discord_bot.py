@@ -415,36 +415,41 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False, Wri
         Iscmd = True
     elif not case:
         startContent = content
-        case = switch(cmd).start()
-        if case("tof"): content = await returnMsg(msg, 9 / 5 * float(Content(content)) + 32)
-        elif case("wait"): await asyncio.sleep(float(Content(content).string.strip())); Iscmd = True
-        elif case("family"): content = await returnMsg(msg, FAMILY)
-        elif case("avatar"): content = await returnMsg(msg, (await getUserInContent(msg, content, cmd)).avatar_url)
-        elif case("toc"): content = await returnMsg(msg, 5 / 9 * (float(splitContent(content, cmd + " ", index=1)) - 32))
-        elif case(["thepenguincommand", "tpc", "thewavecommand", "twc"]): content = await returnMsg(msg, random.choice(("very nice!", "very cool!", "<:TiredPuffle:707773683854213140>")))
-        elif case("reverse"): content = await returnMsg(msg, splitContent(content, f'{cmd} ')[1][::-1])
-        elif case("imscared"): content = await returnMsg(msg, random.choice(("don't be :smiling_imp:", "oh it's ok :)))))))))))))))))", "just don't pay attention of the sounds coming from your attic.....\nit's ok", "it's ok... he's comming :)")))
-        elif case("doihavecovid"): content = await returnMsg(msg, "yes" if random.random() < .995 else "no")
-        elif case(["ship", "boat", "boip"]): content = await returnMsg(msg, "DISCLAIMER: I DO NOT SUPPORT SHIPPING PEOPLE IN ANY WAY, HOWEVER MY MASTER SEEMS TO HAVE OTHER PLANS" if random.random() >= .985 else f'{splitContent(content, ", ")[0].replace("[" + cmd + " ", "")[0:len(splitContent(content, ", ")[0].replace("[" + cmd + " ", "")) // 2]}{splitContent(content, ", ")[1][len(splitContent(content, ", ")[1]) // 2:]}')
-        elif case(["ttc", "thetroycommand"]): content = await returnMsg(msg, random.choice(("meow", "7", "**7**", "*7*", "mo", "<:TiredPuffle:707773683854213140>", "nnn")))
-        elif case("longmessage"): content = await returnMsg(msg, "```````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````hI```````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````")
-        elif case(["wiki", "wikipedia"]): content = await returnMsg(msg, f'https://en.wikipedia.org/wiki/Special:Search?search={content[len(cmd) + 2:].replace(" ", "_")}')
-        elif case("upupdowndownleftrightleftright"):
-            return await returnMsg(msg, "what do you think this is some arcade machine with secret codes, lol")
-        elif case(["eccmd", "editcustomcmd"]):
+        cases = {
+            "tof": lambda: returnMsg(msg, 9 / 5 * float(Content(content)) + 32),
+            "wait": lambda: asyncio.sleep(float(Content(content).string.strip())),
+            "family": lambda: returnMsg(msg, FAMILY),
+            "toc": lambda: returnMsg(msg, 5 / 9 * (float(splitContent(content, cmd + " ", index=1)) - 32)),
+            "twc": lambda: returnMsg(msg, random.choice(("very nice!", "very cool!", "<:TiredPuffle:707773683854213140>"))),
+            "thewavecommand": lambda: returnMsg(msg, random.choice(("very nice!", "very cool!", "<:TiredPuffle:707773683854213140>"))),
+            "reverse": lambda: returnMsg(msg, splitContent(content, f'{cmd} ')[1][::-1]),
+            "imscared": lambda: returnMsg(msg, random.choice(("don't be :smiling_imp:", "oh it's ok :)))))))))))))))))", "just don't pay attention of the sounds coming from your attic.....\nit's ok", "it's ok... he's comming :)"))),
+            "i'mscared": lambda: returnMsg(msg, random.choice(("don't be :smiling_imp:", "oh it's ok :)))))))))))))))))", "just don't pay attention of the sounds coming from your attic.....\nit's ok", "it's ok... he's comming :)"))),
+            "doihavecovid": lambda: returnMsg(msg, "yes" if random.random() < .995 else "no"),
+            "ship": lambda: returnMsg(msg, "DISCLAIMER: I DO NOT SUPPORT SHIPPING PEOPLE IN ANY WAY, HOWEVER MY MASTER SEEMS TO HAVE OTHER PLANS" if random.random() >= .985 else f'{splitContent(content, ", ")[0].replace("[" + cmd + " ", "")[0:len(splitContent(content, ", ")[0].replace("[" + cmd + " ", "")) // 2]}{splitContent(content, ", ")[1][len(splitContent(content, ", ")[1]) // 2:]}'),
+            "boip": lambda: returnMsg(msg, "DISCLAIMER: I DO NOT SUPPORT SHIPPING PEOPLE IN ANY WAY, HOWEVER MY MASTER SEEMS TO HAVE OTHER PLANS" if random.random() >= .985 else f'{splitContent(content, ", ")[0].replace("[" + cmd + " ", "")[0:len(splitContent(content, ", ")[0].replace("[" + cmd + " ", "")) // 2]}{splitContent(content, ", ")[1][len(splitContent(content, ", ")[1]) // 2:]}'),
+            "boat": lambda: returnMsg(msg, "DISCLAIMER: I DO NOT SUPPORT SHIPPING PEOPLE IN ANY WAY, HOWEVER MY MASTER SEEMS TO HAVE OTHER PLANS" if random.random() >= .985 else f'{splitContent(content, ", ")[0].replace("[" + cmd + " ", "")[0:len(splitContent(content, ", ")[0].replace("[" + cmd + " ", "")) // 2]}{splitContent(content, ", ")[1][len(splitContent(content, ", ")[1]) // 2:]}'),
+            "ttc": lambda: returnMsg(msg, random.choice(("meow", "7", "**7**", "*7*", "mo", "<:TiredPuffle:707773683854213140>", "nnn"))),
+            "thetroycommand": lambda: returnMsg(msg, random.choice(("meow", "7", "**7**", "*7*", "mo", "<:TiredPuffle:707773683854213140>", "nnn"))),
+            "longmessage": lambda: returnMsg(msg, "```````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````hI```````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````"),
+            "wiki": lambda: returnMsg(msg, f'https://en.wikipedia.org/wiki/Special:Search?search={content[len(cmd) + 2:].replace(" ", "_")}'),
+            "upupdowndownleftrightleftrightba": lambda: returnMsg(msg, "what do you think this is some arcade machine with secret codes, lol")
+        }
+        if cases.get(cmd):
+            content = await cases[cmd]()
+        elif cmd == "avatar": content = await returnMsg(msg, (await getUserInContent(msg, content, cmd)).avatar_url)
+        elif cmd in ["eccmd", "editcustomcmd"]:
             content = await editCustomCmd(msg, content, cmd=cmd)
             CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
-        elif case(["customcmd", "accmd", "customcommand"]): 
+        elif cmd in ["customcmd", "accmd", "customcommand"]: 
             content = await addCustomCmd(msg, content, cmd=cmd)
             CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
-        elif case(["removecustomcmd", "delcustomcmd", "dccmd", "rccmd"]): 
+        elif cmd in ["removecustomcmd", "delcustomcmd", "dccmd", "rccmd"]: 
             content = await removeCustomCmd(msg, content, cmd=cmd)
             CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
-        elif case(["customcmdlist", "ccmdlist"]): content = await customCmdList(msg, content, cmd=cmd)
-        elif case(list(CUSTOMCMDS.keys())): 
-            content = Content(CUSTOMCMDS[cmd], removeCmd=False)
-            content.formatMessage(msg)
-            content = content.string.strip()
+        elif cmd in ["customcmdlist", "ccmdlist"]: content = await customCmdList(msg, content, cmd=cmd)
+        elif cmd in list(CUSTOMCMDS.keys()): 
+            content = str(Content(CUSTOMCMDS[cmd], removeCmd=False).formatMessage(msg, ret=True)).strip()
             while True:
                 if len(content.split("{")) != len(content.split("}")):
                     return await msg.channel.send("syntax error missing { or }")
@@ -458,7 +463,6 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False, Wri
                     content = content.replace("{" + cmd + "}", (await embedToReadableDict(msg, msg.embeds)).content)
                 else: content = content.replace("{" + cmd + "}", str(mssg.content))
             content = await returnMsg(msg, content)
-        case.end()
         if content != startContent:
             Iscmd = True
     if not Iscmd: 
@@ -502,7 +506,7 @@ async def on_message(msg):
         await msg.delete()
     if "[" in content and PREFIX != content[0]:
         if "[delete" in content: 
-            await msg.delete() #deletes message if requested or myustiak sent it
+            await msg.delete()
         elif "[delin" in content:
             t = content.split("[delin")[1]
             try: await asyncio.sleep(float(t))
@@ -575,8 +579,8 @@ async def on_message(msg):
         if " --cmddelete" in content:
             content = content.replace("--cmddelete", "--delete")
 
-        if testInContent(content, ">>> "):
-            WriteToFile = splitContent(content, ">>> ")[1]
+        if ">>>" in content:
+            WriteToFile = splitContent(content, ">>>")[1]
             content = content.replace(f">>> {WriteToFile}", "")
 
         if msg.mention_everyone:
@@ -651,7 +655,6 @@ async def on_message(msg):
 
     await giveXP(msg)
     await reduceXP(msg)
-
     if TimeThisMessage: return await msg.channel.send(f'it took {time.time() - timeThisMessageTime} process the message')
 
 @client.event
