@@ -265,9 +265,7 @@
         "desc": "says something wave would",
         "date": "6/3/2020",
         "aliases": [
-          "twc",
-          "thepenguincommand",
-          "tpc"
+          "twc"
         ]
       },
       {
@@ -650,8 +648,8 @@
       },
       {
         "name": "inv",
-        "params": null,
-        "desc": "lists the items in your inventory",
+        "params": "[user]",
+        "desc": "lists the items in your or user's inventory",
         "date": "6/11/2020",
         "aliases": [
           "inventory",
@@ -902,7 +900,12 @@
         "name": "commandusage",
         "params": "[command] (-top <amount>) (--least/--ltg) (--raw)",
         "desc": "gives the times [command] was used, defaults to the top 10",
-        "date": "5/23/2020"
+        "date": "5/23/2020",
+        "aliases":[
+          "cmdusage",
+          "cmduse",
+          "commanduse"
+        ]
       },
       {
         "name": "help",
@@ -966,7 +969,7 @@
       },
       {
         "name": "editmsg",
-        "params": "<new message> (--nodel) (FORMATS (msg)) (WHITESPACE FORMATS)",
+        "params": "<new message> (-channel <channel>) (--nodel) (FORMATS (msg)) (WHITESPACE FORMATS)",
         "desc": "edits a message the bot sent",
         "date": "7/23/2020"
       },

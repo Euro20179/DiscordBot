@@ -122,7 +122,7 @@ async def spam(msg, messages, message, BlockStop=False):
 async def ping(msg, content, cmd="ping"):
     startFunction = time.time()
     if random.random() >= .95:
-        await msg.author.send("upupdowndownleftrightleftright")
+        await msg.author.send("upupdowndownleftrightleftrightba")
         await asyncio.sleep(5)
         await msg.author.send("OH SHOOT I WASNT SUPPOSED TO SAY TH-")
         await asyncio.sleep(1)
@@ -170,8 +170,8 @@ async def levelMessage(msg, content, cmd="lvlmsg"):
     if isBot(msg, client): return await returnMsg(msg, "easter e g g")
     changeTo = Content(content)
     changeTo.calcOps(rep=False)
-    yn=Yes = changeTo @ "--y"
-    if Yes: changeTo.replace("--y", "")
+    yn = changeTo @ "--y"
+    if yn: changeTo.replace("--y", "")
     with open(levelingDataFilePath, "r+") as j:
         data = json.load(j)
         userData = data[str(msg.author.id)]
@@ -946,17 +946,16 @@ async def messageInfo(msg, content, cmd="messageinfo"):
     fetchFrom = msg.channel
     if msg.channel_mentions:
         fetchFrom = msg.channel_mentions[0]
-        content = content.replace(fetchFrom.mention,  "", ret=True).strip()
+        content = Content(content.replace(fetchFrom.mention,  "", ret=True).strip(), removeCmd=False)
     if content.string.isnumeric():
         try: msg = await fetchFrom.fetch_message(content)
         except discord.errors.NotFound:
             return await returnMsg(msg, "sorry that message wasn't found")
-    if not msg.content:
-        return await returnMsg(msg, "sorry that message doesn't exist")
     embed = discord.Embed(title="message info")
     embed.add_field(name="is tts", value="¯\_(ツ)_/¯")
     embed.add_field(name="author", value=msg.author.mention)
-    embed.add_field(name="content", value=msg.content)
+    if msg.content: embed.add_field(name="content", value=msg.content)
+    else: embed.add_field(name="files", value="some i guess")
     embed.add_field(name="channel", value=msg.channel.mention)
     embed.add_field(name="id", value=msg.id)
     if msg.mentions:
@@ -969,8 +968,7 @@ async def messageInfo(msg, content, cmd="messageinfo"):
     embed.add_field(name="created at", value=await formatDateTime(msg.created_at))
     embed.add_field(name="jump to link", value=msg.jump_url)
 
-    msg = await sendTo.send(embed=embed)
-    return await embedToReadableDict(msg, embed)
+    return await returnMsg(msg, embed=embed)
 
 async def typeFor(msg, content, cmd="type"):
     content = Content(content)
@@ -1489,11 +1487,13 @@ async def buyItem(msg, content, cmd="buyitem"):
     return await returnMsg(msg, f'bought {forPurchase["name"]}')
 
 async def inventory(msg, content, cmd="inv"):
+    content = Content(content)
+    user = content.getUser(msg)
     with open(itemDataFilePath, "r+", encoding="utf-8-sig") as j:
         data = json.load(j)
-        items = data.get(str(msg.author.id))
+        items = data.get(str(user.id))
         if items:
-            embed = discord.Embed(name=f"{msg.author.name}'s inventory", color=msg.author.color)
+            embed = discord.Embed(name=f"{user.name}'s inventory", color=user.color)
             s = {item["name"] for item in items}
             count = {item: 0 for item in s}
             used = []
@@ -1626,13 +1626,15 @@ async def editCmd(msg, content, cmd="edit"):
         if not edits: break
         await asyncio.sleep(sleepFor)
 
-        tokens = {"+": "add", 
-        "-": False, 
-        "*": "multiply",
-        "<": "insertBeggining",
-        "%": "replace",
-        "^": "insert",
-        ";": "newmessage"}
+        tokens = {
+            "+": "add", 
+            "-": False, 
+            "*": "multiply",
+            "<": "insertBeggining",
+            "%": "replace",
+            "^": "insert",
+            ";": "newmessage"
+        }
         token = tokens.get(edits[0][0])
         if token == None or token == "add": await editable.edit(content=editable.content + edits[0])
         elif token == "multiply": await editable.edit(content=editable.content*int(edits[0][1:]))
@@ -1684,7 +1686,7 @@ async def pingResponse(msg, content, cmd="pingresponse"):
 
 async def setStatus(msg, content, cmd="status"):
     st = Content(content)
-    if len(st) > 1:
+    if len(st) >= 1:
         await client.change_presence(activity=discord.Game(name=str(st)))
         return await returnMsg(msg, f"changed to {st}")
     else: return await returnMsg(msg, "you didn't set the status to anything")
@@ -2733,11 +2735,16 @@ async def reactionTime(msg, content, cmd="reactiontime"):
 async def editMsg(msg, content, cmd="editmsg"):
     content = Content(content)
     if not content @ "--nodel": await msg.delete()
+    for op, param in content.opsWithParams():
+        if op == "-channel":
+            channel = discord.utils.find(lambda x: x.name == param or x.mention == param or str(x.id) == param, msg.guild.channels)
+            break
+    else: channel = msg.channel
     msgId = content.split(" ")[0]
     repWith = Content(" ".join(content.split(" ")[1:]).strip(), removeCmd=False)
-    msg = await msg.channel.fetch_message(int(msgId))
+    msg = await channel.fetch_message(int(msgId))
     repWith.formatMessage(msg, {"{msg}": msg.content})
-    repWith.whitespaceFormat()
+    repWith = repWith.whitespaceFormat(str(repWith))
     await msg.edit(content=repWith)
 
 async def isCountingMessedUp(msg, content, cmd="isCountingMessedUp"):

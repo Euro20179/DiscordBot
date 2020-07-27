@@ -13,11 +13,13 @@ import math
 import statistics
 import re
 import sys
+import threading
+import subprocess
 import youtube_dl
 from typing import List, Tuple, overload
 from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont, ImageChops
 
-VERSION = "6.2.4"
+VERSION = "6.3"
 Stop = False
 
 playingHangman = {}
@@ -46,6 +48,7 @@ userAchievementsFilePath = f'{DISEXT}/userachievements.json'
 queuePath = "./queue"
 EUROID = 334538784043696130
 client = commands.Bot(command_prefix=fakePrefix)
+
 SARCASTICQUOTES = ("mhm", "interesting", "fascinating", "very cool")
 FAMILY = """
 Atahan ---- Peanut                Poptoppete--------------Natalie                          Fool (the godfather)
@@ -403,7 +406,7 @@ class Content:
     def suitibleForEval(self):
         if "help(" in self or "quit()" in self or "exit()" in self or "os." in self or \
             "token" in self or "input(" in self or "sys." in self or "__import__(os" in self or \
-            "time.sleep" in self: return False
+            "time.sleep" in self or "socket." in self: return False
         return True
     
     @overload

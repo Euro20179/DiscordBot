@@ -1,3 +1,21 @@
+6.3 (7/26/2020)
+
+ADDITIONS:
+*you can see other people's inventory
+*you can now specify which channel the message is from in editmsg
+
+CHANGES:
+*tpc and thepenguincommand are no longer aliases for twc
+*messageinfo says messageinfo even if there is no "content"
+*messageinfo works better with /{}
+
+FIXES:
+*status now accepts statuses shorter than 2 chars
+
+TECHNICAL:
+*changed how some commands were executed
+
+====================================================================
 6.2.4 (7/25/2020)
 
 TECHNICAL:
