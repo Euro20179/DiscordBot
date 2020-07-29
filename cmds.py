@@ -181,11 +181,11 @@ async def levelMessage(msg, content, cmd="lvlmsg"):
             return await returnMsg(msg, str(content))
         if changeTo.testOps("--dontsee"):
             return await returnMsg(msg, "uh, ok then")
-        if not Yes:
+        if not yn:
             await msg.channel.send("type y to change message, type n to cancel")
             try: yn = (await client.wait_for('message', check=lambda message: message.author == msg.author, timeout=60.0)).content.lower()
             except asyncio.TimeoutError: yn = "n"
-        if yn in ("yes", "y") or Yes:
+        if yn in ("yes", "y") or yn is True:
             userData["message"] = str(changeTo)
             clearFile(j)
             json.dump(data, j)
