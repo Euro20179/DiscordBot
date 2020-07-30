@@ -19,7 +19,7 @@ import youtube_dl
 from typing import List, Tuple, overload
 from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont, ImageChops
 
-VERSION = "6.3"
+VERSION = "6.3.2"
 Stop = False
 
 playingHangman = {}

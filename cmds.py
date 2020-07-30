@@ -284,7 +284,7 @@ async def leaderboard(msg, content, cmd="top"):
     with open(levelingDataFilePath, "r") as f:
         data = json.load(f)
         users = [(discord.utils.get(msg.guild.members, id=int(user)), int(data[user]["level"]), int(data[user]["xp"]), int(data[user]["required"])) for user in data.keys()]
-        users.sort(key=lambda x: (x[1] ** 10) + (x[2] / 1000), reverse=True)
+        users.sort(key=lambda x: (x[1]) + (x[2].__truediv__(x[3] if x[3] > 0 else 99999999999999999999)), reverse=True)
         firstPlaceRole = discord.utils.get(msg.guild.roles, id=713979970287829033)
         if firstPlaceRole not in users[0][0].roles:
             await users[0][0].add_roles(firstPlaceRole)
@@ -821,7 +821,7 @@ async def channelInfo(msg, content, cmd="cc"):
     embed.add_field(name="position", value=channel.position + 1)
     embed.add_field(name="slowmode delay", value=channel.slowmode_delay)
     embed.add_field(name="mention", value=channel.mention)
-    embed.add_field(name="raw mention", value=f'\{channel.mention}')
+    embed.add_field(name="raw mention", value="\\" + channel.mention)
     return await returnMsg(msg, embed=embed)
 
 async def changes(msg, content, cmd="changes"):
@@ -1042,7 +1042,7 @@ async def userInfo(msg, content, cmd="userinfo"):
     embed.add_field(name="discriminator", value=user.discriminator)
     embed.add_field(name="id", value=user.id)
     embed.add_field(name="mention", value=user.mention)
-    embed.add_field(name="raw mention", value=f'\{user.mention}')
+    embed.add_field(name="raw mention", value="\\" + user.mention)
     embed.add_field(name="roles", value=" ".join([x.mention for x in user.roles]), inline=False)
     embed.set_thumbnail(url=user.avatar_url)
     await msg.channel.send(embed=embed)
@@ -2750,7 +2750,7 @@ async def editMsg(msg, content, cmd="editmsg"):
 async def isCountingMessedUp(msg, content, cmd="isCountingMessedUp"):
     global Stop
     channel = await client.fetch_channel(468874244021813258)
-    last = 10000000000000000000
+    last = math.nan
     if Stop: Stop = False
     async with msg.channel.typing():
         async for mssg in channel.history(limit=100000):
