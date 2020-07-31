@@ -292,7 +292,7 @@ async def leaderboard(msg, content, cmd="top"):
             embed = discord.Embed(title=f"Top {top}", color=users[0][0].color)
             for n, user in enumerate(users):
                 if not user[0]: continue
-                if firstPlaceRole in user[0].roles:
+                if firstPlaceRole in user[0].roles and n != 0:
                     await user[0].remove_roles(firstPlaceRole)
                 if n > top - 1: break
                 embed.add_field(name=str(n + 1), value=f'{user[0].mention}\nLevel: {user[1]}\nXp: {user[2]}')
