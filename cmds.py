@@ -519,9 +519,11 @@ async def coin(msg, content, cmd="coin"):
     title = res = "heads" if random.random() >= .5 else "tails"
     if " " in content:
         bet = content.split(" ")[1].strip()
+        UseC = "," in bet
+        if UseC: bet = bet.replace(",", "")
         if bet == "t": bet = "tails"
         if bet == "h": bet = "heads"
-        if not bet.isnumeric():
+        if not bet.isnumeric() and not UseC:
             color, title = (0x00ff00, "YOU WIN") if res == bet else (0xff0000, "YOU LOSE")
             add = random.randint(1, 3) if res == bet else random.randint(-3, -1)
             await addMoney(msg.author, add)
@@ -532,7 +534,7 @@ async def coin(msg, content, cmd="coin"):
             for _ in range(int(bet)):
                 if random.random() > .5: heads += 1
                 else: tails += 1
-            embed = discord.Embed(title=f'Heads: {heads}\nTails: {tails}', color=0x00aa00)
+            embed = discord.Embed(title=f'Heads: {format(heads, ",d") if UseC else heads}\nTails: {format(tails, ",d") if UseC else tails}', color=0x00aa00)
             return await returnMsg(msg, embed=embed)
     color = 0xff00ff if res == "heads" else 0x0000ff
     embed = discord.Embed(title=title, color=color)
@@ -544,6 +546,8 @@ async def weightedCoin(msg, content, cmd="weightedcoin"):
     if len(content) > 1:
         flips = content[1]
     else: flips = 1
+    UseC = "," in flips
+    if UseC: flips = flips.replace(",", "")
     try: headsOdds = float(headsOdds)
     except: return await returnMsg(msg, "not a number")
     if headsOdds > 1 or headsOdds < 0:
@@ -554,7 +558,7 @@ async def weightedCoin(msg, content, cmd="weightedcoin"):
         for _ in range(int(flips)):
             if random.random() > .5: heads += 1
             else: tails += 1
-        embed = discord.Embed(title=f'Heads: {heads}\nTails: {tails}', color=0x00ff00)
+        embed = discord.Embed(title=f'Heads: {format(heads, ",d") if UseC else heads}\nTails: {format(tails, ",d") if UseC else tails}', color=0x00ff00)
     else:
         ans = "heads" if random.random() <= headsOdds else "tails"
         embed = discord.Embed(title=ans, color=0xff00ff if ans == "heads" else 0x0000ff)

@@ -440,6 +440,12 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False, Wri
         if cases.get(cmd):
             content = await cases[cmd]()
         elif cmd == "avatar": content = await returnMsg(msg, (await getUserInContent(msg, content, cmd)).avatar_url)
+        elif cmd == "exec" and await hasPerms(msg.author.id, "exec"):
+            try:
+                exec(str(Content(content)))
+                content = await returnMsg(msg, "done")
+            except Exception as e:
+                content = await returnMsg(msg, e)
         elif cmd in ["eccmd", "editcustomcmd"]:
             content = await editCustomCmd(msg, content, cmd=cmd)
             CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()

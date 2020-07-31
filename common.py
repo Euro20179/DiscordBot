@@ -16,10 +16,10 @@ import sys
 import threading
 import subprocess
 import youtube_dl
-from typing import List, Tuple, overload
+from typing import Iterable, List, Tuple, overload
 from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont, ImageChops
 
-VERSION = "6.3.5_B"
+VERSION = "6.4"
 Stop = False
 
 playingHangman = {}
@@ -82,15 +82,16 @@ async def addMoney(member, amnt):
         clearFile(j)
         json.dump(data, j)
 
-async def hasPerms(userId, command):
-    global BOTMODS
-    return command in BOTMODS.get(userId) if type(BOTMODS.get(userId)) is list else False
-
 def reloadBOTMODS():
     global BOTMODS
     with open(botModsFilePath, "r") as f:
         BOTMODS = json.load(f)
-    return BOTMODS
+
+async def hasPerms(userId : int, command):
+    global BOTMODS
+    if isinstance(BOTMODS.get(str(userId)), Iterable):
+        return command in BOTMODS.get(str(userId))
+    return False
 
 async def saveImg(filename, url):
     with open(filename, 'wb') as i:
@@ -406,7 +407,7 @@ class Content:
     def suitibleForEval(self):
         if "help(" in self or "quit()" in self or "exit()" in self or "os." in self or \
             "token" in self or "input(" in self or "sys." in self or "__import__(os" in self or \
-            "time.sleep" in self or "socket." in self: return False
+            "time.sleep" in self or "socket." in self or "exec(" in self: return False
         return True
     
     def _whitespaceFormat(self, kwargs=None):
