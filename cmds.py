@@ -601,6 +601,7 @@ async def rand(msg, content, cmd="rand"):
     content = Content(content)
     Even = content @ "--even"
     Odd = content @ "--odd"
+    content.replace(",", "")
     content = content.split(" ")
     low = 1
     high = 10
@@ -617,7 +618,8 @@ async def rand(msg, content, cmd="rand"):
         if Even and int(round(res, r)) % 2 != 0 and r == 0: continue					
         if Odd and int(round(res, r)) % 2 == 0 and r == 0: continue
         else: break
-    return await returnMsg(msg, int(round(res, r)) if r == 0 else round(res, r))
+    res = int(round(res, r)) if r == 0 else round(res, r)
+    return await returnMsg(msg, res)
 
 async def compareRoles(msg, content, cmd="compareroles"):
     embed = discord.Embed(name="Role Comparison")
@@ -1609,6 +1611,8 @@ async def uptime(msg, content, cmd="uptime"):
 
 async def editCmd(msg, content, cmd="edit"):
     content = Content(content)
+    sep = ""
+    content.formatMessage(msg)
     for op, param in content.opsWithParams():
         if op == "-t" or op == "-time":
             if param == "instant":
@@ -1617,8 +1621,10 @@ async def editCmd(msg, content, cmd="edit"):
                 sleepFor = float(param)
                 if sleepFor < 0:
                     return await returnMsg(msg, "must be greater than 0")
-            break
+        elif op == "-sep":
+            sep = Content.whitespaceFormat(param)
     else: sleepFor = .7
+    content._whitespaceFormat()
     edits = content.split("|")
     editable = await msg.channel.send(edits[0])
     while edits:
@@ -1636,7 +1642,7 @@ async def editCmd(msg, content, cmd="edit"):
             ";": "newmessage"
         }
         token = tokens.get(edits[0][0])
-        if token == None or token == "add": await editable.edit(content=editable.content + edits[0])
+        if token == None or token == "add": await editable.edit(content=editable.content + f'{sep}{edits[0]}')
         elif token == "multiply": await editable.edit(content=editable.content*int(edits[0][1:]))
         elif token == "replace":
             rep = edits[0].split("%")[1].split(">>")[0]
@@ -1802,7 +1808,6 @@ async def textInfo(msg, content, cmd="textinfo"):
     return await returnMsg(msg, embed=embed)
 
 async def embedInfo(msg, content, cmd="embedtotext"):
-    sendTo = msg
     content = Content(content).string
     fetchFrom = msg.channel
     if msg.channel_mentions:
@@ -2643,15 +2648,13 @@ async def emoteUsage(msg, content, cmd="emoteusage"):
                 if File: raise FileException("wanted file")
                 return await returnMsg(msg, "\n".join(emotes))
             except Exception as e:
-                if not isinstance(e, FileException):
-                    await msg.channel.send("too long here's a text file")
-                else: await msg.channel.send("file requested")
                 with open("EMOTEFILE.txt", "w") as f:
                     for emote in emotes:
                         f.write(f'{emote.split(":")[1]}: {emote.split(":")[-1]}\n')
                 with open("EMOTEFILE.txt", "rb") as f:
-                    await msg.channel.send(file=discord.File(f, "emoteusage.txt"))
+                    msg = await returnMsg(msg, file=discord.File(f, "emoteusage.txt"))
                 os.remove("EMOTEFILE.txt")
+                return msg
 
 async def toKelvin(msg, content, cmd="tok"):
     content = Content(content)
