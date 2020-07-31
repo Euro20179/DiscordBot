@@ -16,10 +16,11 @@ import sys
 import threading
 import subprocess
 import youtube_dl
+import csv
 from typing import List, Tuple, overload
 from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont, ImageChops
 
-VERSION = "6.3.2"
+VERSION = "6.3.3"
 Stop = False
 
 playingHangman = {}
