@@ -1,3 +1,10 @@
+6.3.5_B (7/31/2020)
+
+ADDITIONS:
+*, now works in rand if you put , in the numbers
+    *can't be a decimal
+
+====================================================================
 6.3.5 (7/30/2020)
 
 ADDITIONS:
