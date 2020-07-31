@@ -698,7 +698,7 @@
       },
       {
         "name": "rand",
-        "params": "<low> <high> [round] (--even) (--odd)",
+        "params": "<low> <high> [round] (--even) (--odd) (use , in number to use , in answer (doesn't work with decimals))",
         "desc": "picks a random number from <low> to <high>\nif either is a decimal it'll give a decimal rounded to [round] defaults to no round\nif --odd or --even it'll be an odd or even number",
         "date": "1/18/2020"
       },

@@ -601,6 +601,7 @@ async def rand(msg, content, cmd="rand"):
     content = Content(content)
     Even = content @ "--even"
     Odd = content @ "--odd"
+    UseC = True if "," in content else False
     content.replace(",", "")
     content = content.split(" ")
     low = 1
@@ -619,6 +620,8 @@ async def rand(msg, content, cmd="rand"):
         if Odd and int(round(res, r)) % 2 == 0 and r == 0: continue
         else: break
     res = int(round(res, r)) if r == 0 else round(res, r)
+    if UseC and not isinstance(res, float):
+        res = format(res, ',d')
     return await returnMsg(msg, res)
 
 async def compareRoles(msg, content, cmd="compareroles"):
