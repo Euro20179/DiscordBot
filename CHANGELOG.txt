@@ -1,3 +1,10 @@
+6.3.3 (7/30/2020)
+
+ADDITIONS:
+*cmds work with editing the message
+*8 is now an alias to 8ball
+
+====================================================================
 6.3.2 (7/30/2020)
 
 FIXES:

@@ -5,7 +5,8 @@ CMDS = {
     "iq": iq, 
     "magicball": magicBall, 
     "8ball": magicBall, 
-    "7ball": magicBall,   
+    "7ball": magicBall,  
+    "8": magicBall, 
     "level": level,   
     "rank": level,   
     "lvl": level,   
@@ -666,6 +667,10 @@ async def on_raw_reaction_add(payload):
             except: data[str(payload.emoji.id)] = 1
             clearFile(j)
             json.dump(data, j)
+
+@client.event
+async def on_message_edit(before, after):
+    await on_message(after)
 
 @client.event
 async def on_voice_state_update(member, before, after):
