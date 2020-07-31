@@ -82,10 +82,11 @@ async def addMoney(member, amnt):
         clearFile(j)
         json.dump(data, j)
 
-def reloadBOTMODS():
+def reloadBOTMODS(ret=True):
     global BOTMODS
     with open(botModsFilePath, "r") as f:
         BOTMODS = json.load(f)
+    if ret: return BOTMODS
 
 async def hasPerms(userId : int, command):
     global BOTMODS
