@@ -124,6 +124,12 @@
         ]
       },
       {
+        "name": "exec",
+        "params": "<python code>",
+        "desc": "executes the python code",
+        "date": "7/31/2020"
+      },
+      {
         "name": "/{}",
         "params": "cmd <> [] ()",
         "desc": "does the cmd inside of /{} first\nadd _ to the end of a command if 2+ commands are the same and you want diff resultes\nadd \\ to the front to not do it\nask euro",

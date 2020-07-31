@@ -1,4 +1,15 @@
-6.3.5_B (7/31/2020)
+6.4 (7/31/2020)
+
+ADDITIONS:
+*anything that gives numbers >= 1000 as a result now has a way of putting , in the result
+    *coin, put , in the flip count
+*exec, must have perms
+
+CHANGES:
+*exec no longer works in eval
+
+====================================================================
+6.3.5_B (7/30/2020)
 
 ADDITIONS:
 *, now works in rand if you put , in the numbers
