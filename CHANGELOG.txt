@@ -1,3 +1,18 @@
+6.3.5 (7/30/2020)
+
+ADDITIONS:
+*-sep to edit, seperates each edit with nothing by default use -sep to seperate with smth
+*it also whitespaceformats and formats
+*[rwd, reacts to the message when it's done processing
+
+CHANGES:
+*use 1 \ instead of 2 when escaping /{}
+*you can use , in rand
+
+FIXES:
+*[rw
+
+====================================================================
 6.3.4 (7/30/2020)
 
 FIXES:

@@ -271,6 +271,7 @@ async def runBotModCmd(msg, content, cmd):
             await msg.channel.send("Logging out")
             await client.logout()
             return
+
     elif cmd == "BAN" and await hasPerms(str(msg.author.id), cmd):
         if cmd in BOTMODS[str(msg.author.id)]:
             user = await getUserInContent(msg, " ".join(content.split(" ")[0:2]), cmd)
@@ -484,10 +485,11 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False, Wri
             except discord.errors.HTTPException:
                 await msg.channel.send("too long here's a file")
                 with open("file.txt", "w", encoding="utf-8", errors="ignore") as f:
-                    f.write(content.content)
+                    f.write(str(content.content))
                 with open("file.txt", "rb") as f:
-                    return await msg.channel.send(file=discord.File(f, f'{cmd}.txt'))
+                    msg = msg.channel.send(file=discord.File(f, f'{cmd}.txt'))
                 os.remove("file.txt")
+                return await msg
 
     else: return content
 
@@ -502,7 +504,7 @@ async def on_message(msg):
         TimeThisMessage = True
         content = content.replace(f"{PREFIX}timeit", "").strip()
     else: TimeThisMessage = False
-    Iscmd = False
+    Iscmd=RWhenDone = False
     if msg.author.id == 311621977339068418 and msg.channel.id not in (732071485564256377, 715043261110288415):
         await msg.delete()
     if "[" in content and PREFIX != content[0]:
@@ -514,8 +516,8 @@ async def on_message(msg):
             except: return await returnMsg(msg, "NaN")
             await msg.delete()
             Iscmd = True
-        elif "[rw" in content and "[dr" not in content:
-            c = splitContent(content, s, index=1).strip()
+        elif "[rw" in content and "[dr" not in content and "[rwd" not in content:
+            c = splitContent(content, "[rw", index=1).strip()
             if " " in c:
                 split = splitContent(c, " ")
                 for s in split:
@@ -525,6 +527,8 @@ async def on_message(msg):
                 e = discord.utils.get(client.emojis, id=int(c.split(":")[2][:-1])) if c in client.emojis else c
                 await msg.add_reaction(e)
             Iscmd = True
+        elif "[rwd" in content and "[dr" not in content:
+            RWhenDone=Iscmd = True
     if not content: 
         return
         
@@ -656,7 +660,8 @@ async def on_message(msg):
 
     await giveXP(msg)
     await reduceXP(msg)
-    if TimeThisMessage: return await msg.channel.send(f'it took {time.time() - timeThisMessageTime} process the message')
+    if TimeThisMessage: await msg.channel.send(f'it took {time.time() - timeThisMessageTime} process the message')
+    if RWhenDone: await msg.add_reaction("❌")
 
 @client.event
 async def on_raw_reaction_add(payload):

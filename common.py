@@ -16,11 +16,10 @@ import sys
 import threading
 import subprocess
 import youtube_dl
-import csv
 from typing import List, Tuple, overload
 from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont, ImageChops
 
-VERSION = "6.3.3"
+VERSION = "6.3.5"
 Stop = False
 
 playingHangman = {}
@@ -410,16 +409,21 @@ class Content:
             "time.sleep" in self or "socket." in self: return False
         return True
     
-    @overload
-    def whitespaceFormat(self):
+    def _whitespaceFormat(self, kwargs=None):
         self.replace(r'\t', "\t")
         self.replace(r'\n', "\n")
         self.replace('\s', " ")
         self.replace('\z', "")
         self.replace(r'\b', "\b")
+        if kwargs:
+            for kw, arg in kwargs.items():
+                self.replace(kw, arg)
 
     @staticmethod
-    def whitespaceFormat(string):
+    def whitespaceFormat(string, kwargs=None):
+        if kwargs:
+            for kw, arg in kwargs.items():
+                string = string.replace(kw, arg)
         return string.replace(r'\t', "\t").replace(r'\n', "\n").replace("\s", " ").replace("\z", "").replace(r'\b', "\b")
 
     def formatMessage(self, msg, kwargs=None, removeCmd=True, ret=False):
