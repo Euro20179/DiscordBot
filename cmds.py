@@ -878,7 +878,7 @@ async def pigLatin(msg, content, cmd="piglatin"):
         if word[0] in "aeiou": m[n] += "ay"
         else:
             moveToEnd = [None if letter.lower() in "aeiou" else letter for letter in word]
-            moveToEnd = moveToEnd[:moveToEnd.index(None)] #all the letters until the first vowel represented by None
+            if None in moveToEnd: moveToEnd = moveToEnd[:moveToEnd.index(None)] #all the letters until the first vowel represented by None
             m[n] = f'{word[len(moveToEnd):]}{"".join(moveToEnd)}ay'
     return await returnMsg(msg, " ".join(m))
 
@@ -1770,6 +1770,7 @@ async def editCmd(msg, content, cmd="edit"):
     content = Content(content)
     sep = ""
     content.formatMessage(msg)
+    sleepFor = .7
     for op, param in content.opsWithParams():
         if op == "-t" or op == "-time":
             if param == "instant":
@@ -1780,7 +1781,6 @@ async def editCmd(msg, content, cmd="edit"):
                     return await returnMsg(msg, "must be greater than 0")
         elif op == "-sep":
             sep = Content.whitespaceFormat(param)
-    else: sleepFor = .7
     content._whitespaceFormat()
     edits = content.split("|")
     editable = await msg.channel.send(edits[0])
