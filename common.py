@@ -19,7 +19,9 @@ import youtube_dl
 from typing import Iterable, List, Tuple, overload
 from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont, ImageChops
 
-VERSION = "6.4"
+#TODO make each user an object with data relating to stuff like leveling and ping response, it will load in when they talk so it's not super slow at login time
+
+VERSION = "6.5"
 Stop = False
 
 playingHangman = {}
@@ -285,12 +287,6 @@ def clearFile(f)->None:
     f.seek(0)
     f.truncate()
 
-async def oneLineCmd(msg : discord.Message, say : str, delete=True, sendMsg=True, cmd=None)->discord.Message:
-    if sendMsg: return await msg.channel.send(say)
-    else:
-        msg.content = say
-        return msg
-
 class Content:
     def __init__(self, string : str, removeCmd : bool = True):
         if removeCmd:
@@ -306,7 +302,7 @@ class Content:
         """
         calculates -- options without yielding
         """
-        if not self.split(" ") or "--" not in self: return []
+        if not self.split(" ") or "--" not in self: return self
         for word in reversed(self.split(" ")):
             if "--" in word and word.strip() != "--delete":
                 self.ops_.append(word)
@@ -314,6 +310,7 @@ class Content:
                 if rep: self.replace(f' {word}', "")
                 if foo == self.string and rep:
                     self.replace(word, "")
+        return self
 
     def split(self, splitBy : str, pastIndex : int = None, key=None):
         split = self.string.split(splitBy) if splitBy else list(self.string)

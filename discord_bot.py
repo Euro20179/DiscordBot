@@ -65,8 +65,7 @@ CMDS = {
     "igpayatinlay": pigLatin,   
     "mostroles": mostRoles, 
     "clear": clear, 
-    "color": color, 
-    "servericon": serverIcon, 
+    "color": color,
     "cc": channelInfo,
     "channelcreated": channelInfo,
     "channelinfo": channelInfo,
@@ -337,7 +336,7 @@ async def runBotModCmd(msg, content, cmd):
 
     return await msg.channel.send("you cannot do that or the command doesn't exist who knows")
 
-async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False, WriteToFile=False):
+async def runCommand(msg, content, cmd, Iscmd=False, DoFirst=False, WriteToFile=False):
     global CUSTOMCMDS, CATS, CMDLIST, BOTMODS, commandUsage
 
     if "/{" in content and "\\" != content[content.index("/{") - 1] and "cmd/{" not in content:
@@ -413,7 +412,12 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False, Wri
     
     case = CMDS.get(cmd)
     if case:
-        content = await case(msg, content, cmd=cmd)
+        if Content(content) @ "--help":
+            helpMsg = case.__doc__
+            if "WHITESPACEFORMATS" in helpMsg: helpMsg += "\ndo help whitespaceformats for more information"
+            if "FORMATS" in helpMsg: helpMsg += "\ndo help formats for more information"
+            content = await returnMsg(msg, helpMsg)
+        else: content = await case(msg, content, cmd=cmd)
         Iscmd = True
     elif not case:
         startContent = content
@@ -435,6 +439,7 @@ async def runCommand(msg, content, cmd, layer=1, Iscmd=False, DoFirst=False, Wri
             "thetroycommand": lambda: returnMsg(msg, random.choice(("meow", "7", "**7**", "*7*", "mo", "<:TiredPuffle:707773683854213140>", "nnn"))),
             "longmessage": lambda: returnMsg(msg, "```````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````hI```````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````"),
             "wiki": lambda: returnMsg(msg, f'https://en.wikipedia.org/wiki/Special:Search?search={content[len(cmd) + 2:].replace(" ", "_")}'),
+            "servericon": lambda: returnMsg(msg, msg.guild.icon_url),
             "upupdowndownleftrightleftrightba": lambda: returnMsg(msg, "what do you think this is some arcade machine with secret codes, lol")
         }
         if cases.get(cmd):
@@ -652,6 +657,8 @@ async def on_message(msg):
         else: await msg.channel.send(f'{msg.author.mention}\nLives left: {tempLives}\nKnown word: {tempDisp}\nguesses: {" ".join(tempGuessed)}')
         playingHangman[msg.author.id] = {"word": tempWord, "lives": tempLives, "disp": tempDisp, "guessed": tempGuessed}
 
+    if not msg.content:
+        msg.content = "None"
     if "<:" in msg.content and ">" in msg.content:
         emotes = re.findall(r'<:[A-Za-z-_0-9]{1,100}:[0-9]{18}>', str(content))
         if emotes and not msg.author.bot:

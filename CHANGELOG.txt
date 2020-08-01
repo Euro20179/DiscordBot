@@ -1,3 +1,28 @@
+6.5 (7/31/2020)
+
+ADDITIONS:
+*--nodel to message
+*--nodel to spacer
+*--nodel to upperlower
+*--hex and --bin to alpha
+*-every to alpha
+*--help to every command, it's slightly different than the help command, implemented for a few commands
+    *i am planning to make it slightly more in depth than the regular help command
+
+FIXES:
+*embed can now just have a title
+    *this is the same as doing [echo <title> -e
+
+TECHNICAL:
+*servericon lost it's own function
+
+====================================================================
+6.4.1 (7/31/2020)
+
+ADDITIONS:
+*8ball now whitespace formats
+
+====================================================================
 6.4 (7/31/2020)
 
 ADDITIONS:
