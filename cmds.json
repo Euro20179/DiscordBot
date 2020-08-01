@@ -71,6 +71,12 @@
         "date": "7/1/2020"
       },
       {
+        "name": "--help",
+        "params": null,
+        "desc": "gets help on the command, slightly different",
+        "date": "7/31/2020"
+      },
+      {
         "name": "<<<",
         "params": "<file>",
         "desc": "puts the text from the file in place of <<<, it can be longer than 2k chars but it's really only useful for textinfo"
@@ -250,7 +256,7 @@
       },
       {
         "name": "8ball",
-        "params": "[question] (-e [color]) (FORMATS (question))",
+        "params": "[question] (-e [color]) (FORMATS (question)) (WHITESPACEFORMATS)",
         "desc": "the magic 8 ball ooooo spooky",
         "date": "11/6/19",
         "aliases": [
@@ -266,10 +272,11 @@
       },
       {
         "name": "randomface",
-        "params": "",
+        "params": null,
         "desc": "sends a random face",
         "aliases": [
-          "rface"
+          "rface",
+          "randface"
         ]
       },
       {
@@ -301,7 +308,7 @@
       },
       {
         "name": "spacer",
-        "params": "<spaces> <message> (-sep <sepby> (WHITESPACEFORMATS))",
+        "params": "<spaces> <message> (-sep <sepby> (WHITESPACEFORMATS)) (--nodel)",
         "desc": "sends <message> with <spaces> amount of spaces in between each letter\nif -sep is specified it'll seperate with that instead of spaces\nif sep is \\n it'll seperate by a new line"
       },
       {
@@ -332,7 +339,7 @@
       },
       {
         "name": "mesage",
-        "params": "<send>| <filename[.ext]>.txt| <content>",
+        "params": "<send>| <filename[.ext]>.txt| <content> (--nodel)",
         "desc": "sends <filename>.txt withe <content> to <send> (send is same as complexmessage)",
         "date": "1/5/20?",
         "aliases":[
@@ -1000,7 +1007,7 @@
       },
       {
         "name": "alphabet",
-        "params": "(-after <letter>) (-before <letter>) (--vowels) (--consonants) (--printable) (--punctuation) (--oct)",
+        "params": "(-after <letter>) (-before <letter>) (-every <amount>) (--vowels) (--consonants) (--printable) (--punctuation) (--oct) (--hex) (--bin)",
         "desc": "gives the alphabet\n--vowels only vowels\nconsonants only consonants",
         "date": "11/9/19",
         "aliases": [
@@ -1011,7 +1018,7 @@
       {
         "name": "doesnothing",
         "params": "<filename>",
-        "desc": "gives a file of every member and their roles",
+        "desc": "doesn't do anything :)",
         "date": "1/1/2020"
       },
       {
