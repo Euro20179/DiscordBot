@@ -63,6 +63,7 @@ CMDS = {
     "8brlist": mball,   
     "piglatin": pigLatin, 
     "igpayatinlay": pigLatin,   
+    "pl": pigLatin,
     "mostroles": mostRoles, 
     "clear": clear, 
     "color": color,

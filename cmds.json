@@ -71,7 +71,7 @@
         "date": "7/1/2020"
       },
       {
-        "name": "--help",
+        "name": "--help (DEPRICATED)",
         "params": null,
         "desc": "gets help on the command, slightly different",
         "date": "7/31/2020"

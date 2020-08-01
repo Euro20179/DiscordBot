@@ -1,3 +1,16 @@
+6.5.1 (7/31/2020)
+
+ADDITIONS:
+*pl alias to piglatin
+
+FIXES:
+*piglatin now works when a word doesn't have a vowel or is a number
+*-t works in edit again
+
+DEPRICATED:
+*--help for all commands
+
+====================================================================
 6.5 (7/31/2020)
 
 ADDITIONS:
