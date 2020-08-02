@@ -440,7 +440,7 @@ class Content:
         if not isinstance(msg.channel, discord.DMChannel): 
             self.replace("{channeln}", msg.channel.name)
             self.replace("{channel}", msg.channel.mention)
-            self.replace("{channelid}", msg.channel.id)
+            self.replace("{channelid}", str(msg.channel.id))
         self.replace("{fhalf}", self[0:(len(self) - 7) // 2])
         if kwargs:
             for k, i in kwargs.items():
