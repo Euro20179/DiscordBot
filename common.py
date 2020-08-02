@@ -437,9 +437,10 @@ class Content:
         self.replace("{author}", msg.author.mention)
         self.replace("{authorid}", str(msg.author.id))
         self.replace("{uptime}", str(time.time() - UPTIME))
-        if not isinstance(msg.channel, discord.DMChannel): self.replace("{channeln}", msg.channel.name)
-        if not isinstance(msg.channel, discord.DMChannel): self.replace("{channel}", msg.channel.mention)
-        if not isinstance(msg.channel, discord.DMChannel): self.replace("{channelid}", msg.channel.id)
+        if not isinstance(msg.channel, discord.DMChannel): 
+            self.replace("{channeln}", msg.channel.name)
+            self.replace("{channel}", msg.channel.mention)
+            self.replace("{channelid}", msg.channel.id)
         self.replace("{fhalf}", self[0:(len(self) - 7) // 2])
         if kwargs:
             for k, i in kwargs.items():
