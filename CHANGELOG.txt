@@ -1,3 +1,10 @@
+6.5.2
+
+ADDITIONS:
+*{authorid} as a format
+*{channelid} as a format
+
+====================================================================
 6.5.1 (7/31/2020)
 
 ADDITIONS:

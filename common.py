@@ -21,7 +21,7 @@ from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont
 
 #TODO make each user an object with data relating to stuff like leveling and ping response, it will load in when they talk so it's not super slow at login time
 
-VERSION = "6.5.1"
+VERSION = "6.5.2"
 Stop = False
 
 playingHangman = {}
@@ -172,15 +172,17 @@ async def embedToReadableDict(msg, embed):
     msg.content = discord.utils.escape_mentions(msg.content)
     return msg
 
-async def writeToFile(msg, content, F):
+async def writeToFile(msg, content, F, sendMsg=True, sendAuthor=False):
     if "." in F: 
         ext = F.split(".")[1]
         F = F.replace(f".{ext}", "")
     else: ext = "txt"
     with open(f"file.{ext}", "w", encoding="utf-8", errors="replace") as f:
         f.write(content)
-    with open(f"file.{ext}", "rb") as f:
-        await msg.channel.send(file=discord.File(f, f"{F}.{ext}"))
+    if sendMsg or sendAuthor:
+        with open(f"file.{ext}", "rb") as f:
+            if sendMsg: await msg.channel.send(file=discord.File(f, f"{F}.{ext}"))
+            elif sendAuthor: await msg.author.send(file=discord.File(f, f'{F}.{ext}'))
     os.remove(f'file.{ext}')
 
 async def removeFromList(l, *args):
@@ -433,9 +435,11 @@ class Content:
         self.replace("{version}", VERSION)
         self.replace("{authorn}", msg.author.name)
         self.replace("{author}", msg.author.mention)
+        self.replace("{authorid}", str(msg.author.id))
         self.replace("{uptime}", str(time.time() - UPTIME))
         if not isinstance(msg.channel, discord.DMChannel): self.replace("{channeln}", msg.channel.name)
         if not isinstance(msg.channel, discord.DMChannel): self.replace("{channel}", msg.channel.mention)
+        if not isinstance(msg.channel, discord.DMChannel): self.replace("{channelid}", msg.channel.id)
         self.replace("{fhalf}", self[0:(len(self) - 7) // 2])
         if kwargs:
             for k, i in kwargs.items():

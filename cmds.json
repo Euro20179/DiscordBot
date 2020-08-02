@@ -960,7 +960,7 @@
       {
         "name": "formats",
         "params": null,
-        "desc": "{version}: bot's version\n{content}: content of message\n{author}: ping the author of the message\n{authorn} the author's name\n{uptime}: uptime of the bot\n{channel}: mention of the channel the message was sent in\n{channeln}: name of the channel\nsome commands have special formats which will be listed with the help of that command",
+        "desc": "{version}: bot's version\n{content}: content of message\n{author}: ping the author of the message\n{authorn} the author's name\n{authorid}: the id of the author\n{uptime}: uptime of the bot\n{channel}: mention of the channel the message was sent in\n{channeln}: name of the channel\n{channelid}: the channel's id\nsome commands have special formats which will be listed with the help of that command",
         "date": "7/9/2020"
       },
       {

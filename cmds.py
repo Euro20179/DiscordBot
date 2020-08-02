@@ -646,17 +646,7 @@ async def complexMessage(msg, content, cmd="complexmessage"):
         filename = content[1]
         mssg = content[2]
     except: return await returnMsg(msg, "make sure you give and seperate each paremeter with a '|'")
-    ext = "txt" if "." not in filename else filename.split(".")[1]
-    if ext == "txt": filename += ".txt"
-    dm = (send == "dm")
-    send = dm^True
-
-    with open(filename, "w") as f:
-        f.write(mssg)
-    with open(filename, 'rb') as f:
-        if send: await msg.channel.send(file=discord.File(f, filename))
-        if dm: await msg.author.send(file=discord.File(f, filename))
-    os.remove(filename)
+    await writeToFile(msg, mssg, filename, sendMsg=(send == "dm")^True, sendAuthor=(send == "dm"))
 
 async def sanity(msg, content, cmd="sanity"):
     c = Content(content)
