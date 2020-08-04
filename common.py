@@ -538,7 +538,7 @@ class switch:
 
     def __exit__(self, type, value, traceback):
         self.end()
-   
+
 class FileException(Exception):
     pass
 
