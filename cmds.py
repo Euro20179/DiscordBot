@@ -1096,7 +1096,7 @@ async def messageInfo(msg, content, cmd="messageinfo"):
     fetchFrom = msg.channel
     if msg.channel_mentions:
         fetchFrom = msg.channel_mentions[0]
-        content = Content(content.replace(fetchFrom.mention,  "", ret=True).strip(), removeCmd=False)
+        content = Content(content.replace(fetchFrom.mention,  "").strip(), removeCmd=False)
     if content.string.isnumeric():
         try: msg = await fetchFrom.fetch_message(content)
         except discord.errors.NotFound:
@@ -1653,9 +1653,6 @@ async def inventory(msg, content, cmd="inv"):
                 used.append(item)
                 embed.add_field(name=f'{item["name"]} * {count[item["name"]]}', value=f'{item["name"]}: {item["desc"]}',)
             return await returnMsg(msg, embed=embed)
-            del used
-            del count
-            del s
         else: return await returnMsg(msg, "none")
 
 async def duplicator(msg, content, cmd="duplicator"):
@@ -1669,7 +1666,7 @@ async def duplicator(msg, content, cmd="duplicator"):
     else: sep = " "
     if t.split(" ")[0].isnumeric():
         times = int(t.split(" ")[0])
-        t = t.replace(f'{times}', "", ret=True).strip()
+        t = t.replace(f'{times}', "").string.strip()
     try: return await returnMsg(msg, f'{t}{sep}'*times)
     except: return await returnMsg(msg, "message too long, try reducing the number of duplications")
 
@@ -1888,7 +1885,7 @@ async def textInfo(msg, content, cmd="textinfo"):
         if op in ("-re", "-regex"):
             Re = True
     try:
-        att, filename, url = await getImg(msg, NotFromChat=True)
+        _, filename, url = await getImg(msg, NotFromChat=True)
         await saveImg(filename, url)
         with open(filename, "r") as f:
             text = Content(f.read(), removeCmd=False)
@@ -2406,7 +2403,7 @@ async def rectangle(msg, content, cmd="rectangle"):
     img.save(filename)
     with Image.open(filename) as img:
         draw = ImageDraw.Draw(img)
-        x1, y1, x2, y2 = content.replace("{width}", str(img.width), ret=True).replace("{height}", str(img.height)).split(" ")[0:4]
+        x1, y1, x2, y2 = content.replace("{width}", str(img.width)).replace("{height}", str(img.height)).string.split(" ")[0:4]
         FR=FG=FB=FA=OA=OR=OG=OB=width = None
         for op, param in content.opsWithParams({"fill": 3, "outline": 3} if not Rgba else {"fill": 4, "outline": 4}):
             if op == "-fill":
@@ -2440,7 +2437,7 @@ async def imgArc(msg, content, cmd="imgarc"):
     img.save(filename)
     with Image.open(filename) as img:
         draw = ImageDraw.Draw(img)
-        x1, y1, x2, y2 = content.replace("{width}", str(img.width), ret=True).replace("{height}", str(img.height)).split(" ")[0:4]
+        x1, y1, x2, y2 = content.replace("{width}", str(img.width)).replace("{height}", str(img.height)).split(" ")[0:4]
         startAngle = content.split(" ")[4]
         endAngle = content.split(" ")[5]
         FR=FG=FB=FA=width = None
@@ -2474,7 +2471,7 @@ async def ellipse(msg, content, cmd="ellipse"):
     img.save(filename)
     with Image.open(filename) as img:
         draw = ImageDraw.Draw(img)
-        x1, y1, x2, y2 = content.replace("{width}", str(img.width), ret=True).replace("{height}", str(img.height)).split(" ")[0:4]
+        x1, y1, x2, y2 = content.replace("{width}", str(img.width)).replace("{height}", str(img.height)).string.split(" ")[0:4]
         FR=FG=FB=FA=OR=OG=OB=OA=width = None
         for op, param in content.opsWithParams({"fill": 3, "outline": 3} if not Rgba else {"fill": 4, "outline": 4}):
             if op == "-fill":
@@ -2507,7 +2504,7 @@ async def line(msg, content, cmd="line"):
     img.save(filename)
     with Image.open(filename) as img:
         draw = ImageDraw.Draw(img)
-        x1, y1, x2, y2 = content.replace("{width}", str(img.width), ret=True).replace("{height}", str(img.height)).split(" ")[0:4]
+        x1, y1, x2, y2 = content.replace("{width}", str(img.width)).replace("{height}", str(img.height)).string.split(" ")[0:4]
         FR=FG=FB=FA=width = None
         for op, param in content.opsWithParams({"fill": 3 if not Rgba else 4}):
             if "-fill" in params:
