@@ -1599,8 +1599,8 @@ async def shop(msg, content, cmd="shop"):
 async def buyItem(msg, content, cmd="buyitem"):
     buying = Content(content).string
     if ", " in content:
-        amnt = int(content.split(", ")[1])
-        buying = content.split(", ")[0]
+        amnt = int(buying.split(", ")[1])
+        buying = buying.split(", ")[0]
     else: amnt = 1
     with open(moneyDataFilePath, "r") as j:
         data = json.load(j)
@@ -1609,7 +1609,7 @@ async def buyItem(msg, content, cmd="buyitem"):
     with open(itemsFilePath, "r") as j:
         data = json.load(j)
         for item in data:
-            if item["name"].lower() == buying.lower() or item["id"] == int(buying):
+            if item["name"].lower() == buying.lower() or str(item["id"]) == buying:
                 forPurchase = item; break
         else: return await returnMsg(msg, "did not find item")
     amountBought = 0

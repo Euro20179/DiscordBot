@@ -364,7 +364,7 @@ async def runCommand(msg, content, cmd, Iscmd=False, DoFirst=False, WriteToFile=
 
     if cmd.isupper() and (await hasPerms(str(msg.author.id), cmd) or msg.author.id == EUROID):
         return await runBotModCmd(msg, content, cmd)
-
+        
     elif cmd == "if":
         if Content(content.split("(")[0].strip()).suitibleForEval():
             res = await calc(msg, content.split("(")[0].strip(), cmd, ReturnRes=True)
@@ -699,5 +699,4 @@ async def on_voice_state_update(member, before, after):
     elif before.channel and not after.channel:
         role = discord.utils.get(member.guild.roles, name="vc")
         await member.remove_roles(role)
-
 client.run(token)
