@@ -21,7 +21,7 @@ from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont
 
 #TODO make each user an object with data relating to stuff like leveling and ping response, it will load in when they talk so it's not super slow at login time
 
-VERSION = "6.5.4"
+VERSION = "6.5.4.1"
 Stop = False
 
 playingHangman = {}

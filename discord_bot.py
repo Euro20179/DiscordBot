@@ -453,6 +453,7 @@ async def runCommand(msg, content, cmd, Iscmd=False, DoFirst=False, WriteToFile=
                 exec(str(Content(content)))
             except Exception as e:
                 content = await returnMsg(msg, e)
+            Iscmd = True
         elif cmd in ["eccmd", "editcustomcmd"]:
             content = await editCustomCmd(msg, content, cmd=cmd)
             CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
