@@ -21,7 +21,7 @@ from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont
 
 #TODO make each user an object with data relating to stuff like leveling and ping response, it will load in when they talk so it's not super slow at login time
 
-VERSION = "6.5.2"
+VERSION = "6.5.4"
 Stop = False
 
 playingHangman = {}
@@ -266,7 +266,9 @@ def testInContent(content : str, *testfor)->str:
     return ""
 
 def getCmd(content : str)->str:
-    return content.split(" ")[0][1:]				
+    content = content.split(" ")
+    if not content[0][1:]: return " "
+    return content[0][1:]			
 
 def splitContent(content : str, *split, index=None, func=None)->str:
     for x in split:
@@ -325,9 +327,9 @@ class Content:
                     if not transformation: split.pop(n)
         return split if not pastIndex else splitBy.join(split[pastIndex:])
 
-    def replace(self, string : str, repWith : str, ret : bool =False): #doesn't return anything unless specified
-        if not ret: self.string = self.string.replace(string, repWith)
-        else: return self.string.replace(string, repWith)
+    def replace(self, string : str, repWith : str): #doesn't return anything unless specified
+        self.string = self.string.replace(string, repWith)
+        return self
     
     def strip(self, other : str =None):
         return self.string.strip(other) if other else self.string.strip()
@@ -433,15 +435,11 @@ class Content:
             self.string = " ".join(new)
         self.replace("{content}", str(Content(msg.content, removeCmd=removeCmd)))
         self.replace("{version}", VERSION)
-        self.replace("{authorn}", msg.author.name)
-        self.replace("{author}", msg.author.mention)
+        self.replace("{authorn}", msg.author.name).replace("{author}", msg.author.mention)
         self.replace("{authorid}", str(msg.author.id))
         self.replace("{uptime}", str(time.time() - UPTIME))
         if not isinstance(msg.channel, discord.DMChannel): 
-            self.replace("{channeln}", msg.channel.name)
-            self.replace("{channel}", msg.channel.mention)
-            self.replace("{channelid}", str(msg.channel.id))
-        self.replace("{fhalf}", self[0:(len(self) - 7) // 2])
+            self.replace("{channeln}", msg.channel.name).replace("{channel}", msg.channel.mention).replace("{channelid}", str(msg.channel.id))
         if kwargs:
             for k, i in kwargs.items():
                 self.replace(str(k), str(i))

@@ -2,6 +2,8 @@ from cmds import *
 
 CMDS = {
     "echo": echo,
+    "e": echo,
+    " ": echo,
     "iq": iq, 
     "magicball": magicBall, 
     "8ball": magicBall, 
@@ -354,7 +356,7 @@ async def runCommand(msg, content, cmd, Iscmd=False, DoFirst=False, WriteToFile=
             if mssg.embeds and "userinfo" not in cmd:
                 content = content.replace("/{" + cmd + "}", (await embedToReadableDict(msg, msg.embeds)).content)
             else: content = content.replace("/{" + cmd + "}", str(mssg.content))
-        return await runCommand(msg, f'{content}', content.split(" ")[0][1:])
+        return await runCommand(msg, f'{content}', getCmd(content))
 
     if "cmd/{" in content:
         content = content.replace("cmd/{", "/{")
@@ -449,7 +451,6 @@ async def runCommand(msg, content, cmd, Iscmd=False, DoFirst=False, WriteToFile=
         elif cmd == "exec" and await hasPerms(msg.author.id, "exec"):
             try:
                 exec(str(Content(content)))
-                content = await returnMsg(msg, "done")
             except Exception as e:
                 content = await returnMsg(msg, e)
         elif cmd in ["eccmd", "editcustomcmd"]:
@@ -586,7 +587,6 @@ async def on_message(msg):
 
         if msg.attachments and cmd not in ["imginfo", "fileinfo"]:
             content += " " + " ".join(att.url for att in msg.attachments)
-        if not cmd: return
         WriteToFile = False
 
         if " --delete" in content: 
