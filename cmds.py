@@ -121,6 +121,7 @@ async def spam(msg, messages, message, BlockStop=False):
         await asyncio.sleep(random.uniform(.5, .7))
     return msg
 
+@command
 async def ping(msg, content, cmd="ping"):
     """
     gets a bunch of timing statistics
@@ -150,6 +151,7 @@ async def ping(msg, content, cmd="ping"):
         await mssg.edit(content=mssg.content + f'\nMessage edit time: ``{(endEdit - startEdit) * 1000}`` ms')
         await mssg.edit(content=mssg.content + f'\nTotal execute time ``{(time.time() - startFunction) * 1000}`` ms')
 
+@command
 async def echo(msg, content, cmd="echo"):
     """
     says <message> it and deletes your message
@@ -180,6 +182,7 @@ async def echo(msg, content, cmd="echo"):
                 except: return await returnMsg(msg, "-wait must be float")
     return await returnMsg(msg, str(c), tts=True if c @ "--tts" else False) if not c @ "--dm" else await returnMsg(msg, str(c), tts=True if c @ "--tts" else False)
 
+@command
 async def timers(msg, content, cmd="timers"):
     """
     gets a list of timers that are currently running
@@ -191,6 +194,7 @@ async def timers(msg, content, cmd="timers"):
             embed.add_field(name=user, value=round(time.time() - t, 2))
         return await returnMsg(msg, embed=embed)
 
+@command
 async def levelMessage(msg, content, cmd="lvlmsg"):
     """
     when you level up it will say what you give it here
@@ -226,6 +230,7 @@ async def levelMessage(msg, content, cmd="lvlmsg"):
             return await returnMsg(msg, f"changed to {changeTo}")
         return await returnMsg(msg, "CANCELLED")
 
+@command
 async def cmdUsage(msg, content, cmd="commandusage"):
     """
     gets the usage of each command, top 10 by default
@@ -272,7 +277,7 @@ async def cmdUsage(msg, content, cmd="commandusage"):
                 return await returnMsg(msg, send)
             except: return await returnMsg(msg, "too long of a message")
 
-
+@command
 async def iq(msg, content, cmd="iq"):
     """
     gets the iq of you by default
@@ -292,6 +297,7 @@ async def iq(msg, content, cmd="iq"):
             iq <= 50 and iq >= 0: f"you good there mate, your iq is {iq}",
             iq < 0: f"you literally don't have a brain you somehow have a negative iq idek\nIQ: {iq}"}.get(True))
 
+@command
 async def shrug(msg, content, cmd="shrug"):
     """
     shrugs
@@ -307,6 +313,7 @@ async def getUserData(user):
         data = json.load(f)
         return data.get(str(user))
 
+@command
 async def level(msg, content, cmd="level"):
     """
     gets your level in the ranking system
@@ -343,6 +350,7 @@ async def level(msg, content, cmd="level"):
     embed.add_field(name="level up mesage", value=str(Content(message, removeCmd=False).formatMessage(msg, kwargs={"{level}": level, "{xp}": xp}, removeCmd=False, ret=True)), inline=False)
     return await returnMsg(msg, embed=embed)
 
+@command
 async def leaderboard(msg, content, cmd="top"):
     """
     the leaderboard of the highest leveled people
@@ -393,6 +401,7 @@ async def leaderboard(msg, content, cmd="top"):
             os.remove("top.html")
             return msg
 
+@command
 async def magicBall(msg, content, cmd="8ball"):
     """
     the beloved magic 8 ball
@@ -416,6 +425,7 @@ async def magicBall(msg, content, cmd="8ball"):
             return await returnMsg(msg, embed=discord.Embed(title=choice, color=int(param, 16) if param else 0x000000))
     return await returnMsg(msg, choice)
 
+@command
 async def spamCmd(msg, content, cmd="spam"):
     """
     spams <message> over and over again :)
@@ -450,6 +460,7 @@ async def spamCmd(msg, content, cmd="spam"):
     if random.random() >= .99: await msg.channel.send("You found an easter egg hehe")
     else: return await returnMsg(msg, random.choice(("done", "Done")))
 
+@command
 async def randomFace(msg, content, cmd="randomface"):
     """
     generates a random face
@@ -465,6 +476,7 @@ async def randomFace(msg, content, cmd="randomface"):
     else:
         return await returnMsg(msg, f'{random.choice(EYES)}{random.choice(MOUTHS)}')
 
+@command
 async def alphabet(msg, content, cmd="alphabet"):
     """
     alphabet gives the alphabet
@@ -504,6 +516,7 @@ async def alphabet(msg, content, cmd="alphabet"):
     if random.random() > .98: send = send[::-1]
     return await returnMsg(msg, send)
 
+@command
 async def unicodeChar(msg, content, cmd="unicodechar"):
     """
     generates a random unicode character
@@ -523,6 +536,7 @@ async def unicodeChar(msg, content, cmd="unicodechar"):
     except: amount = 1
     return await returnMsg(msg, sep.join([chr(random.randint(0, 185000)) for _ in range(amount)]))
 
+@command
 async def serverEmote(msg, content, cmd="serveremote"):
     """
     generates a random custom server emote
@@ -542,6 +556,7 @@ async def serverEmote(msg, content, cmd="serveremote"):
     except: amount = 1
     return await returnMsg(msg, sep.join([str(random.choice(client.emojis)) for _ in range(amount)]))
 
+@command
 async def writeRoles(msg, content, cmd="doesnothing"):
     """
     does absolutely nothing :)
@@ -550,7 +565,7 @@ async def writeRoles(msg, content, cmd="doesnothing"):
     added: 1/1/2020
     """
     filename = Content(content)
-    with open(f".\\roles\\{filename}.txt", "w") as f:
+    with open(f"{filename}.txt", "w") as f:
         for x in client.get_all_members():
             try: f.write(f'\n{str(x.name)}\n')
             except: f.write(f"\n{x.id}\n")
@@ -562,6 +577,7 @@ async def writeRoles(msg, content, cmd="doesnothing"):
         os.remove(f'{filename}.txt')
         return mssg
 
+@command
 async def spacer(msg, content, cmd="spacer"):
     """
     spaces the <message> you give it by <amount>
@@ -589,6 +605,7 @@ async def spacer(msg, content, cmd="spacer"):
     word = add.join(c)
     return await returnMsg(msg, word)
 
+@command
 async def upperLower(msg, content, cmd="upperlower"):
     """
     changes your message from:
@@ -615,6 +632,7 @@ async def upperLower(msg, content, cmd="upperlower"):
 
     return await returnMsg(msg, "".join(newPhrase))
 
+@command
 async def startRPS(msg, content, cmd="rps"):
     """
     play rock paper scissors with <member>
@@ -669,6 +687,7 @@ async def startRPS(msg, content, cmd="rps"):
         else: await msg.channel.send("ITS A DRAW")
     else: await msg.channel.send("either someone spelled something wrong, or someone isn't playing by the rules")
 
+@command
 async def complexMessage(msg, content, cmd="complexmessage"):
     """
     creates a file if no [.ext] is specified it will be a txt file
@@ -695,6 +714,7 @@ async def complexMessage(msg, content, cmd="complexmessage"):
     except: return await returnMsg(msg, "make sure you give and seperate each paremeter with a '|'")
     await writeToFile(msg, mssg, filename, sendMsg=(send == "dm")^True, sendAuthor=(send == "dm"))
 
+@command
 async def sanity(msg, content, cmd="sanity"):
     """
     gives the sanity of <mesage>
@@ -715,6 +735,7 @@ async def sanity(msg, content, cmd="sanity"):
                 san < 0: f'how is {c} even alive'}
     return await returnMsg(msg, cases.get(True)) if cases.get(True) else await returnMsg(msg, f'{c} has {san}% sanity')
 
+@command
 async def coin(msg, content, cmd="coin"):
     """
     flips a coin
@@ -747,6 +768,7 @@ async def coin(msg, content, cmd="coin"):
     embed = discord.Embed(title=title, color=color)
     return await returnMsg(msg, embed=embed)
 
+@command
 async def weightedCoin(msg, content, cmd="weightedcoin"):
     """
     flips a weighted coin
@@ -779,6 +801,7 @@ async def weightedCoin(msg, content, cmd="weightedcoin"):
         embed = discord.Embed(title=ans, color=0xff00ff if ans == "heads" else 0x0000ff)
     return await returnMsg(msg, embed=embed)
 
+@command
 async def roleInfo(msg, content, cmd="roleinfo"):
     """
     gets info on a role
@@ -802,7 +825,16 @@ async def roleInfo(msg, content, cmd="roleinfo"):
     except AttributeError:
         return await returnMsg(msg, "role not found")
 
+@command
 async def roleCount(msg, content, cmd="rolecount"):
+    """
+    gives the role count of [member] defaults to you
+    optional params:
+        [member]: the member to get the role count of
+    options:
+        --showroles: whether or not to show the roles the user has
+    added: 1/19/2020
+    """
     c = Content(content)
     Showroles = c @ "--showroles"
     c = c.string
@@ -820,7 +852,22 @@ async def roleCount(msg, content, cmd="rolecount"):
         else: return await returnMsg(msg, roleCount)
     else: return await returnMsg(msg, "User not found")
 
+@command
 async def rand(msg, content, cmd="rand"):
+    """
+    picks a random number from <low> to <high>
+    if you put a , in low or high, the result will have , in it
+    required params:
+        <low>: the low number
+        <high>: the high number
+    optional params:
+        [round]: the amount of places to round to
+            only give if low or high is a decimal
+    options:
+        --even: makes the result even
+        --odd: makes the result odd
+    added: 1/18/2020
+    """
     global Stop
     if Stop: Stop = False
     content = Content(content)
@@ -849,7 +896,17 @@ async def rand(msg, content, cmd="rand"):
         res = format(res, ',d')
     return await returnMsg(msg, res)
 
+@command
 async def compareRoles(msg, content, cmd="compareroles"):
+    """
+    compares the roles of 2 members
+    required params:
+        <member1 | member 2>: the 2 members seperate with |
+    aliases:
+        comproles
+        compareroles
+    added: 5/5/2020
+    """
     embed = discord.Embed(name="Role Comparison")
     c = Content(content)
     u1name = c.getUser(msg, content=c.split("|")[0].strip())
@@ -2856,7 +2913,7 @@ async def emoteUsage(msg, content, cmd="emoteusage"):
     aliases:
         emojiusage
         emoteusage
-    date: 7/10/2020
+    added: 7/10/2020
     """
     content = Content(content)
     if content @ "--raw":

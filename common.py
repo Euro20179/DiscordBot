@@ -22,7 +22,7 @@ from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont
 
 #TODO make each user an object with data relating to stuff like leveling and ping response, it will load in when they talk so it's not super slow at login time
 
-__version__ = "6.6"
+__version__ = "6.6.1"
 Stop = False
 
 playingHangman = {}
@@ -552,8 +552,8 @@ def command(func):
     #         if alias:
     #             if "added" in alias: break
     #             CMDS[alias] = func
-    def wrapper(*args, **kwargs):
-        func(*args, **kwargs)
+    async def wrapper(*args, **kwargs):
+        return await func(*args, **kwargs)
     return wrapper
 
 
