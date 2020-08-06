@@ -1,3 +1,9 @@
+6.6.2 (8/6/2020)
+
+ADDITIONS:
+*--ret to count, if used it will give the number back
+
+====================================================================
 6.6.1 (8/6/2020)
 
 FIXES:

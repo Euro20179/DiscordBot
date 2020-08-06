@@ -1086,7 +1086,7 @@
       },
       {
         "name": "count",
-        "params": "(--any combination if i, b, and u) (--all) (-e (-c <color>)) (--tts)",
+        "params": "(--any combination if i, b, and u) (--all) (-e (-c <color>)) (--tts) (--ret)",
         "desc": "counts in #counting\n--i makes *italic*\n--b makes **bold**\n--ib makes ***italic and bold***\n--e makes embeded, if -c must be a hex code like 00ffe2\n--u makes underlined\n--ui makes underlined + italic\n-all sends __***number***__",
         "date": "5/6/2020"
       },
