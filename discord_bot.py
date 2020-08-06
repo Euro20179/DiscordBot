@@ -1,4 +1,5 @@
 from cmds import *
+from common import __version__
 
 CMDS = {
     "echo": echo,
@@ -203,21 +204,22 @@ CMDS = {
     "weather": getWeather,
     "baseballscore": getBaseballScore,
     "baseball": getBaseballScore,
-    "mlb": getBaseballScore
+    "mlb": getBaseballScore,
+    "covid": covid
 }
 
 @client.event
 async def on_ready():
     global blueCheck, neutral, CATS, CMDLIST, CUSTOMCMDS, BOTMODS
-    await client.change_presence(activity=discord.Game(f'version: {VERSION}'))
+    await client.change_presence(activity=discord.Game(f'version: {__version__}'))
     foo = await client.fetch_user(334538784043696130)
-    await foo.send(f"ONLINE\nversion: {VERSION}")
+    await foo.send(f"ONLINE\nversion: {__version__}")
     del foo
     blueCheck = discord.utils.get(client.emojis, name="Blue_check")
     neutral = discord.utils.get(client.emojis, name="neutral")
     CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
     BOTMODS = reloadBOTMODS()
-    print(f"ONLINE\nversion: {VERSION}")
+    print(f"ONLINE\nversion: {__version__}")
 
 @client.event
 async def on_disconnect():
@@ -450,7 +452,8 @@ async def runCommand(msg, content, cmd, Iscmd=False, DoFirst=False, WriteToFile=
         elif cmd == "avatar": content = await returnMsg(msg, (await getUserInContent(msg, content, cmd)).avatar_url)
         elif cmd == "exec" and await hasPerms(msg.author.id, "exec"):
             try:
-                exec(str(Content(content)))
+                exec(str(Content(content)), globals(), locals())
+                content = await returnMsg(msg, "done")
             except Exception as e:
                 content = await returnMsg(msg, e)
             Iscmd = True
@@ -521,28 +524,29 @@ async def on_message(msg):
     Iscmd=RWhenDone = False
     if msg.author.id == 311621977339068418 and msg.channel.id not in (732071485564256377, 715043261110288415):
         await msg.delete()
-    if "[" in content and PREFIX != content[0]:
-        if "[delete" in content: 
-            await msg.delete()
-        elif "[delin" in content:
-            t = content.split("[delin")[1]
-            try: await asyncio.sleep(float(t))
-            except: return await returnMsg(msg, "NaN")
-            await msg.delete()
+    if PREFIX in content and PREFIX != content[0]:
+        cmd = getCmd(content.split(PREFIX)[1])
+        with switch(cmd) as case:
+            if case("delete"): await msg.delete()
+            elif case("delin"):
+                t = content.split("[delin")[1]
+                try: await asyncio.sleep(float(t))
+                except: return await returnMsg(msg, "NaN")
+                await msg.delete()
+                Iscmd = True
+            elif case("rw") and not case(["dr", "rwd"]):
+                c = splitContent(content, "[rw", index=1).strip()
+                if " " in c:
+                    split = splitContent(c, " ")
+                    for s in split:
+                        if s in client.emojis: await msg.add_reaction(discord.utils.get(client.emojis, id=int(s.split(":")[2][:-1])))
+                        else: await msg.add_reaction(s)
+                else:
+                    e = discord.utils.get(client.emojis, id=int(c.split(":")[2][:-1])) if c in client.emojis else c
+                    await msg.add_reaction(e)
+            elif case("rwd") and not case("dr"):
+                RWhenDone=Iscmd = True
             Iscmd = True
-        elif "[rw" in content and "[dr" not in content and "[rwd" not in content:
-            c = splitContent(content, "[rw", index=1).strip()
-            if " " in c:
-                split = splitContent(c, " ")
-                for s in split:
-                    if s in client.emojis: await msg.add_reaction(discord.utils.get(client.emojis, id=int(s.split(":")[2][:-1])))
-                    else: await msg.add_reaction(s)
-            else:
-                e = discord.utils.get(client.emojis, id=int(c.split(":")[2][:-1])) if c in client.emojis else c
-                await msg.add_reaction(e)
-            Iscmd = True
-        elif "[rwd" in content and "[dr" not in content:
-            RWhenDone=Iscmd = True
     if not content: 
         return
         
@@ -617,10 +621,8 @@ async def on_message(msg):
 
         if cmd == "stop":
             await stop()
-            return
             
-        else: 
-            content = await runCommand(msg, content, cmd, Iscmd=Iscmd, WriteToFile=WriteToFile)
+        else: content = await runCommand(msg, content, cmd, Iscmd=Iscmd, WriteToFile=WriteToFile)
                 
     if playingHangman.get(msg.author.id):
         tempWord = playingHangman[msg.author.id]["word"]

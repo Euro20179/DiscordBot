@@ -628,7 +628,7 @@
       },
       {
         "name": "guessinggame",
-        "params": "[high] [lives] (--bet)",
+        "params": "[high [lives]] (--bet)",
         "desc": "you have to guess the random number from low to high, defaults to 1 through 100",
         "date": "5/12/2020"
       },
@@ -775,6 +775,12 @@
         "aliases":[
           "iscountingmessedup"
         ]
+      },
+      {
+        "name": "covid",
+        "params": null,
+        "desc": "gets total cases, deaths, and recoveries",
+        "date": "8/5/2020"
       },
       {
         "name": "weather",
@@ -1080,7 +1086,7 @@
       },
       {
         "name": "count",
-        "params": "(--i) (--b) (--ib) (--e (-c <color>)) (--u) (--ui) (--all)",
+        "params": "(--any combination if i, b, and u) (--all) (-e (-c <color>)) (--tts)",
         "desc": "counts in #counting\n--i makes *italic*\n--b makes **bold**\n--ib makes ***italic and bold***\n--e makes embeded, if -c must be a hex code like 00ffe2\n--u makes underlined\n--ui makes underlined + italic\n-all sends __***number***__",
         "date": "5/6/2020"
       },

@@ -16,12 +16,13 @@ import sys
 import threading
 import subprocess
 import youtube_dl
+import functools
 from typing import Iterable, List, Tuple, overload
 from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont, ImageChops
 
 #TODO make each user an object with data relating to stuff like leveling and ping response, it will load in when they talk so it's not super slow at login time
 
-VERSION = "6.5.4.1"
+__version__ = "6.6"
 Stop = False
 
 playingHangman = {}
@@ -434,7 +435,7 @@ class Content:
             new = [x if x.strip() != "{emote}" else str(random.choice(msg.guild.emojis)) for x in self.split(" ")]
             self.string = " ".join(new)
         self.replace("{content}", str(Content(msg.content, removeCmd=removeCmd)))
-        self.replace("{version}", VERSION)
+        self.replace("{version}", __version__)
         self.replace("{authorn}", msg.author.name).replace("{author}", msg.author.mention)
         self.replace("{authorid}", str(msg.author.id))
         self.replace("{uptime}", str(time.time() - UPTIME))
@@ -539,5 +540,21 @@ class switch:
 
 class FileException(Exception):
     pass
+
+def command(func):
+    # doc = func.__doc__
+    # name = func.__name__
+    # CMDS[name] = func
+    # if len(doc.split("aliases")) > 1:
+    #     aliases = doc.split("aliases:")[1].split("\n")
+    #     for alias in aliases:
+    #         alias = alias.strip()
+    #         if alias:
+    #             if "added" in alias: break
+    #             CMDS[alias] = func
+    def wrapper(*args, **kwargs):
+        func(*args, **kwargs)
+    return wrapper
+
 
 token = "NjQxNzk1NjU2Mzc3MTcyMDAw.XcNk8g.HEvnaXjuXFQhN1iilaaffbiPcoo"
