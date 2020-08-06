@@ -591,7 +591,7 @@ async def spacer(msg, content, cmd="spacer"):
     """
     sep = " "
     content = Content(content)
-    if not content.NoDel:
+    if not content @ "--nodel":
         try: await msg.delete()
         except: pass
     try: spaces = int(content.split(" ")[0])
