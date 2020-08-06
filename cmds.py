@@ -976,7 +976,7 @@ async def count(msg, content, cmd="count"):
             mssg = await channel.send(embed=discord.Embed(title=f'.{highest}.', color=discord.Color(color)))
             break
     else: mssg = await channel.send(text, tts=content @ "--tts")
-    if msg.channel != channel: return await returnMsg(msg, mssg.content, embed=mssg.embeds[0] if mssg.embeds else None)
+    if msg.channel != channel and content @ "--ret": return await returnMsg(msg, mssg.content, embed=mssg.embeds[0] if mssg.embeds else None)
 
 async def choose(msg, content, cmd="choose"):
     content = Content(content)
