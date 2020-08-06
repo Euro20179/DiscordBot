@@ -1,3 +1,22 @@
+6.6 (8/5/2020)
+
+ADDITIONS:
+*--tts to count
+
+READDED:
+*covid
+
+CHANGES:
+*mlb/baseball now uses espn instead of google
+*for count instead of doing --i --b and --u all seperately do: --ibu or any combination
+
+UNDEPRICATED:
+*--help for every command
+
+FIXES:
+*anymessage commands now use a consistant prefix
+
+====================================================================
 6.5.4.1 (8/4/2020)
 
 FIXES:

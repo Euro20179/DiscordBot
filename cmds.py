@@ -1,4 +1,6 @@
+from typing import Mapping
 from common import *
+from common import __version__
 
 async def stop(*args, **kwargs)->None: #similar to how raise StopIteration works, it stops whatever is happening
     global Stop
@@ -126,6 +128,7 @@ async def ping(msg, content, cmd="ping"):
     time to send message
     time to edit message
     and total execute time
+    added: 11/6/19
     """
     startFunction = time.time()
     if random.random() >= .95:
@@ -158,6 +161,7 @@ async def echo(msg, content, cmd="echo"):
         --dm: dms you
         --nodel: doesn't delete your message
         --tts: uses text to speach
+    added: 12/14/19
     """
     c = Content(content)
     c.formatMessage(msg, {"{echo}": Content(content.replace("{echo}", ""))})
@@ -196,6 +200,7 @@ async def levelMessage(msg, content, cmd="lvlmsg"):
         --see/--get/--s/--g: shows what will happen when you level up
         --f/--y: automatically agrees to change it
     FORMATS AND {level}, {xp}
+    added: 5/29/2020
     """
     if isBot(msg, client): return await returnMsg(msg, "easter e g g")
     changeTo = Content(content).calcOps(rep=True)
@@ -235,6 +240,7 @@ async def cmdUsage(msg, content, cmd="commandusage"):
         cmdusage
         cmduse
         commanduse
+    added: 5/23/2020
     """
     global commandUsage
     content = Content(content)
@@ -272,6 +278,7 @@ async def iq(msg, content, cmd="iq"):
     gets the iq of you by default
     optional params:
         [message]: the thing it is getting the iq of
+    added: 5/27/2020
     """
     iq = random.randint(-3, 200)
     content = Content(content)
@@ -288,6 +295,7 @@ async def iq(msg, content, cmd="iq"):
 async def shrug(msg, content, cmd="shrug"):
     """
     shrugs
+    added: 5/23/2020
     """
     msg = await msg.channel.send(content=r"¯\_(ツ)_/¯")
     await asyncio.sleep(.3)
@@ -310,6 +318,7 @@ async def level(msg, content, cmd="level"):
         lvl
         rank
         level
+    added: 5/22/2020
     """
     content = Content(content)
     user = content.getUser(msg)
@@ -345,6 +354,7 @@ async def leaderboard(msg, content, cmd="top"):
         levels
         top
         leaderboard
+    added: "5/23/2020
     """
     content = Content(content)
     if content @ "--raw":
@@ -394,6 +404,7 @@ async def magicBall(msg, content, cmd="8ball"):
         8
         magicball
         8ball
+    added: 5/6/19
     """
     with open(mballresponseFilePath, "r") as f:
         responses = f.read().split("\n")
@@ -414,6 +425,7 @@ async def spamCmd(msg, content, cmd="spam"):
         OR
         -random *<op> (sep with |): picks randomly from the options seperated by |
     FORMATS AND {count}, {rcount}, {lauthor}
+    added: 11/6/2020
     """
     global Stop
     if Stop: Stop = False
@@ -470,9 +482,7 @@ async def alphabet(msg, content, cmd="alphabet"):
     aliases:
         alpha
         beta
-        .
-        .
-        .
+    added: 5/9/19
     """
     send = string.ascii_lowercase
     content = Content(content)
@@ -501,6 +511,7 @@ async def unicodeChar(msg, content, cmd="unicodechar"):
         [amount]: the amount of characters to generate
     options:
         -sep <seperator> (WHITESPACEFORMATS): seperates each character by seperator
+    added: 11/9/19
     """
     content = Content(content)
     for op, param in content.opsWithParams():
@@ -519,6 +530,7 @@ async def serverEmote(msg, content, cmd="serveremote"):
         [amount]: the amount of emotes to generate
     options:
         -sep <seperator> (WHITESPACEFORMATS)
+    11/9/19
     """
     content = Content(content)
     for op, param in content.opsWithParams():
@@ -533,6 +545,9 @@ async def serverEmote(msg, content, cmd="serveremote"):
 async def writeRoles(msg, content, cmd="doesnothing"):
     """
     does absolutely nothing :)
+    required params:
+        <text>
+    added: 1/1/2020
     """
     filename = Content(content)
     with open(f".\\roles\\{filename}.txt", "w") as f:
@@ -553,7 +568,7 @@ async def spacer(msg, content, cmd="spacer"):
     required params:
         <message>: the message to space
         <amount>: the amount to space each letter
-    optional params:
+    options:
         -sep <seperator> (WHITESPACEFORMATS): instead of a space it seperates by seperator
     options:
         --nodel: doesn't delete your message
@@ -575,6 +590,14 @@ async def spacer(msg, content, cmd="spacer"):
     return await returnMsg(msg, word)
 
 async def upperLower(msg, content, cmd="upperlower"):
+    """
+    changes your message from:
+    "this" to "tHiS"
+    required params:
+        <message>
+    aliases:
+        ul
+    """
     content = Content(content)
     if not content @ "--nodel":
         try: await msg.delete()
@@ -593,6 +616,17 @@ async def upperLower(msg, content, cmd="upperlower"):
     return await returnMsg(msg, "".join(newPhrase))
 
 async def startRPS(msg, content, cmd="rps"):
+    """
+    play rock paper scissors with <member>
+    required params:
+        @<member>
+    options:
+        -time <time>: the amount of time to decide
+    aliases:
+        rps
+        rockpaperscissors
+    added: 5/18/2020
+    """
     opps = {"rock": "scissors", "paper": "rock", "scissors": "paper"}
     setTo = {"r": "rock", "p": "paper", "s": "scissors"}
     t = 15
@@ -636,6 +670,19 @@ async def startRPS(msg, content, cmd="rps"):
     else: await msg.channel.send("either someone spelled something wrong, or someone isn't playing by the rules")
 
 async def complexMessage(msg, content, cmd="complexmessage"):
+    """
+    creates a file if no [.ext] is specified it will be a txt file
+    required params:
+        <send>: yes/dm, send to chat or dm
+        <filename[.ext]>: the file's name, by default is .txt unless .ext is given
+        <content>: the content of the file
+    options:
+        --nodel: doesn't delete your command message
+    aliases:
+        message
+        complexmessage
+    added: 1/5/2020?
+    """
     content = Content(content)
     if not content @ "--nodel":
         try: await msg.delete()
@@ -649,6 +696,14 @@ async def complexMessage(msg, content, cmd="complexmessage"):
     await writeToFile(msg, mssg, filename, sendMsg=(send == "dm")^True, sendAuthor=(send == "dm"))
 
 async def sanity(msg, content, cmd="sanity"):
+    """
+    gives the sanity of <mesage>
+    requried params:
+        <message>
+    options:
+        -r <round to>: rounds by <round to>, defaults to 3
+    added: 1/18/2020
+    """
     c = Content(content)
     if "-r" in c:
         r = int(c.split("-r ")[1])
@@ -661,6 +716,13 @@ async def sanity(msg, content, cmd="sanity"):
     return await returnMsg(msg, cases.get(True)) if cases.get(True) else await returnMsg(msg, f'{c} has {san}% sanity')
 
 async def coin(msg, content, cmd="coin"):
+    """
+    flips a coin
+    optional params:
+        [h/t]: bet heads/tails (cannot specify flips if this is chosen)
+        [flips]: the amount of times to flip the coin (limit of 10000000)
+    added: 1/18/2020
+    """
     title = res = "heads" if random.random() >= .5 else "tails"
     if " " in content:
         bet = content.split(" ")[1].strip()
@@ -686,6 +748,14 @@ async def coin(msg, content, cmd="coin"):
     return await returnMsg(msg, embed=embed)
 
 async def weightedCoin(msg, content, cmd="weightedcoin"):
+    """
+    flips a weighted coin
+    required params:
+        <heads odds>: the odds of landing on heads
+    optional params:
+        [times]: the times to flip the coin (limit of 10000000)
+    added: 6/30/2020
+    """
     content = Content(content).split(" ")
     headsOdds = content[0]
     if len(content) > 1:
@@ -710,6 +780,12 @@ async def weightedCoin(msg, content, cmd="weightedcoin"):
     return await returnMsg(msg, embed=embed)
 
 async def roleInfo(msg, content, cmd="roleinfo"):
+    """
+    gets info on a role
+    optional params:
+        [role]: the role to get info on, your top role by default
+    added: 5/26/2020
+    """
     rolename = Content(content).strip()
     if not rolename:
         rolename = msg.author.top_role.name
@@ -826,21 +902,24 @@ async def count(msg, content, cmd="count"):
         if x.author == client.user: return ""
     text = f'.{highest}.'
     fancy = ""
-    if content @ "--i":
-        fancy += "*"
-    if content @ "--b":
-        fancy += "**"
-    if content @ "--u":
-        fancy += "__"
+    for op in content.ops():
+        if "i" in op:
+            fancy += "*"
+        if "b" in op:
+            fancy += "**"
+        if "u" in op:
+            fancy += "__"
     if content @ "--all":
         fancy += "***__"
     text = fancy + text + fancy[::-1]
-    if "-e" in content:
-        if "-c" in content:
-            color = int(f'0x{content.split("-c")[1].strip()}', 16)
-        else: color = 0x000000
-        mssg = await channel.send(embed=discord.Embed(title=f'.{highest}.', color=discord.Color(color)))
-    else: mssg = await channel.send(text)
+    for op, param in content.opsWithParams():
+        if op == "-e":
+            if param: color = int(param, 16)
+            else: color = 0x000000
+            mssg = await channel.send(embed=discord.Embed(title=f'.{highest}.', color=discord.Color(color)))
+            break
+    else: mssg = await channel.send(text, tts=content @ "--tts")
+    if msg.channel != channel: return await returnMsg(msg, mssg.content, embed=mssg.embeds[0] if mssg.embeds else None)
 
 async def choose(msg, content, cmd="choose"):
     content = Content(content)
@@ -2763,7 +2842,22 @@ async def embedCmd(msg, content, cmd="embed"):
             embed.add_field(name=name, value=str(value), inline=Inline)
     return await returnMsg(msg, embed=embed)
 
+@command
 async def emoteUsage(msg, content, cmd="emoteusage"):
+    """
+    gives the most used emotes
+    optional params:
+        emote: the emote to get the usage of
+    options:
+        -top <top>: gives the top <top> emotes instead of the top 10
+        --least: gives the least used emotes
+        --raw: gives the raw json file
+        --file: gives a generated file of the most used emotes
+    aliases:
+        emojiusage
+        emoteusage
+    date: 7/10/2020
+    """
     content = Content(content)
     if content @ "--raw":
         with open(emoteUsageFilePath, "rb") as f: return await returnMsg(msg, file=discord.File(f, "emoteusage.json"))
@@ -2800,44 +2894,75 @@ async def emoteUsage(msg, content, cmd="emoteusage"):
                 os.remove("EMOTEFILE.txt")
                 return msg
 
+@command
 async def toKelvin(msg, content, cmd="tok"):
+    """
+    calculates <temp> to kelvin
+    example: [tok 60f
+    required params:
+        <temp>: the tempurature
+    optional params:
+        [from]: put c/f in the temp anywhere to say what unit to convert from
+    added: 7/14/2020
+    """
     content = Content(content)
     t = "f" if "f" in content else "c"
     content = content.string.replace(t, "").strip()
     ans = (9 / 5 * float(content) + 32) + 273 if t == "f" else float(content) + 273
     return await returnMsg(msg, str(ans))
 
+@command
 async def guessingGame(msg, content, cmd="guessinggame"):
-        c = Content(content)
-        Bet = c @ "--bet"
-        LOW, HIGH, LIVES = 1, 100, 5
-        if len(c) > 0:
-            c = c.split(" ")
-            HIGH = int(c[0])
-            c.pop(0)
-            if len(c) >= 1: LIVES = int(c[0])
-        STARTLIVES = LIVES
-        ans = random.randint(LOW, HIGH)
-        await msg.channel.send("guess")
-        while True:
-            try: c = (await client.wait_for("message", check=lambda mssg: mssg.author == msg.author and (mssg.content.isnumeric() or mssg.content.lower() in ["stop", "giveup", "cancel"]), timeout=60.0)).content.lower()
-            except: return await msg.channel.send("waited too long")
-            if c in ["stop", "giveup", "cancel"]:
-                return await msg.channel.send(embed=discord.Embed(title=f'{msg.author.display_name} YOU LOSE\nTHE ANSWER WAS {ans}', color=discord.Color.from_rgb(100, 0, 0)))
-            LIVES -= 1
-            if int(c) == ans:
-                say = f"YOU WIN\nWITH {LIVES} LIVES LEFT" if not Bet else f'YOU WIN\nWITH {LIVES} LIVES LEFT\nYou earned {(int(ans) // STARTLIVES)}'
-                if Bet: await addMoney(msg.author, (int(ans) // STARTLIVES))
-                rv = await msg.channel.send(embed=discord.Embed(title=say, color=discord.Color.from_rgb(0, 255, 0)))
-                return await embedToReadableDict(rv, rv.embeds[0])
-            elif LIVES <= 0:
-                say = f"YOU LOSE\nTHE ANSWER WAS {ans}" if not Bet else f'YOU LOSE\nTHE ANSWER WAS {ans}\nYOU LOSE {(int(ans) // STARTLIVES)}'
-                if Bet: await addMoney(msg.author, -(int(ans) // STARTLIVES))
-                rv = await msg.channel.send(embed=discord.Embed(title=say, color=discord.Color.from_rgb(255, 0, 0)))
-                return await embedToReadableDict(rv, rv.embeds[0])
-            await msg.channel.send(f"{msg.author.mention} too high" if int(c) > ans else f"{msg.author.mention} too low\nguess\nyou have {LIVES} lives left")
+    """
+    guess a random number for 1 to [high] (defaults to 100)
+    and if you guess correctly within [lives] (5 by default) tries you win
+    optional params:
+        high [lives]: the highest number it could be
+            lives: the amount of lives, (must specify high to specify lives)
+    options:
+        --bet: whether or not to bet on the game
+    added: 5/12/2020
+    """
+    c = Content(content)
+    Bet = c @ "--bet"
+    LOW, HIGH, LIVES = 1, 100, 5
+    if len(c) > 0:
+        c = c.split(" ")
+        HIGH = int(c[0])
+        c.pop(0)
+        if len(c) >= 1: LIVES = int(c[0])
+    STARTLIVES = LIVES
+    ans = random.randint(LOW, HIGH)
+    await msg.channel.send("guess")
+    while True:
+        try: c = (await client.wait_for("message", check=lambda mssg: mssg.author == msg.author and (mssg.content.isnumeric() or mssg.content.lower() in ["stop", "giveup", "cancel"]), timeout=60.0)).content.lower()
+        except: return await msg.channel.send("waited too long")
+        if c in ["stop", "giveup", "cancel"]:
+            return await msg.channel.send(embed=discord.Embed(title=f'{msg.author.display_name} YOU LOSE\nTHE ANSWER WAS {ans}', color=discord.Color.from_rgb(100, 0, 0)))
+        LIVES -= 1
+        if int(c) == ans:
+            say = f"YOU WIN\nWITH {LIVES} LIVES LEFT" if not Bet else f'YOU WIN\nWITH {LIVES} LIVES LEFT\nYou earned {(int(ans) // STARTLIVES)}'
+            if Bet: await addMoney(msg.author, (int(ans) // STARTLIVES))
+            rv = await msg.channel.send(embed=discord.Embed(title=say, color=discord.Color.from_rgb(0, 255, 0)))
+            return await embedToReadableDict(rv, rv.embeds[0])
+        elif LIVES <= 0:
+            say = f"YOU LOSE\nTHE ANSWER WAS {ans}" if not Bet else f'YOU LOSE\nTHE ANSWER WAS {ans}\nYOU LOSE {(int(ans) // STARTLIVES)}'
+            if Bet: await addMoney(msg.author, -(int(ans) // STARTLIVES))
+            rv = await msg.channel.send(embed=discord.Embed(title=say, color=discord.Color.from_rgb(255, 0, 0)))
+            return await embedToReadableDict(rv, rv.embeds[0])
+        await msg.channel.send(f"{msg.author.mention} too high" if int(c) > ans else f"{msg.author.mention} too low\nguess\nyou have {LIVES} lives left")
 
+@command
 async def flashEmote(msg, content, cmd="flashemote"):
+    """
+    makes the emote smaller then BIGGER then smaller then BIGGER
+    optional params:
+        emote: the emote (or technically any text) to flash
+        times: the amount of times to flash
+    options:
+        -t <seconds>: the amount of time between each edit
+    added: 7/16/2020
+    """
     global Stop
     if Stop: Stop = False
     content = Content(content)
@@ -2858,7 +2983,11 @@ async def flashEmote(msg, content, cmd="flashemote"):
         await asyncio.sleep(sleepFor)
         await editable.edit(content=f'{emote}' if editable.content == f'{emote} _ _' else f'{emote} _ _')
 
+@command
 async def bans(msg, content, cmd="bans"):
+    """
+    gets the bans
+    """
     if not testInContent(content, "--raw"):
         with open(bannedFilePath, "r+") as bannedJ:
             data = json.load(bannedJ)
@@ -2868,7 +2997,14 @@ async def bans(msg, content, cmd="bans"):
     with open(bannedFilePath, "rb") as bannedJ:
         return await returnMsg(msg, file=discord.File(bannedJ, "bans.json"))
 
+@command
 async def reactionTime(msg, content, cmd="reactiontime"):
+    """
+    checks your reaction time
+    the bot will say go, and you have to send a message
+    as fast as possible
+    added: 5/20/2020
+    """
     await msg.channel.send("i will say GO and you have to send something as fast as possible (probably prepare the message before hand)")
     await asyncio.sleep(random.uniform(1.5, 6))
     start = time.time()
@@ -2879,7 +3015,19 @@ async def reactionTime(msg, content, cmd="reactiontime"):
         end = time.time()
         return await returnMsg(msg, f'your reaction time {end - start}')
 
+@command
 async def editMsg(msg, content, cmd="editmsg"):
+    """
+    edits a message the blue circle sent
+    required params:
+        <content of new message>
+    options:
+        -channel <channel>: the channel the message was sent in
+        --nodel: doesn't delete your command message
+    added: 7/23/2020
+    FORMATS (msg)
+    WHITESPACE FORMATS
+    """
     content = Content(content)
     if not content @ "--nodel": await msg.delete()
     for op, param in content.opsWithParams():
@@ -2894,7 +3042,15 @@ async def editMsg(msg, content, cmd="editmsg"):
     repWith = repWith.whitespaceFormat(str(repWith))
     await msg.edit(content=repWith)
 
+@command
 async def isCountingMessedUp(msg, content, cmd="isCountingMessedUp"):
+    """
+    checks if #counting is messed up
+    aliases:
+        icmu
+        iscountingmessedup
+    added: 7/24/2020
+    """
     global Stop
     channel = await client.fetch_channel(468874244021813258)
     last = math.nan
@@ -2914,7 +3070,14 @@ async def isCountingMessedUp(msg, content, cmd="isCountingMessedUp"):
             else: last -= 1
     return await returnMsg(msg, "done")
 
+@command
 async def getWeather(msg, content, cmd="weather"):
+    """
+    gets the weather in <location>
+    required params:
+        <location>
+    added: 7/24/2020
+    """
     content = Content(content)
     if not content:
         return await returnMsg(msg, "But like where?")
@@ -2938,7 +3101,24 @@ async def getWeather(msg, content, cmd="weather"):
     embed.add_field(name="Overhead", value=condition, inline=False)
     return await returnMsg(msg, embed=embed)
 
+@command
 async def getBaseballScore(msg, content, cmd="baseballscore"):
+    """
+    gets the current score for <team>'s game
+    if they are not in a game, it will say when they next play
+    required params:
+        <team>
+    options:
+        --totalcolor: changes the way it calculates the color
+            by default it's more red if the away team is dominating
+            and more blue if the home team is dominating
+            this makes it so it's the sum of the score / the highest
+            scoring game in baseball
+    aliases:
+        baseball
+        baseballscore
+        mlb
+    """
     content = Content(content).calcOps()
     if not content: return await returnMsg(msg, "smh man what team")
     request = requests.get(f"https://www.google.com/search?q={content}+game")
@@ -2954,8 +3134,6 @@ async def getBaseballScore(msg, content, cmd="baseballscore"):
         embed = discord.Embed(title=f'{t1[0]} @ {t2[0]}', color=discord.Color.from_rgb(*color))
         embed.add_field(name="Inning", value=inning)
         embed.add_field(name="Score", value=f'{t1[1]} TO {t2[1]}')
-        if t1[1] == 7 and t2[1] == 7 and str(inning) == "7":
-            await giveAchievements(msg.author.id, "7th 7-7")
     else:
         try:
             time = soup.find_all("span", {"class": "r0bn4c rQMQod"})[0:2]
@@ -2977,4 +3155,20 @@ async def getBaseballScore(msg, content, cmd="baseballscore"):
             embed.add_field(name=f"{t1[0]}'s score", value=str(t1[1]))
             embed.add_field(name=f"{t2[0]}'s score", value=str(t2[1]))
 
+    return await returnMsg(msg, embed=embed)
+
+@command
+async def covid(msg, content, cmd="covid"):
+    """
+    Gets the total cases, total deaths, and total recoveries
+    of the COVID-19 pandemic
+    """
+    request = requests.get("https://www.worldometers.info/coronavirus/").text
+    soup = bs.BeautifulSoup(request, features="html.parser")
+    div = soup.find("div", {"class": "content-inner"})
+    totalCases, totalDeaths, totalRecovered = map(lambda x: x.text.strip(), div.find_all("div", {"class": "maincounter-number"}))
+    embed = discord.Embed(title="Covid stats", color=discord.Color(0xff0000))
+    embed.add_field(name="Total Cases", value=totalCases)
+    embed.add_field(name="Total Deaths", value=totalDeaths)
+    embed.add_field(name="Total Recovered", value=totalRecovered)
     return await returnMsg(msg, embed=embed)
