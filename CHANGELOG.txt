@@ -1,4 +1,35 @@
-6.6.3
+6.7-rc1 (8/10/2020)
+
+ADDITIONS:
+*dice
+*point as an alias to imgpoint
+*--help should now work for every single command
+*instead of doing --iub for count you can now do ***__ or technically anything, you could do ``` or > lol
+*--rand to color in embed
+
+ADDEDBACK:
+*thepenguincommand and tpc as aliases for twc
+
+CHANGES:
+*for hex, bin, and oct instead of seperating with | sepearte with a space
+*put --d in edit to delete the previous message
+*help [category] no longer gives command descriptions
+    *instead do [cmd --help
+*moved a bunch of commands to custom cmds
+    *servericon
+    longmessage
+    *thetroycommand
+
+REMOVED:
+*help custom
+
+TECHNICAL:
+*hex, bin, oct now use different functions
+*changed the name of a bunch of functions
+*changed how help works
+
+====================================================================
+6.6.3 (8/6/2020)
 
 FIXES:
 *spacer

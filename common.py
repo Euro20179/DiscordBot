@@ -22,7 +22,7 @@ from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont
 
 #TODO make each user an object with data relating to stuff like leveling and ping response, it will load in when they talk so it's not super slow at login time
 
-__version__ = "6.6.3"
+__version__ = "6.7-rc1"
 Stop = False
 
 playingHangman = {}
@@ -51,6 +51,7 @@ userAchievementsFilePath = f'{DISEXT}/userachievements.json'
 queuePath = "./queue"
 EUROID = 334538784043696130
 client = commands.Bot(command_prefix=fakePrefix)
+CMDS = {}
 
 SARCASTICQUOTES = ("mhm", "interesting", "fascinating", "very cool")
 FAMILY = """
@@ -142,18 +143,17 @@ async def getImg(msg, user=None, NotFromChat=False):
             return await msg.channel.send("no img provided")
     return att, filename, url
 
-async def reloadCMDSLIST():
-    with open("cmds.json", "r") as cmdsJson:
-        data = json.load(cmdsJson)
-        with open(customcmdsFilePath, "r") as customJson:
-            foo = json.load(customJson)
-            for cat in data:
-                if cat["cat"] == "CUSTOM":
-                    cat["cmds"] = foo
-        CATS = {cat["cat"]: cat["cmds"] for cat in data}
-        CMDLIST = tuple(cmd for _ in CATS.values() for cmd in _) #gets a list of commands
-        CUSTOMCMDS = {cmd["name"]: cmd["desc"] for cmd in CATS["CUSTOM"]}
-    return CATS, CMDLIST, CUSTOMCMDS
+async def reloadCMDSLIST(retCats=False):
+    with open(customcmdsFilePath, "r") as cmdsJson:
+        customCMDData = json.load(cmdsJson)
+        CUSTOMCMDS = {cmd["name"]: cmd["desc"] for cmd in customCMDData}
+    with open("cmds.json", "r+") as f:
+        data = json.load(f)
+        CATS = [cat for cat in data.keys()]
+        data["CUSTOM"]["cmds"] = customCMDData
+        clearFile(f)
+        json.dump(data, f)
+    return CUSTOMCMDS if not retCats else CATS
 
 def isBot(msg, client)->bool:
     return msg.author == client.user or msg.author.bot
@@ -541,20 +541,88 @@ class switch:
 class FileException(Exception):
     pass
 
-def command(func):
-    # doc = func.__doc__
-    # name = func.__name__
-    # CMDS[name] = func
-    # if len(doc.split("aliases")) > 1:
-    #     aliases = doc.split("aliases:")[1].split("\n")
-    #     for alias in aliases:
-    #         alias = alias.strip()
-    #         if alias:
-    #             if "added" in alias: break
-    #             CMDS[alias] = func
-    async def wrapper(*args, **kwargs):
-        return await func(*args, **kwargs)
-    return wrapper
+class command:
+    def __init__(self, func):
+        self.func = func
+        self.aliases = []
+        self.doc = func.__doc__
+        self._Help = False
+        doc = func.__doc__
+        name = func.__name__.lower()
+        CMDS[name] = self
+        if len(doc.split("aliases")) > 1:
+            aliases = doc.split("aliases:")[1].split("\n")
+            for alias in aliases:
+                if alias != " ": alias = alias.strip()
+                if alias:
+                    if "added" in alias: 
+                        self.date = alias.split("added")[1].strip().strip(":").strip()
+                        break
+                    CMDS[alias] = self
+                    self.aliases.append(alias)
+    async def __call__(self, *args, **kwargs):
+        return await self.func(*args, **kwargs)
 
+    def calcHelp(self):
+        helpMsg = self.doc
+        if "WHITESPACEFORMATS" in helpMsg: helpMsg += "\ndo help whitespaceformats for more information"
+        if "FORMATS" in helpMsg: helpMsg += "\ndo help formats for more information"
+        desc = ""
+        requiredParams = ""
+        optionalParams = ""
+        options = ""
+        added = ""
+        aliases = ""
 
+        helpMsgTemp = helpMsg.split("\n")
+        for line in helpMsgTemp:
+            if "added" in line or "params" in line or "options" in line or "aliases" in line:
+                break
+            desc += line.strip() + "\n"
+
+        helpMsgRequired = helpMsg.split("required params")
+        if len(helpMsgRequired) > 1:
+            helpMsgRequired = helpMsgRequired[1].split("\n")
+            for line in helpMsgRequired:
+                if "added" in line or "params" in line or "options" in line or "aliases" in line:
+                    break
+                requiredParams += line.strip().strip(":") + "\n"
+
+        helpMsgOptional = helpMsg.split("optional params")
+        if len(helpMsgOptional) > 1:
+            helpMsgOptional = helpMsgOptional[1].split("\n")
+            for line in helpMsgOptional:
+                if "added" in line or "params" in line or "options" in line or "aliases" in line:
+                    break
+                optionalParams += line.strip().strip(":") + "\n"
+
+        helpMsgOptions = helpMsg.split("options")
+        if len(helpMsgOptions) > 1:
+            helpMsgOptions = helpMsgOptions[1].split("\n")
+            for line in helpMsgOptions:
+                if "added" in line or "params" in line or "options" in line or "aliases" in line:
+                    break
+                options += line.strip().strip(":") + "\n"
+
+        helpMsgAdded = helpMsg.split("added")
+        if len(helpMsgAdded) > 1:
+            added = helpMsgAdded[1].strip().strip(":").strip()
+        newLine = "\n"
+        backSpace = "\b"
+        helpMsg = f'**```{desc}```**'
+        if requiredParams:
+            helpMsg += f"```required params:{requiredParams}```"
+        if optionalParams:
+            helpMsg += f"```optional params:{optionalParams}```"
+        if options:
+            helpMsg += f"```options:{options}```"
+        if self.aliases:
+            helpMsg += f"```aliases:{newLine + newLine.join(self.aliases)}```"
+        if added:
+            helpMsg += f"```added:{added}```"
+        self._Help = helpMsg
+
+    def help(self):
+        if not self._Help: self.calcHelp()
+        return self._Help
 token = "NjQxNzk1NjU2Mzc3MTcyMDAw.XcNk8g.HEvnaXjuXFQhN1iilaaffbiPcoo"

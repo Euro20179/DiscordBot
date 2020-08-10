@@ -7,108 +7,84 @@ async def stop(*args, **kwargs)->None: #similar to how raise StopIteration works
     Stop = True
     if args: return random.choice(args)
 
+@command
 async def hlp(msg, content, cmd="help"):
-    global CATS, CMDLIST, CUSTOMCMDS
-    CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
-    c = Content(content)
-    added = False
-    Raw = True if c @ "--raw" else False
-    File = True if c @ "--file" else False
-    if c.testOps("--all", "--allh"):
-        with open('cmds.json', "r") as j:
-            data = json.load(j)
-        with open(f"help.{'txt' if c @ '--all' else 'html'}", "w", encoding="utf-8") as f:
-            if c @ "--all":
-                for cat in data:
-                    f.write(cat["cat"] + '\n')
-                    f.write(cat["desc"] + '\n')
-                    for cmd in cat["cmds"]:
-                        f.write(f'name: {cmd["name"]}\nparams: {cmd.get("params")}\ndescription: {cmd.get("desc")}\ndate added: {cmd.get("date")}\naliases: {cmd.get("aliases")}\n\n')
-            elif c @ "--allh":
-                f.write("<html>\n<head>\n<meta charset='utf-8'>\n</head>\n<body style='font-family:arial;font-size:20px;'>")
-                for cat in data:
-                    f.write(f'<p style="color:red;">{cat["cat"]}</p>')
-                    f.write(f'<p style="border-bottom: 1px solid black;color:red;">{cat["desc"]}</p>')
-                    for cmd in cat["cmds"]:
-                        f.write(f'<p style="border-bottom: 1px dashed black;">name: {cmd["name"]}<br />params: {str(cmd.get("params")).replace("<", "&lt;").replace(">", "&gt;")}<br />description: {cmd.get("desc")}<br />date added: {cmd.get("date")}<br />aliases: {cmd.get("aliases")}<br /></p>')
-        with open(f"help.{'txt' if c @ '--all' else 'html'}", "rb") as f:
-            mssg = await returnMsg(msg, file=discord.File(f, f"help.{'txt' if c @ '--all' else 'html'}"))
-        os.remove(f"help.{'txt' if c @ '--all' else 'html'}")
-        return mssg
-    for op, param in c.opsWithParams():
-        if op == "-added":
-            added = param
-    cat = str(c).upper()
-    if added:
-        with open(f'cmds.json', "r") as f:
-            data = json.load(f)
-            cmds = [cmd["name"] for cat in data for cmd in cat["cmds"] if cmd.get("date") == added]
-            return await returnMsg(msg, "\n".join(cmds))
-    if not cat:
-        embed = discord.Embed(title="General", color=discord.Color(0x0000ff))
+    """
+    help command
+    optional params:
+        [category/cmd]: list the cmds in a particular category if a category is given
+            otherwise gives help for command
+    options:
+        --raw: gets the raw json file of the cmds
+        --file: generates a file instead of embed if [category] is specified
+    aliases:
+        help
+        hlp
+    added: day 1
+    """
+    global CUSTOMCMDS
+    CUSTOMCMDS = await reloadCMDSLIST()
+    CATS = await reloadCMDSLIST(retCats=True)
+    content = Content(content)
+    if content @ "--raw":
+        with open("cmds.json", "rb") as f:
+            return await returnMsg(msg, file=discord.File(f, "cmds.json"))
+    File = content @ "--file"
+    if not content:
+        embed = discord.Embed(title="Help", color=discord.Color(random.randint(0, 16777215)))
         with open("cmds.json", "r") as j:
             data = json.load(j)
-            for cat in data:
-                embed.add_field(name=cat["cat"], value=cat["desc"])
+            for cat, catI in data.items():
+                embed.add_field(name=cat, value=catI["desc"])
         return await returnMsg(msg, embed=embed)
-    elif cat in CATS:
-        embed = discord.Embed(title=cat, color=discord.Color(0x00ffe2))
-        if cat == "CUSTOM":
-            for cmd in CATS[cat]:
-                embed.add_field(name=f'{cmd["name"]}', value=f'``{cmd["name"]}``  {cmd["desc"]}')
-        else:
-            for cmd in CATS[cat]:
-                embed.add_field(name=f'{cmd["name"]}', value=f'``{cmd["desc"]}``', inline=False)
-        try:
-            if File: raise Exception("wanted file")
-            if len(embed) > 6000:
-                raise Exception("too long")
-            return await returnMsg(msg, embed=embed)
-        except Exception as e:
-            print(e)
-            if not cat: cat = "help"
-            with open(f'{cat}.txt', "w") as f:
-                for cmd in CATS[cat]:
-                    f.write(f'{cmd["name"]}\n\nparams: {cmd["params"]}\n\nDescription: {cmd["desc"]}\n\nAliases: {cmd.get("aliases")}\n\nAdded: {cmd.get("date")}\n\n\n\n')
-            with open(f'{cat}.txt', "rb") as f:
-                return await returnMsg(msg, file=discord.File(f, f'{cat}.txt'))
-            os.remove(f"{cat}.txt")
-        return cat
+    else:
+        if content.string.upper().strip() in CATS and content.string.strip() != "custom":
+            embed = discord.Embed(title=str(content), color=discord.Color(random.randint(0, 16777215)))
+            with open("cmds.json", "r") as j:
+                data = json.load(j)
+                for cat, catI in data.items():
+                    if cat.lower().strip() == content.lower().strip():
+                        field = "```\n"
+                        for n, cmd in enumerate(catI["cmds"]):
+                            print(n, cmd)
+                            if n % 7 == 0 and n != 0: 
+                                field += f'{cmd}```'
+                                print(field)
+                                embed.add_field(name=str(n), value=field)
+                                field = "```\n"
+                            else:
+                                field += f'{cmd}\n'
+                                print(field)
+                        if n % 7 != 0:
+                            embed.add_field(name=str(n), value=field + "```")
 
-    with open("cmds.json", "rb") as j:
-        if Raw: #the file
-            await returnMsg(msg, file=discord.File(j, "cmds.json"))
-        else: #by specific commoand
-            command = splitContent(content, " ", index=1)
-            embed = discord.Embed(title=command, color=discord.Color(0x00ffe2))
-            for cmd in CATS.values():
-                for c in cmd:
-                    al = c.get("aliases")
-                    if al:
-                        if command in al: isCmd = True
-                    else: isCmd = False
-                    if c["name"] == command or isCmd:
-                        params = c["params"]
-                        desc = c["desc"]
-                        aliases = c.get("aliases")
-                        date = c.get("date")
-                        Locked = c.get("Locked")
-                        addedBy = c.get("addedby")
-                        editedBy = c.get("editedby")
-                        if aliases: aliases = ",\n".join(f'``{x}``' for x in aliases)
-                        break
-            try:
-                if params: embed.add_field(name="params", value=f'``{params}``', inline=False)
-                embed.add_field(name="description", value=f'``{desc}``', inline=False)
-                if aliases: embed.add_field(name="aliases", value=aliases, inline=False)
-                if Locked is not None: embed.add_field(name="locked", value=Locked, inline=False)
-                if addedBy is not None: embed.add_field(name="added by", value=(await client.fetch_user(int(addedBy))).name, inline=False)
-                if editedBy: embed.add_field(name="edited by", value="\n".join([(await client.fetch_user(int(userId))).name for userId in editedBy]), inline=False)
-                embed.add_field(name="date added", value=date if date else "unknown", inline=False)
-            except Exception as e:
-                print(e)
-                return await returnMsg(msg, 'command not found')
-            return await returnMsg(msg, embed=embed)
+        elif content.string.strip() == "custom":
+            return await returnMsg(msg, "do [ccmdlist")
+
+        elif CUSTOMCMDS.get(str(content)):
+            with open(customcmdsFilePath) as j:
+                data = json.load(j)
+                embed = discord.Embed(title=str(content), color=discord.Color(random.randint(0, 16777215)))
+                for cmd in data:
+                    if cmd["name"] == str(content):
+                        params = cmd.get("params")
+                        date = cmd.get("date")
+                        Locked = cmd.get("Locked")
+                        addedBy = cmd.get("addedby")
+                        editedBy = cmd.get("editedby")
+                        embed.add_field(name="desc", value=cmd["desc"])
+                        if params: embed.add_field(name="params", value=params, inline=False)
+                        if date: embed.add_field(name="date added", value=date, inline=False)
+                        if Locked: embed.add_field(name="locked", value=Locked, inline=False)
+                        if addedBy:
+                            embed.add_field(name="added by", value=(await client.fetch_user(int(addedBy))).mention, inline=False)
+                        if editedBy:
+                            embed.add_field(name="edited by", value="\n".join([(await client.fetch_user(int(user))).mention for user in editedBy]), inline=False)
+                        return await returnMsg(msg, embed=embed)
+                return await returnMsg(msg, "cmd not found")
+        else:
+            return await returnMsg(msg, CMDS[str(content)].help())                                
+        return await returnMsg(msg, embed=embed)
 
 async def spam(msg, messages, message, BlockStop=False):
     global Stop
@@ -163,6 +139,10 @@ async def echo(msg, content, cmd="echo"):
         --dm: dms you
         --nodel: doesn't delete your message
         --tts: uses text to speach
+    aliases:
+        echo
+        e
+ 
     added: 12/14/19
     """
     c = Content(content)
@@ -204,6 +184,9 @@ async def levelMessage(msg, content, cmd="lvlmsg"):
         --see/--get/--s/--g: shows what will happen when you level up
         --f/--y: automatically agrees to change it
     FORMATS AND {level}, {xp}
+    aliases:
+        lvlmsg
+        levelmessage
     added: 5/29/2020
     """
     if isBot(msg, client): return await returnMsg(msg, "easter e g g")
@@ -362,6 +345,7 @@ async def leaderboard(msg, content, cmd="top"):
         levels
         top
         leaderboard
+        lb
     added: "5/23/2020
     """
     content = Content(content)
@@ -404,16 +388,20 @@ async def leaderboard(msg, content, cmd="top"):
 @command
 async def magicBall(msg, content, cmd="8ball"):
     """
-    the beloved magic 8 ball
+    the mAgiC 8ball ooooooooooooooo spoooooky
     optional params:
-        [question]: ask a question (some responses may use it)
+        [question]: ask it a question :)
     options:
-        -e [color]: makes an embed that is black by default or has as color of color
+        -e [color]: makes the answer an embed
+            [color] specifies the color defaults to black
+    FORMATS (question)
+    WHITESPACEFORMATS
     aliases:
-        8
         magicball
+        8
         8ball
-    added: 5/6/19
+        7ball
+    added: 11/6/19
     """
     with open(mballresponseFilePath, "r") as f:
         responses = f.read().split("\n")
@@ -433,8 +421,11 @@ async def spamCmd(msg, content, cmd="spam"):
         <amount>: the amount of times to spam
         <message>: the message to spam
         OR
-        -random *<op> (sep with |): picks randomly from the options seperated by |
+        -random *<op> (sep with |): picks randomly from the ops seperated by |
     FORMATS AND {count}, {rcount}, {lauthor}
+    aliases:
+        spam
+        spamcmd
     added: 11/6/2020
     """
     global Stop
@@ -557,7 +548,7 @@ async def serverEmote(msg, content, cmd="serveremote"):
     return await returnMsg(msg, sep.join([str(random.choice(client.emojis)) for _ in range(amount)]))
 
 @command
-async def writeRoles(msg, content, cmd="doesnothing"):
+async def doesnothing(msg, content, cmd="doesnothing"):
     """
     does absolutely nothing :)
     required params:
@@ -922,7 +913,16 @@ async def compareRoles(msg, content, cmd="compareroles"):
         await msg.channel.send(embed=embed)
     else: return await returnMsg(msg, "invalid name(s)")
 
+@command
 async def mballreply(msg, content, cmd="mballreply"):
+    """
+    adds <reply> to the list of possibly 8ball replies, you must have
+    perms to be able to use this
+    required params:
+        <reply>: the response
+    FORMATS (question)
+    added: 1/29/2020
+    """
     global BOTMODS
     BOTMODS = reloadBOTMODS()
     mssg = Content(content)
@@ -933,7 +933,16 @@ async def mballreply(msg, content, cmd="mballreply"):
             return await returnMsg(msg, "message added")
     else: return await returnMsg(msg, "you don't have perms")
 
+@command
 async def mballDel(msg, content, cmd="8brdel"):
+    """
+    removes an 8ball reply you must have perms to be able to use this
+    required params:
+        <reply>: the reply to remove
+    aliases:
+        mballdel
+        8brdel
+    """
     global BOTMODS
     BOTMODS = reloadBOTMODS()
     reply = str(Content(content))
@@ -949,12 +958,30 @@ async def mballDel(msg, content, cmd="8brdel"):
                 else: return await returnMsg(msg, "not a message")
     else: return await returnMsg(msg, "you don't have perms")
 
+@command
 async def count(msg, content, cmd="count"):
+    """
+    counts in #counting, can be said in any channel
+    optional params:
+        [fancy]: the styling of the text
+            ex: \**
+    options:
+        -e (-c <color>): makes it an embed
+            -c <color>: specifies the color to use defaults to black
+        --(any combination of i, u, and b): i makes it *italisized*
+            b makes it **bold**
+            u makes it __underlined__
+        --all: is the same as --iub
+        --tts: makes it tts
+        --ret: gives the number back and sends it in the 
+            origional chat you sent if it's not #counting
+    added: 5/6/2020
+    """
     try: await msg.delete()
     except: pass
     content = Content(content)
     channel = discord.utils.get(msg.guild.channels, name="counting")
-    highest = int(max([x.content.replace("*", "").replace("_", "").replace("`", "").strip(".") async for x in channel.history(limit=3)])) + 1
+    highest = int(max([x.content.replace("*", "").replace("_", "").replace("`", "").strip(".") async for x in channel.history(limit=2)])) + 1
     async for x in channel.history(limit=1):
         if x.author == client.user: return ""
     text = f'.{highest}.'
@@ -968,20 +995,31 @@ async def count(msg, content, cmd="count"):
             fancy += "__"
     if content @ "--all":
         fancy += "***__"
-    text = fancy + text + fancy[::-1]
+    mssg = None
     for op, param in content.opsWithParams():
         if op == "-e":
             if param: color = int(param, 16)
             else: color = 0x000000
             mssg = await channel.send(embed=discord.Embed(title=f'.{highest}.', color=discord.Color(color)))
-            break
-    else: mssg = await channel.send(text, tts=content @ "--tts")
+    if content:
+        fancy = content.strip()
+    text = fancy + text + fancy[::-1]
+    if not mssg: mssg = await channel.send(text, tts=content @ "--tts")
     if msg.channel != channel and content @ "--ret": return await returnMsg(msg, mssg.content, embed=mssg.embeds[0] if mssg.embeds else None)
 
+@command
 async def choose(msg, content, cmd="choose"):
+    """
+    choses -picks amount of <choices>, defaults to 1 pick
+    required params:
+        *<choices> (sep with |): the items it can pick from
+    options:
+        -picks <amount>: the amount of times it chooses
+        -sep <sep by> (WHITESPACEFORMATS): what the answers are seperated by
+    added: 5/6/2020
+    """
     content = Content(content)
     opOps = list(content.opsWithParams())
-    embed = discord.Embed(title="picks")
     sep = " | "
     picks = 1
     for op, param in opOps:
@@ -991,11 +1029,32 @@ async def choose(msg, content, cmd="choose"):
     options = content.split("|", key=lambda x: x.strip())
     return await returnMsg(msg, sep.join([random.choice(options) for _ in range(picks)]))
 
+@command
 async def mball(msg, content, cmd="8ball"):
+    """
+    the list of 8ball replies
+    aliases:
+        mballreplylist
+        8ballreplylist
+        8breplylist
+        8brlist
+    added: 5/12/2020
+    """
     with open(mballresponseFilePath, "rb") as f:
         return await returnMsg(msg, file=discord.File(f, "mballresponse.txt"))
 
+@command
 async def pigLatin(msg, content, cmd="piglatin"):
+    """
+    onvertscay essagemay intoay igpay atinlay
+    equiredray aramspay:
+        <message>: ethay essagemay otay onvertcay otay igpay atinlay
+        --kc: eepskay asingcay
+    addeday: 5/10/2020
+    aliases:
+        piglatin
+        pl
+    """
     content = Content(content)
     if content @ "--kc":
         content = content.lower()
@@ -1008,7 +1067,14 @@ async def pigLatin(msg, content, cmd="piglatin"):
             m[n] = f'{word[len(moveToEnd):]}{"".join(moveToEnd)}ay'
     return await returnMsg(msg, " ".join(m))
 
+@command
 async def mostRoles(msg, content, cmd="mostroles"):
+    """
+    gives the [top] members by role count
+    optional params:
+        [top]: the amount to list, defaults to 5
+    added: 1/1/2020
+    """
     content = Content(content).split(" ")[0]
     top = int(content) if content else 5
     memberRoles = {member.display_name.split("#")[0]: len(member.roles) - 1 for member in msg.guild.members}
@@ -1016,7 +1082,19 @@ async def mostRoles(msg, content, cmd="mostroles"):
     top = [f'{r}, {memberRoles[r]}' for n, r in enumerate(sortedKeys) if n < top]
     return await returnMsg(msg, "\n".join(top))
 
+@command
 async def clear(msg, content, cmd="clear"):
+    """
+    clears <amount> of messages in chat
+    must have message edit perms to use this
+    (don't abuse :)))))
+    required params:
+        <amount>: the amount of messages
+    options:
+        -user <user>: the user who's messages to delete
+        -len <length of message>: the length of the message or longer that gets deleted
+    added: 11/6/19
+    """
     content = Content(content)
     user = None
     length = None
@@ -1040,7 +1118,12 @@ async def clear(msg, content, cmd="clear"):
         for _ in range(random.randint(10, 15)):
             await msg.author.send("you cannot do that, don't do it again")
 
+@command
 async def ridInvites(msg, content, cmd="clearinvites"):
+    """
+    removes all active server invites
+    added: 5/30/2020
+    """
     perms = msg.author.guild_permissions.create_instant_invite
     if perms:
         invites = await msg.guild.invites()
@@ -1049,7 +1132,24 @@ async def ridInvites(msg, content, cmd="clearinvites"):
         return await returnMsg(msg, "invites cleared")
     else: return await returnMsg(msg, "you don't have perms")
 
+@command
 async def color(msg, content, cmd="color"):
+    """
+    gives the color of [role]
+    or the hex color of [r, g, b]
+    or the rgb of [#colorcode]
+    optional params:
+        [role]: the role to get color of, defaults to your top role
+        OR
+        [r, g, b]: the r, g, b to get the hex code of
+        OR
+        [#hexcode]: the hexcode to get the rgb of
+        OR
+        [user]: the user to get the color of
+    options:
+        --rand: picks a random color
+    added: 5/11/2020
+    """
     c = Content(content)
     user = c.getUser(msg, 0)
     if user != msg.author:
@@ -1061,10 +1161,7 @@ async def color(msg, content, cmd="color"):
 
     c = str(c)
     if "--rand" in c:
-        ns = "0123456789abcdef"
-        c = "#"
-        for _ in range(6):
-            c += random.choice(ns)
+        c = random.randint(0, 16777215)
 
     if "#" in c:
         c = c.replace("#", "")
@@ -1086,7 +1183,18 @@ async def color(msg, content, cmd="color"):
         return await returnMsg(msg, embed=embed)
     else: return await returnMsg(msg, "not a valid role")
 
+@command
 async def channelInfo(msg, content, cmd="cc"):
+    """
+    gives info about the current channel
+    optional params:
+        [channel]: the channel to get info about
+    aliases:
+        channelinfo
+        ci
+        cc
+    added: 5/26/2020
+    """
     channel = msg.channel
     content = Content(content).calcOps()
     if content:
@@ -1110,7 +1218,17 @@ async def channelInfo(msg, content, cmd="cc"):
     embed.add_field(name="raw mention", value="\\" + channel.mention)
     return await returnMsg(msg, embed=embed)
 
+@command
 async def changes(msg, content, cmd="changes"):
+    """
+    gives the latest changes
+    optional params:
+        [version]: the version to see changes for
+    options:
+        -date <date> (-m/-day/-y/-dy): the date to get the versions of
+        --raw: the raw txt file
+    added: 5/20/2020
+    """
     if "--raw" in content:
         with open("CHANGELOG.txt", "rb") as f: return await returnMsg(msg, file=discord.File(f, "CHANGELOG.txt"))
     if "-date" in content:
@@ -1161,14 +1279,55 @@ async def changes(msg, content, cmd="changes"):
         if testInContent(content, "--dms"): return await msg.author.send("\n".join(c)) if c else msg.author.send(file=discord.File(f, "changes.txt"))
         else: return await returnMsg(msg, "\n".join(c)) if c else await returnMsg(msg, file=discord.File(f, "changes.txt"))
 
-async def hexBinOct(msg, content, cmd="hex"):
-    content = str(Content(content))
-    num = list(map(lambda n: int(n.strip()), content.split("|"))) if "|" in content else [int(content)]
-    repWith = {"hex": "0x", "bin": "0b", "oct": "0o", "tobase": ""}[cmd]
-    ans = list(map(lambda n: str(hex(n)).replace(repWith, ""), num))
+@command
+async def hexCmd(msg, content, cmd="hex"):
+    """
+    generates the hex form of each num given
+    required params:
+        *<num>
+    aliases:
+        hex
+    added: 5/21/2020
+    """
+    ans = map(lambda n: str(hex(int(n))), Content(content).split(" "))
     return await returnMsg(msg, ", ".join(ans))
 
+@command
+async def octCmd(msg, content, cmd="oct"):
+    """
+    generates the oct form of each num given
+    required params:
+        *<num> 
+    aliases:
+        oct
+    added: 5/27/2020
+    """
+    ans = map(lambda n: str(oct(int(n))), Content(content).split(" "))
+    return await returnMsg(msg, ", ".join(ans))
+
+@command
+async def binCmd(msg, content, cmd="bin"):
+    """
+    generates the binary form of each num given
+    required params:
+        *<num>
+    aliases:
+        bin
+    added: 5/21/2020
+    """
+    ans = map(lambda n: str(bin(int(n))), Content(content).split(" "))
+    return await returnMsg(msg, ", ".join(ans))
+
+@command
 async def response(msg, content, cmd="response"):
+    """
+    finds the message after <message> in chat with a limit that defaults to 1000
+    required params:
+        <message>: the message to search for
+    options:
+        -lim <limit>: the limit of messages to search
+    added: 5/20/2020
+    """
     global Stop
     if Stop: Stop = False
     if isBot(msg, client): return "is bot"
@@ -1187,7 +1346,19 @@ async def response(msg, content, cmd="response"):
         if responses: return await returnMsg(msg, f'{msg.author.mention} I HAVE FOUND A RESPONSE\n{random.choice(responses)}')
         else: return await returnMsg(msg, f'did not find {mssg} in the past {limit} messages in this channel')
 
+@command
 async def stopwatch(msg, content, cmd="stopwatch"):
+    """
+    starts a stopwatch if not started, otherwise gets the time
+    optional params:
+        [inverval [round]]: the interval of time to show
+            can be seconds, minutes, hours, days, or weeks
+            [round]: the places to round to
+    aliases:
+        timer
+        stopwatch
+    added: 5/20/2020
+    """
     content = Content(content)
     with open(timersPath, "r+") as tJ:
         data = json.load(tJ)
@@ -1213,8 +1384,14 @@ async def stopwatch(msg, content, cmd="stopwatch"):
         clearFile(tJ)
         json.dump(data, tJ)
 
-
+@command
 async def emoteInfo(msg, content, cmd="emoteinfo"):
+    """
+    gives info about a serveremote
+    required params:
+        <emote>: the emote to get info on
+    added: 5/30/2020
+    """
     emote = await msg.guild.fetch_emoji(int(content.split(":")[2][:-1]))
     embed = discord.Embed(title=emote.name)
     embed.set_thumbnail(url=emote.url)
@@ -1226,8 +1403,18 @@ async def emoteInfo(msg, content, cmd="emoteinfo"):
     embed.add_field(name="raw mention", value=f"\<:{emote.name}:707773683854213140>")
     return await returnMsg(msg, embed=embed)
 
+@command
 async def messageInfo(msg, content, cmd="messageinfo"):
-    sendTo = msg.channel
+    """
+    gets info on a message, the one you just sent by default
+    optional params:
+        [message id [channel]]: the message to get info on
+            if it is in a different channel, specify the channel
+    aliases:
+        msginfo
+        messageinfo
+    added: 6/3/2020
+    """
     content = Content(content)
     fetchFrom = msg.channel
     if msg.channel_mentions:
@@ -1256,7 +1443,17 @@ async def messageInfo(msg, content, cmd="messageinfo"):
 
     return await returnMsg(msg, embed=embed)
 
+@command
 async def typeFor(msg, content, cmd="type"):
+    """
+    makes the bot type for a specified time
+    defaults to 5 seconds
+    optional params:
+        [time]: the time to type
+    options:
+        --nosend: doesn't say "done" when it's done
+    added: 6/1/2020
+    """
     content = Content(content)
     Send = not content @ "--nosend"
     timeToType = float(content.strip()) if content.strip() else 5
@@ -1266,12 +1463,26 @@ async def typeFor(msg, content, cmd="type"):
         await asyncio.sleep(timeToType)
     return await returnMsg(msg, f'typed for {timeToType} seconds') if Send else msg
 
+@command
 async def sendBlank(msg, content, cmd="sendblank"):
+    """
+    send a specified amount of lines of blank messages defaults to 5
+    optional params:
+        [lines]: the amount of blank lines to send
+    added: 6/1/2020
+    """
     content = Content(content)
     amnt = int(content) if content else 5
     return await returnMsg(msg, "_" + ("\n" * amnt) + "_")
 
+@command
 async def hangman(msg, content, cmd="hangman"):
+    """
+    ping a user and play hangman, you have 15 seconds to dm the bot a word and the user will have ot guess it
+    required params:
+        <user>: the user to play
+    added: 6/1/2020
+    """
     content = Content(content)
     user = content.getUser(msg, 0)
     if user.id in playingHangman.keys():
@@ -1290,7 +1501,12 @@ async def hangman(msg, content, cmd="hangman"):
     try: await client.wait_for("message", check=lambda message: message.author.id == user.id, timeout=90.0)
     except: return await returnMsg(msg, "user did not respond in 1.5 minutes")
 
+@command
 async def serverInfo(msg, content, cmd="serverinfo"):
+    """
+    gets info on the server
+    added: 6/2/2020
+    """
     roles = msg.guild.roles
     creation = msg.guild.created_at
     t = datetime.datetime.now()
@@ -1316,7 +1532,14 @@ async def serverInfo(msg, content, cmd="serverinfo"):
     embed.add_field(name="age", value=t - creation)
     return await returnMsg(msg, embed=embed)
 
+@command
 async def userInfo(msg, content, cmd="userinfo"):
+    """
+    gets info on user
+    optional params:
+        [user]: the user to get info on, defaults to you
+    added: 6/3/2020
+    """
     user = (await getUserInContent(msg, content, cmd))
     embed = discord.Embed(title=user.name, color=user.color)
     embed.add_field(name="Join date", value=await formatDateTime(user.joined_at))
@@ -1333,17 +1556,65 @@ async def userInfo(msg, content, cmd="userinfo"):
     embed.set_thumbnail(url=user.avatar_url)
     await msg.channel.send(embed=embed)
 
-async def fetchSomething(msg, content, cmd="fetchrole"):
+@command
+async def fetchrole(msg, content, cmd="fetchrole"):
+    """
+    gets the name of role ids
+    required params:
+        *<role id>
+    added: 6/3/2020
+    """
     content = Content(content)
-    func = {"fetchrole": msg.guild.get_role,
-    "fetchuser": client.fetch_user,
-    "fetchchannel": client.fetch_channel,
-    "fetchemote": msg.guild.fetch_emoji}[content.cmd[1:]]
-    await func(int(content.split(" ")[0]))
-    fetches = [(await func(int(x.strip()))).name for x in content.split(" ")]
+    fetches = [msg.guild.get_role(int(x.strip())).name for x in content.split(" ")]
     return await returnMsg(msg, "\n".join(fetches))
 
+@command
+async def fetchuser(msg, content, cmd="fetchuser"):
+    """
+    fetches the user by user id
+    required params:
+        *<userid>
+    added: 5/30/2020
+    """
+    content = Content(content)
+    fetches = [(await client.fetch_user(int(x.strip()))) for x in content.split(" ")]
+    return await returnMsg(msg, "\n".join(fetches))
+
+@command
+async def fetchchannel(msg, content, cmd="fetchchannel"):
+    """
+    fetches the channel by id
+    required params:
+        *<channelid>
+    added: 7/1/2020
+    """
+    content = Content(content)
+    fetches = [(await client.fetch_user(int(x.strip()))) for x in content.split(" ")]
+    return await returnMsg(msg, "\n".join(fetches))
+
+@command
+async def fetchemote(msg, content, cmd="fetchemote"):
+    """
+    fetches the channel by id
+    required params:
+        *<channelid>
+    aliases:
+        fetchemote
+        fetchemoji
+    added: 7/10/2020
+    """
+    content = Content(content)
+    fetches = [(await msg.guild.fetch_emoji(int(x.strip()))) for x in content.split(" ")]
+    return await returnMsg(msg, "\n".join(fetches))
+
+@command
 async def categoryInfo(msg, content, cmd="categoryinfo"):
+    """
+    gets info on a category
+    required params:
+        <category>: the category to get info on
+    added: 6/3/2020
+    """
     content = Content(content).string
     cat = discord.utils.find(lambda x: x.name.lower() == content.lower(), msg.guild.categories)
     embed = discord.Embed(title=cat.name)
@@ -1355,12 +1626,31 @@ async def categoryInfo(msg, content, cmd="categoryinfo"):
     embed.add_field(name="created at", value=await formatDateTime(cat.created_at))
     return await returnMsg(msg, embed=embed)
 
+@command
 async def spamStop(msg, content, cmd="spamstop"):
+    """
+    spams [stop 10 times
+    abuse of this command will get you banned from it
+    """
     for _ in range(10):
         await msg.channel.send(f'{PREFIX}stop')
         await asyncio.sleep(random.uniform(.3, 1.2))
 
+@command
 async def calc(msg, content, cmd="calc", ReturnRes=False):
+    """
+    gives the answer to an expression
+    required params:
+        <equation>: the equation/expression to evaluate
+            most things should work but power is ** not ^
+    aliases:
+        eval
+        result
+        equation
+        findans
+        calc
+    added: 5/23/2020
+    """
     content = Content(content)
     if not content.suitibleForEval():
         return await returnMsg(msg, 'nice try')
@@ -1377,7 +1667,14 @@ async def calc(msg, content, cmd="calc", ReturnRes=False):
             print(e)
             return await returnMsg(msg, str(type(e)).split(' ')[1].split("'")[1].strip("'"))
 
+@command
 async def pokemon(msg, content, cmd="pokemon"):
+    """
+    gets info on a pokemon
+    required params:
+        <pokemon or pokedex number>: the pokemon to get info on
+    added: 6/2/2020
+    """
     pokemon = Content(content)
     try:
         request = requests.get(f"https://www.pokemon.com/us/pokedex/{pokemon}")
@@ -1400,13 +1697,51 @@ async def pokemon(msg, content, cmd="pokemon"):
         print(e)
         return await returnMsg(msg, "smth went wrong")
 
+@command
 async def hypixelPlayerCount(msg, content, cmd="hypixelpc"):
+    """
+    gets hypixel's current player count
+    or the playercount of a gametype if specified
+    optional params:
+        [gametype]: the gametype to get player count of
+        GAMES:
+        main lobby
+        tournament lobby
+        duels
+        prototype
+        speed uhc
+        replay
+        legacy
+        skyblock
+        mcgo
+        pit
+        build battle
+        murder mystery
+        tntgames
+        battleground
+        survival games
+        skywars
+        walls3
+        ardcade
+        uhc
+        bedwars
+        housing
+        super smash
+        limbo
+        idle
+        queue
+    aliases:
+        hypixelplayercount
+        hppc
+        hypixelpc
+    added: 6/9/2020
+    """
     game = Content(content).string
     if game:
         data = requests.get(f"https://api.hypixel.net/gameCounts?key={HPKEY}").json()
         if game == "list":
             return await returnMsg(msg, ", ".join(list(x.lower() for x in data["games"].keys())))
-        gameData = data["games"].get(game.upper())
+        gameData = data["games"].get(game.upper().replace(" ", "_"))
         if gameData:
             embed = discord.Embed(title=game, color=discord.Color(0xffff00))
             embed.add_field(name=game, value=gameData["players"])
@@ -1417,7 +1752,16 @@ async def hypixelPlayerCount(msg, content, cmd="hypixelpc"):
             return await returnMsg(msg, embed=embed)
     return await returnMsg(msg, requests.get(f"https://api.hypixel.net/playercount?key={HPKEY}").json()["playerCount"])
 
+@command
 async def hypixelBanStats(msg, content, cmd="hypixelban"):
+    """
+    gets the hypixel ban stats
+    aliases:
+        hypixelbanstats
+        hypixelbans
+        hpbans
+    added: 6/22/2020
+    """
     data = requests.get(f"https://api.hypixel.net/watchdogstats?key={HPKEY}").json()
     embed = discord.Embed(title="ban stats", color=discord.Color(0xffff00))
     for k, v, in data.items():
@@ -1425,7 +1769,20 @@ async def hypixelBanStats(msg, content, cmd="hypixelban"):
         else: embed.add_field(name=k, value=v)
     return await returnMsg(msg, embed=embed)
 
+@command
 async def whoHasRole(msg, content, cmd="hasrole"):
+    """
+    gives a list of members with a role
+    required params:
+        <role>: the role to check
+    options:
+        --file: puts the results in a file
+    aliases:
+        whohasrole
+        hasrole
+        whohas
+    added: 6/11/2020
+    """
     role = Content(content)
     Raw = False if not role @ "--file" else True
     role = discord.utils.find(lambda r: r.name.lower() == role.lower().strip(), msg.channel.guild.roles)
@@ -1449,8 +1806,24 @@ async def whoHasRole(msg, content, cmd="hasrole"):
             await msg.channel.send(file=discord.File(f, f'whohas{role.name}.txt'))
         os.remove(f"whohas{role.name}.txt")
 
+@command
 async def addCustomCmd(msg, content, cmd="customcmd"):
-    global CATS, CMDLIST, CUSTOMCMDS
+    """
+    adds a custom command
+    required params:
+        <cmd name>| <say>:
+            the name of the command | what the command says
+            do {} to do a command inside it and replace it with the result
+    options:
+        --lock: makes it so only you and people with botmod of eccmd can edit the command
+    FORMATS when using the command
+    aliases:
+        accmd
+        customcommand
+        addcustomcmd
+    added: 6/11/2020
+    """
+    global CUSTOMCMDS
     content = Content(content)
     Locked = False if not content @ "--lock" else True
     c = content.split("|")
@@ -1473,13 +1846,25 @@ async def addCustomCmd(msg, content, cmd="customcmd"):
         mssg = await returnMsg(msg, "added")
         clearFile(j)
         json.dump(data, j)
-    CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
+    CUSTOMCMDS = await reloadCMDSLIST()
     return mssg
 
+@command
 async def removeCustomCmd(msg, content, cmd="removecustomcmd"):
-    global CATS, CMDLIST, CUSTOMCMDS
+    """
+    removes a custom command, must have botmod or can manage messages
+    required params:
+        <cmd name>: the command name to remove
+    aliases:
+        removecustomcmd
+        delcustomcmd
+        rccmd
+        dccmd
+    added: 6/11/2020
+    """
+    global CUSTOMCMDS
     perms = msg.author.guild_permissions.manage_messages
-    if not perms and str(msg.author.id) not in BOTMODS.keys():
+    if not perms and not await hasPerms(msg.author.id, cmd):
         return await returnMsg(msg, "you cannot do that")
     name = content[len(cmd) + 2:].split(" ")
     with open(customcmdsFilePath, "r+") as j:
@@ -1499,10 +1884,10 @@ async def removeCustomCmd(msg, content, cmd="removecustomcmd"):
         if name: return await returnMsg(msg, f"{', '.join(name)} not found")
         clearFile(j)
         json.dump(data, j)
-    CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
+    CUSTOMCMDS = await reloadCMDSLIST()
     return await returnMsg(msg, f'removed {" ".join(name)}')
 
-async def deathBattle(msg, users, going, notGoing, responseTime, damageMsgs, healMsgs, embed, first, second, editable):
+async def _deathBattle(msg, users, going, notGoing, responseTime, damageMsgs, healMsgs, embed, first, second, editable):
     global playingDB, Stop
     if Stop:
         Stop = False
@@ -1666,10 +2051,21 @@ async def deathBattle(msg, users, going, notGoing, responseTime, damageMsgs, hea
         return await msg.channel.send(f'{second.name} has won!\nthey earned {abs(users[first]["health"])} and {first.name} has lost {abs(users[first]["health"])}')
     else:
         if going == first:
-            await deathBattle(msg, users, second, first, responseTime, damageMsgs, healMsgs, embed, first, second, editable)
-        else: await deathBattle(msg, users, first, second, responseTime, damageMsgs, healMsgs, embed, first, second, editable)
+            await _deathBattle(msg, users, second, first, responseTime, damageMsgs, healMsgs, embed, first, second, editable)
+        else: await _deathBattle(msg, users, first, second, responseTime, damageMsgs, healMsgs, embed, first, second, editable)
 
-async def INIT_deathBattle(msg, content, cmd="deathbatte"):
+@command
+async def deathbattle(msg, content, cmd="deathbatte"):
+    """
+    battle a user ``````diff
+-TO THE DEATH!!!!!!! DA DA DAAAAAAAAAAAAAAAAAAAAAA``````
+    required params:
+        <user>: the user to ***FIGHT***
+    aliases:
+        db
+        deathbattle
+    added: 6/11/2020
+    """
     global Stop, playingDB
     if Stop: Stop = False
     embed = discord.Embed(title="BATTLE")
@@ -1713,9 +2109,25 @@ async def INIT_deathBattle(msg, content, cmd="deathbatte"):
     damageMsgs = ["{attaker} punched {aked} for {damage}", "{attaker} fireballed {aked} for {damage}", "{attaker} summoned a meteor and it hit {aked} for {damage}", "{aked} was unconsious and a pickle came FLYING at {aked} they took {damage} damage"]
     healMsgs = ["{attaker} was healed for {damage}", "{attaker} was blessed with {damage} extra health"]
     editable = await msg.channel.send(embed=embed)
-    await deathBattle(msg, users, first, second, responseTime, damageMsgs, healMsgs, embed, first, second, editable)
+    await _deathBattle(msg, users, first, second, responseTime, damageMsgs, healMsgs, embed, first, second, editable)
 
+@command
 async def mmoney(msg, content, cmd="mmoney"):
+    """
+    your *money*
+    optional params:
+        [user]: the user's *money*
+    options:
+        --raw: the raw file of *money*
+    aliases:
+        mmoney
+        bal
+        mymoney
+        money
+    added: 5/10/2020
+    History:
+        this used to be a joke command <:TiredPuffle:707773683854213140>
+    """
     user = Content(content).getUser(msg, 0)
     if testInContent(content, "--raw"):
         with open(moneyDataFilePath, "rb") as f:
@@ -1724,7 +2136,12 @@ async def mmoney(msg, content, cmd="mmoney"):
         data = json.load(j)
         return await returnMsg(msg, f'{user.name} has €{data.get(str(user.id))}')
 
+@command
 async def shop(msg, content, cmd="shop"):
+    """
+    lists all items available for purchace in the shop
+    added: 6/11/2020
+    """
     with open(itemsFilePath, "r") as j:
         data = json.load(j)
         embed = discord.Embed(title="Items", color=discord.Color(0x00ff00))
@@ -1732,7 +2149,15 @@ async def shop(msg, content, cmd="shop"):
             embed.add_field(name=f'{item["id"]}: {item["name"]}', value=f'Description: {item["desc"]}\nCost: €{item["cost"]}')
         return await returnMsg(msg, embed=embed)
 
+@command
 async def buyItem(msg, content, cmd="buyitem"):
+    """
+    buys an item from the shop
+    aliases:
+        buyitem
+        buy
+    added: 6/11/2020
+    """
     buying = Content(content).string
     if ", " in content:
         amnt = int(buying.split(", ")[1])
@@ -1771,7 +2196,18 @@ async def buyItem(msg, content, cmd="buyitem"):
         json.dump(data, j)
     return await returnMsg(msg, f'bought {forPurchase["name"]}')
 
+@command
 async def inventory(msg, content, cmd="inv"):
+    """
+    lists the items in your inventory
+    optional params:
+        [user]: the user's inventory you want to see
+    aliases:
+        inventory
+        items
+        inv
+    added: 6/11/2020
+    """
     content = Content(content)
     user = content.getUser(msg)
     with open(itemDataFilePath, "r+", encoding="utf-8-sig") as j:
@@ -1791,7 +2227,23 @@ async def inventory(msg, content, cmd="inv"):
             return await returnMsg(msg, embed=embed)
         else: return await returnMsg(msg, "none")
 
+@command
 async def duplicator(msg, content, cmd="duplicator"):
+    """
+    duplicates a message 2 times by default
+    required params:
+        <message>: the message to duplicate
+    optional params:
+        [times]: if specifying times, put it before the message
+    options:
+        -sep <seporator>: the string to seperate each duplicate by
+            defaults to space
+            WHITESPACE FORMATS
+    aliases:
+        duplicate
+        duplicator
+    added: 6/13/2020
+    """
     t = Content(content)
     times = 2
     for op, param in t.opsWithParams():
@@ -1806,8 +2258,19 @@ async def duplicator(msg, content, cmd="duplicator"):
     try: return await returnMsg(msg, f'{t}{sep}'*times)
     except: return await returnMsg(msg, "message too long, try reducing the number of duplications")
 
+@command
 async def customCmdList(msg, content, cmd="customcmdlist"):
-    _, _, CUSTOMCMDS = await reloadCMDSLIST()
+    """
+    lists the custom commands
+    options:
+        --raw: the raw json file
+        --file: get a file of the cmds
+    aliases:
+        ccmdlist
+        customcmdlist
+    added: 6/11/2020
+    """
+    CUSTOMCMDS = await reloadCMDSLIST()
     content = Content(content)
     if content @ "--raw":
         with open(customcmdsFilePath, "rb") as f: await msg.channel.send(file=discord.File(f, "customCmds.json"))
@@ -1834,7 +2297,18 @@ async def customCmdList(msg, content, cmd="customcmdlist"):
             with open("customcmdlist.txt", "rb") as f:
                 await msg.channel.send(file=discord.File(f, "customcmdlist.txt"))
             os.remove("customcmdlist.txt")
+
+@command
 async def editCustomCmd(msg, content, cmd="eccmd"):
+    """
+    edits a specified command
+    required params:
+        <cmd name>|<new>:
+            the command to edit, what it should say
+    options:
+        --lock: instead of doing <new> you can do lock to lock/unlock a command
+    added: 6/13/2020
+    """
     global BOTMODS
     BOTMODS = reloadBOTMODS()
     content = Content(content)
@@ -1863,7 +2337,16 @@ async def editCustomCmd(msg, content, cmd="eccmd"):
         json.dump(data, j)
     return await returnMsg(msg, "changed successfully")
 
+@command
 async def luckynumber(msg, content, cmd="luckynumber"):
+    """
+    gives author's luckynumbers
+    optional params:
+        [user/message]: user/messages's lucky numbers
+    options:
+        -c <amount>: the amount of lucky numbers
+    added: 6/19/2020
+    """
     content = Content(content)
     who = msg.author.mention
     count = 3
@@ -1876,7 +2359,15 @@ async def luckynumber(msg, content, cmd="luckynumber"):
     if random.random() >= .999: return await returnMsg(msg, f"{who}'s lucky numbers are 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7")
     return await returnMsg(msg, f"{who}'s lucky numbers are {nums}")
 
+@command
 async def uptime(msg, content, cmd="uptime"):
+    """
+    gives the bot's uptime
+    optional params:
+        [unit]: the unit of time to get, can be:
+            seconds, minutes, hours, days, weeks
+    added: 6/26/2020
+    """
     content = Content(content)
     stopAt = content.toSet() & {"seconds", "minutes", "hours", "days", "weeks"}
     if stopAt:
@@ -1889,7 +2380,33 @@ async def uptime(msg, content, cmd="uptime"):
         t, layer = await formatSeconds(time.time() - UPTIME)
         return await returnMsg(msg, f'{str(t)} {layer}')
 
+@command
 async def editCmd(msg, content, cmd="edit"):
+    """
+    sends a message, then edits it
+    required params:
+        *<message> (sep with |): the first message will send immediately
+            messages after | will be edited in, in intervals
+            operators (do these instead of a message):
+                +: add, defaults to add
+                    tacks on the next message to the end of the last
+                -: removes the message from the previous
+                *: duplicates the message
+                <<: adds to the beginning
+                %v>>v2: replaces v with v2, do MSG for the whole message
+                ^pos<<val: inserts val at pos
+                ^pos=val: sets pos to val
+                ;: starts a new message put --d to delete the old one
+    options:
+        -t <time>: the time to wait before editing each message
+        -sep <sep>: defaults to nothing, replaces | with sep
+    FORMATS
+    WHITESPACE FORMATS
+    aliases:
+        edit
+        editcmd
+    added: 6/30/2020
+    """
     content = Content(content)
     sep = ""
     content.formatMessage(msg)
@@ -1942,13 +2459,25 @@ async def editCmd(msg, content, cmd="edit"):
             await editable.edit(content=f'{edits[0][2:]}' + editable.content)
         elif token == "newmessage":
             send = Content(edits[0].split(";")[1], removeCmd=False)
-            if send @ "--delete":
+            if send @ "--d":
                 await editable.delete()
             editable = await editable.channel.send(send)
 
         else: await editable.edit(content=editable.content.replace(edits[0][1:], ""))
 
+@command
 async def pingResponse(msg, content, cmd="pingresponse"):
+    """
+    when someone pings you (except bots) it will say this message
+    required params:    
+        <message>: the message to say
+        OR
+        -WHEN <offline/online/idle/dnd/all>: this controls when it triggers
+            by default it's when you're offline
+            you can change it with this
+            do any combination of them
+    added: 7/1/2020
+    """
     response = Content(content)
     if isBot(msg, client): return
     with open(pingResponseFilePath, "r+") as j:
@@ -1970,14 +2499,31 @@ async def pingResponse(msg, content, cmd="pingresponse"):
         return await returnMsg(msg, f'response will happen when you are {" ".join(data[str(msg.author.id)]["when"])}')
     return await returnMsg(msg, f"changed to:\n{response}")
 
+@command
 async def setStatus(msg, content, cmd="status"):
+    """
+    sets the bots status to something
+    required params:
+        <message>
+    aliases:
+        status
+        setstatus
+    added: 7/2/2020
+    """
     st = Content(content)
     if len(st) >= 1:
         await client.change_presence(activity=discord.Game(name=str(st)))
         return await returnMsg(msg, f"changed to {st}")
     else: return await returnMsg(msg, "you didn't set the status to anything")
 
-async def imageInfo(msg, content, cmd="imginfo"):
+@command
+async def imgInfo(msg, content, cmd="imginfo"):
+    """
+    gets info on an image
+    required params:
+        <img>
+    added: 7/4/2020
+    """
     att, *_ = await getImg(msg)
 
     embed = discord.Embed(title=att.filename if att.filename else "UNKNOWN.img")
@@ -1989,7 +2535,14 @@ async def imageInfo(msg, content, cmd="imginfo"):
     embed.add_field(name="spoiler?", value=att.is_spoiler if type(att.is_spoiler) is bool else "UNKNOWN")
     return await returnMsg(msg, embed=embed)
 
+@command
 async def fileInfo(msg, content, cmd="fileinfo"):
+    """
+    gets info on a file
+    required params:
+        <file>
+    added: 7/7/2020
+    """
     att, filename, url = await getImg(msg)
 
     await saveImg(filename, url)
@@ -2013,7 +2566,17 @@ async def fileInfo(msg, content, cmd="fileinfo"):
     os.remove(filename)
     return mssg
 
+@command
 async def textInfo(msg, content, cmd="textinfo"):
+    """
+    gives info on text
+    required params:
+        <text/file> (the text in the file can be more than the discord limit of 2k chars)
+    options:
+        -re <regex>: search the text with a regex
+        --rankwords: gives a list of the most used words
+    added: 7/7/2020
+    """
     text = Content(content)
     Re = False
     sep = " "
@@ -2087,7 +2650,16 @@ async def textInfo(msg, content, cmd="textinfo"):
             os.remove(f'{msg.author.id}.txt')
     return await returnMsg(msg, embed=embed)
 
-async def embedInfo(msg, content, cmd="embedtotext"):
+@command
+async def embedToText(msg, content, cmd="embedtotext"):
+    """
+    makes an embed into text, why idk
+    required params:
+        <embed>
+    options:
+        --json: instead of text to python dictionary
+    added: 7/7/2020
+    """
     content = Content(content).string
     fetchFrom = msg.channel
     if msg.channel_mentions:
@@ -2110,7 +2682,21 @@ async def embedInfo(msg, content, cmd="embedtotext"):
             return await returnMsg(msg, 'no messages with embeds found')
     return await returnMsg(msg, (await embedToReadableDict(msg, embed)).content)
 
+@command
 async def rotateImg(msg, content, cmd="rotateImg"):
+    """
+    rotates an image by an angle, defaults to 90
+    required params:
+        <img>
+    optional params:
+        [angle]
+    options:
+        --nofit: doesn't expand the image to fit the rotation
+    aliases:
+        rotate
+        rotateimg
+    added: 7/5/2020
+    """
     content = Content(content)
     att, filename, url = await getImg(msg)
     Fit = True if not content @ "--nofit" else False
@@ -2129,7 +2715,18 @@ async def rotateImg(msg, content, cmd="rotateImg"):
         await msg.channel.send(file=discord.File(i, filename=filename))
     os.remove(filename)
 
+@command
 async def mirrorImg(msg, content, cmd="mirrorimg"):
+    """
+    mirrors an image along y/x axis
+    required params:
+        <axis (can either by y or x)>
+        <img>
+    aliases:
+        mirror
+        mirrorimg
+    added: 7/5/2020
+    """
     content = Content(content)
     XY = content.split(" ")[0].lower()
     att, filename, url = await getImg(msg)
@@ -2146,7 +2743,19 @@ async def mirrorImg(msg, content, cmd="mirrorimg"):
         await msg.channel.send(file=discord.File(i, filename=filename))
     os.remove(filename)
 
+@command
 async def spreadPixels(msg, content, cmd="spreadpixels"):
+    """
+    scatters the pixels in an image
+    required params:
+        <img>
+    optional params:
+        [dist]: the distance to spread defaults to 100
+    aliases:
+        spreadpixels
+        spreadpx
+    added: 7/5/2020
+    """
     content = Content(content)
     att, filename, url = await getImg(msg)
     if "https://" in content:
@@ -2162,7 +2771,26 @@ async def spreadPixels(msg, content, cmd="spreadpixels"):
         await msg.channel.send(file=discord.File(i, filename=filename))
     os.remove(filename)
 
+@command
 async def filterImg(msg, content, cmd="filterimg"):
+    """
+    filters an image with the filters provided
+    required params:
+        *<filter(s)>
+        <img>
+        filters:
+        blur
+        contour
+        detail
+        edge_enhance
+        edge_enhance_more
+        emboss
+        find_edges
+        sharpen
+        smooth
+        smooth_more
+    added: 7/5/2020
+"""
     content = Content(content)
     att, filename, url = await getImg(msg)
     if "https://" in content:
@@ -2172,13 +2800,7 @@ async def filterImg(msg, content, cmd="filterimg"):
     else: return await returnMsg(msg, "no filter provided")
     await saveImg(filename, url)
     img = Image.open(filename)
-    async with msg.channel.typing():
-        while filt:
-            currFilt = filt[0]
-            if not currFilt:
-                filt.pop(0)
-                continue
-            try: img = {
+    FILTERS = {
                 "blur": lambda: img.filter(ImageFilter.BLUR),
                 "contour": lambda: img.filter(ImageFilter.CONTOUR),
                 "detail": lambda: img.filter(ImageFilter.DETAIL),
@@ -2189,22 +2811,18 @@ async def filterImg(msg, content, cmd="filterimg"):
                 "sharpen": lambda: img.filter(ImageFilter.SHARPEN),
                 "smooth": lambda: img.filter(ImageFilter.SMOOTH),
                 "smooth_more": lambda: img.filter(ImageFilter.SMOOTH_MORE)
-            }[currFilt]()
+            }
+    async with msg.channel.typing():
+        while filt:
+            currFilt = filt[0]
+            if not currFilt:
+                filt.pop(0)
+                continue
+            try: img = FILTERS[currFilt]()
             except:
                 if currFilt.isnumeric():
                     for x in range(int(currFilt)):
-                        img = {
-                            "blur": lambda: img.filter(ImageFilter.BLUR),
-                            "contour": lambda: img.filter(ImageFilter.CONTOUR),
-                            "detail": lambda: img.filter(ImageFilter.DETAIL),
-                            "edge_enhance": lambda: img.filter(ImageFilter.EDGE_ENHANCE),
-                            "edge_enhance_more": lambda: img.filter(ImageFilter.EDGE_ENHANCE_MORE),
-                            "emboss": lambda: img.filter(ImageFilter.EMBOSS),
-                            "find_edges": lambda: img.filter(ImageFilter.FIND_EDGES),
-                            "sharpen": lambda: img.filter(ImageFilter.SHARPEN),
-                            "smooth": lambda: img.filter(ImageFilter.SMOOTH),
-                            "smooth_more": lambda: img.filter(ImageFilter.SMOOTH_MORE)
-                        }[lastFilt]()
+                        FILTERS[lastFilt]()
                 else: return await returnMsg(msg, f'Invalid filter: {currFilt}')
             filt.pop(0)
             lastFilt = currFilt
@@ -2212,7 +2830,20 @@ async def filterImg(msg, content, cmd="filterimg"):
     with open(filename, "rb") as i:
         await msg.channel.send(file=discord.File(i, filename=filename))
     os.remove(filename)
+
+@command
 async def pixelColor(msg, content, cmd="pixelcolor"):
+    """
+    gets the color of a pixel in an image
+    required params:
+        <x>: x coordinate
+        <y>: y coordinate
+        <img>
+    aliases:
+        pxcolor
+        pixelcolor
+    added: 7/5/2020
+    """
     content = Content(content)
     att, filename, url = await getImg(msg)
     if "https://" in content:
@@ -2232,7 +2863,19 @@ async def pixelColor(msg, content, cmd="pixelcolor"):
     os.remove(filename)
     return await returnMsg(msg, embed=discord.Embed(title=f'R: {r} G: {g} B: {b} ALPHA: {a}', color=discord.Color.from_rgb(r, g, b)))
 
+@command
 async def shrinkImg(msg, content, cmd="shrinkimg"):
+    """
+    reduces the size of an image by a factor
+    required params:
+        <img>
+    optional params:
+        [factor]: the factor to shrink by defaults to 2
+    aliases:
+        shrink
+        shrinkimg
+    added: 7/5/2020
+    """
     content = content[len(cmd) + 2:]
     att, filename, url = await getImg(msg)
     if "https://" in content:
@@ -2252,7 +2895,18 @@ async def shrinkImg(msg, content, cmd="shrinkimg"):
         await msg.channel.send(file=discord.File(i, filename=filename))
     os.remove(filename)
 
+@command
 async def colorize(msg, content, cmd="colorize"):
+    """
+    converts a greyscale img to rgb
+    required params:
+        <r g b>: the color to convert the blacks to
+        <r2 g2 b2>: the color to convert the whites to
+    options:
+        -mid <r g b>: the color to convert the middle colors to
+        -blackpoint <0-255>: the point to consider blacks vs whites
+    added: 7/6/2020
+    """
     content = Content(content)
     att, filename, url = await getImg(msg)
     if "https://" in content:
@@ -2281,7 +2935,21 @@ async def colorize(msg, content, cmd="colorize"):
         await msg.channel.send(file=discord.File(i, filename=filename))
     os.remove(filename)
 
+@command
 async def resizeImg(msg, content, cmd="resizeimg"):
+    """
+    resizes an image
+    required params:
+        <width>: the width to resize to
+        <height>: the height to resize to
+        <img>
+    optional params:
+        [x1 y1 x2 y2]: the part of the image to resize
+    aliases:
+        resize
+        resizeimg
+    added: 7/5/2020
+    """
     content = content[len(cmd) + 2:]
     att, filename, url = await getImg(msg)
     if "https://" in content:
@@ -2311,7 +2979,24 @@ async def resizeImg(msg, content, cmd="resizeimg"):
             await msg.channel.send(file=discord.File(i, filename=filename))
         os.remove(filename)
 
+@command
 async def enhanceImg(msg, content, cmd="enhanceimg"):
+    """
+    similar to filterimg however has different functions
+    required params:
+        *<method,amnt>: the method, the amount of times (no space after comma)
+        <img>
+        methods:
+        color
+        sharpness
+        brightness
+        contrast
+        autocontrast
+    aliases:
+        enhance
+        enhanceimg
+    added: 7/5/2020
+    """
     content = content[len(cmd) + 2:]
     att, filename, url = await getImg(msg)
     if "https://" in content:
@@ -2353,7 +3038,21 @@ async def enhanceImg(msg, content, cmd="enhanceimg"):
         await msg.channel.send(file=discord.File(i, filename=filename))
     os.remove(filename)
 
+@command
 async def cropImg(msg, content, cmd="crop"):
+    """
+    crops an image
+    required params:
+        <img>
+    optional params:
+        [amnt]: the amount to crop by, defaults to 20
+    options:
+        -box <x1 y1 x2 y2>
+    aliases:
+        crop
+        cropimg
+    added: 7/5/2020
+    """
     content = Content(content)
     att, filename, url = await getImg(msg)
     if "https://" in content:
@@ -2373,7 +3072,17 @@ async def cropImg(msg, content, cmd="crop"):
         await msg.channel.send(file=discord.File(i, filename=filename))
     os.remove(filename)
 
+@command
 async def imgBorder(msg, content, cmd="imgborder"):
+    """
+    adds a border around an img
+    required params:
+        <img>
+    optional params:
+        [px]: the border thickness defaults to 20
+        [r g b]: the color of the border
+    added: 7/5/2020
+    """
     content = content[len(cmd) + 2:].split(" ")
     att, filename, url = await getImg(msg)
     if "https://" in content:
@@ -2397,7 +3106,17 @@ async def imgBorder(msg, content, cmd="imgborder"):
         await msg.channel.send(file=discord.File(i, filename=filename))
     os.remove(filename)
 
+@command
 async def greyscale(msg, content, cmd="greyscale"):
+    """
+    converts an image to greyscale
+    required params:
+        <img>
+    aliases:
+        greyscale
+        grayscale
+    added: 7/5/2020
+    """
     content = content[len(cmd) + 2:]
     att, filename, url = await getImg(msg)
     if "https://" in content:
@@ -2410,7 +3129,16 @@ async def greyscale(msg, content, cmd="greyscale"):
         await msg.channel.send(file=discord.File(i, filename=filename))
     os.remove(filename)
 
+@command
 async def imgNoise(msg, content, cmd="imgnoise"):
+    """
+    generates some n o i s e 
+    required params:
+        <width>: the width of the new img
+        <height>: the height of the new img
+        <stdev>: basically the amount of noise in the form of std deviation
+    added: 7/6/2020
+    """
     content = content[len(cmd) + 2:]
     filename = f'{msg.author.id}.png'
     width, height = content.split(" ")[0:2]
@@ -2422,7 +3150,16 @@ async def imgNoise(msg, content, cmd="imgnoise"):
         await msg.channel.send(file=discord.File(i, filename=filename))
     os.remove(filename)
 
+@command
 async def invert(msg, content, cmd="invert"):
+    """
+    inverts the image
+    required params:
+        <img>
+    optional params:
+        [threshold (0-255)]: the point to start inverting from, defaults to 0
+    added: 7/5/2020
+    """
     content = content[len(cmd) + 2:].split(" ")
     att, filename, url = await getImg(msg)
     if "https://" in content:
@@ -2438,7 +3175,23 @@ async def invert(msg, content, cmd="invert"):
         await msg.channel.send(file=discord.File(i, filename=filename))
     os.remove(filename)
 
-async def compileImgs(msg, content, cmd="compileimg"):
+@command
+async def compileImg(msg, content, cmd="compileimg"):
+    """
+    puts 2 images ontop of each other
+    required params:
+        <img1 url>
+        <img2 url>
+        (img 1 goes ontop of img2)
+    options:
+        -box <x y>: the point where img1 goes on img2
+        -alpha <alpha>: the transparency of img1
+    aliases:
+        compileimg
+        combineimg
+        addimg
+    added: 7/5/2020
+    """
     content = Content(content)
     filename1 = f'{msg.author.id}.png'
     filename2 = f'{msg.author.id}2.png'
@@ -2461,7 +3214,15 @@ async def compileImgs(msg, content, cmd="compileimg"):
     os.remove(filename1)
     os.remove(filename2)
 
+@command
 async def imgDiff(msg, content, cmd="imgdiff"):
+    """
+    finds the difference in 2 images
+    required params:
+        <img1 url>
+        <img2 url>
+    added: 7/6/2020
+    """
     content = content[len(cmd) + 2:].split(" ")
     filename1 = f'{msg.author.id}.png'
     filename2 = f'{msg.author.id}2.png'
@@ -2477,7 +3238,15 @@ async def imgDiff(msg, content, cmd="imgdiff"):
     os.remove(filename1)
     os.remove(filename2)
 
+@command
 async def lightImg(msg, content, cmd="lightimg"):
+    """
+    makes a new image using the lighter of the 2 pixels for each pixel in the images
+    required params:
+        <img1 url>
+        <img 2 url>
+    added: 7/6/2020
+    """
     content = content[len(cmd) + 2:].split(" ")
     filename1 = f'{msg.author.id}.png'
     filename2 = f'{msg.author.id}2.png'
@@ -2492,7 +3261,15 @@ async def lightImg(msg, content, cmd="lightimg"):
     os.remove(filename1)
     os.remove(filename2)
 
+@command
 async def darkImg(msg, content, cmd="darkimg"):
+    """
+    makes a new image using the darker of the 2 pixels for each pixel in the 2 images
+    required params:
+        <img1 url>
+        <img2 url>
+    added: 7/6/2020
+    """
     content = content[len(cmd) + 2:].split(" ")
     filename1 = f'{msg.author.id}.png'
     filename2 = f'{msg.author.id}2.png'
@@ -2507,7 +3284,16 @@ async def darkImg(msg, content, cmd="darkimg"):
     os.remove(filename1)
     os.remove(filename2)
 
+@command
 async def newImg(msg, content, cmd="newimg"):
+    """
+    creates a new blank image
+    optional params:
+        [width height]: the width and height of the new img
+        [r g b [a]]: the color of the new img
+            [a]: the alpha/transparency of the new img
+    added: 7/5/2020
+    """
     content = content[len(cmd) + 2:].split(" ")
     if "https://" in content:
         content = content.replace(url, '')
@@ -2524,7 +3310,23 @@ async def newImg(msg, content, cmd="newimg"):
         await msg.channel.send(file=discord.File(i, filename=f"{msg.author.id}.png"))
     os.remove(f"{msg.author.id}.png")
 
+@command
 async def rectangle(msg, content, cmd="rectangle"):
+    """
+    puts a rectangle on an image
+    required params:
+        <x1 y1 x2 y2>: the coordinates of the rectangle (top left->bottom right)
+        <img>
+    options:
+        -width <px>: the width of the border
+        -fill <r g b>: the rgb to fill the rectangle with
+        -outline <r g b>: the outline color
+        --rgba: if specified provide an alpha for colors
+    aliases:
+        rectangle
+        rect
+    added: 7/5/2020
+    """
     content = Content(content)
     att, filename, url = await getImg(msg)
     if "https://" in content:
@@ -2559,7 +3361,21 @@ async def rectangle(msg, content, cmd="rectangle"):
         await msg.channel.send(file=discord.File(i, filename=filename))
     os.remove(filename)
 
+@command
 async def imgArc(msg, content, cmd="imgarc"):
+    """
+    draws an arc on an image
+    required params:
+        <x1 y1 x2 y2>: the coordinates of the arc (start->end)
+        <start angle>: i have no idea just give it
+        <end angle>: again i have no idea just give it
+        <img>
+    options:
+        -fill <r g b>: the color of the line
+        -width <width>: the width of the line
+        --rgba: if specified give alpha for colors
+    added: 7/5/2020
+    """
     content = Content(content).calcOps()
     att, filename, url = await getImg(msg)
     if "https://" in content:
@@ -2593,7 +3409,20 @@ async def imgArc(msg, content, cmd="imgarc"):
         await msg.channel.send(file=discord.File(i, filename=filename))
     os.remove(filename)
 
+@command
 async def ellipse(msg, content, cmd="ellipse"):
+    """
+    draws a circle/ellipse on an image
+    required params:
+        <x1 y1 x2 y2>: the coordinates of the ellipse's bounding box (top left->bottom right)
+        <img>
+    options:
+        -fill <r g b>: the color of the circle
+        -outline <r g b>: the outline color of the circle
+        -width <width>: the width of the line
+        --rgba: if specified give alpha for colors
+    added: 7/5/2020
+    """
     content = Content(content)
     att, filename, url = await getImg(msg)
     if "https://" in content:
@@ -2625,7 +3454,19 @@ async def ellipse(msg, content, cmd="ellipse"):
         await msg.channel.send(file=discord.File(i, filename=filename))
     os.remove(filename)
 
+@command
 async def line(msg, content, cmd="line"):
+    """
+    draws a line on an image
+    required params:
+        <x1 y1 x2 y2>: the coordinates of the line (start->end)
+        <img>
+    options:
+        -fill <r g b>: the color of the line
+        -width <width>: the width of the line
+        --rgba: if specified provide alpha for the colors
+    added: 7/5/2020
+    """
     content = Content(content)
     att, filename, url = await getImg(msg)
     if "https://" in content:
@@ -2657,7 +3498,21 @@ async def line(msg, content, cmd="line"):
         await msg.channel.send(file=discord.File(i, filename=filename))
     os.remove(filename)
 
+@command
 async def point(msg, content, cmd="point"):
+    """
+    makes a point on an image
+    required params:
+        *<x y>: the coordinates of each point
+        <img>: the image to put points on
+    options:
+        -fill <r g b>: the color of the point
+        --rgba: if specified provide an alpha for fill
+    aliases:
+        point
+        imgpoint
+    added: 7/5/2020
+    """
     content = Content(content)
     att, filename, url = await getImg(msg)
     if "https://" in content:
@@ -2682,7 +3537,25 @@ async def point(msg, content, cmd="point"):
         await msg.channel.send(file=discord.File(i, filename=filename))
     os.remove(filename)
 
+@command
 async def polygon(msg, content, cmd="poly"):
+    """
+    draws a polygon on an image
+    required params:
+        <x1 y1>: the first pair of coordinates
+        <x2 y2>: the second pair of coordinates
+        <img>: the image to draw on
+    optional params:
+        *[<x y>]: as many more pairs of coordinates to draw lines to
+    options:
+        -fill <r g b>: the color of the fill
+        -outline <r g b>: the color of the outline
+        --rgba: if used provide an alpha for fill and or outline
+    aliases:
+        poly
+        polyg
+    added: 7/5/2020
+    """
     content = Content(content)
     att, filename, url = await getImg(msg)
     if "https://" in content:
@@ -2720,7 +3593,22 @@ async def polygon(msg, content, cmd="poly"):
         await msg.channel.send(file=discord.File(i, filename=filename))
     os.remove(filename)
 
+@command
 async def imgText(msg, content, cmd="imgtext"):
+    """
+    puts text on an image
+    required params:
+        <x>: the x coordinate, can be number or center/top/bottom
+        <y>: the y coordinate
+        <text>: the text to put
+        <img>: the img to put text on
+    options:
+        -fill <r g b>: the color of the text
+        -font <font name> <font size>: the font and size of the text
+            (do help fonts to get a list of fonts)
+        -txtwidth <width>: honestly idrk
+    added: 7/6/2020
+    """
     content = Content(content)
     att, filename, url = await getImg(msg)
     await saveImg(filename, url)
@@ -2763,7 +3651,20 @@ async def imgText(msg, content, cmd="imgtext"):
         await msg.channel.send(file=discord.File(i, filename=filename))
     os.remove(filename)
 
+@command
 async def convertImg(msg, content, cmd):
+    """
+    converts the image to a different mode
+    required params:
+        <mode>: the mode to convert to
+            can be:
+            1: pure black and white
+            L: greyscale
+            refer to https://pillow.readthedocs.io/en/stable/handbook/concepts.html#concept-modes for more
+    options:
+        -palette <palette> (-color <color>): honestly idrk what this does lmao
+    added: 7/6/2020
+    """
     content = Content(content)
     att, filename, url = await getImg(msg)
     if "https://" in content:
@@ -2785,7 +3686,22 @@ async def convertImg(msg, content, cmd):
         await msg.channel.send(file=discord.File(i, filename=filename))
     os.remove(filename)
 
+@command
 async def sortImg(msg, content, cmd="sortimg"):
+    """
+    sorts image by sort
+    required params:
+        <sort>: the sorting style
+            sort can be:
+            wtb: white to black
+            r: redmost
+            g: greenmost
+            b: bluemost
+            custom: python expression
+                example: px[0] + px[1] will sort by adding red and green values
+        <img>: the image to sort
+    added: 7/6/2020
+    """
     content = content[len(cmd) + 2:].split(" ")
     att, filename, url = await getImg(msg)
     if "https://" in content:
@@ -2817,7 +3733,16 @@ async def sortImg(msg, content, cmd="sortimg"):
         await msg.channel.send(file=discord.File(i, filename=filename))
     os.remove(filename)
 
+@command
 async def imgBand(msg, content, cmd="imgband"):
+    """
+    gives a color band of an image
+    required params:
+        <band (can be r, g, b, or a)>:
+            can also be b+g, or g+r etc...
+            the color band wanted from the image
+    added: 7/6/2020
+    """
     content = Content(content)
     content = content.split("+")
     att, filename, url = await getImg(msg)
@@ -2841,7 +3766,17 @@ async def imgBand(msg, content, cmd="imgband"):
             await msg.channel.send(file=discord.File(i, filename=f'{msg.author.id}{n}.png'))
         os.remove(f'{msg.author.id}{n}.png')
 
+@command
 async def ytdl(msg, content, cmd="ytdl"):
+    """
+    piracy is bad.
+    required params:
+        <youtube url>: the url :)
+    aliases:
+        piracyisbad
+        ytdl
+    added: 7/7/2020
+    """
     global queue
     song = Content(content).string
     if song:
@@ -2856,7 +3791,13 @@ async def ytdl(msg, content, cmd="ytdl"):
             await giveAchievements(msg, "pirate")
             return rv
 
+@command
 async def botMods(msg, content, cmd="botmods"):
+    """
+    lists the botmods, and the perms they have
+    optional parmas:
+        [user]: the user to check perms of
+    """
     global BOTMODS
     BOTMODS = reloadBOTMODS()
     content = Content(content)
@@ -2870,7 +3811,23 @@ async def botMods(msg, content, cmd="botmods"):
             except: return await returnMsg(msg, "None")
         else: return await returnMsg(msg, "\n".join([f'{await getUserInContent(msg, "ok " + k, "ok")}: {", ".join(i)}' for k, i in BOTMODS.items()]))
 
-async def embedCmd(msg, content, cmd="embed"):
+@command
+async def embed(msg, content, cmd="embed"):
+    """
+    creates an embed
+    required params:
+        <title> | *<fields <title>, <value> (--ninline)> 
+        seperate each field with |
+        example:
+        [embed Title | Field1, Field content1 | Field2, Field content2
+    options:
+        -color <color> (--rand): the color of the embed
+            --rand makes a random color
+        -image <img url>: the image of the embed
+        -author <author>: the author of the embed
+    FORMATS (title, color, author)
+    added: 7/10/2020
+    """
     content = Content(content)
     color=image=thumbnail=author = None
     title = content.split("|")[0]
@@ -2878,7 +3835,7 @@ async def embedCmd(msg, content, cmd="embed"):
     content = Content(content.split("|", pastIndex=1), removeCmd=False)
     for op, param in content.opsWithParams({"author": (slice(0,None,None), " ")}):
         with switch(op) as case:
-            if case("-color"): color = param
+            if case("-color"): color = Content(param, removeCmd=False)
             elif case("-image"): image = param
             elif case("-thumbnail"): thumbnail = param
             elif case("-author"):
@@ -2886,7 +3843,7 @@ async def embedCmd(msg, content, cmd="embed"):
                 list(author.opsWithParams())
                 author = str(author)
     content.formatMessage(msg, {"{title}": title, "{color}": color, "{author}": author})
-    embed = discord.Embed(title=title, color=discord.Color(int(color, 16)) if color else discord.Color(0x000000))
+    embed = discord.Embed(title=title, color=discord.Color(int(str(color), 16) if not color @ "--rand" else random.randint(0, 16777215)) if color else discord.Color(0x000000))
     if image: embed.set_image(url=image)
     if thumbnail: embed.set_thumbnail(url=thumbnail)
     if author: embed.set_author(name=author)
@@ -2960,6 +3917,9 @@ async def toKelvin(msg, content, cmd="tok"):
         <temp>: the tempurature
     optional params:
         [from]: put c/f in the temp anywhere to say what unit to convert from
+    aliases:
+        tokelvin
+        tok
     added: 7/14/2020
     """
     content = Content(content)
@@ -3128,7 +4088,7 @@ async def isCountingMessedUp(msg, content, cmd="isCountingMessedUp"):
     return await returnMsg(msg, "done")
 
 @command
-async def getWeather(msg, content, cmd="weather"):
+async def weather(msg, content, cmd="weather"):
     """
     gets the weather in <location>
     required params:
@@ -3147,7 +4107,8 @@ async def getWeather(msg, content, cmd="weather"):
         condition = condition.split("AM" if "AM" in condition else "PM")[1]
         location = soup.find_all("span", {"class": "BNeawe tAd8D AP7Wnd"})[0].text
         celcius = f'{5 / 9 * (float(tempurature.split("°")[0]) - 32)}°C'
-    except:
+    except Exception as e:
+        print(e)
         return await returnMsg(msg, "failed")
     if "Pleasanton, CA" in location: return await returnMsg(msg, "failed")
     r = int(255 * ((temp) / 134))
@@ -3229,3 +4190,149 @@ async def covid(msg, content, cmd="covid"):
     embed.add_field(name="Total Deaths", value=totalDeaths)
     embed.add_field(name="Total Recovered", value=totalRecovered)
     return await returnMsg(msg, embed=embed)
+
+@command
+async def dice(msg, content, cmd="dice"):
+    """
+    rolls a dice that defaults with 6 sides
+    optional params:
+        [sides]: the number of sides the dice has
+        [side expression]: the equation to figure out each side's value, must provide the amount of sides to use this
+    options:
+        -sep <seperator>: what to seperate each roll by
+        -rolls <count>: the amount of times to roll
+        --eval: the choices will be the eval of [side expression] instead of applying a number in place of n for each side
+    aliases:
+        dice
+        roll
+    added: 8/6/2020
+    """
+    content = Content(content.strip())
+    rollCount = 1
+    sep = "\n"
+    for op, param in content.opsWithParams():
+        if op == "-rolls": 
+            rollCount = int(param)
+        elif op == "-sep":
+            sep = Content.whitespaceFormat(param)
+    content = content.strip().split(" ")
+    high = int(content[0]) if content[0] else 6
+    FullEval = False
+    if len(content) > 1:
+        evalStmnt = Content(" ".join(content[1:]), removeCmd=False)
+        FullEval = evalStmnt @ "--eval"
+        if not evalStmnt.suitibleForEval():
+            return await returnMsg(msg, "nice try")
+    else: evalStmnt = "n"
+    if not FullEval:
+        choices = [eval(str(evalStmnt)) for n in range(1, high)]
+        rolls = [str(random.choice(choices)) for _ in range(rollCount)]
+    else:
+        rolls = [str(random.choice(eval(str(evalStmnt)))) for _ in range(rollCount)]
+    return await returnMsg(msg, sep.join(rolls))
+
+@command
+async def tof(msg, content, cmd="tof"):
+    """
+    converts celcius temp to farenheight
+    required params:
+        <temp>: the temp to convert from
+    """
+    return await returnMsg(msg, 9 / 5 * float(Content(content)) + 32)
+
+@command
+async def wait(msg, content, cmd="wait"):
+    """
+    idk waits? lol
+    required params:
+        <wait time>: the amount of time to wait
+    """
+    content = Content(content)
+    try:
+        t = float(content)
+    except:
+        return await returnMsg("not a valid wait time")
+    await asyncio.sleep(t)
+
+@command
+async def toc(msg, content, cmd="toc"):
+    """
+    converts farenheight to celcius
+    required params:
+        <temp>
+    """
+    return await returnMsg(msg, 5 / 9 * (float(splitContent(content, cmd + " ", index=1)) - 32))
+
+@command
+async def twc(msg, content, cmd="twc"):
+    """
+    the wave command
+    aliases:
+        thewavecommand
+        twc
+        tpc
+        thepenguincommand
+    """
+    return await returnMsg(msg, random.choice(("very nice!", "very cool!", "<:TiredPuffle:707773683854213140>")))
+
+@command
+async def reverse(msg, content, cmd="reverse"):
+    """
+    reverses your message
+    requried params:
+        <message>
+    """
+    return await returnMsg(msg, splitContent(content, f'{cmd} ')[1][::-1])
+
+@command
+async def imscared(msg, content, cmd="imscared"):
+    """
+    be terrified :)
+    aliases:
+        i'mscared
+    """
+    msgs = (
+        "don't be :smiling_imp:", 
+        "oh it's ok :)))))))))))))))))", 
+        "just don't pay attention of the sounds coming from your attic.....\nit's ok", 
+        "it's ok... he's comming :)"
+        )
+    return await returnMsg(msg, random.choice(msgs))
+
+@command
+async def doihavecovid(msg, content, cmd="doihavecovid"):
+    """
+    maybe who knows hopefuly yo do
+    i mean don't have covid :))))))
+    """
+    return await returnMsg(msg, "yes" if random.random() < .995 else "no")
+
+@command
+async def ship(msg, content, cmd="ship"):
+    """
+    makes a cute couple out of 2 messages :)))))
+    required params:
+        <1>, <2>: the 2 things to be shipped seperated by comma and space
+    aliases:
+        ship
+        boip
+        boat
+    """
+    content = Content(content).split(", ")
+    one = content[0]
+    two = content[1]
+    shipped = one[:(len(one) // 2) + 1] + two[len(two) // 2:]
+    returnMsg(msg, "DISCLAIMER: I DO NOT SUPPORT SHIPPING PEOPLE IN ANY WAY, HOWEVER MY MASTER SEEMS TO HAVE OTHER PLANS" if random.random() >= .985 else shipped)
+
+@command
+async def wikipediaCmd(msg, content, cmd="wiki"):
+    """
+    generates the url link for a wikipedia page
+    required params:
+        <search>
+    aliases:
+        wiki
+        wikipedia
+        wikipediacmd
+    """
+    return await returnMsg(msg, f'https://en.wikipedia.org/wiki/Special:Search?search={content[len(cmd) + 2:].replace(" ", "_")}')
