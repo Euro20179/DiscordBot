@@ -1,223 +1,16 @@
 from cmds import *
 from common import __version__
 
-CMDS = {
-    "echo": echo,
-    "e": echo,
-    " ": echo,
-    "iq": iq, 
-    "magicball": magicBall, 
-    "8ball": magicBall, 
-    "7ball": magicBall,  
-    "8": magicBall, 
-    "level": level,   
-    "rank": level,   
-    "lvl": level,   
-    "top": leaderboard, 
-    "leaderboard": leaderboard, 
-    "levels": leaderboard, 
-    "lb": leaderboard,   
-    "timers": timers, 
-    "ping": ping, 
-    "help": hlp, 
-    "commandusage": cmdUsage, 
-    "cmduse": cmdUsage, 
-    "cmdusage": cmdUsage, 
-    "commanduse": cmdUsage,   
-    "findans": calc,
-    "equation": calc, 
-    "result": calc, 
-    "eval": calc, 
-    "calc": calc,   
-    "shrug": shrug, 
-    "spam": spamCmd, 
-    "randomface": randomFace,  
-    "randface": randomFace,   
-    "rface": randomFace,   
-    "mmoney": mmoney,   
-    "mymoney": mmoney,   
-    "money": mmoney,  
-    "bal": mmoney,   
-    "ucodechar": unicodeChar, 
-    "unicodechar": unicodeChar,   
-    "serveremote": serverEmote, 
-    "doesnothing": writeRoles, 
-    "spacer": spacer, 
-    "upperlower": upperLower, 
-    "ul": upperLower,   
-    "rps": startRPS, 
-    "rockpaperscissors": startRPS,   
-    "complexmessage": complexMessage, 
-    "message": complexMessage,   
-    "sanity": sanity, 
-    "coin": coin, 
-    "roleinfo": roleInfo, 
-    "rand": rand, 
-    "rolecount": roleCount, 
-    "comproles": compareRoles, 
-    "compareroles": compareRoles,   
-    "mballreply": mballreply, 
-    "8brdel": mballDel, 			
-    "count": count, 
-    "choose": choose, 
-    "mballreplylist": mball,   
-    "8ballreplylist": mball,  
-    "8breplylist": mball,   
-    "8brlist": mball,   
-    "piglatin": pigLatin, 
-    "igpayatinlay": pigLatin,   
-    "pl": pigLatin,
-    "mostroles": mostRoles, 
-    "clear": clear, 
-    "color": color,
-    "cc": channelInfo,
-    "channelcreated": channelInfo,
-    "channelinfo": channelInfo,
-    "ci": channelInfo,  
-    "changes": changes, 					
-    "hex": hexBinOct,
-    "bin": hexBinOct,
-    "oct": hexBinOct,  
-    "response": response, 
-    "stopwatch": stopwatch, 
-    "timer": stopwatch,  
-    "lvlmsg": levelMessage, 
-    "emoteinfo": emoteInfo, 
-    "clearinvites": ridInvites, 
-    "typefor": typeFor, 
-    "hangman": hangman, 
-    "sendblank": sendBlank, 
-    "serverinfo": serverInfo, 
-    "pokemon": pokemon, 
-    "userinfo": userInfo, 
-    "msginfo": messageInfo,
-    "messageinfo": messageInfo,
-    "fetchrole": fetchSomething, 
-    "categoryinfo": categoryInfo, 
-    "alphabet": alphabet,   
-    "alpha": alphabet,   
-    "beta": alphabet,   
-    "gamma": alphabet,   
-    "delta": alphabet,   
-    "epsilon": alphabet,   
-    "zeta": alphabet,   
-    "eta": alphabet,   
-    "theta": alphabet,   
-    "iota": alphabet,   
-    "kappa": alphabet,   
-    "lambda": alphabet,  
-    "mu": alphabet,   
-    "nu": alphabet,   
-    "xi": alphabet,   
-    "omicron": alphabet,   
-    "pi": alphabet,   
-    "rho": alphabet,   
-    "sigma": alphabet,   
-    "tau": alphabet,   
-    "upsilon": alphabet,   
-    "phi": alphabet,   
-    "chi": alphabet,   
-    "psi": alphabet,   
-    "omega": alphabet,   
-    "spamstop": spamStop, 
-    "hypixelpc": hypixelPlayerCount,
-    "hppc": hypixelPlayerCount,
-    "hypixelbans": hypixelBanStats,
-    "hpbans": hypixelBanStats,  
-    "hasrole": whoHasRole, 
-    "whohas": whoHasRole,   
-    "db": INIT_deathBattle,
-    "deathbattle": INIT_deathBattle, 
-    "shop": shop, 
-    "buyitem": buyItem,
-    "buy": buyItem,
-    "inv": inventory,
-    "inventory": inventory,
-    "items": inventory,  
-    "duplicator": duplicator,
-    "duplicate": duplicator,
-    "luckynumber": luckynumber,
-    "uptime": uptime,
-    "weightedcoin": weightedCoin,
-    "edit": editCmd,
-    "pingresponse": pingResponse,
-    "status": setStatus,
-    "imginfo": imageInfo,
-    "rotate": rotateImg,
-    "mirror": mirrorImg,
-    "spreadpixels": spreadPixels, 
-    "spreadpix": spreadPixels, 
-    "filterimg": filterImg,
-    "pixelcolor": pixelColor,
-    "pxcolor": pixelColor, 
-    "shrink": shrinkImg,
-    "resize": resizeImg,
-    "enhance": enhanceImg,
-    "crop": cropImg,
-    "imgborder": imgBorder,
-    "greyscale": greyscale,
-    "grayscale": greyscale, 
-    "invert": invert,
-    "newimg": newImg,
-    "rectangle": rectangle,
-    "rect": rectangle,
-    "imgtext": imgText,
-    "imgarc": imgArc,
-    "ellipse": ellipse,
-    "imgpoint": point,
-    "line": line,
-    "polygon": polygon,
-    "polyg": polygon,
-    "poly": polygon,
-    "compileimg": compileImgs,
-    "combineimg": compileImgs,
-    "addimg": compileImgs, 
-    "colorize": colorize,
-    "imgdiff": imgDiff,
-    "lightimg": lightImg,
-    "darkimg": darkImg,
-    "imgnoise": imgNoise,
-    "convertimg": convertImg,
-    "sortimg": sortImg,
-    "imgband": imgBand,
-    "fileinfo": fileInfo,
-    "embedtotext": embedInfo,
-    "textinfo": textInfo,
-    "ytdl": ytdl,
-    "piracyisbad": ytdl,
-    "botmods": botMods,
-    "embed": embedCmd,
-    "emoteusage": emoteUsage,
-    "emojiusage": emoteUsage,
-    "tok": toKelvin,
-    "guessinggame": guessingGame,
-    "fetchuser": fetchSomething,
-    "fetchchannel": fetchSomething,
-    "fetchemote": fetchSomething,
-    "fetchemoji": fetchSomething,
-    "flashemote": flashEmote,
-    "bans": bans,
-    "reactiontime": reactionTime,
-    "editmsg": editMsg,
-    "iscountingmessedup": isCountingMessedUp,
-    "icmu": isCountingMessedUp,
-    "weather": getWeather,
-    "baseballscore": getBaseballScore,
-    "baseball": getBaseballScore,
-    "mlb": getBaseballScore,
-    "covid": covid
-}
-
 @client.event
 async def on_ready():
-    global blueCheck, neutral, CATS, CMDLIST, CUSTOMCMDS, BOTMODS
+    global blueCheck, neutral, CUSTOMCMDS, BOTMODS
     await client.change_presence(activity=discord.Game(f'version: {__version__}'))
     foo = await client.fetch_user(334538784043696130)
     await foo.send(f"ONLINE\nversion: {__version__}")
     del foo
     blueCheck = discord.utils.get(client.emojis, name="Blue_check")
     neutral = discord.utils.get(client.emojis, name="neutral")
-    CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
+    CUSTOMCMDS = await reloadCMDSLIST()
     BOTMODS = reloadBOTMODS()
     print(f"ONLINE\nversion: {__version__}")
 
@@ -227,7 +20,7 @@ async def on_disconnect():
         json.dump(commandUsage, j)
 
 async def runBotModCmd(msg, content, cmd):
-    global CUSTOMCMDS, CATS, CMDLIST, BOTMODS
+    global CUSTOMCMDS, BOTMODS
     if isBot(msg, client): return
     if cmd == "ADDMONEY" and msg.author.id == EUROID:
         user = await getUserInContent(msg, content.split(", ")[0], cmd)
@@ -342,7 +135,7 @@ async def runBotModCmd(msg, content, cmd):
     return await msg.channel.send("you cannot do that or the command doesn't exist who knows")
 
 async def runCommand(msg, content, cmd, Iscmd=False, DoFirst=False, WriteToFile=False):
-    global CUSTOMCMDS, CATS, CMDLIST, BOTMODS, commandUsage
+    global CUSTOMCMDS, BOTMODS, commandUsage
 
     if "/{" in content and "\\" != content[content.index("/{") - 1] and "cmd/{" not in content:
         while True:
@@ -370,6 +163,21 @@ async def runCommand(msg, content, cmd, Iscmd=False, DoFirst=False, WriteToFile=
         return await runBotModCmd(msg, content, cmd)
         
     elif cmd == "if":
+        if Content(content) @ "--help":
+            return await returnMsg(msg, """
+it's an if statement
+    required params:
+        <expr>(
+            *<cmds>;
+        )
+        [else](
+            *<cmds>;
+        )
+        must be in that syntax, else is optional, all the cmds in else trigger if the normal <expr> didn't
+        each command must be seperated by ;
+    added: 7/17/2020
+                """
+            )
         if Content(content.split("(")[0].strip()).suitibleForEval():
             res = await calc(msg, content.split("(")[0].strip(), cmd, ReturnRes=True)
         else: return await returnMsg(msg, "nice try")
@@ -389,6 +197,19 @@ async def runCommand(msg, content, cmd, Iscmd=False, DoFirst=False, WriteToFile=
 
     elif cmd == "for":
         content = Content(content)
+        if content @ "--help":
+            return await returnMsg(msg, """
+it's a for loop
+    required params:
+        <times (limit of 1000)>(
+            *<cmds>;
+        )
+        must be in that syntax
+        it does all the commands seperated by ;
+        times times
+    added: 7/23/2020
+                """
+            )
         times = content.split("(")[0]
         stuff = content.strip(f'{times}(').strip().split(";")
         res = []
@@ -416,35 +237,14 @@ async def runCommand(msg, content, cmd, Iscmd=False, DoFirst=False, WriteToFile=
         content = content.replace("--notyet", "")
     
     case = CMDS.get(cmd)
-    if case:
+    if case and not Iscmd:
         if Content(content) @ "--help":
-            helpMsg = case.__doc__
-            if "WHITESPACEFORMATS" in helpMsg: helpMsg += "\ndo help whitespaceformats for more information"
-            if "FORMATS" in helpMsg: helpMsg += "\ndo help formats for more information"
-            content = await returnMsg(msg, helpMsg)
+            content = await returnMsg(msg, case.help())
         else: content = await case(msg, content, cmd=cmd)
         Iscmd = True
     elif not case:
         startContent = content
         cases = {
-            "tof": lambda: returnMsg(msg, 9 / 5 * float(Content(content)) + 32),
-            "wait": lambda: asyncio.sleep(float(Content(content).string.strip())),
-            "family": lambda: returnMsg(msg, FAMILY),
-            "toc": lambda: returnMsg(msg, 5 / 9 * (float(splitContent(content, cmd + " ", index=1)) - 32)),
-            "twc": lambda: returnMsg(msg, random.choice(("very nice!", "very cool!", "<:TiredPuffle:707773683854213140>"))),
-            "thewavecommand": lambda: returnMsg(msg, random.choice(("very nice!", "very cool!", "<:TiredPuffle:707773683854213140>"))),
-            "reverse": lambda: returnMsg(msg, splitContent(content, f'{cmd} ')[1][::-1]),
-            "imscared": lambda: returnMsg(msg, random.choice(("don't be :smiling_imp:", "oh it's ok :)))))))))))))))))", "just don't pay attention of the sounds coming from your attic.....\nit's ok", "it's ok... he's comming :)"))),
-            "i'mscared": lambda: returnMsg(msg, random.choice(("don't be :smiling_imp:", "oh it's ok :)))))))))))))))))", "just don't pay attention of the sounds coming from your attic.....\nit's ok", "it's ok... he's comming :)"))),
-            "doihavecovid": lambda: returnMsg(msg, "yes" if random.random() < .995 else "no"),
-            "ship": lambda: returnMsg(msg, "DISCLAIMER: I DO NOT SUPPORT SHIPPING PEOPLE IN ANY WAY, HOWEVER MY MASTER SEEMS TO HAVE OTHER PLANS" if random.random() >= .985 else f'{splitContent(content, ", ")[0].replace("[" + cmd + " ", "")[0:len(splitContent(content, ", ")[0].replace("[" + cmd + " ", "")) // 2]}{splitContent(content, ", ")[1][len(splitContent(content, ", ")[1]) // 2:]}'),
-            "boip": lambda: returnMsg(msg, "DISCLAIMER: I DO NOT SUPPORT SHIPPING PEOPLE IN ANY WAY, HOWEVER MY MASTER SEEMS TO HAVE OTHER PLANS" if random.random() >= .985 else f'{splitContent(content, ", ")[0].replace("[" + cmd + " ", "")[0:len(splitContent(content, ", ")[0].replace("[" + cmd + " ", "")) // 2]}{splitContent(content, ", ")[1][len(splitContent(content, ", ")[1]) // 2:]}'),
-            "boat": lambda: returnMsg(msg, "DISCLAIMER: I DO NOT SUPPORT SHIPPING PEOPLE IN ANY WAY, HOWEVER MY MASTER SEEMS TO HAVE OTHER PLANS" if random.random() >= .985 else f'{splitContent(content, ", ")[0].replace("[" + cmd + " ", "")[0:len(splitContent(content, ", ")[0].replace("[" + cmd + " ", "")) // 2]}{splitContent(content, ", ")[1][len(splitContent(content, ", ")[1]) // 2:]}'),
-            "ttc": lambda: returnMsg(msg, random.choice(("meow", "7", "**7**", "*7*", "mo", "<:TiredPuffle:707773683854213140>", "nnn"))),
-            "thetroycommand": lambda: returnMsg(msg, random.choice(("meow", "7", "**7**", "*7*", "mo", "<:TiredPuffle:707773683854213140>", "nnn"))),
-            "longmessage": lambda: returnMsg(msg, "```````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````hI```````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````"),
-            "wiki": lambda: returnMsg(msg, f'https://en.wikipedia.org/wiki/Special:Search?search={content[len(cmd) + 2:].replace(" ", "_")}'),
-            "servericon": lambda: returnMsg(msg, msg.guild.icon_url),
             "upupdowndownleftrightleftrightba": lambda: returnMsg(msg, "what do you think this is some arcade machine with secret codes, lol")
         }
         if cases.get(cmd):
@@ -459,15 +259,15 @@ async def runCommand(msg, content, cmd, Iscmd=False, DoFirst=False, WriteToFile=
             Iscmd = True
         elif cmd in ["eccmd", "editcustomcmd"]:
             content = await editCustomCmd(msg, content, cmd=cmd)
-            CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
+            CUSTOMCMDS = await reloadCMDSLIST()
         elif cmd in ["customcmd", "accmd", "customcommand"]: 
             content = await addCustomCmd(msg, content, cmd=cmd)
-            CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
+            CUSTOMCMDS = await reloadCMDSLIST()
         elif cmd in ["removecustomcmd", "delcustomcmd", "dccmd", "rccmd"]: 
             content = await removeCustomCmd(msg, content, cmd=cmd)
-            CATS, CMDLIST, CUSTOMCMDS = await reloadCMDSLIST()
+            CUSTOMCMDS = await reloadCMDSLIST()
         elif cmd in ["customcmdlist", "ccmdlist"]: content = await customCmdList(msg, content, cmd=cmd)
-        elif cmd in list(CUSTOMCMDS.keys()): 
+        elif cmd in CUSTOMCMDS.keys(): 
             content = str(Content(CUSTOMCMDS[cmd], removeCmd=False).formatMessage(msg, ret=True)).strip()
             while True:
                 if len(content.split("{")) != len(content.split("}")):
@@ -702,4 +502,5 @@ async def on_voice_state_update(member, before, after):
     elif before.channel and not after.channel:
         role = discord.utils.get(member.guild.roles, name="vc")
         await member.remove_roles(role)
+
 client.run(token)
