@@ -4318,11 +4318,10 @@ async def ship(msg, content, cmd="ship"):
         boip
         boat
     """
-    content = Content(content).split(", ")
-    one = content[0]
-    two = content[1]
+    one, *two = Content(content).split(", ")
+    two = ", ".join(two)
     shipped = one[:(len(one) // 2) + 1] + two[len(two) // 2:]
-    returnMsg(msg, "DISCLAIMER: I DO NOT SUPPORT SHIPPING PEOPLE IN ANY WAY, HOWEVER MY MASTER SEEMS TO HAVE OTHER PLANS" if random.random() >= .985 else shipped)
+    return await returnMsg(msg, "DISCLAIMER: I DO NOT SUPPORT SHIPPING PEOPLE IN ANY WAY, HOWEVER MY MASTER SEEMS TO HAVE OTHER PLANS" if random.random() >= .985 else shipped)
 
 @command
 async def wikipediaCmd(msg, content, cmd="wiki"):
@@ -4336,3 +4335,12 @@ async def wikipediaCmd(msg, content, cmd="wiki"):
         wikipediacmd
     """
     return await returnMsg(msg, f'https://en.wikipedia.org/wiki/Special:Search?search={content[len(cmd) + 2:].replace(" ", "_")}')
+
+@command
+async def avatarCmd(msg, content, cmd="avatar"):
+    """
+    gets the avatar of you
+    optional params:
+        [user]: the user to get the avtar of
+    """
+    return await returnMsg(msg, (await getUserInContent(msg, content, cmd)).avatar_url)

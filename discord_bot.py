@@ -244,12 +244,11 @@ it's a for loop
         Iscmd = True
     elif not case:
         startContent = content
-        cases = {
+        secretCmds = {
             "upupdowndownleftrightleftrightba": lambda: returnMsg(msg, "what do you think this is some arcade machine with secret codes, lol")
         }
-        if cases.get(cmd):
-            content = await cases[cmd]()
-        elif cmd == "avatar": content = await returnMsg(msg, (await getUserInContent(msg, content, cmd)).avatar_url)
+        if secretCmds.get(cmd):
+            content = await secretCmds[cmd]()
         elif cmd == "exec" and await hasPerms(msg.author.id, "exec"):
             try:
                 exec(str(Content(content)), globals(), locals())
