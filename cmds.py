@@ -4041,6 +4041,7 @@ async def editMsg(msg, content, cmd="editmsg"):
     options:
         -channel <channel>: the channel the message was sent in
         --nodel: doesn't delete your command message
+        --delmsg: deletes the message you are editing
     added: 7/23/2020
     FORMATS (msg)
     WHITESPACE FORMATS
@@ -4055,9 +4056,12 @@ async def editMsg(msg, content, cmd="editmsg"):
     msgId = content.split(" ")[0]
     repWith = Content(" ".join(content.split(" ")[1:]).strip(), removeCmd=False)
     msg = await channel.fetch_message(int(msgId))
-    repWith.formatMessage(msg, {"{msg}": msg.content})
-    repWith = repWith.whitespaceFormat(str(repWith))
-    await msg.edit(content=repWith)
+    if content @ "--delmsg":
+        await msg.delete()
+    else:
+        repWith.formatMessage(msg, {"{msg}": msg.content})
+        repWith = repWith.whitespaceFormat(str(repWith))
+        await msg.edit(content=repWith)
 
 @command
 async def isCountingMessedUp(msg, content, cmd="isCountingMessedUp"):
