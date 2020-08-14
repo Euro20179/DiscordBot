@@ -83,7 +83,9 @@ async def hlp(msg, content, cmd="help"):
                         return await returnMsg(msg, embed=embed)
                 return await returnMsg(msg, "cmd not found")
         else:
-            return await returnMsg(msg, CMDS[str(content)].help())                                
+            try: return await returnMsg(msg, CMDS[str(content)].help())               
+            except KeyError as e:
+                return await returnMsg(msg, f'{content} does not exist {":face_with_monocle:"*10}')                 
         return await returnMsg(msg, embed=embed)
 
 async def spam(msg, messages, message, BlockStop=False):
@@ -4428,3 +4430,16 @@ async def quote(msg, content, cmd="quote"):
     quotesChannel = await client.fetch_channel(693641312531906661)
     await quotesChannel.send('> {0.content}\n{0.author.mention} - {0.channel.mention}'.format(messageToQuote))
     if not NoDel: await msg.delete()
+
+@command
+async def nice(msg, content, cmd="nice"):
+    """
+    nice
+    aliases:
+    SECRET:
+    69
+    """
+    if Content(content).strip() != "nice":
+        return await returnMsg(msg, "incorrect password")
+    else:
+        await msg.author.send("you have earned the secret trophy very n i c e")
