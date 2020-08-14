@@ -151,15 +151,14 @@ async def echo(msg, content, cmd="echo"):
         try: await msg.delete()
         except: pass
     for op, param in c.opsWithParams({"test": (..., '"')}):
-        with switch(op) as case:
-            if case("-e"):
-                if param: color = int(param, 16)
-                else: color = 0x000000
-                embed = discord.Embed(title=str(c), color=discord.Color(color))
-                return await returnMsg(msg, None, embed=embed) if not c @ "--dm" else await returnMsg(msg, None, embed)
-            elif case("-wait"):
-                try: await asyncio.sleep(float(param))
-                except: return await returnMsg(msg, "-wait must be float")
+        if op == "-e":
+            if param: color = int(param, 16)
+            else: color = 0x000000
+            embed = discord.Embed(title=str(c), color=discord.Color(color))
+            return await returnMsg(msg, None, embed=embed) if not c @ "--dm" else await returnMsg(msg, None, embed)
+        elif op == "-wait":
+            try: await asyncio.sleep(float(param))
+            except: return await returnMsg(msg, "-wait must be float")
     return await returnMsg(msg, str(c), tts=True if c @ "--tts" else False) if not c @ "--dm" else await returnMsg(msg, str(c), tts=True if c @ "--tts" else False)
 
 @command
@@ -2332,6 +2331,9 @@ async def editCustomCmd(msg, content, cmd="eccmd"):
             the command to edit, what it should say
     options:
         --lock: instead of doing <new> you can do lock to lock/unlock a command
+    aliases:
+        editcustomcmd
+        eccmd
     added: 6/13/2020
     """
     global BOTMODS

@@ -258,31 +258,26 @@ it'll break if it lasts longer than 1 min 30 seconds
             except Exception as e:
                 content = await returnMsg(msg, e)
             Iscmd = True
-        elif cmd in ["eccmd", "editcustomcmd"]:
-            content = await editCustomCmd(msg, content, cmd=cmd)
-            CUSTOMCMDS = await reloadCMDSLIST()
-        elif cmd in ["customcmd", "accmd", "customcommand"]: 
-            content = await addCustomCmd(msg, content, cmd=cmd)
-            CUSTOMCMDS = await reloadCMDSLIST()
-        elif cmd in ["removecustomcmd", "delcustomcmd", "dccmd", "rccmd"]: 
-            content = await removeCustomCmd(msg, content, cmd=cmd)
-            CUSTOMCMDS = await reloadCMDSLIST()
         elif cmd in ["customcmdlist", "ccmdlist"]: content = await customCmdList(msg, content, cmd=cmd)
-        elif cmd in CUSTOMCMDS.keys(): 
-            content = str(Content(CUSTOMCMDS[cmd], removeCmd=False).formatMessage(msg, ret=True)).strip()
-            while True:
-                if len(content.split("{")) != len(content.split("}")):
-                    return await msg.channel.send("syntax error missing { or }")
-                cmds = [x.split("}")[0] for x in content.split("{")]
-                cmds.reverse()
-                cmds = cmds[:-1]
-                try: cmd = cmds[0]
-                except IndexError: break
-                mssg = await runCommand(msg, f'{PREFIX}{cmd.strip("_")}', cmd=cmd.split(" ")[0].strip().strip("_"), DoFirst=True)
-                if mssg.embeds and "userinfo" not in cmd:
-                    content = content.replace("{" + cmd + "}", (await embedToReadableDict(msg, msg.embeds)).content)
-                else: content = content.replace("{" + cmd + "}", str(mssg.content))
-            content = await returnMsg(msg, content)
+        else: 
+            CUSTOMCMDS = await reloadCMDSLIST()
+            try:
+                content = str(Content(CUSTOMCMDS[cmd], removeCmd=False).formatMessage(msg, ret=True)).strip()
+                while True:
+                    if len(content.split("{")) != len(content.split("}")):
+                        return await msg.channel.send("syntax error missing { or }")
+                    cmds = [x.split("}")[0] for x in content.split("{")]
+                    cmds.reverse()
+                    cmds = cmds[:-1]
+                    try: cmd = cmds[0]
+                    except IndexError: break
+                    mssg = await runCommand(msg, f'{PREFIX}{cmd.strip("_")}', cmd=cmd.split(" ")[0].strip().strip("_"), DoFirst=True)
+                    if mssg.embeds and "userinfo" not in cmd:
+                        content = content.replace("{" + cmd + "}", (await embedToReadableDict(msg, msg.embeds)).content)
+                    else: content = content.replace("{" + cmd + "}", str(mssg.content))
+                content = await returnMsg(msg, content)
+            except:
+                content = await returnMsg(msg, f"{cmd} is not a thing")
         if content != startContent:
             Iscmd = True
     if not Iscmd: 
