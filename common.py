@@ -21,7 +21,7 @@ from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont
 
 #TODO make each user an object with data relating to stuff like leveling and ping response, it will load in when they talk so it's not super slow at login time
 
-__version__ = "6.8"
+__version__ = "6.8.1"
 Stop = False
 
 playingHangman = {}
@@ -307,12 +307,12 @@ class Content:
         calculates -- options without yielding
         """
         if not self.split(" ") or "--" not in self: return self
-        for word in reversed(self.split(" ")):
-            if "--" in word and word.strip() != "--delete":
-                self.ops_.append(word)
+        self.ops_ = (word for word in self.split(" ")[::-1] if "--" in word and word.strip() != "--delete")
+        if rep:
+            for word in self.ops_:
                 foo = self.string
-                if rep: self.replace(f' {word}', "")
-                if foo == self.string and rep:
+                self.replace(f' {word}', "")
+                if foo == self.string:
                     self.replace(word, "")
         return self
 
