@@ -14,7 +14,6 @@ import statistics
 import re
 import sys
 import threading
-import subprocess
 import youtube_dl
 import functools
 from typing import Iterable, List, Tuple, overload
@@ -22,7 +21,7 @@ from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont
 
 #TODO make each user an object with data relating to stuff like leveling and ping response, it will load in when they talk so it's not super slow at login time
 
-__version__ = "6.7.1"
+__version__ = "6.8"
 Stop = False
 
 playingHangman = {}
@@ -202,7 +201,7 @@ async def formatSeconds(t, layer="seconds", stopAt=None, rec=0):
     return t, layer
 
 async def formatDateTime(createdAt : datetime.datetime)->str:
-    return f'{createdAt.month}/{createdAt.day}/{createdAt.year}\nat {createdAt.hour}:{createdAt.minute}:{createdAt.second}'
+    return "{0.month}/{0.day}/{0.year}\nat {0.hour}:{0.minute}:{0.second}".format(createdAt)
 
 async def getUserInContent(msg : discord.Message, c : str, cmd : str)->discord.User: #gets user by id, name, etc
     c = str(c.split(cmd)[1].strip())
@@ -545,11 +544,13 @@ class command:
     def __init__(self, func):
         self.func = func
         self.aliases = []
+        self.secretAliases = []
         self.doc = func.__doc__
         self._Help = False
         doc = func.__doc__
         name = func.__name__.lower()
         CMDS[name] = self
+        aliasList = self.aliases
         if len(doc.split("aliases")) > 1:
             aliases = doc.split("aliases:")[1].split("\n")
             for alias in aliases:
@@ -558,8 +559,13 @@ class command:
                     if "added" in alias: 
                         self.date = alias.split("added")[1].strip().strip(":").strip()
                         break
+                    if "SECRET" in alias:
+                        aliasList = self.secretAliases
+                        continue
                     CMDS[alias] = self
-                    self.aliases.append(alias)
+                    if aliasList is self.secretAliases:
+                        self.secretAliases.append(alias)
+                    else: self.aliases.append(alias)
     async def __call__(self, *args, **kwargs):
         return await self.func(*args, **kwargs)
 
@@ -572,55 +578,58 @@ class command:
         optionalParams = ""
         options = ""
         added = ""
-        aliases = ""
 
         helpMsgTemp = helpMsg.split("\n")
-        for line in helpMsgTemp:
-            if "added" in line or "params" in line or "options" in line or "aliases" in line:
-                break
-            desc += line.strip() + "\n"
-
-        helpMsgRequired = helpMsg.split("required params")
-        if len(helpMsgRequired) > 1:
-            helpMsgRequired = helpMsgRequired[1].split("\n")
-            for line in helpMsgRequired:
+        if not helpMsgTemp[0]: helpMsgTemp = helpMsgTemp[1:]
+        if "CUSTOM:" not in helpMsgTemp[0]:
+            for line in helpMsgTemp:
                 if "added" in line or "params" in line or "options" in line or "aliases" in line:
                     break
-                requiredParams += line.strip().strip(":") + "\n"
+                desc += line.strip() + "\n"
 
-        helpMsgOptional = helpMsg.split("optional params")
-        if len(helpMsgOptional) > 1:
-            helpMsgOptional = helpMsgOptional[1].split("\n")
-            for line in helpMsgOptional:
-                if "added" in line or "params" in line or "options" in line or "aliases" in line:
-                    break
-                optionalParams += line.strip().strip(":") + "\n"
+            helpMsgRequired = helpMsg.split("required params")
+            if len(helpMsgRequired) > 1:
+                helpMsgRequired = helpMsgRequired[1].split("\n")
+                for line in helpMsgRequired:
+                    if "added" in line or "params" in line or "options" in line or "aliases" in line:
+                        break
+                    requiredParams += line.strip().strip(":") + "\n"
 
-        helpMsgOptions = helpMsg.split("options")
-        if len(helpMsgOptions) > 1:
-            helpMsgOptions = helpMsgOptions[1].split("\n")
-            for line in helpMsgOptions:
-                if "added" in line or "params" in line or "options" in line or "aliases" in line:
-                    break
-                options += line.strip().strip(":") + "\n"
+            helpMsgOptional = helpMsg.split("optional params")
+            if len(helpMsgOptional) > 1:
+                helpMsgOptional = helpMsgOptional[1].split("\n")
+                for line in helpMsgOptional:
+                    if "added" in line or "params" in line or "options" in line or "aliases" in line:
+                        break
+                    optionalParams += line.strip().strip(":") + "\n"
 
-        helpMsgAdded = helpMsg.split("added")
-        if len(helpMsgAdded) > 1:
-            added = helpMsgAdded[1].strip().strip(":").strip()
-        newLine = "\n"
-        backSpace = "\b"
-        helpMsg = f'**```{desc}```**'
-        if requiredParams:
-            helpMsg += f"```required params:{requiredParams}```"
-        if optionalParams:
-            helpMsg += f"```optional params:{optionalParams}```"
-        if options:
-            helpMsg += f"```options:{options}```"
-        if self.aliases:
-            helpMsg += f"```aliases:{newLine + newLine.join(self.aliases)}```"
-        if added:
-            helpMsg += f"```added:{added}```"
-        self._Help = helpMsg
+            helpMsgOptions = helpMsg.split("options")
+            if len(helpMsgOptions) > 1:
+                helpMsgOptions = helpMsgOptions[1].split("\n")
+                for line in helpMsgOptions:
+                    if "added" in line or "params" in line or "options" in line or "aliases" in line:
+                        break
+                    options += line.strip().strip(":") + "\n"
+
+            helpMsgAdded = helpMsg.split("added")
+            if len(helpMsgAdded) > 1:
+                added = helpMsgAdded[1].strip().strip(":").strip()
+            newLine = "\n"
+            helpMsg = f'**```{desc}```**'
+            if requiredParams:
+                helpMsg += f"```required params:{requiredParams}```"
+            if optionalParams:
+                helpMsg += f"```optional params:{optionalParams}```"
+            if options:
+                helpMsg += f"```options:{options}```"
+            if self.aliases:
+                helpMsg += f"```aliases:{newLine + newLine.join(self.aliases)}```"
+            if added:
+                helpMsg += f"```added:{added}```"
+            self._Help = helpMsg
+        else:
+            helpMsgTemp = helpMsgTemp[1:]
+            self._Help = "\n".join(helpMsgTemp)
 
     def help(self):
         if not self._Help: self.calcHelp()

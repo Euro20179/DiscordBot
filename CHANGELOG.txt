@@ -1,3 +1,17 @@
+6.8 (8/13/2020)
+
+ADDITIONS:
+*quote, give a message id, puts it in quotes
+*you can now do as many searches as you want for wikipedia, seperate each search with |
+*tof and toc now accepts as many tempuratures to convert
+
+CHANGES:
+*instead of there being a number of loop limit for the for cmd, it's instead a time limit of 1.5 mins
+
+FIXES:
+*anymessage commands
+
+====================================================================
 6.7.1 (8/12/2020)
 
 ADDTIONS:
