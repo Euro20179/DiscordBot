@@ -200,8 +200,9 @@ it's an if statement
         if content @ "--help":
             return await returnMsg(msg, """
 it's a for loop
+it'll break if it lasts longer than 1 min 30 seconds
     required params:
-        <times (limit of 1000)>(
+        <times>(
             *<cmds>;
         )
         must be in that syntax
@@ -213,16 +214,16 @@ it's a for loop
         times = content.split("(")[0]
         stuff = content.strip(f'{times}(').strip().split(";")
         res = []
-        if int(times) > 1000:
-            content = await returnMsg(msg, "too long")
-        else:
-            for i in range(int(times)):
-                for cmd in stuff:
-                    cmd = cmd.replace("{i}", str(i))
-                    if cmd == ")": break
-                    content = await runCommand(msg, f'{PREFIX}{cmd.strip()}', cmd.strip().split(" ")[0], DoFirst=True) 
-                    res.append(str(content.content))
-            content = await returnMsg(msg, "\n".join(res))       
+        timeoutLength = 90
+        startTimeout = time.time()
+        for i in range(int(times)):
+            for cmd in stuff:
+                cmd = cmd.replace("{i}", str(i))
+                if cmd == ")": break
+                content = await runCommand(msg, f'{PREFIX}{cmd.strip()}', cmd.strip().split(" ")[0], DoFirst=True) 
+                res.append(str(content.content))
+            if (time.time() - startTimeout) > timeoutLength: break
+        content = await returnMsg(msg, "\n".join(res))       
         Iscmd = True
 
     elif ";;" in content and "--notyet" not in content:
@@ -233,6 +234,7 @@ it's a for loop
             print(cmd)
             await runCommand(msg, cmd.strip(), cmd.strip().split(" ")[0].strip().strip(PREFIX))
         Iscmd = True
+
     elif "--notyet" in content:
         content = content.replace("--notyet", "")
     
@@ -324,17 +326,17 @@ async def on_message(msg):
     if msg.author.id == 311621977339068418 and msg.channel.id not in (732071485564256377, 715043261110288415):
         await msg.delete()
     if PREFIX in content and PREFIX != content[0]:
-        cmd = getCmd(content.split(PREFIX)[1])
+        cmd = content.split(PREFIX)[1].split(" ")[0]
         with switch(cmd) as case:
             if case("delete"): await msg.delete()
             elif case("delin"):
-                t = content.split("[delin")[1]
+                t = content.split(f"{PREFIX}delin")[1]
                 try: await asyncio.sleep(float(t))
                 except: return await returnMsg(msg, "NaN")
                 await msg.delete()
                 Iscmd = True
             elif case("rw") and not case(["dr", "rwd"]):
-                c = splitContent(content, "[rw", index=1).strip()
+                c = splitContent(content, f"{PREFIX}rw", index=1).strip()
                 if " " in c:
                     split = splitContent(c, " ")
                     for s in split:
@@ -349,7 +351,7 @@ async def on_message(msg):
     if not content: 
         return
         
-    if (msg.channel.id == 427973752647712768 or (f'{PREFIX}chkx' in content and "[dr" not in content)):
+    if (msg.channel.id == 427973752647712768 or (f'{PREFIX}chkx' in content and f"{PREFIX}dr" not in content)):
         await msg.add_reaction(blueCheck)
         await msg.add_reaction(neutral)
         await msg.add_reaction("❌")

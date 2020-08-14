@@ -485,6 +485,29 @@ async def alphabet(msg, content, cmd="alphabet"):
     aliases:
         alpha
         beta
+        SECRET:
+        gamma
+        delta
+        epsilon
+        zeta
+        eta
+        theta
+        iota
+        kappa
+        lambda
+        mu
+        nu
+        xi
+        omicron
+        pi
+        rho
+        sigma
+        tau
+        upsilon
+        phi
+        chi
+        psi
+        omega
     added: 5/9/19
     """
     send = string.ascii_lowercase
@@ -1054,6 +1077,8 @@ async def pigLatin(msg, content, cmd="piglatin"):
     aliases:
         piglatin
         pl
+        SECRET:
+        igpayatinlay
     """
     content = Content(content)
     if content @ "--kc":
@@ -4240,9 +4265,18 @@ async def tof(msg, content, cmd="tof"):
     """
     converts celcius temp to farenheight
     required params:
-        <temp>: the temp to convert from
+       *<temp>: the temp to convert from
+    options:
+        -sep <seperator>: the chars to seperate each temp by
     """
-    return await returnMsg(msg, 9 / 5 * float(Content(content)) + 32)
+    content = Content(content)
+    for op, param in content.opsWithParams():
+        if op == "-sep": 
+            sep = Content.whiteSpaceFormat(param)
+            break
+    else: sep = "\n"
+    temps = (str((9 / 5) * float(temp)) for temp in content.split("\n"))
+    return await returnMsg(msg, sep.join(temps))
 
 @command
 async def wait(msg, content, cmd="wait"):
@@ -4263,9 +4297,18 @@ async def toc(msg, content, cmd="toc"):
     """
     converts farenheight to celcius
     required params:
-        <temp>
+        *<temp>
+    options:
+        -sep <seperator>: the chars to seperate each temp by
     """
-    return await returnMsg(msg, 5 / 9 * (float(splitContent(content, cmd + " ", index=1)) - 32))
+    content = Content(content)
+    for op, param in content.opsWithParams():
+        if op == "-sep": 
+            sep = Content.whiteSpaceFormat(param)
+            break
+    else: sep = "\n"
+    temps = (str((5 / 9) * float(temp)) for temp in content.split("\n"))
+    return await returnMsg(msg, sep.join(temps))
 
 @command
 async def twc(msg, content, cmd="twc"):
@@ -4285,6 +4328,11 @@ async def reverse(msg, content, cmd="reverse"):
     reverses your message
     requried params:
         <message>
+    aliases:
+        reversed
+        SECRET:
+        esrever
+        desrever
     """
     return await returnMsg(msg, splitContent(content, f'{cmd} ')[1][::-1])
 
@@ -4306,8 +4354,10 @@ async def imscared(msg, content, cmd="imscared"):
 @command
 async def doihavecovid(msg, content, cmd="doihavecovid"):
     """
-    maybe who knows hopefuly yo do
-    i mean don't have covid :))))))
+    CUSTOM:
+    ```diff
+-maybe who knows hopefuly yo do
+-i mean don't have covid :))))))```
     """
     return await returnMsg(msg, "yes" if random.random() < .995 else "no")
 
@@ -4319,8 +4369,9 @@ async def ship(msg, content, cmd="ship"):
         <1>, <2>: the 2 things to be shipped seperated by comma and space
     aliases:
         ship
-        boip
         boat
+        SECRET:
+        boip
     """
     one, *two = Content(content).split(", ")
     two = ", ".join(two)
@@ -4332,13 +4383,24 @@ async def wikipediaCmd(msg, content, cmd="wiki"):
     """
     generates the url link for a wikipedia page
     required params:
-        <search>
+        *<search> (sep with |)
+    options:
+        -sep <seperator>: what to seperate each link by
     aliases:
         wiki
         wikipedia
         wikipediacmd
+        SECRET:
+        knowledge
     """
-    return await returnMsg(msg, f'https://en.wikipedia.org/wiki/Special:Search?search={content[len(cmd) + 2:].replace(" ", "_")}')
+    content = Content(content)
+    for op, param in content.opsWithParams():
+        if op == "-sep":
+            sep = Content.whitespaceFormat(param)
+            break
+    else: sep = "\n"
+    queries = frozenset(f'https://en.wikipedia.org/wiki/Special:Search?search={search.strip().replace(" ", "_")}' for search in content.split("|"))
+    return await returnMsg(msg, sep.join(queries))
 
 @command
 async def avatarCmd(msg, content, cmd="avatar"):
@@ -4348,3 +4410,19 @@ async def avatarCmd(msg, content, cmd="avatar"):
         [user]: the user to get the avtar of
     """
     return await returnMsg(msg, (await getUserInContent(msg, content, cmd)).avatar_url)
+    
+@command
+async def quote(msg, content, cmd="quote"):
+    """
+    puts a message into the quotes channel,
+    and it mentions the user and says what channel
+    required params:
+        <message id> (must be in the channel you are in)
+    added: 8/13/2020
+    """
+    content = Content(content)
+    NoDel = content @ "--nodel"
+    messageToQuote = await msg.channel.fetch_message(int(content))
+    quotesChannel = await client.fetch_channel(693641312531906661)
+    await quotesChannel.send('> {0.content}\n{0.author.mention} - {0.channel.mention}'.format(messageToQuote))
+    if not NoDel: await msg.delete()
