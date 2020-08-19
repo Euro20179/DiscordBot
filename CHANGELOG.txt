@@ -25,6 +25,13 @@ TECHNICAL:
     *and easier to work with
 
 ====================================================================
+7.0-rc2
+
+CHANGES:
+*there is now a 50% chance that the owner of the dropped money can pick it up
+*the password length for the drop is now only 2-8 chars instead of 5-10 chars
+
+====================================================================
 7.0-rc1 (8/19/2020)
 
 ADDITIONS:
