@@ -21,7 +21,7 @@ from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont
 
 #TODO make each user an object with data relating to stuff like leveling and ping response, it will load in when they talk so it's not super slow at login time
 
-__version__ = "6.9"
+__version__ = "7.0-rc1_b.1"
 Stop = False
 
 playingHangman = {}
@@ -46,12 +46,12 @@ botModsFilePath = f'{DISEXT}/botMods.json'
 itemsFilePath = f'items.json'
 pingResponseFilePath = f'{DISEXT}/pingresponse.json'
 emoteUsageFilePath = f'{DISEXT}/emoteusage.json'
-userAchievementsFilePath = f'{DISEXT}/userachievements.json'
 queuePath = "./queue"
 EUROID = 334538784043696130
 client = commands.Bot(command_prefix=fakePrefix)
 CMDS = {}
 
+RAMUserInfo = {}
 SARCASTICQUOTES = ("mhm", "interesting", "fascinating", "very cool")
 FAMILY = """
 Atahan ---- Peanut                Poptoppete--------------Natalie                          Fool (the godfather)
@@ -76,26 +76,15 @@ async def returnMsg(msg, content=None, embed=None, file=None, tts=False):
     msg.attachments = file
     return msg
 
-async def addMoney(member, amnt):
-    with open(moneyDataFilePath, "r+") as j:
-        data = json.load(j)
-        if data.get(str(member.id)):
-            data[str(member.id)] += amnt
-        else: data[str(member.id)] = amnt
-        clearFile(j)
-        json.dump(data, j)
-
 def reloadBOTMODS(ret=True):
     global BOTMODS
-    with open(botModsFilePath, "r") as f:
+    with open(botModsFilePath, "r", encoding="utf-8-sig") as f:
         BOTMODS = json.load(f)
     if ret: return BOTMODS
 
 async def hasPerms(userId : int, command):
-    global BOTMODS
-    if isinstance(BOTMODS.get(str(userId)), Iterable):
-        return command in BOTMODS.get(str(userId))
-    return False
+    await UserInfo.registerUser(userId)
+    return command in RAMUserInfo[int(userId)].perms
 
 async def saveImg(filename, url):
     with open(filename, 'wb') as i:
@@ -211,54 +200,6 @@ async def getUserInContent(msg : discord.Message, c : str, cmd : str)->discord.U
     user = msg.author if not user else user
     return user
 
-async def giveXP(msg : discord.Message)->None:
-    if isBot(msg, client): return
-    with open(levelingDataFilePath, "r+") as f:
-        data = json.load(f)
-        authorId = str(msg.author.id)
-        userInfo = data.get(authorId)
-        if userInfo:
-            lastTalked = int(userInfo["lastTalked"])
-            if time.time() - lastTalked >= 60:
-                level = userInfo["level"]
-                xp = userInfo["xp"]
-                xp += random.randint(15, 100)
-                lastTalked = time.time()
-                required = userInfo["required"]
-                levelUpMessage = userInfo.get("message")
-                if not levelUpMessage: levelUpMessage = '{author} you have leveled up to level {level}, very cool'
-                if xp >= required:
-                    await addMoney(msg.author, int((level + 1) * 2))
-                    level += 1; xp //= 2 #gives level; reduces xp
-                    disp = Content(levelUpMessage, removeCmd=False)
-                    disp.formatMessage(msg, {"{level}": level, "{xp}": xp}, removeCmd=False)
-                    disp = disp.string
-                    if disp not in ["none", "None", "null", "Null"]:
-                        await msg.channel.send(disp)
-                required = round((1000 * level) * 1.1)
-                userInfo = {"level": level, "xp": xp, "required": required, "lastTalked": lastTalked, "message": levelUpMessage}
-            else: return
-            data[authorId] = userInfo
-        else:
-            data[authorId] = BASICINFO
-            data[authorId]["lastTalked"] = time.time()
-        clearFile(f)
-        json.dump(data, f)
-
-async def reduceXP(msg : discord.Message)->None:
-    if isBot(msg, client): return
-    with open(levelingDataFilePath, "r+") as f:
-        data = json.load(f)
-        for user in data.keys():
-            if time.time() - data[user]["lastTalked"] >= 1209600:
-                if data[user]["xp"] > 1:
-                    data[user]["xp"] -= random.randint(0, 1)
-                if data[user]["xp"] <= (data[user]["level"] * 1000) // 2 and data[user]["level"] > 1:
-                    data[user]["level"] -= 1
-                    data[user]["xp"] = (data[user]["level"] * 1000) - 1
-        clearFile(f)
-        json.dump(data, f)
-
 def testInContent(content : str, *testfor)->str:
     for x in testfor:
         if x.lower() in content.lower():
@@ -294,9 +235,8 @@ def clearFile(f)->None:
 class Content:
     def __init__(self, string : str, removeCmd : bool = True):
         if removeCmd:
-            split = str(string).split(" ")
-            self.string = " ".join(split[1:])
-            self.cmd = split[0]
+            self.cmd, *self.string = split = str(string).split(" ")
+            self.string = " ".join(self.string)
         else: self.string = string
         self._i = -1
         self.ops_ = []
@@ -307,13 +247,13 @@ class Content:
         calculates -- options without yielding
         """
         if not self.split(" ") or "--" not in self: return self
-        self.ops_ = (word for word in self.split(" ")[::-1] if "--" in word and word.strip() != "--delete")
+        self.ops_ = tuple(word for word in self.string.split(" ")[::-1] if "--" in word and word.strip() != "--delete")
         if rep:
             for word in self.ops_:
                 foo = self.string
-                self.replace(f' {word}', "")
+                self.string = self.string.replace(f' {word}', "")
                 if foo == self.string:
-                    self.replace(word, "")
+                    self.string = self.string.replace(word, "")
         return self
 
     def split(self, splitBy : str, pastIndex : int = None, key=None):
@@ -407,20 +347,17 @@ class Content:
         return set(self.split(spl, pastIndex=pastIndex, key=key))
 
     def suitibleForEval(self):
-        if "help(" in self or "quit()" in self or "exit()" in self or "os." in self or \
-            "token" in self or "input(" in self or "sys." in self or "__import__(os" in self or \
-            "time.sleep" in self or "socket." in self or "exec(" in self: return False
-        return True
+        return False if ({"help(", "quit()", "exit()", "os.", "token", "input(", "sys.", "__import__(os", "time.sleep", "socket.", "exec("} & self.toSet()) else True
     
     def _whitespaceFormat(self, kwargs=None):
-        self.replace(r'\t', "\t")
-        self.replace(r'\n', "\n")
-        self.replace('\s', " ")
-        self.replace('\z', "")
-        self.replace(r'\b', "\b")
+        self.string = self.string.replace(r'\t', "\t")
+        self.string = self.string.replace(r'\n', "\n")
+        self.string = self.string.replace('\s', " ")
+        self.string = self.string.replace('\z', "")
+        self.string = self.string.replace(r'\b', "\b")
         if kwargs:
             for kw, arg in kwargs.items():
-                self.replace(kw, arg)
+                self.string = self.string.replace(kw, arg)
 
     @staticmethod
     def whitespaceFormat(string, kwargs=None):
@@ -433,16 +370,16 @@ class Content:
         if "{emote}" in self:
             new = [x if x.strip() != "{emote}" else str(random.choice(msg.guild.emojis)) for x in self.split(" ")]
             self.string = " ".join(new)
-        self.replace("{content}", str(Content(msg.content, removeCmd=removeCmd)))
-        self.replace("{version}", __version__)
-        self.replace("{authorn}", msg.author.name).replace("{author}", msg.author.mention)
-        self.replace("{authorid}", str(msg.author.id))
-        self.replace("{uptime}", str(time.time() - UPTIME))
+        self.string = self.string.replace("{content}", str(Content(msg.content, removeCmd=removeCmd)))
+        self.string = self.string.replace("{version}", __version__)
+        self.string = self.string.replace("{authorn}", msg.author.name).replace("{author}", msg.author.mention)
+        self.string = self.string.replace("{authorid}", str(msg.author.id))
+        self.string = self.string.replace("{uptime}", str(time.time() - UPTIME))
         if not isinstance(msg.channel, discord.DMChannel): 
-            self.replace("{channeln}", msg.channel.name).replace("{channel}", msg.channel.mention).replace("{channelid}", str(msg.channel.id))
+            self.string = self.string.replace("{channeln}", msg.channel.name).replace("{channel}", msg.channel.mention).replace("{channelid}", str(msg.channel.id))
         if kwargs:
             for k, i in kwargs.items():
-                self.replace(str(k), str(i))
+                self.string = self.string.replace(str(k), str(i))
         if ret: return self
 
     def insert(self, index, other):
@@ -457,7 +394,7 @@ class Content:
         return str(self)
 
     def __str__(self):
-        return self.string
+        return str(self.string)
 
     def __add__(self, other):
         return self.string + other
@@ -509,11 +446,8 @@ class Content:
 class switch:
     def __init__(self, value):
         self.value = value
-        otherDir = dir(value)
-        if "__case__" in otherDir:
+        if "__case__" in dir(value):
             self.__case__ = value.__case__
-        else: self.__case__ = False
-        del otherDir
 
     def start(self):
         return self
@@ -521,15 +455,13 @@ class switch:
     def end(self):
         del self
 
-    @staticmethod
     def __case__(value, other):
         if isinstance(other, list) or isinstance(other, tuple):
             return value in other
         
-    def __call__(self, other, func : Tuple["func", "args"] =None, *args, **kwargs):
-        if self.__case__: return self.__case__(other, *args, **kwargs)
-        elif not isinstance(other, list): return self.value == other
-        else: return switch.__case__(self.value, other)
+    def __call__(self, other, *args, **kwargs):
+        if not isinstance(other, list): return self.value == other
+        return self.__case__(other, *args, **kwargs)
 
     def __enter__(self):
         return self
@@ -566,6 +498,7 @@ class command:
                     if aliasList is self.secretAliases:
                         self.secretAliases.append(alias)
                     else: self.aliases.append(alias)
+
     async def __call__(self, *args, **kwargs):
         return await self.func(*args, **kwargs)
 
@@ -634,4 +567,189 @@ class command:
     def help(self):
         if not self._Help: self.calcHelp()
         return self._Help
+
+class UserInfo:
+    def __init__(self, userId):
+        self.userId = str(userId)
+        RAMUserInfo[self.userId] = self
+
+        #leveling data
+        with open(levelingDataFilePath, "r", encoding="utf-8-sig") as j:
+            levelingInfo = json.load(j).get(self.userId)
+        if levelingInfo:
+            self.level = levelingInfo["level"]
+            self.xp = levelingInfo["xp"]
+            self.required = levelingInfo["required"]
+            self.lastTalked = levelingInfo["lastTalked"]
+            self.levelUpMessage = levelingInfo.get("message")
+            if not self.levelUpMessage:
+                self.levelUpMessage = '{author} you have leveled up to level {level}, very cool'
+            del levelingInfo
+        else:
+            self.level = 0
+            self.xp = 0
+            self.required = 1000
+            self.lastTalked = time.time()
+            self.levelUpMessage = "{author} you have leveld up to level {level}, very cool"
+        self.levelUpMessage = Content(self.levelUpMessage, removeCmd=False)
+
+        #pingresponse
+        with open(pingResponseFilePath, "r", encoding="utf-8-sig") as j:
+            pr = json.load(j).get(self.userId)
+            if pr:
+                self.pingResponse = pr.get("response")
+                self.pingResponseWhen = pr.get("when")
+            else: 
+                self.pingResponse = ""
+                self.pingResponseWhen = []
+
+        #bans
+        with open(bannedFilePath, "r", encoding="utf-8-sig") as j:
+            bannedInfo = json.load(j).get(self.userId)
+            self.bans = bannedInfo if bannedInfo else []
+
+        #timers
+        with open(timersPath, "r", encoding="utf-8-sig") as j:
+            timers = json.load(j).get(self.userId)
+            self.time = timers if timers else 0
+
+        #money
+        with open(moneyDataFilePath, "r", encoding="utf-8-sig") as j:
+            money = json.load(j).get(self.userId)
+            self.money = money if money else 0
+
+        #items
+        with open(itemDataFilePath, "r", encoding="utf-8-sig") as j:
+            items = json.load(j).get(self.userId)
+            self.items = items if items else {}
+            if type(self.items) is list:
+                t = {}
+                for item in self.items:
+                    try: t[item["name"]] += 1
+                    except: t[item["name"]] = 1
+                self.items = t
+
+
+        #perms
+        with open(botModsFilePath, "r", encoding="utf-8-sig") as j:
+            perms = json.load(j).get(self.userId)
+            self.perms = perms if perms else []
+
+    async def giveXP(self, msg):
+        if time.time() - self.lastTalked >= 60:
+            self.xp += random.randint(15, 100)
+            self.lastTalked = time.time()
+            if self.xp >= self.required:
+                self.level +=1
+                self.xp //= 2
+                self.money += int(self.level * 2)
+                self.levelUpMessage.formatMessage(msg, {"{level}": self.level, "{xp}": self.xp}, removeCmd=False)
+                disp = str(self.levelUpMessage)
+                if disp and disp.lower() not in ["none", "null"]:
+                    await msg.channel.send(disp)
+                self.required = round((1000 * self.level) * 1.1)
+        else: return
+
+    async def dumpLevelInfo(self):
+        with open(levelingDataFilePath, "r+", encoding="utf-8-sig") as j:
+            data = json.load(j)
+            data[self.userId] = {
+                "level": self.level,
+                "xp": self.xp,
+                "required": self.required,
+                "lastTalked": self.lastTalked,
+                "message": str(self.levelUpMessage)
+            }
+            clearFile(j)
+            json.dump(data, j)
+
+    async def basicDump(self, file, attrToDump, encoding="utf-8-sig", DumpIfNone=True):
+        DelData = DumpIfNone^1
+        with open(file, "r+", encoding=encoding) as j:
+            data = json.load(j)
+            if attrToDump or DumpIfNone:
+                data[self.userId] = attrToDump
+            if (not attrToDump and not DumpIfNone) and DelData:
+                if data.get(self.userId):
+                    del data[self.userId]
+            clearFile(j)
+            json.dump(data, j)
+
+    async def dumpMoneyInfo(self):
+        await self.basicDump(moneyDataFilePath, self.money)
+
+    async def dumpBannedInfo(self):
+        await self.basicDump(bannedFilePath, self.bans, DumpIfNone=False)
+
+    async def dumpTimerInfo(self):
+        if not self.time: 
+            with open(timersPath, "r+", encoding="utf-8-sig") as f:
+                data = json.load(f)
+                try: del data[self.userId]
+                except: pass
+                finally:
+                    clearFile(f)
+                    json.dump(data, f)
+        else: await self.basicDump(timersPath, self.time)
+
+    async def dumpItemInfo(self):
+        await self.basicDump(itemDataFilePath, self.items, DumpIfNone=False)
+            
+    async def dumpPermInfo(self):
+        await self.basicDump(botModsFilePath, self.perms, DumpIfNone=False)
+
+    async def dumpPingResponseInfo(self):
+        with open(pingResponseFilePath, "r+") as f:
+            data = json.load(f)
+            if data.get(self.userId):
+                if not self.pingResponse:
+                    del data[self.userId]
+                else:
+                    data[self.userId] = {"response": self.pingResponse, "when": self.pingResponseWhen}
+                clearFile(f)
+                json.dump(data, f)
+            
+    async def dumpInfo(self, clFromRAMDict=False):
+        await self.dumpLevelInfo()
+        await self.dumpMoneyInfo()
+        await self.dumpBannedInfo()
+        await self.dumpTimerInfo()
+        await self.dumpItemInfo()
+        await self.dumpPermInfo()
+        await self.dumpPingResponseInfo()
+        if clFromRAMDict: await self.clearFromRAMDict()
+
+    async def clearFromRAMDict(self):
+        del RAMUserInfo[int(self.userId)]
+
+    async def reduceXP(self):
+        if time.time() - self.lastTalked >= 1209600:
+            if self.xp > 1:
+                self.xp -= random.randint(0, 1)
+            if self.xp <= (self.level * 1000) // 2 and self.level > 1:
+                self.level -= 1
+                self.xp = (self.level * 1000) - 1
+
+    async def addMoney(self, amnt):
+        self.money += amnt
+        
+    async def removeItem(self, iName=None, iId=None, item=None):
+        if not item: item = findItem(iName=iName, iId=iId)
+        self.items[item["name"]] -= 1
+        if not self.items[item["name"]]:
+            del self.items[item["name"]]
+
+    @classmethod
+    async def registerUser(cls, userId):
+        userId = int(userId)
+        if userId not in RAMUserInfo.keys():
+            RAMUserInfo[userId] = cls(userId)
+            
+def findItem(iName=None, iId=None):
+    with open(itemsFilePath, "r") as f:
+        data = json.load(f)
+        for item in data:
+            if item["id"] == iId or item["name"] == iName:
+                return item
+
 token = "NjQxNzk1NjU2Mzc3MTcyMDAw.XcNk8g.HEvnaXjuXFQhN1iilaaffbiPcoo"

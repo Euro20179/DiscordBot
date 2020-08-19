@@ -1,4 +1,3 @@
-from typing import Mapping
 from common import *
 from common import __version__
 
@@ -148,7 +147,7 @@ async def echo(msg, content, cmd="echo"):
     added: 12/14/19
     """
     c = Content(content)
-    c.formatMessage(msg, {"{echo}": Content(content.replace("{echo}", ""))})
+    c.formatMessage(msg, {"{echo}": str(c).replace("{echo}", "")})
     if not c @ "--nodel":
         try: await msg.delete()
         except: pass
@@ -167,9 +166,16 @@ async def echo(msg, content, cmd="echo"):
 async def timers(msg, content, cmd="timers"):
     """
     gets a list of timers that are currently running
+    options:
+        --raw: the file
     """
     embed = discord.Embed(title="Timers")
-    with open(timersPath, "r") as tJ:
+    for user in RAMUserInfo.values():
+        await user.dumpTimerInfo()
+    if Content(content) @ "--raw":
+        with open(timersPath, "r") as f:
+            return await returnMsg(msg, file=discord.File(f, "tiemrs.json"))
+    with open(timersPath, "r", encoding="utf-8-sig") as tJ:
         data = json.load(tJ)
         for user, t in data.items():
             embed.add_field(name=user, value=round(time.time() - t, 2))
@@ -194,25 +200,21 @@ async def levelMessage(msg, content, cmd="lvlmsg"):
     changeTo = Content(content).calcOps(rep=True)
     yn = changeTo @ "--y"
     if yn: changeTo.replace("--y", "")
-    with open(levelingDataFilePath, "r+") as j:
-        data = json.load(j)
-        userData = data[str(msg.author.id)]
-        if changeTo.testOps("--see", "--get", "--s", "--g"):
-            content = Content(userData["message"], removeCmd=False)
-            content.formatMessage(msg, {"{level}": userData['level'], "{xp}": userData["xp"]}, removeCmd=False)
-            return await returnMsg(msg, str(content))
-        if changeTo.testOps("--dontsee"):
-            return await returnMsg(msg, "uh, ok then")
-        if not yn:
-            await msg.channel.send("type y to change message, type n to cancel")
-            try: yn = (await client.wait_for('message', check=lambda message: message.author == msg.author, timeout=60.0)).content.lower()
-            except asyncio.TimeoutError: yn = "n"
-        if yn in ("yes", "y") or yn is True:
-            userData["message"] = str(changeTo)
-            clearFile(j)
-            json.dump(data, j)
-            return await returnMsg(msg, f"changed to {changeTo}")
-        return await returnMsg(msg, "CANCELLED")
+    userData = RAMUserInfo[msg.author.id]
+    if changeTo.testOps("--see", "--get", "--s", "--g"):
+        content = Content(userData.levelUpMessage, removeCmd=False)
+        content.formatMessage(msg, {"{level}": userData.level, "{xp}": userData.xp}, removeCmd=False)
+        return await returnMsg(msg, str(content))
+    if changeTo.testOps("--dontsee"):
+        return await returnMsg(msg, "uh, ok then")
+    if not yn:
+        await msg.channel.send("type y to change message, type n to cancel")
+        try: yn = (await client.wait_for('message', check=lambda message: message.author == msg.author, timeout=60.0)).content.lower()
+        except asyncio.TimeoutError: yn = "n"
+    if yn in ("yes", "y") or yn is True:
+        userData.levelUpMessage = str(changeTo)
+        return await returnMsg(msg, f"changed to {changeTo}")
+    return await returnMsg(msg, "CANCELLED")
 
 @command
 async def cmdUsage(msg, content, cmd="commandusage"):
@@ -313,20 +315,22 @@ async def level(msg, content, cmd="level"):
     """
     content = Content(content)
     user = content.getUser(msg)
-    userData = await getUserData(user.id)
-    with open(levelingDataFilePath, "r") as f:
+    await UserInfo.registerUser(user.id)
+    await RAMUserInfo[user.id].dumpLevelInfo()
+    userData = RAMUserInfo[user.id]
+    with open(levelingDataFilePath, "r", encoding="utf-8-sig") as f:
         data = json.load(f)
         users = [(discord.utils.get(msg.guild.members, id=int(user.id)).id, int(data[userr]["level"])) for userr in data.keys()]
         users.sort(key=lambda x: x[1], reverse=True)
-    level = userData["level"]
-    xp = userData["xp"]
-    required = userData["required"]
-    message = userData["message"]
+    level = userData.level
+    xp = userData.xp
+    required = userData.required
+    message = userData.levelUpMessage
     pos = users.index((user.id, level)) + 1
     embed = discord.Embed(title=user.display_name, color=user.color)
-    for k, i in userData.items():
-        if k == "lastTalked": break
-        embed.add_field(name=k, value=i)
+    embed.add_field(name="level", value=str(level))
+    embed.add_field(name="xp", value=str(xp))
+    embed.add_field(name="required", value=str(required))
     embed.add_field(name="rank #", value=pos)
     embed.add_field(name="xp needed", value=required - xp)
     time, layer = await formatSeconds(((required - xp) / 57.5), layer="minutes")
@@ -350,17 +354,21 @@ async def leaderboard(msg, content, cmd="top"):
     added: "5/23/2020
     """
     content = Content(content)
+    for user in RAMUserInfo.values():
+        if type(user) is str: continue
+        await user.dumpLevelInfo()
     if content @ "--raw":
-        with open(levelingDataFilePath, "rb") as f:
+        with open(levelingDataFilePath, "rb", encoding="utf-8-sig") as f:
             return await returnMsg(msg, file=discord.File(f, levelingDataFilePath))
     top = 10
     if str(content):
         try: top = int(content)
         except: return await returnMsg(msg, "NaN")
-    with open(levelingDataFilePath, "r") as f:
+    with open(levelingDataFilePath, "r", encoding="utf-8-sig") as f:
         data = json.load(f)
         users = [(discord.utils.get(msg.guild.members, id=int(user)), int(data[user]["level"]), int(data[user]["xp"]), int(data[user]["required"])) for user in data.keys()]
         users.sort(key=lambda x: (x[1]) + (x[2].__truediv__(x[3] if x[3] > 0 else 99999999999999999999)), reverse=True)
+        
         firstPlaceRole = discord.utils.get(msg.guild.roles, id=713979970287829033)
         if firstPlaceRole not in users[0][0].roles:
             await users[0][0].add_roles(firstPlaceRole)
@@ -689,15 +697,16 @@ async def startRPS(msg, content, cmd="rps"):
     if resp2 in setTo.keys(): resp2 = setTo[resp2]
 
     if resp1 in opps.keys() and resp2 in opps.keys():
+        UserInfo.registerUser(user2.id)
         if opps[resp2] == resp1:
             if user2.mention != user1.mention:
-                await addMoney(user2, random.randint(1, 5))
-                await addMoney(user1, random.randint(-5, -1))
+                await RAMUserInfo[user2.id].addMoney(random.randint(1, 5))
+                await RAMUserInfo[user1.id].addMoney(random.randint(-5, -1))
             return await returnMsg(msg, f'{user2.mention} WINS')
         elif opps[resp1] == resp2:
             if user2.mention != user1.mention:
-                await addMoney(user2, random.randint(-5, -1))
-                await addMoney(user1, random.randint(1, 5))
+                await RAMUserInfo[user2.id].addMoney(random.randint(-5, -1))
+                await RAMUserInfo[user1.id].addMoney(random.randint(1, 5))
             return await returnMsg(msg, f'{user1.mention} WINS')
         else: await msg.channel.send("ITS A DRAW")
     else: await msg.channel.send("either someone spelled something wrong, or someone isn't playing by the rules")
@@ -769,7 +778,7 @@ async def coin(msg, content, cmd="coin"):
         if not bet.isnumeric() and not UseC:
             color, title = (0x00ff00, "YOU WIN") if res == bet else (0xff0000, "YOU LOSE")
             add = random.randint(1, 3) if res == bet else random.randint(-3, -1)
-            await addMoney(msg.author, add)
+            await RAMUserInfo[msg.author.id].addMoney(add)
             title += f'\nYOU WON {add}' if res == bet else f'\nYOU LOSE {abs(add)}'
         elif int(bet) < 10000000:
             heads = 0
@@ -863,7 +872,7 @@ async def roleCount(msg, content, cmd="rolecount"):
             embed = discord.Embed(title=f"{m.name}'s Roles", color=m.color)
             embed.add_field(name="Count", value=roleCount)
             embed.add_field(name="Roles", value="".join(roles))
-            await msg.channel.send(embed=embed)
+            await msg.channel.send(embed=embed)       
         else: return await returnMsg(msg, roleCount)
     else: return await returnMsg(msg, "User not found")
 
@@ -1386,29 +1395,26 @@ async def stopwatch(msg, content, cmd="stopwatch"):
     added: 5/20/2020
     """
     content = Content(content)
-    with open(timersPath, "r+") as tJ:
-        data = json.load(tJ)
-        running = data.get(str(msg.author.id))
-        stopAt = content.toSet() & {"seconds", "minutes", "hours", "days", "weeks"}
-        if not running:
-            data[msg.author.id] = time.time()
-            return await returnMsg(msg, f'{msg.author.mention} stopwatch started')
-        elif running and content @ "--stop":
-            t = await formatSeconds(time.time() - running)
-            await msg.channel.send(embed=discord.Embed(title=str(round(t[0], 2)) + f' {t[1]}'))
-            del data[str(msg.author.id)]
-            return await returnMsg(msg, "timer stopped")
-        elif stopAt:
-            stopAt = list(stopAt)[0]
-            t, layer = await formatSeconds(time.time() - running, stopAt=stopAt)
-            r = 15 if not splitContent(content, f'{stopAt} ', index=1) else int(content.split(f'{stopAt} ')[1])
-            t = round(t, r)
-            return await returnMsg(msg, embed=discord.Embed(title=f'{t} {layer}'))
-        elif running:
-            t = await formatSeconds(time.time() - running)
-            return await returnMsg(msg, embed=discord.Embed(title=str(round(t[0], 2)) + f' {t[1]}'))
-        clearFile(tJ)
-        json.dump(data, tJ)
+    userInfo: UserInfo = RAMUserInfo[msg.author.id]
+    running = userInfo.time
+    stopAt = content.toSet() & {"seconds", "minutes", "hours", "days", "weeks"}
+    if not running:
+        userInfo.time = time.time()
+        return await returnMsg(msg, f'{msg.author.mention} stopwatch started')
+    elif running and content @ "--stop":
+        t = await formatSeconds(time.time() - running)
+        await msg.channel.send(embed=discord.Embed(title=str(round(t[0], 2)) + f' {t[1]}'))
+        userInfo.time = 0
+        return await returnMsg(msg, "timer stopped")
+    elif stopAt:
+        stopAt = list(stopAt)[0]
+        t, layer = await formatSeconds(time.time() - running, stopAt=stopAt)
+        r = 15 if not splitContent(content, f'{stopAt} ', index=1) else int(content.split(f'{stopAt} ')[1])
+        t = round(t, r)
+        return await returnMsg(msg, embed=discord.Embed(title=f'{t} {layer}'))
+    elif running:
+        t = await formatSeconds(time.time() - running)
+        return await returnMsg(msg, embed=discord.Embed(title=str(round(t[0], 2)) + f' {t[1]}'))
 
 @command
 async def emoteInfo(msg, content, cmd="emoteinfo"):
@@ -1520,7 +1526,7 @@ async def hangman(msg, content, cmd="hangman"):
     await asyncio.sleep(15)
     async for i in msg.author.dm_channel.history(limit=1):
         word = i.content
-    disp = "".join(["-" if x not in [" ", "," "." "'" '"'] else x for x in word])
+    disp = "".join(["-" if x not in (" ", "," "." "'" '"') else x for x in word])
     playingHangman[user.id] = {"word": word, "lives": lives, "guessed": [], "disp": disp}
     await msg.channel.send(f'{user.mention} guessing time')
     mssg = await msg.channel.send(disp)
@@ -1603,7 +1609,7 @@ async def fetchuser(msg, content, cmd="fetchuser"):
     added: 5/30/2020
     """
     content = Content(content)
-    fetches = [(await client.fetch_user(int(x.strip()))) for x in content.split(" ")]
+    fetches = [(await client.fetch_user(int(x.strip()))).name for x in content.split(" ")]
     return await returnMsg(msg, "\n".join(fetches))
 
 @command
@@ -1615,7 +1621,7 @@ async def fetchchannel(msg, content, cmd="fetchchannel"):
     added: 7/1/2020
     """
     content = Content(content)
-    fetches = [(await client.fetch_user(int(x.strip()))) for x in content.split(" ")]
+    fetches = [(await client.fetch_user(int(x.strip()))).mention for x in content.split(" ")]
     return await returnMsg(msg, "\n".join(fetches))
 
 @command
@@ -1630,7 +1636,7 @@ async def fetchemote(msg, content, cmd="fetchemote"):
     added: 7/10/2020
     """
     content = Content(content)
-    fetches = [(await msg.guild.fetch_emoji(int(x.strip()))) for x in content.split(" ")]
+    fetches = [(await msg.guild.fetch_emoji(int(x.strip()))).name for x in content.split(" ")]
     return await returnMsg(msg, "\n".join(fetches))
 
 @command
@@ -1726,41 +1732,39 @@ async def pokemon(msg, content, cmd="pokemon"):
 @command
 async def hypixelPlayerCount(msg, content, cmd="hypixelpc"):
     """
-    gets hypixel's current player count
-    or the playercount of a gametype if specified
-    optional params:
-        [gametype]: the gametype to get player count of
-        GAMES:
-        main lobby
-        tournament lobby
-        duels
-        prototype
-        speed uhc
-        replay
-        legacy
-        skyblock
-        mcgo
-        pit
-        build battle
-        murder mystery
-        tntgames
-        battleground
-        survival games
-        skywars
-        walls3
-        ardcade
-        uhc
-        bedwars
-        housing
-        super smash
-        limbo
-        idle
-        queue
-    aliases:
-        hypixelplayercount
-        hppc
-        hypixelpc
-    added: 6/9/2020
+    CUSTOM:
+```gets hypixel's current player count
+or the playercount of a gametype if specified``````optional params:
+    [gametype]: the gametype to get player count of``````md
+GAMES:
+#main lobby
+#tournament lobby
+#duels
+#prototype
+#speed uhc
+#replay
+#legacy
+#skyblock
+#mcgo
+#pit
+#build battle
+#murder mystery
+#tntgames
+#battleground
+#survival games
+#skywars
+#walls3
+#ardcade
+#uhc
+#bedwars
+#housing
+#super smash
+#limbo
+#idle
+#queue``````aliases:
+hypixelplayercount
+hppc
+hypixelpc``````added: 6/9/2020```
     """
     game = Content(content).string
     if game:
@@ -1918,7 +1922,10 @@ async def _deathBattle(msg, users, going, notGoing, responseTime, damageMsgs, he
     if Stop:
         Stop = False
         await removeFromList(playingDB, going, notGoing)
-    tempItems = {item["id"]: item["name"].lower() for item in users[going]["items"]} #gets the items + item ids ready
+    tempItems = {}
+    for item in users[going]["items"]:
+        t = findItem(iName=item)
+        tempItems[t["id"]] = t["name"].lower()
     temp = await msg.channel.send(f"{going.name} attack or heal\nor item (there is no backing out)") #message to say in chat
     try: #waiting for option
         ah = await client.wait_for("message", check=lambda message: message.author.id == going.id and message.content.lower() in ["attack", "a", "h", "heal", "stop", "item"], timeout=responseTime)
@@ -1943,15 +1950,9 @@ async def _deathBattle(msg, users, going, notGoing, responseTime, damageMsgs, he
                 await msg.channel.send("you waited to long, picking 1")
                 i = 1
             await whichItem.delete()
-            with open(itemDataFilePath, "r+", encoding="utf-8-sig") as j: #removes from inventory
-                data = json.load(j)
-                for item in data[str(going.id)]:
-                    if item["id"] == i:
-                        AH = item["name"]
-                        data[str(going.id)].remove(item)
-                users[going]["items"] = data[str(going.id)]
-                clearFile(j)
-                json.dump(data, j)
+            t = findItem(iId=int(i))
+            await RAMUserInfo[going.id].removeItem(item=t)
+            AH = t["name"]
             CustomMessage = True
             if AH.title() == "Theft":
                 count = 0
@@ -1962,7 +1963,7 @@ async def _deathBattle(msg, users, going, notGoing, responseTime, damageMsgs, he
                         CustomMessage = f'{going} did 20 damage to {notGoing}'
                         break
                     else:
-                        AH = random.choice(users[notGoing]["items"])["name"]
+                        AH = random.choice(list(users[notGoing]["items"].keys()))
                         if AH.title() == "Theft":
                             temp = notGoing
                             notGoing = going
@@ -2030,7 +2031,7 @@ async def _deathBattle(msg, users, going, notGoing, responseTime, damageMsgs, he
             await temp.delete()
         users[going]["healstreak"] += 1
     elif AH == 'stop':
-        await addMoney(going, -20)
+        await RAMUserInfo[int(going.id)].addMoney(-20)
         await removeFromList(playingDB, going, notGoing)
         await temp.delete()
         return await stop("stopped")
@@ -2067,13 +2068,13 @@ async def _deathBattle(msg, users, going, notGoing, responseTime, damageMsgs, he
         return await msg.channel.send("ITS A DRAW!")
     if users[second]["health"] <= 0:
         await removeFromList(playingDB, going, notGoing)
-        await addMoney(first, abs(users[second]["health"]))
-        await addMoney(second, users[second]["health"])
+        await RAMUserInfo[int(first.id)].addMoney(abs(users[second]["health"]))
+        await RAMUserInfo[int(second.id)].addMoney(users[second]["health"])
         return await msg.channel.send(f'{first.name} has won!\nthey earned {abs(users[second]["health"])} and {second.name} has lost {abs(users[second]["health"])}')
     elif users[first]["health"] <= 0:
         await removeFromList(playingDB, going, notGoing)
-        await addMoney(second, abs(users[first]["health"]))
-        await addMoney(first, users[first]["health"])
+        await RAMUserInfo[int(second.id)].addMoney(abs(users[second]["health"]))
+        await RAMUserInfo[int(first.id)].addMoney(users[second]["health"])
         return await msg.channel.send(f'{second.name} has won!\nthey earned {abs(users[first]["health"])} and {first.name} has lost {abs(users[first]["health"])}')
     else:
         if going == first:
@@ -2106,26 +2107,15 @@ async def deathbattle(msg, content, cmd="deathbatte"):
         return await returnMsg(msg, f'{user2.name} is in a game')
     if msg.author == client.user or user2 == client.user:
         return await returnMsg(msg, "I cannot play sadly :((((((")
-    with open(levelingDataFilePath, "r") as j:
-        data = json.load(j)
-        b1 = data[str(msg.author.id)]["level"] // 3
-        if data.get(str(user2.id)):
-            b2 = data[str(user2.id)]["level"] // 3
-        else: b2 = 0
+    await UserInfo.registerUser(user2.id)
+    b1 = RAMUserInfo[msg.author.id].level // 3
+    b2 = RAMUserInfo[user2.id].level // 3
     first = random.choice([msg.author, user2])
     second = msg.author if first == user2 else user2
     playingDB.append(first)
     playingDB.append(second)
-    with open(itemDataFilePath, "r", encoding="utf-8-sig") as j:
-        data = json.load(j)
-        items = data.get(str(msg.author.id))
-        if items:
-            i1 = items
-        else: i1 = []
-        items = data.get(str(user2.id))
-        if items:
-            i2 = items
-        else: i2 = []
+    i1 = RAMUserInfo[msg.author.id].items
+    i2 = RAMUserInfo[user2.id].items
     users = {msg.author: {"user": msg.author, "health": 100 + b1, "items": i1, "healstreak": 0},
              user2: {"user": user2, "health": 100 + b2, "items": i2, "healstreak": 0}}
     users[second]["health"] += 15
@@ -2145,6 +2135,7 @@ async def mmoney(msg, content, cmd="mmoney"):
         [user]: the user's *money*
     options:
         --raw: the raw file of *money*
+        --totalmoney: gets the total money, and [users] (default to your) % of the money
     aliases:
         mmoney
         bal
@@ -2154,13 +2145,50 @@ async def mmoney(msg, content, cmd="mmoney"):
     History:
         this used to be a joke command <:TiredPuffle:707773683854213140>
     """
-    user = Content(content).getUser(msg, 0)
-    if testInContent(content, "--raw"):
-        with open(moneyDataFilePath, "rb") as f:
-            await msg.channel.send(file=discord.File(f, "money.json"))
-    with open(moneyDataFilePath, "r") as j:
-        data = json.load(j)
-        return await returnMsg(msg, f'{user.name} has €{data.get(str(user.id))}')
+    user = Content(content.split(" --totalmoney")[0]).getUser(msg, 0)
+    await UserInfo.registerUser(user.id)
+    if "--totalmoney" in content:
+        total = 0
+        for u in RAMUserInfo.values():
+            await u.dumpMoneyInfo()
+        with open(moneyDataFilePath, "r", encoding="utf-8-sig") as f:
+            data = json.load(f)
+            for amnt in data.values():
+                total += amnt
+        return await returnMsg(msg, f'total money: {total}\n{user.name}\'s % of the total: {RAMUserInfo[user.id].money / total * 100}')
+    if "--raw" in content:
+        with open(moneyDataFilePath, "rb", encoding="utf-8-sig") as f:
+            return await returnMsg(msg, file=discord.File(f, "money.json"))
+    return await returnMsg(msg, f'{user.name} has €{RAMUserInfo[user.id].money}')
+
+@command
+async def mostmoney(msg, content, cmd="mostmoney"):
+    """
+    a leaderboard of the people with the most money
+    i finally gave in lol
+    options:
+        -top <top>: the amnt of people to show
+        -sep <seperator>: what to seperate each person by
+    added: 8/19/2020
+    """
+    content = Content(content)
+    top = 10
+    sep = "\n"
+    for op, param in content.opsWithParams():
+        if op == "-top": top = param
+        elif op == "-sep": sep = param
+    for u in RAMUserInfo.values():
+        await u.dumpMoneyInfo()    
+    with open(moneyDataFilePath, "r", encoding="utf-8-sig") as f:
+        data = json.load(f)
+        data = {uId: amnt for uId, amnt in sorted(data.items(), key=lambda x: x[1], reverse=True)}
+        new = []
+        USERS = {u.id: u.name for u in msg.guild.members}
+        for n, (uId, amnt) in enumerate(data.items()):
+            if n >= int(top): break
+            try: new.append(f'{n + 1}: {USERS[int(uId)]}: {amnt}')
+            except KeyError: continue
+        return await returnMsg(msg, sep.join(new))
 
 @command
 async def shop(msg, content, cmd="shop"):
@@ -2189,10 +2217,8 @@ async def buyItem(msg, content, cmd="buyitem"):
         amnt = int(buying.split(", ")[1])
         buying = buying.split(", ")[0]
     else: amnt = 1
-    with open(moneyDataFilePath, "r") as j:
-        data = json.load(j)
-        money = data.get(str(msg.author.id))
-        if not money: return await returnMsg(msg, "you have no money")
+    money = RAMUserInfo[msg.author.id].money
+    if not money: return await returnMsg(msg, "you have no money")
     with open(itemsFilePath, "r") as j:
         data = json.load(j)
         for item in data:
@@ -2205,21 +2231,10 @@ async def buyItem(msg, content, cmd="buyitem"):
         else:
             money -= forPurchase["cost"]
             amountBought += 1
-    with open(itemDataFilePath, "r+", encoding="utf-8-sig") as j2:
-        data = json.load(j2)
-        l = data.get(str(msg.author.id))
-        if l:
-            for _ in range(amountBought):
-                l.append(forPurchase)
-        else: l = [forPurchase] * amountBought
-        data[str(msg.author.id)] = l
-        clearFile(j2)
-        json.dump(data, j2)
-    with open(moneyDataFilePath, "r+") as j:
-        data = json.load(j)
-        data[str(msg.author.id)] = money
-        clearFile(j)
-        json.dump(data, j)
+    l = RAMUserInfo[msg.author.id].items
+    try: l[forPurchase["name"]] += amountBought
+    except: l[forPurchase["name"]] = amountBought
+    RAMUserInfo[msg.author.id].money = money
     return await returnMsg(msg, f'bought {forPurchase["name"]}')
 
 @command
@@ -2236,22 +2251,15 @@ async def inventory(msg, content, cmd="inv"):
     """
     content = Content(content)
     user = content.getUser(msg)
-    with open(itemDataFilePath, "r+", encoding="utf-8-sig") as j:
-        data = json.load(j)
-        items = data.get(str(user.id))
-        if items:
-            embed = discord.Embed(name=f"{user.name}'s inventory", color=user.color)
-            s = {item["name"] for item in items}
-            count = {item: 0 for item in s}
-            used = []
-            for item in items: count[item["name"]] += 1
-            for item in items:
-                if item in used:
-                    continue
-                used.append(item)
-                embed.add_field(name=f'{item["name"]} * {count[item["name"]]}', value=f'{item["name"]}: {item["desc"]}',)
-            return await returnMsg(msg, embed=embed)
-        else: return await returnMsg(msg, "none")
+    userInfo: UserInfo = RAMUserInfo[msg.author.id]
+    await userInfo.dumpItemInfo()
+    items = userInfo.items
+    if items:
+        embed = discord.Embed(name=f"{user.name}'s inventory", color=user.color)
+        for item, count in items.items():
+            embed.add_field(name=item, value=count)
+        return await returnMsg(msg, embed=embed)
+    else: return await returnMsg(msg, "none")
 
 @command
 async def duplicator(msg, content, cmd="duplicator"):
@@ -2509,24 +2517,34 @@ async def pingResponse(msg, content, cmd="pingresponse"):
     """
     response = Content(content)
     if isBot(msg, client): return
-    with open(pingResponseFilePath, "r+") as j:
-        data = json.load(j)
-        if "-WHEN" in response:
-            when = response.split("-WHEN ")[1]
-            when = when.split(" ")
-            data[str(msg.author.id)]["when"] = when
-        elif response.lower() == "none":
-            del data[str(msg.author.id)]
-        else:
-            if not data.get(str(msg.author.id)):
-                data[str(msg.author.id)] = {"response": str(response), "when": ["offline"]}
-            else:
-                data[str(msg.author.id)] = {"response": str(response), "when": data[str(msg.author.id)]["when"]}
-        clearFile(j)
-        json.dump(data, j)
+    userInfo: UserInfo = RAMUserInfo[msg.author.id]
     if "-WHEN" in response:
-        return await returnMsg(msg, f'response will happen when you are {" ".join(data[str(msg.author.id)]["when"])}')
+        when = response.split("-WHEN ")[1]
+        when = when.split(" ")
+        userInfo.pingResponseWhen = when
+    elif response.lower() == "none":
+        userInfo.pingRespone = ""
+    else:
+        userInfo.pingResponse = str(response)
+    if "-WHEN" in response:
+        return await returnMsg(msg, f'response will happen when you are {" ".join(userInfo.pingResponseWhen)}')
     return await returnMsg(msg, f"changed to:\n{response}")
+
+@command
+async def prfile(msg, content, cmd="prfile"):
+    """
+    gets the file of ping responses
+    aliases:
+        prfile
+        prlist
+        pingresponselist
+        pingresponsefile
+    added: 8/18/2020
+    """
+    for user in RAMUserInfo.values():
+        await user.dumpPingResponseInfo()
+    with open(pingResponseFilePath, "rb") as f:
+        return await returnMsg(msg, file=discord.File(f, "pingResponse.json"))
 
 @command
 async def setStatus(msg, content, cmd="status"):
@@ -2675,8 +2693,9 @@ async def textInfo(msg, content, cmd="textinfo"):
             with open(f'{msg.author.id}.txt', "w") as f:
                 f.write(send)
             with open(f'{msg.author.id}.txt', "rb") as f:
-                return await returnMsg(msg, file=discord.File(f, "text.txt"))
+                mssg = await returnMsg(msg, file=discord.File(f, "text.txt"))
             os.remove(f'{msg.author.id}.txt')
+            return mssg
     return await returnMsg(msg, embed=embed)
 
 @command
@@ -3831,9 +3850,9 @@ async def botMods(msg, content, cmd="botmods"):
     BOTMODS = reloadBOTMODS()
     content = Content(content)
     if content @ "--raw":
-        with open(botModsFilePath, "rb") as f:
+        with open(botModsFilePath, "rb", encoding="utf-8-sig") as f:
             return await returnMsg(msg, file=discord.File(f, "botmods.json"))
-    with open(botModsFilePath, "r") as j:
+    with open(botModsFilePath, "r", encoding="utf-8-sig") as j:
         data = json.load(j)
         if content:
             try: return await returnMsg(msg, "\n".join(data.get(str(content.getUser(msg).id))))
@@ -3862,7 +3881,8 @@ async def embed(msg, content, cmd="embed"):
     title = content.split("|")[0]
     content.replace(f'{title} ', "")
     content = Content(content.split("|", pastIndex=1), removeCmd=False)
-    for op, param in content.opsWithParams({"author": (slice(0,None,None), " ")}):
+    msgContent = None
+    for op, param in content.opsWithParams({"author": (slice(0,None,None), " "), "content": (slice(0, None, None), " ")}):
         with switch(op) as case:
             if case("-color"): color = Content(param, removeCmd=False)
             elif case("-image"): image = param
@@ -3871,19 +3891,21 @@ async def embed(msg, content, cmd="embed"):
                 author = Content(" ".join(param), removeCmd=False)
                 list(author.opsWithParams())
                 author = str(author)
+            elif case("-content"):
+                msgContent = " ".join(param)
     content.formatMessage(msg, {"{title}": title, "{color}": color, "{author}": author})
     embed = discord.Embed(title=title, color=discord.Color(int(str(color), 16) if not color @ "--rand" else random.randint(0, 16777215)) if color else discord.Color(0x000000))
     if image: embed.set_image(url=image)
     if thumbnail: embed.set_thumbnail(url=thumbnail)
     if author: embed.set_author(name=author)
     split = content.split("|")
-    if len(split) > 1:
+    if len(split) >= 1 and split[0]:
         for n, field in enumerate(split):
             name, value = field.split(",")
             value = Content(value, removeCmd=False)
             Inline = True if not value @ "--ninline" else False
             embed.add_field(name=name, value=str(value), inline=Inline)
-    return await returnMsg(msg, embed=embed)
+    return await returnMsg(msg, content=msgContent, embed=embed)
 
 @command
 async def emoteUsage(msg, content, cmd="emoteusage"):
@@ -3988,12 +4010,12 @@ async def guessingGame(msg, content, cmd="guessinggame"):
         LIVES -= 1
         if int(c) == ans:
             say = f"YOU WIN\nWITH {LIVES} LIVES LEFT" if not Bet else f'YOU WIN\nWITH {LIVES} LIVES LEFT\nYou earned {(int(ans) // STARTLIVES)}'
-            if Bet: await addMoney(msg.author, (int(ans) // STARTLIVES))
+            if Bet: await RAMUserInfo[msg.author.id].addMoney(int(ans) // STARTLIVES)
             rv = await msg.channel.send(embed=discord.Embed(title=say, color=discord.Color.from_rgb(0, 255, 0)))
             return await embedToReadableDict(rv, rv.embeds[0])
         elif LIVES <= 0:
             say = f"YOU LOSE\nTHE ANSWER WAS {ans}" if not Bet else f'YOU LOSE\nTHE ANSWER WAS {ans}\nYOU LOSE {(int(ans) // STARTLIVES)}'
-            if Bet: await addMoney(msg.author, -(int(ans) // STARTLIVES))
+            if Bet: await RAMUserInfo[msg.author.id].addMoney(-(int(ans) // STARTLIVES))
             rv = await msg.channel.send(embed=discord.Embed(title=say, color=discord.Color.from_rgb(255, 0, 0)))
             return await embedToReadableDict(rv, rv.embeds[0])
         await msg.channel.send(f"{msg.author.mention} too high" if int(c) > ans else f"{msg.author.mention} too low\nguess\nyou have {LIVES} lives left")
@@ -4034,13 +4056,15 @@ async def bans(msg, content, cmd="bans"):
     """
     gets the bans
     """
+    for user in RAMUserInfo.values():
+        await user.dumpBannedInfo()
     if not testInContent(content, "--raw"):
-        with open(bannedFilePath, "r+") as bannedJ:
+        with open(bannedFilePath, "r+", encoding="utf-8-sig") as bannedJ:
             data = json.load(bannedJ)
-            mssg = "".join([f'{(await client.fetch_user(int(user))).name}: {" ".join(data[user])}\n' for user in data.keys()])
+            mssg = "".join([f'{(await client.fetch_user(int(user))).name}: {" ".join(data[user])}\n' for user in data.keys() if data[user]])
             try: return await returnMsg(msg, mssg)
             except: pass
-    with open(bannedFilePath, "rb") as bannedJ:
+    with open(bannedFilePath, "rb", encoding="utf-8-sig") as bannedJ:
         return await returnMsg(msg, file=discord.File(bannedJ, "bans.json"))
 
 @command
@@ -4132,10 +4156,16 @@ async def weather(msg, content, cmd="weather"):
     if not content:
         return await returnMsg(msg, "But like where?")
     request = requests.get(f"https://www.google.com/search?q={content}+weather")
+    with open("epicfile.html", "w") as f:
+        f.write(request.text)
     try:
         soup = bs.BeautifulSoup(request.text, features="html.parser")
-        tempurature = soup.find_all("div", {"class": "BNeawe iBp4i AP7Wnd"})[1].text
-        temp = int(tempurature.split("°")[0])
+        tempurature = soup.find_all("div", {"class": "BNeawe iBp4i AP7Wnd"})[-1].text.split("°")[0]
+        warning = None
+        if "\n" in tempurature:
+            tempurature, *warning = tempurature.split("\n")[::-1]
+            warning = "\n".join(warning)
+        temp = int(tempurature)
         condition = soup.find_all("div", {"class": "BNeawe tAd8D AP7Wnd"})[0].text
         condition = condition.split("AM" if "AM" in condition else "PM")[1]
         location = soup.find_all("span", {"class": "BNeawe tAd8D AP7Wnd"})[0].text
@@ -4149,6 +4179,7 @@ async def weather(msg, content, cmd="weather"):
     embed = discord.Embed(title=location, color=discord.Color.from_rgb(r, 0, b))
     embed.add_field(name="Current weather (F)", value=tempurature)
     embed.add_field(name="Current weather (C)", value=celcius)
+    if warning: embed.add_field(name="Warning", value=warning, inline=False)
     embed.add_field(name="Overhead", value=condition, inline=False)
     return await returnMsg(msg, embed=embed)
 
@@ -4258,8 +4289,8 @@ async def dice(msg, content, cmd="dice"):
             return await returnMsg(msg, "nice try")
     else: evalStmnt = "n"
     if not FullEval:
-        choices = [eval(str(evalStmnt)) for n in range(1, high)]
-        rolls = [str(random.choice(choices)) for _ in range(rollCount)]
+        choices = tuple(eval(str(evalStmnt)) for _ in range(1, high))
+        rolls = tuple(str(random.choice(choices)) for _ in range(rollCount))
     else:
         rolls = [str(random.choice(eval(str(evalStmnt)))) for _ in range(rollCount)]
     return await returnMsg(msg, sep.join(rolls))
@@ -4276,10 +4307,10 @@ async def tof(msg, content, cmd="tof"):
     content = Content(content)
     for op, param in content.opsWithParams():
         if op == "-sep": 
-            sep = Content.whiteSpaceFormat(param)
+            sep = Content.whitespaceFormat(param)
             break
     else: sep = "\n"
-    temps = (str((9 / 5) * float(temp)) for temp in content.split("\n"))
+    temps = map(lambda t: str((9 / 5) * float(t)), content.strip().split(" "))
     return await returnMsg(msg, sep.join(temps))
 
 @command
@@ -4290,10 +4321,8 @@ async def wait(msg, content, cmd="wait"):
         <wait time>: the amount of time to wait
     """
     content = Content(content)
-    try:
-        t = float(content)
-    except:
-        return await returnMsg("not a valid wait time")
+    try: t = float(content)
+    except: return await returnMsg("not a number")
     await asyncio.sleep(t)
 
 @command
@@ -4308,10 +4337,10 @@ async def toc(msg, content, cmd="toc"):
     content = Content(content)
     for op, param in content.opsWithParams():
         if op == "-sep": 
-            sep = Content.whiteSpaceFormat(param)
+            sep = Content.whitespaceFormat(param)
             break
     else: sep = "\n"
-    temps = (str((5 / 9) * float(temp)) for temp in content.split("\n"))
+    temps = map(lambda t: str((5 / 9) * float(t)), content.strip().split(" "))
     return await returnMsg(msg, sep.join(temps))
 
 @command
@@ -4438,6 +4467,7 @@ async def nice(msg, content, cmd="nice"):
     aliases:
     SECRET:
     69
+    added: 8/14/2020
     """
     if Content(content).strip() != "nice":
         return await returnMsg(msg, "incorrect password")
