@@ -459,14 +459,21 @@ async def on_message(msg):
         userInfo: UserInfo = RAMUserInfo[msg.author.id]
         if userInfo.money:
             dropAmnt = round(random.gauss(userInfo.money / 100, .01 * userInfo.money), 2)
-            pswrd = "".join(random.choice(string.ascii_lowercase) for _ in range(random.randint(5, 10)))
-            await msg.channel.send(random.choice((
+            pswrd = "".join(random.choice(string.ascii_lowercase) for _ in range(random.randint(2, 8)))
+            CanPickUp = random.random() >= .5
+            randomMsg = random.choice((
                 f'{msg.author.mention} has dropped {dropAmnt}\n say {pswrd} to pick it up',
                 f'OMG LOOK AT THE €{dropAmnt} ON THE FLOOR THAT {msg.author.mention} DROPPED, SAY {pswrd} TO PICK IT UP',
                 f'{dropAmnt} has been dropped by {msg.author.mention} {pswrd} is a secret word used in order to pick it up :))'
-                )))
+                ))
+            if CanPickUp: randomMsg += f"\n{msg.author.mention} GET YOUR MONEY BACK"
+            await msg.channel.send(randomMsg)
             try:
-                collectorMsg = await client.wait_for("message", check=lambda message: message.author != msg.author and message.content == pswrd and message.channel == msg.channel, timeout=30.0)
+                if not CanPickUp:
+                    check = lambda message: message.author != msg.author and message.content == pswrd and message.channel == msg.channel
+                else: check = lambda message: message.content == pswrd and message.channel == msg.channel
+
+                collectorMsg = await client.wait_for("message", check=check, timeout=30.0)
             except Exception as e:
                 await msg.channel.send("no one gets the money :(")
             else:
