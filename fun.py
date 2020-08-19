@@ -22,63 +22,6 @@ async def luckynumber(msg, content, cmd="luckynumber"):
     if random.random() >= .999: return await returnMsg(msg, f"{who}'s lucky numbers are 7 7 7")
     return await returnMsg(msg, f"{who}'s lucky numbers are {nums}")
 
-
-@command
-async def getBaseballScore(msg, content, cmd="baseballscore"):
-    """
-    gets the current score for <team>'s game
-    if they are not in a game, it will say when they next play
-    required params:
-        <team>
-    options:
-        --totalcolor: changes the way it calculates the color
-            by default it's more red if the away team is dominating
-            and more blue if the home team is dominating
-            this makes it so it's the sum of the score / the highest
-            scoring game in baseball
-    aliases:
-        baseball
-        baseballscore
-        mlb
-    """
-    content = Content(content).calcOps()
-    if not content: return await returnMsg(msg, "smh man what team")
-    request = requests.get(f"https://www.google.com/search?q={content}+game")
-    soup = bs.BeautifulSoup(request.text, features="html.parser")
-    span = soup.find_all("span", {"class": "rQMQod AWuZUe"})
-    inning = span[0].text if span else "NONE"
-    if inning != "NONE":
-        teams = soup.find_all("div", {"class": "BNeawe s3v9rd AP7Wnd lRVwie"})[1:3]
-        scores = soup.find_all("div", {"class": "BNeawe deIvCb AP7Wnd"})[1:3]
-        t1 = (teams[0].text, int(scores[0].text))
-        t2 = (teams[1].text, int(scores[1].text))
-        color = (int(255 * (t1[1] / (t2[1] + t1[1]))), 0, int(255 * (t2[1] / (t2[1] + t1[1])))) if (t1[1] != 0 and t2[1] != 0) and not content @ "--totalcolor" else (int(255 * ((t1[1] + t2[1]) / 46)), 0, int(255 * (1 - ((t1[1] + t2[1]) / 46))))
-        embed = discord.Embed(title=f'{t1[0]} @ {t2[0]}', color=discord.Color.from_rgb(*color))
-        embed.add_field(name="Inning", value=inning)
-        embed.add_field(name="Score", value=f'{t1[1]} TO {t2[1]}')
-    else:
-        try:
-            time = soup.find_all("span", {"class": "r0bn4c rQMQod"})[0:2]
-            time = f'{time[0].text}, {time[1].text}'
-            teams = soup.find_all("div", {"class": "BNeawe s3v9rd AP7Wnd lRVwie"})[1:3]
-            t1 = teams[0].text
-            t2 = teams[1].text
-            if "yesterday" in time.lower():
-                raise Exception("Yesterday's game")
-            embed = discord.Embed(title=f'{t1} @ {t2} {time} (PACIFIC TIME)')
-        except Exception as e:
-            winner = soup.find_all("span", {"class": "FCUp0c rQMQod"})[0]
-            loser = soup.find_all("div", {"class": "BNeawe s3v9rd AP7Wnd lRVwie"})[2]
-            scores = soup.find_all("div", {"class": "BNeawe deIvCb AP7Wnd"})[1:3]
-            t1 = (winner.text, int(scores[0].text))
-            t2 = (loser.text, int(scores[1].text))
-            color = (int(255 * (t1[1] / (t2[1] + t1[1]))), 0, int(255 * (t2[1] / (t2[1] + t1[1])))) if (t1[1] != 0 and t2[1] != 0) or not content @ "--totalcolor" else (int(255 * ((t1[1] + t2[1]) / 46)), 0, 0)
-            embed = discord.Embed(title=f'{t1[0]} WON against {t2[0]}', color=discord.Color.from_rgb(*color))
-            embed.add_field(name=f"{t1[0]}'s score", value=str(t1[1]))
-            embed.add_field(name=f"{t2[0]}'s score", value=str(t2[1]))
-
-    return await returnMsg(msg, embed=embed)
-
 @command
 async def shrug(msg, content, cmd="shrug"):
     """
@@ -94,6 +37,8 @@ async def shrug(msg, content, cmd="shrug"):
 async def editCmd(msg, content, cmd="edit"):
     """
     sends a message, then edits it
+    ex:
+        [edit cool| %o>>e
     required params:
         *<message> (sep with |): the first message will send immediately
             messages after | will be edited in, in intervals
@@ -110,6 +55,7 @@ async def editCmd(msg, content, cmd="edit"):
     options:
         -t <time>: the time to wait before editing each message
         -sep <sep>: defaults to nothing, replaces | with sep
+        per edit: /-t <time>: the time to wait for that edit
     FORMATS
     WHITESPACE FORMATS
     aliases:
@@ -134,21 +80,26 @@ async def editCmd(msg, content, cmd="edit"):
     content._whitespaceFormat()
     edits = content.split("|")
     editable = await msg.channel.send(edits[0])
+    tokens = {
+        "+": "add",
+        "-": False,
+        "*": "multiply",
+        "<": "insertBeggining",
+        "%": "replace",
+        "^": "insert",
+        ";": "newmessage"
+    }
     while edits:
         edits.pop(0)
         if not edits: break
-        await asyncio.sleep(sleepFor)
-
-        tokens = {
-            "+": "add",
-            "-": False,
-            "*": "multiply",
-            "<": "insertBeggining",
-            "%": "replace",
-            "^": "insert",
-            ";": "newmessage"
-        }
         token = tokens.get(edits[0][0])
+        ChangeT = "/-t" in edits[0]
+        if ChangeT:
+            tempSleepFor = sleepFor
+            t = edits[0]
+            sleepFor = float(t.split("/-t")[1].strip())
+            edits[0] = edits[0].split("/-t")[0]
+        await asyncio.sleep(sleepFor)
         if token == None or token == "add": await editable.edit(content=editable.content + f'{sep}{edits[0]}')
         elif token == "multiply": await editable.edit(content=editable.content*int(edits[0][1:]))
         elif token == "replace":
@@ -174,6 +125,7 @@ async def editCmd(msg, content, cmd="edit"):
             editable = await editable.channel.send(send)
 
         else: await editable.edit(content=editable.content.replace(edits[0][1:], ""))
+        if ChangeT: sleepFor = tempSleepFor
 
 @command
 async def duplicator(msg, content, cmd="duplicator"):
@@ -222,18 +174,6 @@ async def ship(msg, content, cmd="ship"):
     two = ", ".join(two)
     shipped = one[:(len(one) // 2) + 1] + two[len(two) // 2:]
     return await returnMsg(msg, "DISCLAIMER: I DO NOT SUPPORT SHIPPING PEOPLE IN ANY WAY, HOWEVER MY MASTER SEEMS TO HAVE OTHER PLANS" if random.random() >= .985 else shipped)
-
-@command
-async def sendBlank(msg, content, cmd="sendblank"):
-    """
-    send a specified amount of lines of blank messages defaults to 5
-    optional params:
-        [lines]: the amount of blank lines to send
-    added: 6/1/2020
-    """
-    content = Content(content)
-    amnt = int(content) if content else 5
-    return await returnMsg(msg, "_" + ("\n" * amnt) + "_")
 
 @command
 async def echo(msg, content, cmd="echo"):

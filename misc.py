@@ -532,3 +532,15 @@ async def wikipediaCmd(msg, content, cmd="wiki"):
     else: sep = "\n"
     queries = frozenset(f'https://en.wikipedia.org/wiki/Special:Search?search={search.strip().replace(" ", "_")}' for search in content.split("|"))
     return await returnMsg(msg, sep.join(queries))
+
+@command
+async def sendBlank(msg, content, cmd="sendblank"):
+    """
+    send a specified amount of lines of blank messages defaults to 5
+    optional params:
+        [lines]: the amount of blank lines to send
+    added: 6/1/2020
+    """
+    content = Content(content)
+    amnt = int(content) if content else 5
+    return await returnMsg(msg, "_" + ("\n" * amnt) + "_")
