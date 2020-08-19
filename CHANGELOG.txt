@@ -1,4 +1,5 @@
-7.0 (8/??/2020)
+7.1 (8/??/2020)
+(7.1 is both the 7.1 and 7.0 update)
 
 ADDITIONS:
 *--raw to timers
@@ -23,6 +24,28 @@ TECHNICAL:
     *this makes it easier to add more user data type stuff
     *it's also faster
     *and easier to work with
+*cmds are now in diff files
+
+====================================================================
+7.0 (??/??/????)
+
+ADDITIONS:
+???
+
+CHANGES:
+???
+
+FIXES:
+???
+
+====================================================================
+7.1-rc1
+
+ADDITIONS:
+*there is now a 1% chance you lose money when you do bal
+
+TECHNICAL:
+*cmds are now in diff files
 
 ====================================================================
 7.0-rc2

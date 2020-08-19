@@ -1,4 +1,14 @@
-from cmds import *
+from cmdsthatrequirestop import *
+from customcmds import *
+from fun import *
+from images import *
+from info import *
+from levels import *
+from mathy import *
+from misc import *
+from gamesandmoney import *
+from staff import *
+
 from common import __version__
 
 @client.event
@@ -306,8 +316,7 @@ async def on_message(msg):
         if not isBot(msg, client):
             RAMUserInfo[msg.author.id] = UserInfo(msg.author.id)
     if f"{PREFIX}timeit" in content:
-        timeThisMessageTime = time.time()
-        TimeThisMessage = True
+        TimeThisMessage = time.time()
         content = content.replace(f"{PREFIX}timeit", "").strip()
     else: TimeThisMessage = False
 
@@ -407,11 +416,8 @@ async def on_message(msg):
             userData = userData.bans
             if cmd in userData or "ALL" in userData:
                 return await msg.channel.send(f'you are FORBIDDEN from using {cmd}')
-
-        if cmd == "stop":
-            await stop()
             
-        else: content = await runCommand(msg, content, cmd, Iscmd=Iscmd, WriteToFile=WriteToFile)
+        content = await runCommand(msg, content, cmd, Iscmd=Iscmd, WriteToFile=WriteToFile)
                 
     if playingHangman.get(msg.author.id):
         tempWord = playingHangman[msg.author.id]["word"]
@@ -501,7 +507,7 @@ async def on_message(msg):
             userInfo = RAMUserInfo[user]
             if type(userInfo) is str: continue
             await userInfo.reduceXP()
-    if TimeThisMessage: await msg.channel.send(f'it took {time.time() - timeThisMessageTime} process the message')
+    if TimeThisMessage: await msg.channel.send(f'it took {time.time() - TimeThisMessage} process the message')
     if RWhenDone: await msg.add_reaction("❌")
 
 @client.event
