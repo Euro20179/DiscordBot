@@ -1,3 +1,57 @@
+7.0 (8/??/2020)
+
+ADDITIONS:
+*--raw to timers
+*if there are any warnings in an area, weather will now say them
+*prfile, gets the json file of the pingresponses
+*there is now a .1% chance you drop money, and someone can pick it up
+*--totalmoney to mmoney
+*mostmoney, a leaderboard of people with the most money
+*there is now a 1/1000 chance you drop some of your money, that only other people can pick up, they will have 30 seconds
+
+FIXES:
+*for, if
+*embed works properly when given 1 field
+*weather when there is a warning
+*-sep for toc and tof
+*fetchuser
+*fetchchannel
+*fetchemote
+
+TECHNICAL:
+*changed how user data is stored
+    *this makes it easier to add more user data type stuff
+    *it's also faster
+    *and easier to work with
+
+====================================================================
+7.0-rc1_b.1 (8/19?/2020)
+
+ADDITIONS:
+*--raw to timers
+*if there are any warnings in an area, weather will now say them
+*prfile, gets the json file of the pingresponses
+*there is now a .1% chance you drop money, and someone can pick it up
+*--totalmoney to mmoney
+*mostmoney, a leaderboard of people with the most money
+*there is now a 1/1000 chance you drop some of your money, that only other people can pick up, they will have 30 seconds
+
+FIXES:
+*for, if
+*embed works properly when given 1 field
+*weather when there is a warning
+*-sep for toc and tof
+*fetchuser
+*fetchchannel
+*fetchemote
+
+TECHNICAL:
+*changed how user data is stored
+    *this makes it easier to add more user data type stuff
+    *it's also faster
+    *and easier to work with
+
+====================================================================
 6.9 (8/14/2020)
 
 ADDITIONS:

@@ -16,16 +16,19 @@ async def on_ready():
 
 @client.event
 async def on_disconnect():
+    for user in RAMUserInfo.values():
+        if type(user) is str: continue
+        await user.dumpInfo()
     with open(commandusageFilePath, "w") as j:
         json.dump(commandUsage, j)
 
 async def runBotModCmd(msg, content, cmd):
     global CUSTOMCMDS, BOTMODS
     if isBot(msg, client): return
-    if cmd == "ADDMONEY" and msg.author.id == EUROID:
+    if cmd == "ADDMONEY" and await hasPerms(str(msg.author.id), cmd):
         user = await getUserInContent(msg, content.split(", ")[0], cmd)
         amnt = content.split(", ")[1]
-        await addMoney(user, float(amnt))
+        await RAMUserInfo[user.author.id].addMoney(float(amnt))
         return await msg.channel.send(f'{float(amnt)} removed from {user.name}')
 
     elif cmd == "RESETEMOJIUSAGE" and msg.author.id == EUROID:
@@ -40,60 +43,47 @@ async def runBotModCmd(msg, content, cmd):
 
     elif cmd == "ALLOW" and msg.author.id == EUROID:
         user = await getUserInContent(msg, content.split("|")[0], cmd)
-        with open(botModsFilePath, "r+") as f:
-            data = json.load(f)
-            if str(user.id) in data.keys():
-                data[str(user.id)].append(content.split("|")[1].strip())
-            else:
-                data[str(user.id)] = [content.split("|")[1].strip()]
-            clearFile(f)
-            json.dump(data, f)
-            await msg.channel.send(f'{user.name} can now use {content.split("|")[1]}')
-            BOTMODS = reloadBOTMODS()
-            return
+        await UserInfo.registerUser(user.id)
+        userInfo: UserInfo = RAMUserInfo[int(user.id)]
+        userInfo.perms.append(content.split("|")[1].strip())
+        await userInfo.dumpPermInfo()
+        await msg.channel.send(f'{user.name} can now use {content.split("|")[1]}')
+        BOTMODS = reloadBOTMODS()
+        return
+
     elif cmd == "DISALLOW" and msg.author.id == EUROID:
         user = await getUserInContent(msg, content.split("|")[0], cmd)
-        with open(botModsFilePath, "r+") as f:
-            data = json.load(f)
-            if str(user.id) in data.keys():
-                data[str(user.id)].remove(content.split("|")[1].strip())
-            clearFile(f)
-            json.dump(data, f)
-            await msg.channel.send(f'{user.name} can not use {content.split("|")[1]}')
-            BOTMODS = reloadBOTMODS()
-            return
+        await UserInfo.registerUser(user.id)
+        userInfo: UserInfo = RAMUserInfo[int(user.id)]
+        userInfo.perms.remove(content.split("|")[1].strip())
+        await userInfo.dumpPermInfo()
+        await msg.channel.send(f'{user.name} can not use {content.split("|")[1]}')
+        BOTMODS = reloadBOTMODS()
+        return
 
     elif cmd == "ENDPLS" and await hasPerms(str(msg.author.id), cmd):
-        if cmd in BOTMODS[str(msg.author.id)]:
-            await msg.channel.send("Logging out")
-            await client.logout()
-            return
+        await msg.channel.send("Logging out")
+        await client.logout()
+        return
 
     elif cmd == "BAN" and await hasPerms(str(msg.author.id), cmd):
-        if cmd in BOTMODS[str(msg.author.id)]:
-            user = await getUserInContent(msg, " ".join(content.split(" ")[0:2]), cmd)
-            banFrom = splitContent(content, " ", index=2)
-            with open(bannedFilePath, "r+") as bannedJ:
-                data = json.load(bannedJ)
-                if data.get(str(user.id)):
-                    data[str(user.id)].append(banFrom)
-                else: data[str(user.id)] = [banFrom]
-                clearFile(bannedJ)
-                json.dump(data, bannedJ)
-                return await msg.channel.send(f'banned {user.name} from {banFrom}')
+        user = await getUserInContent(msg, " ".join(content.split(" ")[0:2]), cmd)
+        banFrom = splitContent(content, " ", index=2)
+        await UserInfo.registerUser(user.id)
+        userInfo: UserInfo = RAMUserInfo[user.id]
+        userInfo.bans.append(banFrom)
+        return await msg.channel.send(f'banned {user.name} from {banFrom}')
 
     elif cmd == "UNBAN" and await hasPerms(str(msg.author.id), cmd):
-        if cmd in BOTMODS[str(msg.author.id)]:
-            user = await getUserInContent(msg, " ".join(content.split(" ")[0:2]), cmd)
-            unbanFrom = splitContent(content, " ", index=2)
-            with open(bannedFilePath, "r+") as bannedJ:
-                data = json.load(bannedJ)
-                if data.get(str(user.id)):
-                    data[str(user.id)].remove(unbanFrom)
-                else: return await msg.channel.send("did not find user")
-                clearFile(bannedJ)
-                json.dump(data, bannedJ)
-                return await msg.channel.send(f'unbanned {user.name} from {unbanFrom}')
+        user = await getUserInContent(msg, " ".join(content.split(" ")[0:2]), cmd)
+        unbanFrom = splitContent(content, " ", index=2)
+        await UserInfo.registerUser(user.id)
+        userInfo: UserInfo = RAMUserInfo[user.id]
+        try:
+            userInfo.bans.remove(unbanFrom)
+        except:
+            return await msg.channel.send(f'not banned from {unbanFrom}')
+        return await msg.channel.send(f'unbanned {user.name} from {unbanFrom}')
 
     elif cmd == "CHANGELVLMSG" and await hasPerms(str(msg.author.id), cmd):
         if cmd in BOTMODS[str(msg.author.id)]:
@@ -219,7 +209,8 @@ it'll break if it lasts longer than 1 min 30 seconds
         for i in range(int(times)):
             for cmd in stuff:
                 cmd = cmd.replace("{i}", str(i))
-                if cmd == ")": break
+                if cmd == ")": 
+                    break
                 content = await runCommand(msg, f'{PREFIX}{cmd.strip()}', cmd.strip().split(" ")[0], DoFirst=True) 
                 res.append(str(content.content))
             if (time.time() - startTimeout) > timeoutLength: break
@@ -244,7 +235,7 @@ it'll break if it lasts longer than 1 min 30 seconds
             content = await returnMsg(msg, case.help())
         else: content = await case(msg, content, cmd=cmd)
         Iscmd = True
-    elif not case:
+    elif not case and not Iscmd:
         startContent = content
         secretCmds = {
             "upupdowndownleftrightleftrightba": lambda: returnMsg(msg, "what do you think this is some arcade machine with secret codes, lol")
@@ -290,7 +281,7 @@ it'll break if it lasts longer than 1 min 30 seconds
                 content.content = (await embedToReadableDict(msg, msg.embeds)).content
             await writeToFile(msg, content.content, WriteToFile)
         elif content.embeds:
-            return await msg.channel.send(embed=content.embeds if content.embeds else None, tts=content.tts)
+            return await msg.channel.send(content.content if content.content else None, embed=content.embeds if content.embeds else None, tts=content.tts)
         elif content.attachments:
             return await msg.channel.send(file=content.attachments if content.attachments else None, tts=content.tts)
         else:
@@ -311,15 +302,20 @@ async def on_message(msg):
     global Stop
     global blueCheck, neutral
     content = msg.content
-        
+    if msg.author.id not in RAMUserInfo.keys():
+        if not isBot(msg, client):
+            RAMUserInfo[msg.author.id] = UserInfo(msg.author.id)
     if f"{PREFIX}timeit" in content:
         timeThisMessageTime = time.time()
         TimeThisMessage = True
         content = content.replace(f"{PREFIX}timeit", "").strip()
     else: TimeThisMessage = False
+
     Iscmd=RWhenDone = False
+
     if msg.author.id == 311621977339068418 and msg.channel.id not in (732071485564256377, 715043261110288415):
         await msg.delete()
+
     if PREFIX in content and PREFIX != content[0]:
         cmd = content.split(PREFIX)[1].split(" ")[0]
         with switch(cmd) as case:
@@ -343,6 +339,7 @@ async def on_message(msg):
             elif case("rwd") and not case("dr"):
                 RWhenDone=Iscmd = True
             Iscmd = True
+
     if not content: 
         return
         
@@ -360,26 +357,28 @@ async def on_message(msg):
         await msg.channel.send(random.choice((discord.utils.find(lambda e: e.name.lower() == "watching1", client.emojis), discord.utils.find(lambda e: e.name.lower() == "pinged", client.emojis))))
 
     if msg.mentions and not isBot(msg, client):
-        usersPinged = {str(user.id) for user in msg.mentions}
-        with open(pingResponseFilePath, "r") as j:
-            data = json.load(j)
-            for user in usersPinged & set(data.keys()):
-                if data.get(user):
-                    u = findMember(user, msg)
-                    if str(u.status) in data[user]["when"] or "all" in data[user]["when"]:
-                        c = Content(data[user]["response"], removeCmd=False)
-                        c = c.formatMessage(msg, ret=True)
-                        await msg.channel.send(c)     
+        usersPinged = frozenset(user.id for user in msg.mentions)
+        for user in usersPinged:
+            if user not in RAMUserInfo.keys():
+                await UserInfo.registerUser(user)
+            u = findMember(str(user), msg)
+            userInfo: UserInfo
+            userInfo = RAMUserInfo[user]
+            if str(u.status) in userInfo.pingResponseWhen or "all" in userInfo.pingResponseWhen:
+                c = Content(userInfo.pingResponse, removeCmd=False)
+                c = c.formatMessage(msg, ret=True)
+                await msg.channel.send(c) 
 
     if content[0] in PREFIX:
 
         cmd = getCmd(content)
         content = content.replace("—", "--")
+        WriteToFile = False
 
         if "<<<" in content:
             f = msg.attachments[0]
-            filename, url = f.filename, f.url
-            await saveImg(filename, url)
+            filename = f.filename
+            await saveImg(filename, f.url)
             with open(filename, "r") as f:
                 read = f.read()
             content = content.replace("<<<", read)
@@ -388,7 +387,6 @@ async def on_message(msg):
 
         if msg.attachments and cmd not in ["imginfo", "fileinfo"]:
             content += " " + " ".join(att.url for att in msg.attachments)
-        WriteToFile = False
 
         if " --delete" in content: 
             content = content.replace("--delete", "")
@@ -405,15 +403,10 @@ async def on_message(msg):
             return await msg.channel.send("NO")
 
         if msg.author.id:
-            with open(bannedFilePath, "r") as bannedJ:
-                data = json.load(bannedJ)
-                if data.get("EVERYONE"):
-                    if cmd in data["EVERYONE"]:
-                        return await msg.channel.send(f"no one can use {cmd}")
-                userData = data.get(str(msg.author.id))
-                if userData:
-                    if cmd in userData or "ALL" in userData:
-                        return await msg.channel.send(f"You cannot use {cmd}")
+            userData: UserInfo = RAMUserInfo[msg.author.id]
+            userData = userData.bans
+            if cmd in userData or "ALL" in userData:
+                return await msg.channel.send(f'you are FORBIDDEN from using {cmd}')
 
         if cmd == "stop":
             await stop()
@@ -458,7 +451,31 @@ async def on_message(msg):
         playingHangman[msg.author.id] = {"word": tempWord, "lives": tempLives, "disp": tempDisp, "guessed": tempGuessed}
 
     if not msg.content:
-        msg.content = "None"
+        msg.content = " "
+
+    msg.content = str(msg.content)
+
+    if random.random() >= .999:
+        userInfo: UserInfo = RAMUserInfo[msg.author.id]
+        if userInfo.money:
+            dropAmnt = round(random.gauss(userInfo.money / 100, .01 * userInfo.money), 2)
+            pswrd = "".join(random.choice(string.ascii_lowercase) for _ in range(random.randint(5, 10)))
+            await msg.channel.send(random.choice((
+                f'{msg.author.mention} has dropped {dropAmnt}\n say {pswrd} to pick it up',
+                f'OMG LOOK AT THE €{dropAmnt} ON THE FLOOR THAT {msg.author.mention} DROPPED, SAY {pswrd} TO PICK IT UP',
+                f'{dropAmnt} has been dropped by {msg.author.mention} {pswrd} is a secret word used in order to pick it up :))'
+                )))
+            try:
+                collectorMsg = await client.wait_for("message", check=lambda message: message.author != msg.author and message.content == pswrd and message.channel == msg.channel, timeout=30.0)
+            except Exception as e:
+                await msg.channel.send("no one gets the money :(")
+            else:
+                await msg.channel.send(f"good job {collectorMsg.author.mention} you earned {dropAmnt}")
+                UserInfo.registerUser(collectorMsg.id)
+                collectorInfo: UserInfo = RAMUserInfo[collectorMsg.author.id]
+                collectorInfo.money += dropAmnt
+                userInfo.money -= dropAmnt
+
     if "<:" in msg.content and ">" in msg.content:
         emotes = re.findall(r'<:[A-Za-z-_0-9]{1,100}:[0-9]{18}>', str(content))
         if emotes and not msg.author.bot:
@@ -471,8 +488,12 @@ async def on_message(msg):
                 clearFile(j)
                 json.dump(data, j)
 
-    await giveXP(msg)
-    await reduceXP(msg)
+    if RAMUserInfo.get(msg.author.id):
+        await RAMUserInfo[msg.author.id].giveXP(msg)
+        for user in RAMUserInfo.keys():
+            userInfo = RAMUserInfo[user]
+            if type(userInfo) is str: continue
+            await userInfo.reduceXP()
     if TimeThisMessage: await msg.channel.send(f'it took {time.time() - timeThisMessageTime} process the message')
     if RWhenDone: await msg.add_reaction("❌")
 
