@@ -25,6 +25,15 @@ TECHNICAL:
     *and easier to work with
 
 ====================================================================
+7.0-rc1 (8/19/2020)
+
+ADDITIONS:
+*mostmoney now says the % of the money each person has
+*sep for mostmoney now defaults to none, it whitespaceformats too now
+*top for mostmoney defaults to 5
+*lbm, lbmoney, tmoney as aliases for mostmoney
+
+====================================================================
 7.0-rc1_b.2 (8/19/2020)
 
 FIXES:
