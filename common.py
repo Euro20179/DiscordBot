@@ -21,7 +21,7 @@ from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont
 
 #TODO make each user an object with data relating to stuff like leveling and ping response, it will load in when they talk so it's not super slow at login time
 
-__version__ = "7.0-rc2"
+__version__ = "7.1-rc1"
 Stop = False
 
 playingHangman = {}
@@ -68,6 +68,12 @@ tracemalloc.start()
 
 with open(commandusageFilePath, "r") as j:
     commandUsage = json.load(j)
+
+async def stop(*args, **kwargs)->None: #similar to how raise StopIteration works, it stops whatever is happening
+    global Stop
+    Stop = True
+    if args: return random.choice(args)
+    if kwargs.get("retstop"): return Stop
 
 async def returnMsg(msg, content=None, embed=None, file=None, tts=False):
     msg.content = content
