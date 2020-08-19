@@ -402,7 +402,7 @@ async def on_message(msg):
         if msg.mention_everyone:
             return await msg.channel.send("NO")
 
-        if msg.author.id:
+        if msg.author.id and not isBot(msg, client):
             userData: UserInfo = RAMUserInfo[msg.author.id]
             userData = userData.bans
             if cmd in userData or "ALL" in userData:
