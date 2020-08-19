@@ -2169,14 +2169,19 @@ async def mostmoney(msg, content, cmd="mostmoney"):
     options:
         -top <top>: the amnt of people to show
         -sep <seperator>: what to seperate each person by
+    aliases:
+        tmoney
+        mostmoney
+        lbm
+        lbmoney
     added: 8/19/2020
     """
     content = Content(content)
-    top = 10
-    sep = "\n"
+    top = 5
+    sep = ""
     for op, param in content.opsWithParams():
         if op == "-top": top = param
-        elif op == "-sep": sep = param
+        elif op == "-sep": sep = Content.whitespaceFormat(param)
     for u in RAMUserInfo.values():
         await u.dumpMoneyInfo()    
     with open(moneyDataFilePath, "r", encoding="utf-8-sig") as f:
@@ -2184,11 +2189,17 @@ async def mostmoney(msg, content, cmd="mostmoney"):
         data = {uId: amnt for uId, amnt in sorted(data.items(), key=lambda x: x[1], reverse=True)}
         new = []
         USERS = {u.id: u.name for u in msg.guild.members}
+        total = 0
         for n, (uId, amnt) in enumerate(data.items()):
             if n >= int(top): break
-            try: new.append(f'{n + 1}: {USERS[int(uId)]}: {amnt}')
+            try: 
+                USERS[int(uId)]
+                new.append(f'```{n + 1}: {USERS[int(uId)]}: {amnt}')
+                total += amnt
             except KeyError: continue
-        return await returnMsg(msg, sep.join(new))
+        for n, (_, amnt) in zip(new, data.items()):
+            new[new.index(n)] += f"         % of total: {amnt / total * 100}```"
+        return await returnMsg(msg, f'total money: {total}\n{sep.join(new)}')
 
 @command
 async def shop(msg, content, cmd="shop"):
