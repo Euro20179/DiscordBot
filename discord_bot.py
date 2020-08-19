@@ -394,7 +394,7 @@ async def on_message(msg):
             msg.attachments = []
             os.remove(filename)
 
-        if msg.attachments and cmd not in ["imginfo", "fileinfo"]:
+        if msg.attachments and cmd not in ("imginfo", "fileinfo"):
             content += " " + " ".join(att.url for att in msg.attachments)
 
         if " --delete" in content: 

@@ -1,4 +1,10 @@
-7.1 (8/??/2020)
+7.1.1 (8/19/2020)
+
+ADDITIONS:
+*/-t to edit, use it in the edit to change the wait time of that specific edit
+
+====================================================================
+7.1 (8/19/2020)
 (7.1 is both the 7.1 and 7.0 update)
 
 ADDITIONS:
