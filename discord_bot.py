@@ -470,6 +470,7 @@ async def on_message(msg):
                 ))
             if CanPickUp: randomMsg += f"\n{msg.author.mention} GET YOUR MONEY BACK"
             await msg.channel.send(randomMsg)
+            userInfo.money -= dropAmnt
             try:
                 if not CanPickUp:
                     check = lambda message: message.author != msg.author and message.content == pswrd and message.channel == msg.channel
@@ -483,7 +484,6 @@ async def on_message(msg):
                 UserInfo.registerUser(collectorMsg.id)
                 collectorInfo: UserInfo = RAMUserInfo[collectorMsg.author.id]
                 collectorInfo.money += dropAmnt
-                userInfo.money -= dropAmnt
 
     if "<:" in msg.content and ">" in msg.content:
         emotes = re.findall(r'<:[A-Za-z-_0-9]{1,100}:[0-9]{18}>', str(content))
