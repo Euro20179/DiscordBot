@@ -148,7 +148,7 @@ async def runCommand(msg, content, cmd, Iscmd=False, DoFirst=False, WriteToFile=
             try: cmd = cmds[0]
             except IndexError: break
             mssg = await runCommand(msg, f'{PREFIX}{cmd.strip("_")}', cmd=cmd.split(" ")[0].strip().strip("_"), DoFirst=True)
-            if mssg.embeds and "userinfo" not in cmd:
+            if mssg.embeds:
                 content = content.replace("/{" + cmd + "}", (await embedToReadableDict(msg, msg.embeds)).content)
             else: content = content.replace("/{" + cmd + "}", str(mssg.content))
         return await runCommand(msg, f'{content}', getCmd(content))
@@ -291,11 +291,11 @@ it'll break if it lasts longer than 1 min 30 seconds
                 content.content = (await embedToReadableDict(msg, msg.embeds)).content
             await writeToFile(msg, content.content, WriteToFile)
         elif content.embeds:
-            return await msg.channel.send(content.content if content.content else None, embed=content.embeds if content.embeds else None, tts=content.tts)
+            return await msg.channel.send(content.content if content.content else None, embed=content.embeds if content.embeds else None, tts=content.tts, allowed_mentions=content.mentions)
         elif content.attachments:
-            return await msg.channel.send(file=content.attachments if content.attachments else None, tts=content.tts)
+            return await msg.channel.send(file=content.attachments if content.attachments else None, tts=content.tts, allowed_mentions=content.mentions)
         else:
-            try: return await msg.channel.send(content.content, tts=content.tts)
+            try: return await msg.channel.send(content.content, tts=content.tts, allowed_mentions=content.mentions)
             except discord.errors.HTTPException:
                 await msg.channel.send("too long here's a file")
                 with open("file.txt", "w", encoding="utf-8", errors="ignore") as f:
@@ -407,9 +407,6 @@ async def on_message(msg):
         if ">>>" in content:
             WriteToFile = splitContent(content, ">>>")[1]
             content = content.replace(f">>> {WriteToFile}", "")
-
-        if msg.mention_everyone:
-            return await msg.channel.send("NO")
 
         if msg.author.id and not isBot(msg, client):
             userData: UserInfo = RAMUserInfo[msg.author.id]

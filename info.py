@@ -390,7 +390,7 @@ async def userInfo(msg, content, cmd="userinfo"):
     embed.add_field(name="raw mention", value="\\" + user.mention)
     embed.add_field(name="roles", value=" ".join([x.mention for x in user.roles]), inline=False)
     embed.set_thumbnail(url=user.avatar_url)
-    await msg.channel.send(embed=embed)
+    return await returnMsg(msg, embed=embed, allowedmentions=discord.AllowedMentions(roles=False,everyone=False,users=False))
 
 @command
 async def roleInfo(msg, content, cmd="roleinfo"):
@@ -470,7 +470,7 @@ async def roleCount(msg, content, cmd="rolecount"):
             embed = discord.Embed(title=f"{m.name}'s Roles", color=m.color)
             embed.add_field(name="Count", value=roleCount)
             embed.add_field(name="Roles", value="".join(roles))
-            await msg.channel.send(embed=embed)       
+            return await returnMsg(msg, embed=embed, allowedmentions=discord.AllowedMentions(everyone=False,users=False,roles=False))    
         else: return await returnMsg(msg, roleCount)
     else: return await returnMsg(msg, "User not found")
 

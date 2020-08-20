@@ -21,7 +21,7 @@ from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont
 
 #TODO make each user an object with data relating to stuff like leveling and ping response, it will load in when they talk so it's not super slow at login time
 
-__version__ = "7.1.1"
+__version__ = "7.2"
 Stop = False
 
 playingHangman = {}
@@ -48,7 +48,7 @@ pingResponseFilePath = f'{DISEXT}/pingresponse.json'
 emoteUsageFilePath = f'{DISEXT}/emoteusage.json'
 queuePath = "./queue"
 EUROID = 334538784043696130
-client = commands.Bot(command_prefix=fakePrefix)
+client = commands.Bot(command_prefix=fakePrefix, allowed_mentions=discord.AllowedMentions(everyone=False))
 CMDS = {}
 
 RAMUserInfo = {}
@@ -75,11 +75,12 @@ async def stop(*args, **kwargs)->None: #similar to how raise StopIteration works
     if args: return random.choice(args)
     if kwargs.get("retstop"): return Stop
 
-async def returnMsg(msg, content=None, embed=None, file=None, tts=False):
+async def returnMsg(msg, content=None, embed=None, file=None, tts=False, allowedmentions : discord.AllowedMentions=None):
     msg.content = content
     msg.embeds = embed if not embed else embed
     msg.tts = tts
     msg.attachments = file
+    msg.mentions = allowedmentions
     return msg
 
 def reloadBOTMODS(ret=True):

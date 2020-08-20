@@ -227,11 +227,10 @@ async def embed(msg, content, cmd="embed"):
     added: 7/10/2020
     """
     content = Content(content)
-    color=image=thumbnail=author = None
+    color=image=thumbnail=author=msgContent = None
     title = content.split("|")[0]
     content.replace(f'{title} ', "")
     content = Content(content.split("|", pastIndex=1), removeCmd=False)
-    msgContent = None
     for op, param in content.opsWithParams({"author": (slice(0,None,None), " "), "content": (slice(0, None, None), " ")}):
         with switch(op) as case:
             if case("-color"): color = Content(param, removeCmd=False)
