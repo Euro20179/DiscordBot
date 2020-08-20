@@ -1,4 +1,5 @@
 from common import *
+from gamesandmoney import mostmoney
 
 @command
 async def level(msg, content, cmd="level"):
@@ -45,8 +46,11 @@ async def leaderboard(msg, content, cmd="top"):
     the leaderboard of the highest leveled people
     optional params:
         [top]: the amount of people to show
+        [m]: alias to mostmoney
     options:
         --html: generates an html file instead of an embed (always shows everyone)
+        --money: alias to mostmoney
+        --m: alias to mostmoney
     aliases:
         levels
         top
@@ -55,6 +59,8 @@ async def leaderboard(msg, content, cmd="top"):
     added: "5/23/2020
     """
     content = Content(content)
+    if content.testOps("--money", "--m") or content.string.strip() == "m":
+        return await mostmoney(msg, content, cmd="mostmoney")
     for user in RAMUserInfo.values():
         if type(user) is str: continue
         await user.dumpLevelInfo()

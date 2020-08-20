@@ -268,6 +268,7 @@ async def mostmoney(msg, content, cmd="mostmoney"):
         mostmoney
         lbm
         lbmoney
+        topm
     added: 8/19/2020
     """
     content = Content(content)
