@@ -544,3 +544,19 @@ async def sendBlank(msg, content, cmd="sendblank"):
     content = Content(content)
     amnt = int(content) if content else 5
     return await returnMsg(msg, "_" + ("\n" * amnt) + "_")
+
+@command
+async def changenick(msg, content, cmd="changenick"):
+    """
+    changes the nick name of the bot
+    required params:
+        <name>: the name to change to
+    aliases:
+        nick
+        nickname
+    added: 8/19/2020
+    """
+    content = Content(content).string
+    member = await msg.guild.fetch_member(client.user.id)
+    await member.edit(nick=content)
+    return await returnMsg(msg, "did it work?")

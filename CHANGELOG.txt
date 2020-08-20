@@ -1,3 +1,12 @@
+7.2.3.1 (8/19/2020)
+
+ADDITIONS:
+*nick, nickname as aliases for changenick
+
+CHANGES:
+*changed the success message for changenick
+
+====================================================================
 7.2.3 (8/19/2020)
 
 ADDITIONS:

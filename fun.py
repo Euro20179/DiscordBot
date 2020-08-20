@@ -514,15 +514,3 @@ async def iq(msg, content, cmd="iq"):
             iq > 50 and iq <= 150: iq,
             iq <= 50 and iq >= 0: f"you good there mate, your iq is {iq}",
             iq < 0: f"you literally don't have a brain you somehow have a negative iq idek\nIQ: {iq}"}.get(True))
-
-@command
-async def changenick(msg, content, cmd="changenick"):
-    """
-    changes the nick name of the bot
-    required params:
-        <name>: the name to change to
-    """
-    content = Content(content).string
-    member = await msg.guild.fetch_member(client.user.id)
-    await member.edit(nick=content)
-    return await returnMsg(msg, "failed probably lmao")
