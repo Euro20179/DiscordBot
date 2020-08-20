@@ -40,7 +40,7 @@ async def guessingGame(msg, content, cmd="guessinggame"):
             if Bet: await RAMUserInfo[msg.author.id].addMoney(-(int(ans) // STARTLIVES))
             rv = await msg.channel.send(embed=discord.Embed(title=say, color=discord.Color.from_rgb(255, 0, 0)))
             return await embedToReadableDict(rv, rv.embeds[0])
-        await msg.channel.send(f"{msg.author.mention} too high" if int(c) > ans else f"{msg.author.mention} too low\nguess\nyou have {LIVES} lives left")
+        await msg.channel.send(f"{msg.author.mention} too high\nguess\nyou have {LIVES} lives left" if int(c) > ans else f"{msg.author.mention} too low\nguess\nyou have {LIVES} lives left")
 
 @command
 async def startRPS(msg, content, cmd="rps"):

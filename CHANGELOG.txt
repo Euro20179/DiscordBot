@@ -1,3 +1,9 @@
+7.2.1 (8/19/2020)
+
+FIXES:
+*if the guess is too low in guessinggame it'll still say your lives
+
+====================================================================
 7.2 (8/19/2020)
 
 ADDITIONS:
