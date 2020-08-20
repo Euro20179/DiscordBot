@@ -1,3 +1,12 @@
+7.2 (8/19/2020)
+
+ADDITIONS:
+*userinfo, rolecount --showroles now work with /{} but it looks awful
+
+TECHNICAL:
+*now uses discord.py 1.4.1
+
+====================================================================
 7.1.1 (8/19/2020)
 
 ADDITIONS:
