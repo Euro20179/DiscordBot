@@ -1,3 +1,9 @@
+7.2.4 (8/19/2020)
+
+ADDITIONS:
+*levelupmessage levelupmsg lvlupmsg as aliases for lvlmsg
+
+====================================================================
 7.2.3.1 (8/19/2020)
 
 ADDITIONS:
