@@ -551,12 +551,15 @@ async def changenick(msg, content, cmd="changenick"):
     changes the nick name of the bot
     required params:
         <name>: the name to change to
+    options:
+        --nret, makes it not say "did it work"
     aliases:
         nick
         nickname
     added: 8/19/2020
     """
-    content = Content(content).string
+    content = Content(content)
+    Ret = not (content @ "--nret")
     member = await msg.guild.fetch_member(client.user.id)
-    await member.edit(nick=content)
-    return await returnMsg(msg, "did it work?")
+    await member.edit(nick=content.string)
+    if Ret: return await returnMsg(msg, "did it work?")
