@@ -1,3 +1,9 @@
+7.2.7 (8/19/2020)
+
+CHANGES:
+*when you drop money, you now lose the money by default, if no one picks it up sorry, if you can't pick it back up sorry lmao
+
+====================================================================
 7.2.6 (8/19/2020)
 
 ADDITIONS:
