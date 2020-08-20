@@ -229,7 +229,6 @@ it'll break if it lasts longer than 1 min 30 seconds
 
     elif ";;" in content and "--notyet" not in content:
         content = Content(content, removeCmd=False)
-        content.calcOps()
         content = content.string
         for cmd in content.split(";;"):
             print(cmd)
