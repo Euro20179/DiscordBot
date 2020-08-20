@@ -1,5 +1,5 @@
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 import time, datetime
 import random
 import string
@@ -21,7 +21,7 @@ from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont
 
 #TODO make each user an object with data relating to stuff like leveling and ping response, it will load in when they talk so it's not super slow at login time
 
-__version__ = "7.2.3.1"
+__version__ = "7.2.4"
 Stop = False
 
 playingHangman = {}

@@ -198,7 +198,7 @@ async def echo(msg, content, cmd="echo"):
     if not c @ "--nodel":
         try: await msg.delete()
         except: pass
-    for op, param in c.opsWithParams({"test": (..., '"')}):
+    for op, param in c.opsWithParams():
         if op == "-e":
             if param: color = int(param, 16)
             else: color = 0x000000
