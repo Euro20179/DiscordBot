@@ -120,9 +120,12 @@ async def levelMessage(msg, content, cmd="lvlmsg"):
     added: 5/29/2020
     """
     if isBot(msg, client): return await returnMsg(msg, "easter e g g")
-    changeTo = Content(content).calcOps(rep=True)
+    changeTo = Content(content)
+    unTampered = changeTo.string
+    changeTo = changeTo.calcOps(rep=True)
     yn = changeTo @ "--y"
-    if yn: changeTo.replace("--y", "")
+    if yn: 
+        unTampered = unTampered.replace("--y", "")
     userData = RAMUserInfo[msg.author.id]
     if changeTo.testOps("--see", "--get", "--s", "--g"):
         content = Content(userData.levelUpMessage, removeCmd=False)
@@ -135,6 +138,6 @@ async def levelMessage(msg, content, cmd="lvlmsg"):
         try: yn = (await client.wait_for('message', check=lambda message: message.author == msg.author, timeout=60.0)).content.lower()
         except asyncio.TimeoutError: yn = "n"
     if yn in ("yes", "y") or yn is True:
-        userData.levelUpMessage = str(changeTo)
-        return await returnMsg(msg, f"changed to {changeTo}")
+        userData.levelUpMessage = str(unTampered)
+        return await returnMsg(msg, f"changed to {unTampered}")
     return await returnMsg(msg, "CANCELLED")
