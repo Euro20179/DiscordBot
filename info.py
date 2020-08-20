@@ -83,7 +83,7 @@ async def weather(msg, content, cmd="weather"):
     embed.add_field(name="Current weather (C)", value=celcius)
     if warning: embed.add_field(name="Warning", value=warning, inline=False)
     embed.add_field(name="Overhead", value=condition, inline=False)
-    return await returnMsg(msg, embed=embed)
+    return await returnMsg(msg, content="the tempurature which is probably too hot or smth stop being so picky smh" if random.random() > .01 else None, embed=embed)
 
 @command
 async def emoteUsage(msg, content, cmd="emoteusage"):
@@ -986,57 +986,54 @@ async def timers(msg, content, cmd="timers"):
         return await returnMsg(msg, embed=embed)
 
 @command
-async def getBaseballScore(msg, content, cmd="baseballscore"):
+async def population(msg, content, cmd="population"):
     """
-    gets the current score for <team>'s game
-    if they are not in a game, it will say when they next play
+    gets the population of a place
     required params:
-        <team>
-    options:
-        --totalcolor: changes the way it calculates the color
-            by default it's more red if the away team is dominating
-            and more blue if the home team is dominating
-            this makes it so it's the sum of the score / the highest
-            scoring game in baseball
+        <place>: the place to get the population of
     aliases:
-        baseball
-        baseballscore
-        mlb
+        pop
+        population
+    options:
+        --wm [year]: uses worldmeters instead of google
+            year gets that particular year, defaults to latest
+            year is in incroments of 5 starting in 1955
+            the name of the country must be the name the website gave it, so this may be more challenging
+    added: 8/20/2020
     """
-    content = Content(content).calcOps()
-    if not content: return await returnMsg(msg, "smh man what team")
-    request = requests.get(f"https://www.google.com/search?q={content}+game")
-    soup = bs.BeautifulSoup(request.text, features="html.parser")
-    span = soup.find_all("span", {"class": "rQMQod AWuZUe"})
-    inning = span[0].text if span else "NONE"
-    if inning != "NONE":
-        teams = soup.find_all("div", {"class": "BNeawe s3v9rd AP7Wnd lRVwie"})[1:3]
-        scores = soup.find_all("div", {"class": "BNeawe deIvCb AP7Wnd"})[1:3]
-        t1 = (teams[0].text, int(scores[0].text))
-        t2 = (teams[1].text, int(scores[1].text))
-        color = (int(255 * (t1[1] / (t2[1] + t1[1]))), 0, int(255 * (t2[1] / (t2[1] + t1[1])))) if (t1[1] != 0 and t2[1] != 0) and not content @ "--totalcolor" else (int(255 * ((t1[1] + t2[1]) / 46)), 0, int(255 * (1 - ((t1[1] + t2[1]) / 46))))
-        embed = discord.Embed(title=f'{t1[0]} @ {t2[0]}', color=discord.Color.from_rgb(*color))
-        embed.add_field(name="Inning", value=inning)
-        embed.add_field(name="Score", value=f'{t1[1]} TO {t2[1]}')
-    else:
-        try:
-            time = soup.find_all("span", {"class": "r0bn4c rQMQod"})[0:2]
-            time = f'{time[0].text}, {time[1].text}'
-            teams = soup.find_all("div", {"class": "BNeawe s3v9rd AP7Wnd lRVwie"})[1:3]
-            t1 = teams[0].text
-            t2 = teams[1].text
-            if "yesterday" in time.lower():
-                raise Exception("Yesterday's game")
-            embed = discord.Embed(title=f'{t1} @ {t2} {time} (PACIFIC TIME)')
-        except Exception as e:
-            winner = soup.find_all("span", {"class": "FCUp0c rQMQod"})[0]
-            loser = soup.find_all("div", {"class": "BNeawe s3v9rd AP7Wnd lRVwie"})[2]
-            scores = soup.find_all("div", {"class": "BNeawe deIvCb AP7Wnd"})[1:3]
-            t1 = (winner.text, int(scores[0].text))
-            t2 = (loser.text, int(scores[1].text))
-            color = (int(255 * (t1[1] / (t2[1] + t1[1]))), 0, int(255 * (t2[1] / (t2[1] + t1[1])))) if (t1[1] != 0 and t2[1] != 0) or not content @ "--totalcolor" else (int(255 * ((t1[1] + t2[1]) / 46)), 0, 0)
-            embed = discord.Embed(title=f'{t1[0]} WON against {t2[0]}', color=discord.Color.from_rgb(*color))
-            embed.add_field(name=f"{t1[0]}'s score", value=str(t1[1]))
-            embed.add_field(name=f"{t2[0]}'s score", value=str(t2[1]))
-
+    content = Content(content)
+    for op, param in content.opsWithParams():
+        if op == "-wm":
+            year = param if param else str(datetime.datetime.now().year)
+            search = content.string.strip().lower()
+            request = requests.get(f'https://www.worldometers.info/world-population/{search}-population/')
+            if request.status_code == 404:
+                return await returnMsg(msg, f"{content} not found check your spelling")
+            request = request.text
+            soup = bs.BeautifulSoup(request, features="html.parser")
+            table = soup.find("table", {"class": "table table-striped table-bordered table-hover table-condensed table-list"})
+            head = table.find_all("thead")[0]
+            th = {n: name.text for n, name in enumerate(head.find_all("th"))}
+            body = table.find_all("tbody")[0]
+            data = {}
+            for row in body.find_all("tr"):
+                currYear = 0
+                for n, td in enumerate(row.find_all("td")):
+                    if n == 0: currYear = td.text
+                    if currYear != year: continue
+                    else: data[th[n]] = td.text
+                if data: break
+            embed = discord.Embed(title=f'Population of {search}')
+            for name, value in data.items():
+                embed.add_field(name=name, value=value)
+            return await returnMsg(msg, embed=embed)
+    else: content = content.string
+    request = requests.get(f'https://www.google.com/search?q={content.replace(" ", "+")}+population').text
+    soup = bs.BeautifulSoup(request, features="html.parser")
+    soup = soup.find("div", {"class": "BNeawe iBp4i AP7Wnd"}).text
+    pop = " ".join(soup.split(" ")[:-1])
+    time = soup.split(" ")[-1]
+    embed = discord.Embed(title=f'Population of {content}')
+    embed.add_field(name="population", value=pop)
+    if time: embed.add_field(name="when", value=time)
     return await returnMsg(msg, embed=embed)

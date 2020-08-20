@@ -514,3 +514,67 @@ async def iq(msg, content, cmd="iq"):
             iq > 50 and iq <= 150: iq,
             iq <= 50 and iq >= 0: f"you good there mate, your iq is {iq}",
             iq < 0: f"you literally don't have a brain you somehow have a negative iq idek\nIQ: {iq}"}.get(True))
+
+@command
+async def getBaseballScore(msg, content, cmd="baseballscore"):
+    """
+    gets the current score for <team>'s game
+    if they are not in a game, it will say when they next play
+    required params:
+        <team>
+    options:
+        --totalcolor: changes the way it calculates the color
+            by default it's more red if the away team is dominating
+            and more blue if the home team is dominating
+            this makes it so it's the sum of the score / the highest
+            scoring game in baseball
+    aliases:
+        baseball
+        baseballscore
+        mlb
+    """
+    content = Content(content).calcOps()
+    if not content: return await returnMsg(msg, "smh man what team")
+    request = requests.get(f"https://www.google.com/search?q={content}+game")
+    soup = bs.BeautifulSoup(request.text, features="html.parser")
+    span = soup.find_all("span", {"class": "rQMQod AWuZUe"})
+    inning = span[0].text if span else "NONE"
+    retContent = None
+    if inning != "NONE":
+        teams = soup.find_all("div", {"class": "BNeawe s3v9rd AP7Wnd lRVwie"})[1:3]
+        scores = soup.find_all("div", {"class": "BNeawe deIvCb AP7Wnd"})[1:3]
+        t1 = (teams[0].text, int(scores[0].text))
+        t2 = (teams[1].text, int(scores[1].text))
+        AsWinning = False
+        As = t1 if "athletics" in t1[0] else False
+        if not As: t2 if "athletics" in t2[0] else False
+        if As:
+            if As == t2: AsWinning = As[1] > t1[1]
+            else: AsWinning = As[1] > t2[1]
+        color = (int(255 * (t1[1] / (t2[1] + t1[1]))), 0, int(255 * (t2[1] / (t2[1] + t1[1])))) if (t1[1] != 0 and t2[1] != 0) and not content @ "--totalcolor" else (int(255 * ((t1[1] + t2[1]) / 46)), 0, int(255 * (1 - ((t1[1] + t2[1]) / 46))))
+        embed = discord.Embed(title=f'{t1[0]} @ {t2[0]}', color=discord.Color.from_rgb(*color))
+        embed.add_field(name="Inning", value=inning)
+        embed.add_field(name="Score", value=f'{t1[1]} TO {t2[1]}')
+        retContent = "GO A'S" if AsWinning else None
+    else:
+        try:
+            time = soup.find_all("span", {"class": "r0bn4c rQMQod"})[0:2]
+            time = f'{time[0].text}, {time[1].text}'
+            teams = soup.find_all("div", {"class": "BNeawe s3v9rd AP7Wnd lRVwie"})[1:3]
+            t1 = teams[0].text
+            t2 = teams[1].text
+            if "yesterday" in time.lower():
+                raise Exception("Yesterday's game")
+            embed = discord.Embed(title=f'{t1} @ {t2} {time} (PACIFIC TIME)')
+        except:
+            winner = soup.find_all("span", {"class": "FCUp0c rQMQod"})[0]
+            loser = soup.find_all("div", {"class": "BNeawe s3v9rd AP7Wnd lRVwie"})[2]
+            scores = soup.find_all("div", {"class": "BNeawe deIvCb AP7Wnd"})[1:3]
+            t1 = (winner.text, int(scores[0].text))
+            t2 = (loser.text, int(scores[1].text))
+            color = (int(255 * (t1[1] / (t2[1] + t1[1]))), 0, int(255 * (t2[1] / (t2[1] + t1[1])))) if (t1[1] != 0 and t2[1] != 0) or not content @ "--totalcolor" else (int(255 * ((t1[1] + t2[1]) / 46)), 0, 0)
+            embed = discord.Embed(title=f'{t1[0]} WON against {t2[0]}', color=discord.Color.from_rgb(*color))
+            embed.add_field(name=f"{t1[0]}'s score", value=str(t1[1]))
+            embed.add_field(name=f"{t2[0]}'s score", value=str(t2[1]))
+
+    return await returnMsg(msg, content=retContent, embed=embed)
