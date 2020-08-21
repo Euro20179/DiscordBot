@@ -374,7 +374,7 @@ async def on_message(msg):
             userInfo = RAMUserInfo[user]
             if str(u.status) in userInfo.pingResponseWhen or "all" in userInfo.pingResponseWhen:
                 c = Content(userInfo.pingResponse, removeCmd=False)
-                c = c.formatMessage(msg, ret=True)
+                c = c.formatMessage(msg, ret=True, removeCmd=False)
                 await msg.channel.send(c) 
 
     if content[0] in PREFIX:
@@ -456,7 +456,6 @@ async def on_message(msg):
         msg.content = " "
 
     msg.content = str(msg.content)
-
     if random.random() >= .999:
         userInfo: UserInfo = RAMUserInfo[msg.author.id]
         if userInfo.money:

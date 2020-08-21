@@ -764,11 +764,11 @@ async def hlp(msg, content, cmd="help"):
         return await returnMsg(msg, embed=embed)
     else:
         if content.string.upper().strip() in CATS and content.string.strip() != "custom":
-            embed = discord.Embed(title=str(content), color=discord.Color(random.randint(0, 16777215)))
             with open("cmds.json", "r") as j:
                 data = json.load(j)
                 for cat, catI in data.items():
                     if cat.lower().strip() == content.lower().strip():
+                        embed = discord.Embed(title=catI["desc"], color=discord.Color(random.randint(0, 16777215)))
                         field = "```\n"
                         for n, cmd in enumerate(catI["cmds"]):
                             print(n, cmd)
@@ -995,7 +995,7 @@ async def population(msg, content, cmd="population"):
         pop
         population
     options:
-        --wm [year]: uses worldmeters instead of google
+        -wm [year]: uses worldmeters instead of google
             year gets that particular year, defaults to latest
             year is in incroments of 5 starting in 1955
             the name of the country must be the name the website gave it, so this may be more challenging
@@ -1006,7 +1006,7 @@ async def population(msg, content, cmd="population"):
         if op == "-wm":
             year = param if param else str(datetime.datetime.now().year)
             search = content.string.strip().lower()
-            request = requests.get(f'https://www.worldometers.info/world-population/{search}-population/')
+            request = requests.get(f'https://www.worldometers.info/world-population/{search.replace(" ", "-")}-population/')
             if request.status_code == 404:
                 return await returnMsg(msg, f"{content} not found check your spelling")
             request = request.text
@@ -1027,7 +1027,7 @@ async def population(msg, content, cmd="population"):
             for name, value in data.items():
                 embed.add_field(name=name, value=value)
             return await returnMsg(msg, embed=embed)
-    else: content = content.string
+    content = content.string
     request = requests.get(f'https://www.google.com/search?q={content.replace(" ", "+")}+population').text
     soup = bs.BeautifulSoup(request, features="html.parser")
     soup = soup.find("div", {"class": "BNeawe iBp4i AP7Wnd"}).text
