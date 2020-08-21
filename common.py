@@ -21,7 +21,7 @@ from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont
 
 #TODO make each user an object with data relating to stuff like leveling and ping response, it will load in when they talk so it's not super slow at login time
 
-__version__ = "7.3"
+__version__ = "7.4"
 Stop = False
 
 playingHangman = {}
@@ -296,41 +296,31 @@ class Content:
         for op in self.ops_:
             yield op
 
-    def opsWithParams(self, paramcount : dict =None):
+    def opsWithParams(self, paramcount : dict =None, yieldList=False):
         """
         paramcount could be {'param': arg_num}
         or {'param': (index, split)}
         """
+        #redo this so it just loops through the whole thing, keeps trakc of when the last op was, and keep appending the val to it until it reaches another
         l = self.split(" ")
         if not l[0] and len(l) < 2: return [(None, None)]
+        opsDict = {}
+        currOp = None
         for n, word in enumerate(l):
             if not word: continue
             if "-" == word[0] and word[1] != "-":
-                if paramcount and word.strip("-") in paramcount.keys():
-                    paramCount = paramcount.get(word.strip("-"))
-                    if paramCount:
-                        if isinstance(paramCount, tuple):
-                            index = paramCount[0] if paramCount[0] else 1
-                            splitBy = paramCount[1]
-                            arg = " ".join(l[n + 1:]).split(splitBy)
-                            self.opOps.append(word)
-                            self.replace(f'{word} {splitBy.join(arg)}', "")
-                            yield (word, arg[index].strip()) if not isinstance(index, slice) else (word, arg[index])
-                        else:
-                            self.opOps.append(word)
-                            arg = l[l.index(word) + 1: l.index(word) + paramCount + 1]
-                            self.replace(f'{word} {" ".join(arg)}', "")
-                            yield (word, arg)
-                else:
-                    try:
-                        self.opOps.append(word)
-                        self.replace(f'{word} {"".join(l[l.index(word) + 1])}', "")
-                        yield (word, "".join(l[l.index(word) + 1]))
-                    except Exception as e:
-                        print(e)
-                        self.opOps.append(word)
-                        self.replace(word, "")
-                        yield(word, None)
+                currOp = word
+                opsDict[currOp] = []
+                self.opOps.append(word)
+            if "-" == word[0] and "-" == word[1]: break
+            if currOp and word != currOp:
+                opsDict[currOp].append(word)
+        for op, param in opsDict.items():
+            self.replace(f'{op} {" ".join(param)}', "")
+        for op, param in opsDict.items():
+            if not yieldList:
+                yield (op, " ".join(param))
+            else: yield (op, param)
 
     def getUser(self, msg, index=None, content=None):
         """

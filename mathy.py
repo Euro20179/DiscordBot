@@ -175,19 +175,38 @@ async def toKelvin(msg, content, cmd="tok"):
     calculates <temp> to kelvin
     example: [tok 60f
     required params:
-        <temp>: the tempurature
+        *<temp[from]>: the tempurature
+            [from]: the unit to convert from
+                ex: [tok 40f
+                ex: [tok 40f 40c
     optional params:
-        [from]: put c/f in the temp anywhere to say what unit to convert from
+        [from]: c/f to make all the temps that unit
+            ex: [tok 50 23 f
+    options:
+        -sep <seperator>: what to seperate each answer by
     aliases:
         tokelvin
         tok
     added: 7/14/2020
     """
     content = Content(content)
-    t = "f" if "f" in content else "c"
-    content = content.string.replace(t, "").strip()
-    ans = (9 / 5 * float(content) + 32) + 273 if t == "f" else float(content) + 273
-    return await returnMsg(msg, str(ans))
+    sep = "\n"
+    for op, param in content.opsWithParams():
+        if op == "-sep":
+            sep = Content.whitespaceFormat(param)
+    content = content.string.split(" ")
+    if content[-1].isalpha():
+        overAllT = content[-1]
+    else: overAllT = "c"
+    answers = []
+    for temp in content:
+        t = {"f" in temp: "f", "c" in temp: "c"}.get(True)
+        if not t: t = overAllT
+        temp = temp.replace(t, "").strip()
+        if not temp: continue
+        ans = str((9 / 5 * float(temp) + 32) + 273 if t == "f" else float(temp) + 273)
+        answers.append(ans)
+    return await returnMsg(msg, sep.join(answers))
 
 @command
 async def toc(msg, content, cmd="toc"):

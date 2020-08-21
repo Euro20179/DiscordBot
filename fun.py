@@ -184,6 +184,8 @@ async def echo(msg, content, cmd="echo"):
     options:
         -e: makes an embed [color]: gives the embed a color
         -wait <time>: waits time before sedning, still deletes your message instantly
+        -fops *<key="val"> (sep with ,): every {key} in your message will be replaced with val, val must be in ""
+        -formatops: alias to -fops
         --dm: dms you
         --nodel: doesn't delete your message
         --tts: uses text to speach
@@ -194,7 +196,8 @@ async def echo(msg, content, cmd="echo"):
     added: 12/14/19
     """
     c = Content(content)
-    c.formatMessage(msg, {"{echo}": str(c).replace("{echo}", "")})
+    defaultOps = {"{echo}": str(c).replace("{echo}", "")}
+    formatOps = {}
     if not c @ "--nodel":
         try: await msg.delete()
         except: pass
@@ -207,6 +210,13 @@ async def echo(msg, content, cmd="echo"):
         elif op == "-wait":
             try: await asyncio.sleep(float(param))
             except: return await returnMsg(msg, "-wait must be float")
+        elif op in ("-formatops", "-fops"):
+            if not Content(str(param), removeCmd=False).suitibleForEval():
+                return await returnMsg(msg, "nice try")
+            formatOps = eval(f'dict({param})')
+            formatOps = {k: v for k, v in map(lambda x: ("{" + x[0] + "}", x[1]), formatOps.items())}
+    ops = {**defaultOps, **formatOps}
+    c.formatMessage(msg, ops)
     return await returnMsg(msg, str(c), tts=True if c @ "--tts" else False) if not c @ "--dm" else await returnMsg(msg, str(c), tts=True if c @ "--tts" else False)
 
 @command
@@ -231,17 +241,17 @@ async def embed(msg, content, cmd="embed"):
     title = content.split("|")[0]
     content.replace(f'{title} ', "")
     content = Content(content.split("|", pastIndex=1), removeCmd=False)
-    for op, param in content.opsWithParams({"author": (slice(0,None,None), " "), "content": (slice(0, None, None), " ")}):
+    for op, param in content.opsWithParams():
         with switch(op) as case:
             if case("-color"): color = Content(param, removeCmd=False)
             elif case("-image"): image = param
             elif case("-thumbnail"): thumbnail = param
             elif case("-author"):
-                author = Content(" ".join(param), removeCmd=False)
+                author = Content(param, removeCmd=False)
                 list(author.opsWithParams())
                 author = str(author)
             elif case("-content"):
-                msgContent = " ".join(param)
+                msgContent = param
     content.formatMessage(msg, {"{title}": title, "{color}": color, "{author}": author})
     embed = discord.Embed(title=title, color=discord.Color(int(str(color), 16) if not color @ "--rand" else random.randint(0, 16777215)) if color else discord.Color(0x000000))
     if image: embed.set_image(url=image)
@@ -337,11 +347,10 @@ async def spacer(msg, content, cmd="spacer"):
     """
     spaces the <message> you give it by <amount>
     required params:
-        <message>: the message to space
-        <amount>: the amount to space each letter
+        [amnt] <message>: the message to space
+            amnt is the amount of spaces
     options:
         -sep <seperator> (WHITESPACEFORMATS): instead of a space it seperates by seperator
-    options:
         --nodel: doesn't delete your message
     """
     sep = " "
@@ -349,9 +358,13 @@ async def spacer(msg, content, cmd="spacer"):
     if not content @ "--nodel":
         try: await msg.delete()
         except: pass
-    try: spaces = int(content.split(" ")[0])
-    except: spaces = 1
-    c = content.split(" ", pastIndex=1)
+    try: 
+        spaces, *c = content.split(" ")
+        spaces = int(spaces)
+        c = " ".join(c)
+    except: 
+        c = content
+        spaces = 1
     if "-sep" in c:
         sep = content.split("-sep ")[1]
         c = c.split("-sep")[0]

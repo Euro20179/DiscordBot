@@ -1,3 +1,21 @@
+7.4 (8/20/2020)
+
+ADDITIONS:
+*you can now convert as many temps tok as you want
+*-sep to tok
+
+CHANGES:
+*if you use -wm in population you don't have to worry about - just names
+*changes you have to put f/c in the number for tok instead of just anywhere
+*the title of [help [category] is the description of the category instead of the name
+
+FIXES:
+*spacer without providing a number works properly now
+
+TECHNICAL:
+*options that take an argument are now much **much** more flexible, this opens up the posibilities lol
+
+====================================================================
 7.3 (8/20/2020)
 
 ADDITIONS:

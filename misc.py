@@ -407,7 +407,8 @@ async def doihavecovid(msg, content, cmd="doihavecovid"):
 -maybe who knows hopefuly yo do
 -i mean don't have covid :))))))```
     """
-    return await returnMsg(msg, "yes" if random.random() < .995 else "no")
+    r = random.random() < .995
+    return await returnMsg(msg, f'{"yes"*r}{"no"*(r^1)}') #someone said if statements were too slow, but this is really challenging to read lmao
 
 @command
 async def typeFor(msg, content, cmd="type"):
