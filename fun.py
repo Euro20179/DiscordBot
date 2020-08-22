@@ -238,9 +238,6 @@ async def embed(msg, content, cmd="embed"):
     """
     content = Content(content)
     color=image=thumbnail=author=msgContent = None
-    title = content.split("|")[0]
-    content.replace(f'{title} ', "")
-    content = Content(content.split("|", pastIndex=1), removeCmd=False)
     for op, param in content.opsWithParams():
         with switch(op) as case:
             if case("-color"): color = Content(param, removeCmd=False)
@@ -252,13 +249,14 @@ async def embed(msg, content, cmd="embed"):
                 author = str(author)
             elif case("-content"):
                 msgContent = param
+    title = content.split("|")[0]
     content.formatMessage(msg, {"{title}": title, "{color}": color, "{author}": author})
     embed = discord.Embed(title=title, color=discord.Color(int(str(color), 16) if not color @ "--rand" else random.randint(0, 16777215)) if color else discord.Color(0x000000))
     if image: embed.set_image(url=image)
     if thumbnail: embed.set_thumbnail(url=thumbnail)
     if author: embed.set_author(name=author)
     split = content.split("|")
-    if len(split) >= 1 and split[0]:
+    if len(split) >= 1 and split[0] and (len(split) >=1 and split[0].strip() != title.strip()):
         for n, field in enumerate(split):
             name, value = field.split(",")
             value = Content(value, removeCmd=False)

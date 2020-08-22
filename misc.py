@@ -307,7 +307,7 @@ async def count(msg, content, cmd="count"):
     except: pass
     content = Content(content)
     channel = discord.utils.get(msg.guild.channels, name="counting")
-    highest = int(max([x.content.replace("*", "").replace("_", "").replace("`", "").strip(".") async for x in channel.history(limit=2)])) + 1
+    highest = int(max([x.content.replace("*", "").replace("_", "").replace("`", "").replace("\\", "").strip(".") async for x in channel.history(limit=1)])) + 1
     async for x in channel.history(limit=1):
         if x.author == client.user: return ""
     text = f'.{highest}.'

@@ -312,7 +312,7 @@ async def on_message(msg):
     global blueCheck, neutral
     content = msg.content
     if msg.author.id not in RAMUserInfo.keys():
-        if not isBot(msg, client):
+        if not isBot(msg, client) or msg.author == client.user:
             RAMUserInfo[msg.author.id] = UserInfo(msg.author.id)
     if f"{PREFIX}timeit" in content:
         TimeThisMessage = time.time()
@@ -410,7 +410,9 @@ async def on_message(msg):
         if msg.author.id and not isBot(msg, client):
             userData: UserInfo = RAMUserInfo[msg.author.id]
             userData = userData.bans
-            if cmd in userData or "ALL" in userData:
+            try: t = CMDS[cmd].aliases
+            except: t = []
+            if cmd in userData or "ALL" in userData or cmd in t:
                 return await msg.channel.send(f'you are FORBIDDEN from using {cmd}')
             
         content = await runCommand(msg, content, cmd, Iscmd=Iscmd, WriteToFile=WriteToFile)
