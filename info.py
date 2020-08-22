@@ -943,7 +943,7 @@ async def bans(msg, content, cmd="bans"):
             mssg = "".join([f'{(await client.fetch_user(int(user))).name}: {" ".join(data[user])}\n' for user in data.keys() if data[user]])
             try: return await returnMsg(msg, mssg)
             except: pass
-    with open(bannedFilePath, "rb", encoding="utf-8-sig") as bannedJ:
+    with open(bannedFilePath, "rb") as bannedJ:
         return await returnMsg(msg, file=discord.File(bannedJ, "bans.json"))
 
 @command
