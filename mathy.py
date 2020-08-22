@@ -314,3 +314,171 @@ async def calc(msg, content, cmd="calc", ReturnRes=False):
         except Exception as e:
             print(e)
             return await returnMsg(msg, str(type(e)).split(' ')[1].split("'")[1].strip("'"))
+
+@command
+async def graph(msg, content, cmd="graph"):
+    """
+    CUSTOM:
+```
+graphs a line``````required params:
+*<equation> (sep with |):
+    ex: [graph x^2
+    (to use bitwise xor do **)``````options:
+-range <amnt : number>: basically how long the x axis is
+-lstyle <style>: the style of the line
+-marker <marker>: what to mark each point with
+-color <color>: the color of the line
+-fillstyle <style>: idk what this does
+-alpha <alpha of line 0-1>: the alpha of the line
+-gstyle <style>: the style of the graph
+-drawstyle <style>: drawstyle
+-markersize <size : decimal>: the size of each marker
+-scatter *<points : (x, y)>: makes it a scatter instead of line graph (equation not used)
+--scatter: uses the equation, but makes a scatter graph
+NOTE: when using scatter, no other option will work``````md
+styles:
+#solid (default)
+#dashed
+#dotted
+#dashdot
+None (idk why this is a thing)``````md
+markers:
+#.
+#,
+#o
+#v
+#^
+#<
+#>
+#1
+#2
+#3
+#4
+#5
+#s
+#p
+#*
+#h
+#H
+#+
+#x
+#D
+#d
+#_``````md
+colors:
+#b
+#g
+#r
+#c
+#m
+#y
+#k
+#w
+#anything from 0-1``````md
+fill styles:
+#full
+#left
+#right
+#top
+#bottom
+#none``````md
+draw styles:
+#steps
+#steps-pre
+#steps-mid
+#steps-post
+#default (default)
+#gstyles:
+#default (default)
+#classic
+#solarize_light2
+#_classic_test
+#bmh
+#dark_background
+#fast
+#fivethirtyeight
+#ggplot
+#grayscale
+#seaborn
+#seaborn-bright
+#seaborn-colorblind
+#seaborn-dark
+#seaborn-dark-pallette
+#seaborn-darkgrid
+#seaborn-deep
+#seaborn-muted
+#seaborn-notebook
+#seaborn-paper
+#seaborn-pastel
+#seaborn-poster
+#seaborn-talk
+#seaborn-ticks
+#seaborn-white
+#seaborn-whitegrid
+#tableau-colorblind10```"""
+    for content in content.split("|"):
+        r = 100
+        style = "solid"
+        marker=color=fillStyle=alpha=makerSize=None
+        drawStyle = "default"
+        content = Content(content)
+        Scatter = False #using points 
+        RegScatter = content @ "--scatter" #using the equation
+        for op, param in content.opsWithParams():
+            if op == "-range": r = int(param)
+            elif op == "-lstyle": style = param
+            elif op == "-marker": marker = param
+            elif op == "-color": color = param
+            elif op == "-fillstyle": fillStyle = param
+            elif op == "-alpha": alpha = float(param)
+            elif op == "-drawstyle": drawStyle = param
+            elif op == "-markersize": makerSize = float(param)
+            elif op == "-gstyle": 
+                matstyle.use(param)
+            elif op == "-scatter" and not RegScatter: #makes sure not regular scatter
+                Scatter = True
+                X = []
+                Y = []
+                for point in param.split("("):
+                    if not point: continue
+                    x, y = point.split(",")
+                    x = x.strip().strip("(").strip()
+                    y = y.strip().strip(")").strip()
+                    X.append(x)
+                    Y.append(y)
+                    try:
+                        plt.scatter(X, Y)
+                        plt.savefig(f'{msg.author.id}.png')
+                    except Exception as e:
+                        plt.cla()
+                        return await returnMsg(msg, e)
+        if not Scatter: #makes sure not using points
+            if not content.suitibleForEval():
+                return await returnMsg(msg, "nice try")
+            equation = content.string.strip()    
+            y = [eval(equation.replace("x", str(i)).replace("**", "^").replace("^", "**")) for i in range(r)]
+            x = [i + 1 for i in range(len(y))]
+            try: 
+                if not RegScatter:
+                    plt.plot(
+                        x, y, 
+                        linestyle=style,
+                        marker=marker, 
+                        color=color,
+                        fillstyle=fillStyle,
+                        alpha=alpha,
+                        drawstyle=drawStyle,
+                        markersize=makerSize
+                    )
+                else:
+                    plt.scatter(x, y)
+                plt.savefig(f'{str(msg.author.id)}.png')
+            except Exception as e:
+                plt.cla()
+                return await returnMsg(msg, e)
+    plt.cla()
+    with open(f'{msg.author.id}.png', "rb") as f:
+        m = returnMsg(msg, file=discord.File(f, "chart.png"))
+    os.remove(f'{msg.author.id}.png')
+    matstyle.use("default")
+    return await m
