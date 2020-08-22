@@ -16,12 +16,14 @@ import sys
 import threading
 import youtube_dl
 import functools
+from matplotlib import pyplot as plt
+from matplotlib import style as matstyle
 from typing import Iterable, List, Tuple, overload
 from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont, ImageChops
 
 #TODO make each user an object with data relating to stuff like leveling and ping response, it will load in when they talk so it's not super slow at login time
 
-__version__ = "7.4"
+__version__ = "7.5"
 Stop = False
 
 playingHangman = {}
