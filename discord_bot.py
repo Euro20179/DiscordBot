@@ -407,12 +407,13 @@ async def on_message(msg):
             WriteToFile = splitContent(content, ">>>")[1]
             content = content.replace(f">>> {WriteToFile}", "")
 
-        if msg.author.id and not isBot(msg, client):
+        if msg.author.id and not isBot(msg, client) and RAMUserInfo[msg.author.id].bans:
             userData: UserInfo = RAMUserInfo[msg.author.id]
             userData = userData.bans
-            try: t = CMDS[cmd].aliases
-            except: t = []
-            if cmd in userData or "ALL" in userData or cmd in t:
+            try: 
+                userDataAliases = [alias for ban in userData for alias in CMDS[ban].aliases]
+            except: userDataAliases = []
+            if cmd in userData or "ALL" in userData or cmd in userDataAliases:
                 return await msg.channel.send(f'you are FORBIDDEN from using {cmd}')
             
         content = await runCommand(msg, content, cmd, Iscmd=Iscmd, WriteToFile=WriteToFile)
