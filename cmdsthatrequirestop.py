@@ -173,9 +173,10 @@ async def _deathBattle(msg, users, going, notGoing, responseTime, damageMsgs, he
                 try:
                     await msg.channel.send("what health should each player be set to you have 60 seconds")
                     health = await client.wait_for("message", check=lambda message: message.author == going and message.content.isnumeric(), timeout=60.0)
+                    health = float(health.content)
                 except:
                     await msg.channel.send("you waited too long, picking 15")
-                health = float(health.content)
+                    health = 15
                 if health > 200:
                     await msg.channel.send("too high, you get to do NOTHING")
                     if going == first:

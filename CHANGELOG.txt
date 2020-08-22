@@ -1,3 +1,12 @@
+7.4.1 (8/20/2020)
+
+CHANGES:
+*the blue circle now basically has a profile lol
+
+FIXES:
+*if a \ was in the previous count message count will still work
+
+====================================================================
 7.4 (8/20/2020)
 
 ADDITIONS:
