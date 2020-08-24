@@ -30,7 +30,7 @@ playingHangman = {}
 playingDB = []
 
 #CONSTS
-PREFIX = "]"
+PREFIX = "["
 UPTIME = time.time()
 fakePrefix = PREFIX
 HPKEY = "544fcd57-1cb1-4d8a-8613-c156d7e8f4ed"
