@@ -23,7 +23,7 @@ async def addCustomCmd(msg, content, cmd="customcmd"):
     Locked = False if not content @ "--lock" else True
     c = content.split("|")
     name = c.pop(0).strip()
-    say = c.pop(0)
+    say = "|".join(c)
     if " " in name: return await returnMsg(msg, "no spaces in command names")
     with open(customcmdsFilePath, "r+") as j:
         data = json.load(j)

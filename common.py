@@ -308,7 +308,7 @@ class Content:
         if not l[0] and len(l) < 2: return [(None, None)]
         opsDict = {}
         currOp = None
-        for n, word in enumerate(l):
+        for word in l:
             if not word: continue
             if "-" == word[0] and word[1] != "-":
                 currOp = word
@@ -750,5 +750,4 @@ def findItem(iName=None, iId=None):
         for item in data:
             if item["id"] == iId or item["name"] == iName:
                 return item
-
 token = "NjQxNzk1NjU2Mzc3MTcyMDAw.XcNk8g.HEvnaXjuXFQhN1iilaaffbiPcoo"
