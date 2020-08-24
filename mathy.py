@@ -415,7 +415,8 @@ draw styles:
 #seaborn-ticks
 #seaborn-white
 #seaborn-whitegrid
-#tableau-colorblind10```"""
+#tableau-colorblind10```
+```added: 8/21/2020```"""
     for content in content.split("|"):
         r = 100
         style = "solid"

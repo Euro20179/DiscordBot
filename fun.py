@@ -589,3 +589,19 @@ async def getBaseballScore(msg, content, cmd="baseballscore"):
             embed.add_field(name=f"{t2[0]}'s score", value=str(t2[1]))
 
     return await returnMsg(msg, content=retContent, embed=embed)
+
+@command
+async def getbasketballscore(msg, content, cmd="nba"):
+    """
+    gets the score of an ongiong nba game
+    required params:
+        <team>
+    aliases:
+        getbasketballscore
+        nba
+        basketball
+        nbascore
+        basketballscore
+    added: 8/22/2020
+    """
+    content = Content(content)
