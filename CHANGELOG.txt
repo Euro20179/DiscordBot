@@ -1,3 +1,17 @@
+7.5.4 (8/31/2020)
+
+ADDITIONS:
+*hey there buddy chum pal friend buddy pal chum bud friend fella bruther amigo pal buddy friend chummy chum chum pal. i don't mean to be rude my friend pal homeslice breadslice dawg, but you should probably move this to #bot_commands my friend buddy chum friendly friend friend pal friend buddy chum pally friend chum buddy.
+FIXES:
+*embed
+
+====================================================================
+7.5.3 (8/31/2020)
+
+FIXES:
+*embed
+
+====================================================================
 7.5.2 (8/30/2020)
 
 FIXES:

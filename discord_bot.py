@@ -407,6 +407,7 @@ async def on_message(msg):
             WriteToFile = splitContent(content, ">>>")[1]
             content = content.replace(f">>> {WriteToFile}", "")
 
+        if not await RAMUserInfo[msg.author.id].usedCmd(msg): return
         if msg.author.id and not isBot(msg, client) and RAMUserInfo[msg.author.id].bans:
             userData: UserInfo = RAMUserInfo[msg.author.id]
             userData = userData.bans
@@ -483,7 +484,7 @@ async def on_message(msg):
                 await msg.channel.send("no one gets the money :(")
             else:
                 await msg.channel.send(f"good job {collectorMsg.author.mention} you earned {dropAmnt}")
-                UserInfo.registerUser(collectorMsg.id)
+                await UserInfo.registerUser(collectorMsg.id)
                 collectorInfo: UserInfo = RAMUserInfo[collectorMsg.author.id]
                 collectorInfo.money += dropAmnt
 

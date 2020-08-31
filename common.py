@@ -23,7 +23,7 @@ from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont
 
 #TODO make each user an object with data relating to stuff like leveling and ping response, it will load in when they talk so it's not super slow at login time
 
-__version__ = "7.5.2"
+__version__ = "7.5.4"
 Stop = False
 
 playingHangman = {}
@@ -52,6 +52,7 @@ queuePath = "./queue"
 EUROID = 334538784043696130
 client = commands.Bot(command_prefix=fakePrefix, allowed_mentions=discord.AllowedMentions(everyone=False))
 CMDS = {}
+GENERALCHANNEL = 693893222006521856
 
 RAMUserInfo = {}
 SARCASTICQUOTES = ("mhm", "interesting", "fascinating", "very cool")
@@ -548,16 +549,21 @@ class command:
                 added = helpMsgAdded[1].strip().strip(":").strip()
             newLine = "\n"
             helpMsg = f'**```{desc}```**'
+            self.desc = desc
             if requiredParams:
                 helpMsg += f"```required params:{requiredParams}```"
+                self.requiredParams = requiredParams
             if optionalParams:
                 helpMsg += f"```optional params:{optionalParams}```"
+                self.optionalParams = optionalParams
             if options:
                 helpMsg += f"```options:{options}```"
+                self.options = options
             if self.aliases:
                 helpMsg += f"```aliases:{newLine + newLine.join(self.aliases)}```"
             if added:
                 helpMsg += f"```added:{added}```"
+                self.added = added
             self._Help = helpMsg
         else:
             helpMsgTemp = helpMsgTemp[1:]
@@ -571,6 +577,8 @@ class UserInfo:
     def __init__(self, userId):
         self.userId = str(userId)
         RAMUserInfo[self.userId] = self
+        self.cmdsIn30Seconds = 0
+        self.timeLastCmdUsed = 0
 
         #leveling data
         with open(levelingDataFilePath, "r", encoding="utf-8-sig") as j:
@@ -627,12 +635,20 @@ class UserInfo:
                     try: t[item["name"]] += 1
                     except: t[item["name"]] = 1
                 self.items = t
-
-
         #perms
         with open(botModsFilePath, "r", encoding="utf-8-sig") as j:
             perms = json.load(j).get(self.userId)
             self.perms = perms if perms else []
+
+    async def usedCmd(self, msg)->bool:
+        if time.time() - self.timeLastCmdUsed <= 30 and msg.channel.id == GENERALCHANNEL:
+            self.cmdsIn30Seconds += 1
+        else: self.cmdsIn30Seconds = 0
+        if self.cmdsIn30Seconds >= 5 and msg.channel.id == GENERALCHANNEL:
+            await msg.channel.send("hey there buddy chum pal friend buddy pal chum bud friend fella bruther amigo pal buddy friend chummy chum chum pal. i don't mean to be rude my friend pal homeslice breadslice dawg, but you should probably move this to <#732071485564256377> my friend buddy chum friendly friend friend pal friend buddy chum pally friend chum buddy.")
+            return False
+        self.timeLastCmdUsed = time.time()
+        return True
 
     async def giveXP(self, msg):
         if time.time() - self.lastTalked >= 60:

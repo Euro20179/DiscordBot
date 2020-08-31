@@ -255,7 +255,7 @@ async def embed(msg, content, cmd="embed"):
     if image: embed.set_image(url=image)
     if thumbnail: embed.set_thumbnail(url=thumbnail)
     if author: embed.set_author(name=author)
-    split = content.split("|")
+    split = content.split("|")[1:]
     if len(split) >= 1 and split[0] and (len(split) >=1 and split[0].strip() != title.strip()):
         for n, field in enumerate(split):
             name, value = field.split(",")
