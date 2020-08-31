@@ -23,7 +23,7 @@ from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont
 
 #TODO make each user an object with data relating to stuff like leveling and ping response, it will load in when they talk so it's not super slow at login time
 
-__version__ = "7.5.1_B"
+__version__ = "7.5.2"
 Stop = False
 
 playingHangman = {}
@@ -318,7 +318,7 @@ class Content:
             if currOp and word != currOp:
                 opsDict[currOp].append(word)
         for op, param in opsDict.items():
-            self.replace(f'{op} {" ".join(param)}', "")
+            self.replace(f'{op} {" ".join(param)}'.strip(), "")
         for op, param in opsDict.items():
             if not yieldList:
                 yield (op, " ".join(param))

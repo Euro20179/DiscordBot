@@ -410,9 +410,8 @@ async def upperLower(msg, content, cmd="upperlower"):
 
     for val, letter in enumerate(mssg):
         if val > 0:
-            if mssg[val - 1] != " " and newPhrase[val - 1].islower():
-                letter = letter.upper()
-            elif newPhrase[val - 2].islower() and mssg[val - 1] == " ":
+            if (mssg[val - 1] != " " and newPhrase[val - 1].islower()) \
+            or (newPhrase[val - 2].islower() and mssg[val - 1] == " "):
                 letter = letter.upper()
         newPhrase.append(letter)
 
