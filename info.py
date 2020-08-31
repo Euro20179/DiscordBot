@@ -754,8 +754,7 @@ async def hlp(msg, content, cmd="help"):
     if content @ "--raw":
         with open("cmds.json", "rb") as f:
             return await returnMsg(msg, file=discord.File(f, "cmds.json"))
-    File = content @ "--file"
-    if not content:
+    elif not content:
         embed = discord.Embed(title="Help", color=discord.Color(random.randint(0, 16777215)))
         with open("cmds.json", "r") as j:
             data = json.load(j)
@@ -771,15 +770,12 @@ async def hlp(msg, content, cmd="help"):
                         embed = discord.Embed(title=catI["desc"], color=discord.Color(random.randint(0, 16777215)))
                         field = "```\n"
                         for n, cmd in enumerate(catI["cmds"]):
-                            print(n, cmd)
                             if n % 7 == 0 and n != 0: 
                                 field += f'{cmd}```'
-                                print(field)
                                 embed.add_field(name=str(n), value=field)
                                 field = "```\n"
                             else:
                                 field += f'{cmd}\n'
-                                print(field)
                         if n % 7 != 0:
                             embed.add_field(name=str(n), value=field + "```")
 

@@ -119,7 +119,6 @@ async def levelMessage(msg, content, cmd="lvlmsg"):
         lvlupmsg
     added: 5/29/2020
     """
-    if isBot(msg, client): return await returnMsg(msg, "easter e g g")
     changeTo = Content(content)
     unTampered = changeTo.string
     changeTo = changeTo.calcOps(rep=True)
