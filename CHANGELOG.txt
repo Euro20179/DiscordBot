@@ -1,3 +1,12 @@
+7.5.5 (8/31/2020)
+
+CHANGES:
+*instead of only being 5 messages in general before a timeout it's 7
+
+FIXES:
+*[dr works again (i think)
+
+====================================================================
 7.5.4 (8/31/2020)
 
 ADDITIONS:

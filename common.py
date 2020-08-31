@@ -23,7 +23,7 @@ from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont
 
 #TODO make each user an object with data relating to stuff like leveling and ping response, it will load in when they talk so it's not super slow at login time
 
-__version__ = "7.5.4"
+__version__ = "7.5.5"
 Stop = False
 
 playingHangman = {}
@@ -644,7 +644,7 @@ class UserInfo:
         if time.time() - self.timeLastCmdUsed <= 30 and msg.channel.id == GENERALCHANNEL:
             self.cmdsIn30Seconds += 1
         else: self.cmdsIn30Seconds = 0
-        if self.cmdsIn30Seconds >= 5 and msg.channel.id == GENERALCHANNEL:
+        if self.cmdsIn30Seconds >= 7 and msg.channel.id == GENERALCHANNEL:
             await msg.channel.send("hey there buddy chum pal friend buddy pal chum bud friend fella bruther amigo pal buddy friend chummy chum chum pal. i don't mean to be rude my friend pal homeslice breadslice dawg, but you should probably move this to <#732071485564256377> my friend buddy chum friendly friend friend pal friend buddy chum pally friend chum buddy.")
             return False
         self.timeLastCmdUsed = time.time()
