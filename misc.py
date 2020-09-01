@@ -603,4 +603,4 @@ async def removePrefix(msg, content, cmd="removeprefix"):
         clearFile(f)
         f.write("\n".join(p))
     PREFIXES.remove(content)
-    return await returnMsg(f"removed prefix: {content}")
+    return await returnMsg(msg, f"removed prefix: {content}")

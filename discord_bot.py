@@ -147,7 +147,7 @@ async def runCommand(msg, content, cmd, Iscmd=False, DoFirst=False, WriteToFile=
             cmds = cmds[:-1]
             try: cmd = cmds[0]
             except IndexError: break
-            mssg = await runCommand(msg, f'{PREFIX}{cmd.strip("_")}', cmd=cmd.split(" ")[0].strip().strip("_"), DoFirst=True)
+            mssg = await runCommand(msg, f'{STDPrefix}{cmd.strip("_")}', cmd=cmd.split(" ")[0].strip().strip("_"), DoFirst=True)
             if mssg.embeds:
                 content = content.replace("/{" + cmd + "}", (await embedToReadableDict(msg, msg.embeds)).content)
             else: content = content.replace("/{" + cmd + "}", str(mssg.content))
@@ -221,7 +221,7 @@ it'll break if it lasts longer than 1 min 30 seconds
                 cmd = cmd.replace("{i}", str(i))
                 if cmd == ")": 
                     break
-                content = await runCommand(msg, f'{PREFIX}{cmd.strip()}', cmd.strip().split(" ")[0], DoFirst=True) 
+                content = await runCommand(msg, f'{STDPrefix}{cmd.strip()}', cmd.strip().split(" ")[0], DoFirst=True) 
                 res.append(str(content.content))
             if (time.time() - startTimeout) > timeoutLength: break
         content = await returnMsg(msg, "\n".join(res))       
@@ -232,7 +232,7 @@ it'll break if it lasts longer than 1 min 30 seconds
         content = content.string
         for cmd in content.split(";;"):
             print(cmd)
-            await runCommand(msg, cmd.strip(), cmd.strip().split(" ")[0].strip().strip(PREFIX))
+            await runCommand(msg, cmd.strip(), cmd.strip().split(" ")[0].strip().strip(STDPrefix))
         Iscmd = True
 
     elif "--notyet" in content:
@@ -271,7 +271,7 @@ it'll break if it lasts longer than 1 min 30 seconds
                     cmds = cmds[:-1]
                     try: cmd = cmds[0]
                     except IndexError: break
-                    mssg = await runCommand(msg, f'{PREFIX}{cmd.strip("_")}', cmd=cmd.split(" ")[0].strip().strip("_"), DoFirst=True)
+                    mssg = await runCommand(msg, f'{STDPrefix}{cmd.strip("_")}', cmd=cmd.split(" ")[0].strip().strip("_"), DoFirst=True)
                     if mssg.embeds and "userinfo" not in cmd:
                         content = content.replace("{" + cmd + "}", (await embedToReadableDict(msg, msg.embeds)).content)
                     else: content = content.replace("{" + cmd + "}", str(mssg.content))
