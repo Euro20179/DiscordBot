@@ -1,3 +1,16 @@
+7.6.4 (9/1/2020)
+
+ADDITIONS:
+*you can now have perms for calc, and you can do more
+*avatarurl, avatar_url as aliases to avatar
+
+CHANGES:
+*avatar is not a custom cmd again
+
+FIXES:
+*multiple anymessage cmds work slightly better
+
+====================================================================
 7.6.3 (8/31/2020)
 
 ADDITIONS:

@@ -332,28 +332,29 @@ async def on_message(msg):
         await msg.delete()
 
     if PREFIX in content and PREFIX != content[0]:
-        cmd = content.split(PREFIX)[1].split(" ")[0]
-        with switch(cmd) as case:
-            if case("delete"): await msg.delete()
-            elif case("delin"):
-                t = content.split(f"{PREFIX}delin")[1]
-                try: await asyncio.sleep(float(t))
-                except: return await returnMsg(msg, "NaN")
-                await msg.delete()
-                Iscmd = True
-            elif case("rw") and not case(["dr", "rwd"]):
-                c = splitContent(content, f"{PREFIX}rw", index=1).strip()
-                if " " in c:
-                    split = splitContent(c, " ")
-                    for s in split:
-                        if s in client.emojis: await msg.add_reaction(discord.utils.get(client.emojis, id=int(s.split(":")[2][:-1])))
-                        else: await msg.add_reaction(s)
-                else:
-                    e = discord.utils.get(client.emojis, id=int(c.split(":")[2][:-1])) if c in client.emojis else c
-                    await msg.add_reaction(e)
-            elif case("rwd") and not case("dr"):
-                RWhenDone=Iscmd = True
-            Iscmd = True
+        cmds = tuple(getCmd(f'{PREFIX}{c}') for c in content.split(PREFIX)[1:])
+        for c in cmds:
+            with switch(c) as case:
+                if case("delete"): await msg.delete()
+                if case("delin"):
+                    t = content.split(f"{PREFIX}delin")[1]
+                    try: await asyncio.sleep(float(t))
+                    except: return await returnMsg(msg, "NaN")
+                    await msg.delete()
+                    Iscmd = True
+                if case("rw") and not case(["dr", "rwd"]):
+                    c = splitContent(content, f"{PREFIX}rw", index=1).strip()
+                    if " " in c:
+                        split = splitContent(c, " ")
+                        for s in split:
+                            if s in client.emojis: await msg.add_reaction(discord.utils.get(client.emojis, id=int(s.split(":")[2][:-1])))
+                            else: await msg.add_reaction(s)
+                    else:
+                        e = discord.utils.get(client.emojis, id=int(c.split(":")[2][:-1])) if c in client.emojis else c
+                        await msg.add_reaction(e)
+                if case("rwd") and not case("dr"):
+                    RWhenDone=Iscmd = True
+        Iscmd = True
 
     if not content: 
         return
