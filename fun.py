@@ -182,7 +182,7 @@ async def echo(msg, content, cmd="echo"):
     required params:
         <message>: the message it says
     options:
-        -e: makes an embed [color]: gives the embed a color
+        -e: makes an embed [color (rand)]: gives the embed a color, rand makes it random color
         -wait <time>: waits time before sedning, still deletes your message instantly
         -fops *<key="val"> (sep with ,): every {key} in your message will be replaced with val, val must be in ""
         -formatops: alias to -fops
@@ -203,7 +203,8 @@ async def echo(msg, content, cmd="echo"):
         except: pass
     for op, param in c.opsWithParams():
         if op == "-e":
-            if param: color = int(param, 16)
+            if param: 
+                color = int(param, 16) if param != "rand" else random.randint(0, 16777215)
             else: color = 0x000000
             embed = discord.Embed(title=str(c), color=discord.Color(color))
             return await returnMsg(msg, None, embed=embed) if not c @ "--dm" else await returnMsg(msg, None, embed)
@@ -229,8 +230,8 @@ async def embed(msg, content, cmd="embed"):
         example:
         [embed Title | Field1, Field content1 | Field2, Field content2
     options:
-        -color <color> (--rand): the color of the embed
-            --rand makes a random color
+        -color <color> (rand): the color of the embed
+            rand: makes a random color
         -image <img url>: the image of the embed
         -author <author>: the author of the embed
     FORMATS (title, color, author)
@@ -240,7 +241,7 @@ async def embed(msg, content, cmd="embed"):
     color=image=thumbnail=author=msgContent = None
     for op, param in content.opsWithParams():
         with switch(op) as case:
-            if case("-color"): color = Content(param, removeCmd=False)
+            if case("-color"): color = param
             elif case("-image"): image = param
             elif case("-thumbnail"): thumbnail = param
             elif case("-author"):
@@ -251,7 +252,7 @@ async def embed(msg, content, cmd="embed"):
                 msgContent = param
     title = content.split("|")[0]
     content.formatMessage(msg, {"{title}": title, "{color}": color, "{author}": author})
-    embed = discord.Embed(title=title, color=discord.Color(int(str(color), 16) if not color @ "--rand" else random.randint(0, 16777215)) if color else discord.Color(0x000000))
+    embed = discord.Embed(title=title, color=discord.Color(int(str(color), 16) if color != "rand" else random.randint(0, 16777215)) if color else discord.Color(0x000000))
     if image: embed.set_image(url=image)
     if thumbnail: embed.set_thumbnail(url=thumbnail)
     if author: embed.set_author(name=author)
