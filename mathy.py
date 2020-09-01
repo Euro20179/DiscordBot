@@ -300,7 +300,7 @@ async def calc(msg, content, cmd="calc", ReturnRes=False):
     added: 5/23/2020
     """
     content = Content(content)
-    if not content.suitibleForEval():
+    if not content.suitibleForEval(perms=await hasPerms(msg.author.id, cmd)):
         return await returnMsg(msg, 'nice try')
     else:
         if str(content) in ["1 + 1", "1+1"]:

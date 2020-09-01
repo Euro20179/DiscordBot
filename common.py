@@ -24,7 +24,7 @@ from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont
 
 #TODO make each user an object with data relating to stuff like leveling and ping response, it will load in when they talk so it's not super slow at login time
 
-__version__ = "7.6.3"
+__version__ = "7.6.4"
 Stop = False
 
 playingHangman = {}
@@ -343,7 +343,7 @@ class Content:
                 yield (op, " ".join(param))
             else: yield (op, param)
 
-    def getUser(self, msg, index=None, content=None):
+    def getUser(self, msg, index=None, content=None)->discord.abc.User:
         """
         index is the index where the user should be when content is split by spaces
         """
@@ -364,7 +364,8 @@ class Content:
         """
         return set(self.split(spl, pastIndex=pastIndex, key=key))
 
-    def suitibleForEval(self):
+    def suitibleForEval(self, perms : bool=False):
+        if perms: return True
         return False if ({"help(", "quit()", "exit()", "os.", "token", "input(", "sys.", "__import__(os", "time.sleep", "socket.", "exec("} & self.toSet()) else True
 
     def _whitespaceFormat(self, kwargs=None):

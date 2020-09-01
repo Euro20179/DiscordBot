@@ -604,3 +604,17 @@ async def removePrefix(msg, content, cmd="removeprefix"):
         f.write("\n".join(p))
     PREFIXES.remove(content)
     return await returnMsg(msg, f"removed prefix: {content}")
+    
+@command
+async def avatar(msg, content, cmd="avatar"):
+    """
+    gets the avatar of [user] (defaults to you)
+    optional params:
+        [user]
+    aliases:
+        avatarurl
+        avatar_url
+        avatar
+    """
+    user = Content(content).getUser(msg)
+    return await returnMsg(msg, user.avatar_url)
