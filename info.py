@@ -1033,3 +1033,12 @@ async def population(msg, content, cmd="population"):
     embed.add_field(name="population", value=pop)
     if time: embed.add_field(name="when", value=time)
     return await returnMsg(msg, embed=embed)
+
+@command
+async def prefixes(msg, content, cmd="prefixes"):
+    """
+    lists the prefixes
+    added: 8/31/2020
+    """
+    with open(prefixFilePath, "r") as f:
+        return await returnMsg(msg, "```" + f.read() + "```")
