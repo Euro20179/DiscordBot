@@ -661,13 +661,13 @@ async def rectangle(msg, content, cmd="rectangle"):
         draw = ImageDraw.Draw(img)
         x1, y1, x2, y2 = content.replace("{width}", str(img.width)).replace("{height}", str(img.height)).string.split(" ")[0:4]
         FR=FG=FB=FA=OA=OR=OG=OB=width = None
-        for op, param in content.opsWithParams({"fill": 3, "outline": 3} if not Rgba else {"fill": 4, "outline": 4}):
+        for op, param in content.opsWithParams():
             if op == "-fill":
-                if not Rgba: FR, FG, FB = param
-                else: FR, FG, FB, FA = param
+                if not Rgba: FR, FG, FB = param.split(" ")
+                else: FR, FG, FB, FA = param.split(" ")
             if op == "-outline":
-                if not Rgba: OR, OG, OB = param
-                else: OR, OG, OB, OA = param
+                if not Rgba: OR, OG, OB = param.split(" ")
+                else: OR, OG, OB, OA = param.split(" ")
             if op == "-width":
                 width = param
         if Rgba:
@@ -711,10 +711,10 @@ async def imgArc(msg, content, cmd="imgarc"):
         startAngle = content.split(" ")[4]
         endAngle = content.split(" ")[5]
         FR=FG=FB=FA=width = None
-        for op, param in content.opsWithParams({"fill": 3 if not Rgba else 4}):
+        for op, param in content.opsWithParams():
             if op== "-fill":
-                if not Rgba: FR, FG, FB = param
-                else: FR, FG, FB, FA = param
+                if not Rgba: FR, FG, FB = param.split(" ")
+                else: FR, FG, FB, FA = param.split(" ")
             if op == "-width":
                 width = param
         if Rgba: draw.arc([(int(x1), int(y1)), (int(x2), int(y2))],
@@ -758,12 +758,12 @@ async def ellipse(msg, content, cmd="ellipse"):
         FR=FG=FB=FA=OR=OG=OB=OA=width = None
         for op, param in content.opsWithParams({"fill": 3, "outline": 3} if not Rgba else {"fill": 4, "outline": 4}):
             if op == "-fill":
-                if not Rgba: FR, FG, FB = param
-                else: FR, FG, FB, FA = param
-            if "-outline" in params:
-                if not Rgba: OR, OG, OB = param
-                else: OR, OG, OB, OA = param
-            if "-width" in params:
+                if not Rgba: FR, FG, FB = param.split(" ")
+                else: FR, FG, FB, FA = param.split(" ")
+            if op == "-outline":
+                if not Rgba: OR, OG, OB = param.split(" ")
+                else: OR, OG, OB, OA = param.split(" ")
+            if op == "-width":
                 width = param
         if Rgba: draw.ellipse([(int(x1), int(y1)), (int(x2), int(y2))], outline=None if not OR else (int(OR), int(OG), int(OB), int(OA)), fill=None if not FR else (int(FR), int(FG), int(FB), int(FA)), width=1 if not width else int(width))
         else: draw.ellipse([(int(x1), int(y1)), (int(x2), int(y2))], outline=None if not OR else (int(OR), int(OG), int(OB)), fill=None if not FR else (int(FR), int(FG), int(FB)), width=1 if not width else int(width))
@@ -801,10 +801,10 @@ async def line(msg, content, cmd="line"):
         draw = ImageDraw.Draw(img)
         x1, y1, x2, y2 = content.replace("{width}", str(img.width)).replace("{height}", str(img.height)).string.split(" ")[0:4]
         FR=FG=FB=FA=width = None
-        for op, param in content.opsWithParams({"fill": 3 if not Rgba else 4}):
+        for op, param in content.opsWithParams():
             if "-fill" in params:
-                if Rgba: FR, FG, FB, FA = param
-                else: FR, FG, FB = param
+                if Rgba: FR, FG, FB, FA = param.split(" ")
+                else: FR, FG, FB = param.split(" ")
             if "-width" in params:
                 width = param
         if Rgba: draw.line([(int(x1), int(y1)), (int(x2), int(y2))],
@@ -839,9 +839,9 @@ async def point(msg, content, cmd="point"):
     with Image.open(filename) as img:
         draw = ImageDraw.Draw(img)
         FR=FG=FB=OR=OG=OB = None
-        for op, param in content.opsWithParams({"fill": 3}):
+        for op, param in content.opsWithParams():
             if op == "-fill":
-                FR, FG, FB = param
+                FR, FG, FB = param.split(" ")
         newXYS = [""]
         for XY in content.strip().split(" "):
             if len(newXYS[-1]) % 2 != 0:
@@ -888,13 +888,13 @@ async def polygon(msg, content, cmd="poly"):
     with Image.open(filename) as img:
         draw = ImageDraw.Draw(img)
         FR=FG=FB=FA=OR=OG=OB=OA = None
-        for op, param in content.opsWithParams({"fill": 3, "outline": 3} if not Rgba else {"fill": 4, "outline": 4}):
+        for op, param in content.opsWithParams():
             if op == "-fill":
-                if Rgba: FR, FG, FB, FA = param
-                else: FR, FG, FB = param
+                if Rgba: FR, FG, FB, FA = param.split(" ")
+                else: FR, FG, FB = param.split(" ")
             elif op == "-outline":
-                if Rgba: OR, OG, OB, OA = param
-                else: OR, OG, OB = param
+                if Rgba: OR, OG, OB, OA = param.split(" ")
+                else: OR, OG, OB = param.split(" ")
         XYS = content[0:].split(" ")
         newXYS = [""]
         for XY in XYS:
@@ -943,9 +943,9 @@ async def imgText(msg, content, cmd="imgtext"):
         font = ImageFont.load_default()
         if msg.attachments:
             text = text.replace(msg.attachments[0].url, "")
-        for op, param in text.opsWithParams({"fill": 3, "font": 2}):
+        for op, param in text.opsWithParams():
             if op == "-fill":
-                FR, FG, FB = param
+                FR, FG, FB = param.split(" ")
             if op == "-txtwidth":
                 txtWidth = param
             if op == "-font":

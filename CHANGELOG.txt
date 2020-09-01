@@ -1,3 +1,14 @@
+7.6 (8/31/2020)
+
+ADDITIONS:
+*the ability to have more than 1 prefix and prefixes of length > 1
+*addprefix, must have perms
+*removeprefix, must have perms
+
+FIXES:
+*a bunch of image cmds
+
+====================================================================
 7.5.5 (8/31/2020)
 
 CHANGES:

@@ -285,7 +285,7 @@ async def magicBall(msg, content, cmd="8ball"):
     with open(mballresponseFilePath, "r") as f:
         responses = f.read().split("\n")
     choice = Content(random.choice(responses), removeCmd=False)
-    choice.formatMessage(msg, {"{question}": str(Content(content))})
+    choice.formatMessage(msg, {"{question}": cutCmd(content)})
     choice._whitespaceFormat()
     for op, param in Content(content).opsWithParams():
         if op == "-e":
