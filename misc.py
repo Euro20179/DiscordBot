@@ -437,7 +437,7 @@ async def spamStop(msg, content, cmd="spamstop"):
     abuse of this command will get you banned from it
     """
     for _ in range(10):
-        await msg.channel.send(f'{PREFIX}stop')
+        await msg.channel.send(f'{PREFIXES[0]}stop')
         await asyncio.sleep(random.uniform(.3, 1.2))
 
 @command
@@ -564,3 +564,43 @@ async def changenick(msg, content, cmd="changenick"):
     member = await msg.guild.fetch_member(client.user.id)
     await member.edit(nick=content.string)
     if Ret: return await returnMsg(msg, "did it work?")
+
+@command
+async def addPrefix(msg, content, cmd="addprefix"):
+    """
+    adds a prefix to the list of prefixes,
+    mustn't contain spaces
+    required params:
+        <prefix>
+    added: 8/31/2020
+    """
+    global PREFIXES
+    if not await hasPerms(msg.author.id, cmd):
+        return await returnMsg(msg, "you don't have perms")
+    content = cutCmd(content).strip()
+    if content not in PREFIXES:
+        with open(prefixFilePath, "a") as f:
+            f.write(f"\n{content}")
+        PREFIXES.append(content)
+        return await returnMsg(msg, f'added {content} as a prefix')
+    return await returnMsg(msg, f'already a prefix')
+
+@command
+async def removePrefix(msg, content, cmd="removeprefix"):
+    """
+    removes a prefix
+    required params:
+        <prefix>
+    added: 8/31/2020
+    """
+    global PREFIXES
+    content = cutCmd(content).strip()
+    if not await hasPerms(msg.author.id, cmd) or STDPrefix == content:
+        return await returnMsg(msg, "you don't have perms and you can't remove the default prefix what is wrong with you")
+    with open(prefixFilePath, "r+") as f:
+        p = f.read().split("\n")
+        p.remove(content)
+        clearFile(f)
+        f.write("\n".join(p))
+    PREFIXES.remove(content)
+    return await returnMsg(f"removed prefix: {content}")

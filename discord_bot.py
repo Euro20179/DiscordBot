@@ -311,9 +311,16 @@ async def on_message(msg):
     global Stop
     global blueCheck, neutral
     content = msg.content
+    PREFIX = PREFIXES[0]
+    for prefix in PREFIXES:
+        if hasPrefix(content, prefix):
+            content = content.replace(prefix, PREFIXES[0])
+            break
+
     if msg.author.id not in RAMUserInfo.keys():
         if not isBot(msg, client) or msg.author == client.user:
             RAMUserInfo[msg.author.id] = UserInfo(msg.author.id)
+            
     if f"{PREFIX}timeit" in content:
         TimeThisMessage = time.time()
         content = content.replace(f"{PREFIX}timeit", "").strip()

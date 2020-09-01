@@ -1,3 +1,4 @@
+from os import stat
 import discord
 from discord.ext import commands, tasks
 import time, datetime
@@ -23,16 +24,15 @@ from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont
 
 #TODO make each user an object with data relating to stuff like leveling and ping response, it will load in when they talk so it's not super slow at login time
 
-__version__ = "7.5.5"
+__version__ = "7.6"
 Stop = False
 
 playingHangman = {}
 playingDB = []
 
 #CONSTS
-PREFIX = "["
 UPTIME = time.time()
-fakePrefix = PREFIX
+STDPrefix = "["
 HPKEY = "544fcd57-1cb1-4d8a-8613-c156d7e8f4ed"
 DISEXT = "../disbot_ext"
 BASICINFO = {"level": 1, "xp": 0, "required": 1000, "lastTalked": 0, "message": '{author} you have leveled up to level {level}, very cool'}
@@ -48,9 +48,10 @@ botModsFilePath = f'{DISEXT}/botMods.json'
 itemsFilePath = f'items.json'
 pingResponseFilePath = f'{DISEXT}/pingresponse.json'
 emoteUsageFilePath = f'{DISEXT}/emoteusage.json'
+prefixFilePath = f'{DISEXT}/prefixes.txt'
 queuePath = "./queue"
 EUROID = 334538784043696130
-client = commands.Bot(command_prefix=fakePrefix, allowed_mentions=discord.AllowedMentions(everyone=False))
+client = commands.Bot(command_prefix=STDPrefix, allowed_mentions=discord.AllowedMentions(everyone=False))
 CMDS = {}
 GENERALCHANNEL = 693893222006521856
 
@@ -71,6 +72,11 @@ tracemalloc.start()
 
 with open(commandusageFilePath, "r") as j:
     commandUsage = json.load(j)
+
+with open(prefixFilePath, "r") as f:
+    PREFIXES: list = f.read().split("\n")
+    PREFIXES.pop(0)
+    PREFIXES.insert(0, STDPrefix)
 
 async def stop(*args, **kwargs)->None: #similar to how raise StopIteration works, it stops whatever is happening
     global Stop
@@ -242,11 +248,23 @@ def clearFile(f)->None:
     f.seek(0)
     f.truncate()
 
+def cutCmd(string : str, returnCmd : bool=False):
+    cmd, *string = str(string).split(" ")
+    string = " ".join(string)
+    if returnCmd: return (cmd, string)
+    return string
+
+def hasPrefix(string : str, prefix : str):
+    return prefix == string[:len(prefix)]
+
+def removePrefix(string : str, prefix : str):
+    if not hasPrefix(string, prefix):
+        return string
+    return string[len(prefix):]
+
 class Content:
     def __init__(self, string : str, removeCmd : bool = True):
-        if removeCmd:
-            self.cmd, *self.string = split = str(string).split(" ")
-            self.string = " ".join(self.string)
+        if removeCmd: self.cmd, self.string = cutCmd(string, returnCmd=True)
         else: self.string = string
         self._i = -1
         self.ops_ = []
