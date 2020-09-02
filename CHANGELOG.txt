@@ -1,3 +1,12 @@
+7.7.5 (9/3/2020)
+
+CHANGES:
+*timers now says the user's name instead of id
+
+FIXES:
+*misspelled timers in [timers --raw
+
+====================================================================
 7.7.4 (9/3/2020)
 
 TECHNICAL:

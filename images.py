@@ -141,7 +141,7 @@ async def filterImg(msg, content, cmd="filterimg"):
             try: img = FILTERS[currFilt]()
             except:
                 if currFilt.isnumeric():
-                    for x in range(int(currFilt)):
+                    for _ in range(int(currFilt)):
                         FILTERS[lastFilt]()
                 else: return await returnMsg(msg, f'Invalid filter: {currFilt}')
             filt.pop(0)

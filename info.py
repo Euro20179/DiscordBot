@@ -215,6 +215,13 @@ async def textInfo(msg, content, cmd="textinfo"):
                         return await returnMsg(msg, "message too long", file=discord.File(f, "match.txt"))
     RankWords = False if not text @ "--rankwords" else True
     text = str(text)
+    words = {}
+    for word in text.split():
+        try:
+            words[word] += 1
+        except:
+            words[word] = 1
+    sortedWords = sorted(words.items(), key=lambda x: x[1], reverse=True)
     if not RankWords:
         charCount = len(text)
         wordCount = len(text.split(" "))
@@ -225,16 +232,6 @@ async def textInfo(msg, content, cmd="textinfo"):
         numberCount = len(re.findall(r"[0-9]", text))
         whiteSpaceCount = len(re.findall(r'\s', text))
         averageWordLength = statistics.mean([len(word) for word in text.split()])
-
-    words = {}
-    for word in text.split():
-        try:
-            words[word] += 1
-        except:
-            words[word] = 1
-
-    sortedWords = sorted(words.items(), key=lambda x: x[1], reverse=True)
-    if not RankWords:
         embed = discord.Embed(title="Text info")
         embed.add_field(name="most common word", value=f'{sortedWords[0][0]}: {sortedWords[0][1]}')
         embed.add_field(name="word count", value=wordCount)
@@ -974,13 +971,14 @@ async def timers(msg, content, cmd="timers"):
     embed = discord.Embed(title="Timers")
     for user in RAMUserInfo.values():
         await user.dumpTimerInfo()
-    if Content(content) @ "--raw":
+    if "--raw" in content:
         with open(timersPath, "r") as f:
-            return await returnMsg(msg, file=discord.File(f, "tiemrs.json"))
+            return await returnMsg(msg, file=discord.File(f, "timers.json"))
     with open(timersPath, "r", encoding="utf-8-sig") as tJ:
         data = json.load(tJ)
         for user, t in data.items():
-            embed.add_field(name=user, value=round(time.time() - t, 2))
+            user = await client.fetch_user(user)
+            embed.add_field(name=user.name, value=round(time.time() - t, 2))
         return await returnMsg(msg, embed=embed)
 
 @command
