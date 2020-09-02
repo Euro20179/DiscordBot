@@ -1,3 +1,4 @@
+from os import remove
 from customcmds import removeCustomCmd
 from common import *
 
@@ -199,6 +200,7 @@ async def echo(msg, content, cmd="echo"):
     c = Content(content)
     defaultOps = {"{echo}": str(c).replace("{echo}", "")}
     formatOps = {}
+    allowedMentions = ("roles", "users")
     if not c @ "--nodel":
         try: await msg.delete()
         except: pass

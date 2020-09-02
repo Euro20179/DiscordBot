@@ -68,7 +68,7 @@ async def spamCmd(msg, content, cmd="spam"):
     if messages > lim:
         return await returnMsg(msg, f"pls consult a psychiatrist that's too many messages\nthe limit is: {lim}")
 
-    if messages < 0: return await returnMsg(msg, "ERROR: MESSAGE COUNT LESS THAN 0")
+    if messages < 0: return await returnMsg(msg, "message count can't be less than 0")
 
     if "-random" in c:
         c.replace("-random ", "")
