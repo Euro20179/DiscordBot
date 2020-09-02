@@ -678,7 +678,7 @@ class UserInfo:
                 self.xp //= 2
                 self.money += int(self.level * 2)
                 temp = Content(self.levelUpMessage, removeCmd=False)
-                temp.p(msg, {"{level}": self.level, "{xp}": self.xp}, removeCmd=False)
+                temp.formatMessage(msg, {"{level}": self.level, "{xp}": self.xp}, removeCmd=False)
                 disp = str(temp)
                 if disp and disp.lower() not in ["none", "null"]:
                     await msg.channel.send(disp)

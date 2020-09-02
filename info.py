@@ -1086,5 +1086,5 @@ async def define(msg, content, cmd="define"):
             for n, definition in enumerate(section.find_all("span", {"class": "one-click-content css-1p89gle e1q3nk1v4"}), 1):
                 embed.add_field(name=f'{partOfSpeach}, {n}:', value=definition.text)
         return await returnMsg(msg, embed=embed)
-    except Exception as e:
+    except:
         return await returnMsg(msg, f'ERROR: probably not found')
