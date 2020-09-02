@@ -69,6 +69,7 @@ async def startRPS(msg, content, cmd="rps"):
     await user1.send(f"say your move here, you have {t} seconds (typos will mess up results)")
     await user2.send(f"say your move here, you have {t} seconds (typos will mess up results)")
     await asyncio.sleep(t)
+    resp1=resp2 = "??????"
     async for rep in user1.dm_channel.history(limit=1):
         resp1 = rep.content.lower()
         if resp1 == "--rand": resp1 = random.choice(list(opps.keys()))
@@ -134,6 +135,7 @@ async def hangman(msg, content, cmd="hangman"):
     playingHangman[user.id] = None
     await msg.author.send(f"you will have 15 seconds to send a word of your choice, and {user.name} will have to guess it in {msg.channel.name}")
     await asyncio.sleep(15)
+    word = None
     async for i in msg.author.dm_channel.history(limit=1):
         word = i.content
     disp = "".join(["-" if x not in (" ", "," "." "'" '"') else x for x in word])
