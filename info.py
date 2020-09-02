@@ -564,7 +564,7 @@ async def color(msg, content, cmd="color"):
         c = c.replace("#", "")
         r, g, b = int(c[0:2], 16), int(c[2:4], 16), int(c[4:], 16)
         embed = discord.Embed(title=f'{r} {g} {b}', color=discord.Color(int(c, 16)))
-        return await returnMsg(msg, msg, embed=embed)
+        return await returnMsg(msg, embed=embed)
 
     if ", " in c:
         c = c.replace(" ", "")
@@ -1042,3 +1042,49 @@ async def prefixes(msg, content, cmd="prefixes"):
     """
     with open(prefixFilePath, "r") as f:
         return await returnMsg(msg, "```" + f.read() + "```")
+        
+@command
+async def define(msg, content, cmd="define"):
+    """
+    searches https://dictionary.com for a definition
+    required params:
+        <word>
+    aliases:
+        define
+        definition
+        dictionary
+        def
+    added: 9/1/2020
+    """
+    content = cutCmd(content)
+
+    colors = {
+        "red": 0xff0000,
+        "green": 0x00ff00,
+        "blue": 0x0000ff,
+        "yellow": 0xffff00,
+        "orange": 0xff9900,
+        "purple": 0x8206e8,
+        "pink": 0xfca9e2,
+        "lime": 0x25fc00
+    }
+
+    embed = discord.Embed(title=f"Definition of {content}", color=random.randint(1, 16777215) if not colors.get(content) else colors[content])
+    embed.set_footer(text=f"https://www.dictionary.com/browse/{content}")
+    request = requests.get(f"https://www.dictionary.com/browse/{content}").text
+    try:
+        english = bs.BeautifulSoup(request, features="html.parser").find("div", {"class": "css-1urpfgu e16867sm0"}) #there's a brittish version TODO: implement it
+
+        sound = english.find("span", {"class": "pron-spell-content css-z3mf2 evh0tcl2"})
+        embed.add_field(name="pronounciation", value=sound.text)
+        ipa = english.find("span", {"class": "pron-ipa-content css-z3mf2 evh0tcl2"})
+        embed.add_field(name="ipa pronounciation", value=ipa.text)
+
+        sections = english.find_all("section", {"class": "css-pnw38j e1hk9ate0"})
+        for section in sections:
+            partOfSpeach = section.find_all("h3", {"class": "css-sdwj8v e1hk9ate1"})[0].text.strip()
+            for n, definition in enumerate(section.find_all("span", {"class": "one-click-content css-1p89gle e1q3nk1v4"}), 1):
+                embed.add_field(name=f'{partOfSpeach}, {n}:', value=definition.text)
+        return await returnMsg(msg, embed=embed)
+    except Exception as e:
+        return await returnMsg(msg, f'ERROR: probably not found')

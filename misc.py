@@ -154,6 +154,7 @@ async def alphabet(msg, content, cmd="alphabet"):
     aliases:
         alpha
         beta
+        abc
         SECRET:
         gamma
         delta

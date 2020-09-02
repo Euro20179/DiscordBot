@@ -1,3 +1,4 @@
+from customcmds import removeCustomCmd
 from common import *
 
 @command
@@ -590,18 +591,3 @@ async def getBaseballScore(msg, content, cmd="baseballscore"):
 
     return await returnMsg(msg, content=retContent, embed=embed)
 
-@command
-async def getbasketballscore(msg, content, cmd="nba"):
-    """
-    gets the score of an ongiong nba game
-    required params:
-        <team>
-    aliases:
-        getbasketballscore
-        nba
-        basketball
-        nbascore
-        basketballscore
-    added: 8/22/2020
-    """
-    content = Content(content)
