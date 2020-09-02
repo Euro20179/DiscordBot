@@ -508,7 +508,7 @@ async def pigLatin(msg, content, cmd="piglatin"):
             if None in moveToEnd: moveToEnd = moveToEnd[:moveToEnd.index(None)] #all the letters until the first vowel represented by None
             m[n] = f'{word[len(moveToEnd):]}{"".join(moveToEnd)}ay'
     return await returnMsg(msg, " ".join(m))
-
+    
 @command
 async def iq(msg, content, cmd="iq"):
     """

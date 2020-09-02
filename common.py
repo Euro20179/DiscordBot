@@ -1,4 +1,4 @@
-from os import stat
+from os import remove, stat
 import discord
 from discord.ext import commands, tasks
 import time, datetime
@@ -19,12 +19,12 @@ import youtube_dl
 import functools
 from matplotlib import pyplot as plt
 from matplotlib import style as matstyle
-from typing import Iterable, List, Tuple, overload, Dict
+from typing import Any, Callable, Generator, Iterable, List, NoReturn, Optional, Tuple, overload, Dict, Union
 from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont, ImageChops
 
 #TODO make each user an object with data relating to stuff like leveling and ping response, it will load in when they talk so it's not super slow at login time
 
-__version__ = "7.6.4"
+__version__ = "7.7.1"
 Stop = False
 
 playingHangman = {}
@@ -70,6 +70,18 @@ Atahan ---- Peanut                Poptoppete--------------Natalie               
 """
 tracemalloc.start()
 
+class Depricated: pass
+class Unused: 
+    def __init__(self): pass
+    def __getitem__(self, other):...
+class User:...
+class Message:...
+class fp:...
+class Attachment:...
+class Embed:...
+class Member:...
+Unused = Unused()
+
 with open(commandusageFilePath, "r") as j:
     commandUsage = json.load(j)
 
@@ -78,13 +90,20 @@ with open(prefixFilePath, "r") as f:
     PREFIXES.pop(0)
     PREFIXES.insert(0, STDPrefix)
 
-async def stop(*args, **kwargs)->None: #similar to how raise StopIteration works, it stops whatever is happening
+async def stop(*args: Any, **kwargs)->Union[NoReturn, Any]: #similar to how raise StopIteration works, it stops whatever is happening
     global Stop
     Stop = True
     if args: return random.choice(args)
     if kwargs.get("retstop"): return Stop
 
-async def returnMsg(msg, content=None, embed=None, file=None, tts=False, allowedmentions : discord.AllowedMentions=None):
+async def returnMsg(
+        msg: Message, 
+        content: Optional[str]=None, 
+        embed: Optional[Embed]=None, 
+        file: Optional[Embed]=None, 
+        tts: Optional[bool]=False, 
+        allowedmentions: Optional[discord.AllowedMentions]=None
+    ):
     msg.content = content
     msg.embeds = embed if not embed else embed
     msg.tts = tts
@@ -92,17 +111,17 @@ async def returnMsg(msg, content=None, embed=None, file=None, tts=False, allowed
     msg.mentions = allowedmentions
     return msg
 
-def reloadBOTMODS(ret=True):
+def reloadBOTMODS(ret: Optional[bool]=True)->Union[None, dict]:
     global BOTMODS
     with open(botModsFilePath, "r", encoding="utf-8-sig") as f:
         BOTMODS = json.load(f)
     if ret: return BOTMODS
 
-async def hasPerms(userId : int, command):
+async def hasPerms(userId: int, command: str)->bool:
     await UserInfo.registerUser(userId)
     return command in RAMUserInfo[int(userId)].perms
 
-async def saveImg(filename, url):
+async def saveImg(filename: str, url: str)->NoReturn:
     with open(filename, 'wb') as i:
         response = requests.get(url, stream=True)
         for block in response.iter_content(1024):
@@ -110,7 +129,7 @@ async def saveImg(filename, url):
                 break
             i.write(block)
 
-async def imgInChat(msg, limit=20):
+async def imgInChat(msg: Message, limit: Optional[int]=20)->Union[str, Tuple[Union[Attachment, str, str]]]:
     async for mssg in msg.channel.history(limit=limit):
         if mssg.embeds:
             if mssg.embeds[0].image:
@@ -126,7 +145,8 @@ async def imgInChat(msg, limit=20):
     else: return "USER"
     return att, filename, url
 
-async def getImg(msg, user=None, NotFromChat=False):
+async def getImg(msg: Message, user: Optional[User]=None, NotFromChat: Optional[bool]=False)\
+->Union[Message, Tuple[Union[Attachment, str, str]]]:
     if "https://" in msg.content:
         att = None
         filename = "UNKNOWN.png"
@@ -147,7 +167,7 @@ async def getImg(msg, user=None, NotFromChat=False):
             return await msg.channel.send("no img provided")
     return att, filename, url
 
-async def reloadCMDSLIST(retCats=False):
+async def reloadCMDSLIST(retCats: Optional[bool]=False)->dict:
     with open(customcmdsFilePath, "r") as cmdsJson:
         customCMDData = json.load(cmdsJson)
         CUSTOMCMDS = {cmd["name"]: cmd["desc"] for cmd in customCMDData}
@@ -159,10 +179,10 @@ async def reloadCMDSLIST(retCats=False):
         json.dump(data, f)
     return CUSTOMCMDS if not retCats else CATS
 
-def isBot(msg, client)->bool:
+def isBot(msg: Message, client: commands.Bot)->bool:
     return msg.author == client.user or msg.author.bot
 
-async def embedToReadableDict(msg, embed):
+async def embedToReadableDict(msg: Message, embed: Embed)->Message:
     d = embed.to_dict()
     msg.content = str(d.get("title")) + "\n"
     for k in d.keys():
@@ -177,7 +197,13 @@ async def embedToReadableDict(msg, embed):
     msg.content = discord.utils.escape_mentions(msg.content)
     return msg
 
-async def writeToFile(msg, content, F, sendMsg=True, sendAuthor=False):
+async def writeToFile(
+        msg: Message, 
+        content: str, 
+        F: str, 
+        sendMsg: Optional[bool]=True,
+        sendAuthor: Optional[bool]=False
+    )->NoReturn:
     if "." in F: 
         ext = F.split(".")[1]
         F = F.replace(f".{ext}", "")
@@ -190,10 +216,11 @@ async def writeToFile(msg, content, F, sendMsg=True, sendAuthor=False):
             elif sendAuthor: await msg.author.send(file=discord.File(f, f'{F}.{ext}'))
     os.remove(f'file.{ext}')
 
-async def removeFromList(l, *args):
+async def removeFromList(l: list, *args: Any)->NoReturn:
     for arg in args: l.remove(arg)
 
-async def formatSeconds(t, layer="seconds", stopAt=None, rec=0):
+async def formatSeconds(t: float, layer: Optional[str]="seconds", stopAt: Optional[bool]=None, rec: Optional[int]=0)\
+->Tuple[float, str]:
     cases = {"seconds": ("minutes", 60),
              "minutes": ("hours", 60), 
              "hours": ("days", 24), 
@@ -205,10 +232,23 @@ async def formatSeconds(t, layer="seconds", stopAt=None, rec=0):
         t, layer = await formatSeconds(t, layer=cases[layer][0], stopAt=stopAt, rec=rec + 1)
     return t, layer
 
-async def formatDateTime(createdAt : datetime.datetime)->str:
-    return "{0.month}/{0.day}/{0.year}\nat {0.hour}:{0.minute}:{0.second}".format(createdAt)
+async def formatDateTime(createdAt: datetime.datetime, customFormatString: Optional[str]=None)->str:
+    """
+    %b = month name
+    %d = day
+    %Y = year
+    %I = hour
+    %M = minute
+    %S = second
+    %f = microsecond
+    %p = am/pm
+    %Z = timezone
+    """
+    if customFormatString:
+        return createdAt.strftime(customFormatString)
+    return createdAt.strftime("%b %d, %Y\nat %I:%M:%S %p")
 
-async def getUserInContent(msg : discord.Message, c : str, cmd : str)->discord.User: #gets user by id, name, etc
+async def getUserInContent(msg: Message, c: str, cmd: str)->User: #gets user by id, name, etc
     c = str(c.split(cmd)[1].strip())
     c = c.replace("!", "")[2:-1] if "<@" in c else c
     if not c: c = str(msg.author.id)
@@ -216,18 +256,18 @@ async def getUserInContent(msg : discord.Message, c : str, cmd : str)->discord.U
     user = msg.author if not user else user
     return user
 
-def testInContent(content : str, *testfor)->str:
+def testInContent(content: str, *testfor: str)->str:
     for x in testfor:
         if x.lower() in content.lower():
             return x
     return ""
 
-def getCmd(content : str)->str:
+def getCmd(content: str)->str:
     content = content.split(" ")
     if not content[0][1:]: return " "
     return content[0][1:]			
 
-def splitContent(content : str, *split, index=None, func=None)->str:
+def splitContent(content: str, *split: str, index: Optional[int]=None, func=None)->str:
     for x in split:
         if x in content: #this is an IF STATEMENT, don't think it's a for loop
             ret = content.split(x)
@@ -238,39 +278,39 @@ def splitContent(content : str, *split, index=None, func=None)->str:
             return ret
     return ""
     
-def userHasRole(msg : discord.Message, *roles)->bool:
+def userHasRole(msg: Message, *roles: str)->bool:
     return True if discord.utils.find(lambda r: r.name in roles, msg.author.roles) else False
 
-def findMember(c : str, msg : discord.Message)->discord.Member:
+def findMember(c: str, msg: Message)->Member:
     return discord.utils.find(lambda m: str(m.id) == c or str(m.display_name.split("#")[0].lower()) == c.lower() or m.name.lower() == c.lower(), msg.guild.members)
 
-def clearFile(f)->None:
+def clearFile(f)->NoReturn:
     f.seek(0)
     f.truncate()
 
-def cutCmd(string : str, returnCmd : bool=False):
+def cutCmd(string: str, returnCmd: Optional[bool]=False)->Union[Tuple[str], str]:
     cmd, *string = str(string).split(" ")
     string = " ".join(string)
     if returnCmd: return (cmd, string)
     return string
 
-def hasPrefix(string : str, prefix : str):
+def hasPrefix(string: str, prefix: str)->bool:
     return prefix == string[:len(prefix)]
 
-def removePrefix(string : str, prefix : str):
+def removePrefix(string: str, prefix: str)->str:
     if not hasPrefix(string, prefix):
         return string
     return string[len(prefix):]
 
 class Content:
-    def __init__(self, string : str, removeCmd : bool = True):
+    def __init__(self, string: str, removeCmd: bool = True):
         if removeCmd: self.cmd, self.string = cutCmd(string, returnCmd=True)
         else: self.string = string
         self._i = -1
         self.ops_ = []
         self.opOps = []
 
-    def calcOps(self, rep=True):
+    def calcOps(self, rep: Optional[bool]=True):
         """
         calculates -- options without yielding
         """
@@ -284,7 +324,7 @@ class Content:
                     self.string = self.string.replace(word, "")
         return self
 
-    def split(self, splitBy : str, pastIndex : int = None, key=None):
+    def split(self, splitBy: str, pastIndex: Optional[int]=None, key=None)->str:
         split = self.string.split(splitBy) if splitBy else list(self.string)
         if key:
             for n, s in enumerate(split):
@@ -295,29 +335,29 @@ class Content:
                     if not transformation: split.pop(n)
         return split if not pastIndex else splitBy.join(split[pastIndex:])
 
-    def replace(self, string : str, repWith : str): #doesn't return anything unless specified
+    def replace(self, string: str, repWith: str): #doesn't return anything unless specified
         self.string = self.string.replace(string, repWith)
         return self
     
-    def strip(self, other : str =None):
+    def strip(self, other: Optional[str]=None)->str:
         return self.string.strip(other) if other else self.string.strip()
 
-    def lower(self):
+    def lower(self)->str:
         return self.string.lower()
     
-    def testOps(self, *ops):
+    def testOps(self, *ops: str)->bool:
         if not self.ops_: self.calcOps()
         for op in ops:
             if op in self.opOps or op in self.ops_:
                 return True
         return False
     
-    def ops(self):
+    def ops(self)->Generator:
         if not self.ops_: self.calcOps()
         for op in self.ops_:
             yield op
 
-    def opsWithParams(self, paramcount : dict =None, yieldList=False):
+    def opsWithParams(self, paramcount: Unused[dict]=None, yieldList: Optional[bool]=False):
         """
         paramcount could be {'param': arg_num}
         or {'param': (index, split)}
@@ -343,13 +383,17 @@ class Content:
                 yield (op, " ".join(param))
             else: yield (op, param)
 
-    def getUser(self, msg, index=None, content=None)->discord.abc.User:
+    def getUser(self, msg: Message, index: Optional[int]=None, content: Optional[str]=None)->User:
         """
         index is the index where the user should be when content is split by spaces
         """
         if index:
-            try: c = str(self.split(" ")[index].strip())
-            except: return msg.author
+            try: 
+                c = str(self.split(" ")[index])
+                if isinstance(c, list):
+                    c = " ".join(c)
+                c = c.strip()
+            except Exception as e: print(e); return msg.author
         else:
             try: c = str(self) if not content else str(content)
             except: return msg.author
@@ -358,17 +402,17 @@ class Content:
         user = discord.utils.find(lambda m: str(m.id) == c or str(m.display_name.split("#")[0].lower()) == c.lower() or m.name.lower() == c.lower(), msg.guild.members)
         return user if user else msg.author
 
-    def toSet(self, spl=" ", pastIndex=None, key=None):
+    def toSet(self, spl: Optional[str]=" ", pastIndex: Optional[int]=None, key=None)->set:
         """
         returns a set split by split
         """
         return set(self.split(spl, pastIndex=pastIndex, key=key))
 
-    def suitibleForEval(self, perms : bool=False):
+    def suitibleForEval(self, perms: Optional[bool]=False)->bool:
         if perms: return True
         return False if ({"help(", "quit()", "exit()", "os.", "token", "input(", "sys.", "__import__(os", "time.sleep", "socket.", "exec("} & self.toSet()) else True
 
-    def _whitespaceFormat(self, kwargs=None):
+    def _whitespaceFormat(self, kwargs: Optional[dict]=None)->NoReturn:
         self.string = self.string.replace(r'\t', "\t")
         self.string = self.string.replace(r'\n', "\n")
         self.string = self.string.replace('\s', " ")
@@ -379,13 +423,13 @@ class Content:
                 self.string = self.string.replace(kw, arg)
 
     @staticmethod
-    def whitespaceFormat(string, kwargs=None):
+    def whitespaceFormat(string, kwargs: Optional[dict]=None)->str:
         if kwargs:
             for kw, arg in kwargs.items():
                 string = string.replace(kw, arg)
         return string.replace(r'\t', "\t").replace(r'\n', "\n").replace("\s", " ").replace("\z", "").replace(r'\b', "\b")
 
-    def formatMessage(self, msg, kwargs=None, removeCmd=True, ret=False):
+    def formatMessage(self, msg: Message, kwargs: Optional[dict]=None, removeCmd: Optional[bool]=True, ret: Optional[bool]=False)->Union[None, Any]:
         if "{emote}" in self:
             new = [x if x.strip() != "{emote}" else str(random.choice(msg.guild.emojis)) for x in self.split(" ")]
             self.string = " ".join(new)
@@ -401,7 +445,7 @@ class Content:
                 self.string = self.string.replace(str(k), str(i))
         if ret: return self
 
-    def insert(self, index, other):
+    def insert(self, index: int, other: str)->NoReturn:
         foo = list(self)
         foo.insert(index, other)
         self.string = "".join(foo)
@@ -521,7 +565,7 @@ class command:
     async def __call__(self, *args, **kwargs):
         return await self.func(*args, **kwargs)
 
-    def calcHelp(self):
+    def calcHelp(self)->NoReturn:
         helpMsg = self.doc
         if "WHITESPACEFORMATS" in helpMsg: helpMsg += "\ndo help whitespaceformats for more information"
         if "FORMATS" in helpMsg: helpMsg += "\ndo help formats for more information"
@@ -659,7 +703,7 @@ class UserInfo:
             perms = json.load(j).get(self.userId)
             self.perms = perms if perms else []
 
-    async def usedCmd(self, msg)->bool:
+    async def usedCmd(self, msg: Message)->bool:
         if time.time() - self.timeLastCmdUsed <= 30 and msg.channel.id == GENERALCHANNEL:
             self.cmdsIn30Seconds += 1
         else: self.cmdsIn30Seconds = 0
@@ -669,7 +713,7 @@ class UserInfo:
         self.timeLastCmdUsed = time.time()
         return True
 
-    async def giveXP(self, msg):
+    async def giveXP(self, msg: Message)->Union[None, NoReturn]:
         if time.time() - self.lastTalked >= 60:
             self.xp += random.randint(15, 100)
             self.lastTalked = time.time()
@@ -685,7 +729,7 @@ class UserInfo:
                 self.required = round((1000 * self.level) * 1.1)
         else: return
 
-    async def dumpLevelInfo(self):
+    async def dumpLevelInfo(self)->NoReturn:
         with open(levelingDataFilePath, "r+", encoding="utf-8-sig") as j:
             data = json.load(j)
             data[self.userId] = {
@@ -698,7 +742,13 @@ class UserInfo:
             clearFile(j)
             json.dump(data, j)
 
-    async def basicDump(self, file, attrToDump, encoding="utf-8-sig", DumpIfNone=True):
+    async def basicDump(
+            self, 
+            file: str, 
+            attrToDump: str, 
+            encoding: Optional[str]="utf-8-sig", 
+            DumpIfNone: Optional[bool]=True
+        )->NoReturn:
         DelData = DumpIfNone^1
         with open(file, "r+", encoding=encoding) as j:
             data = json.load(j)
@@ -710,13 +760,13 @@ class UserInfo:
             clearFile(j)
             json.dump(data, j)
 
-    async def dumpMoneyInfo(self):
+    async def dumpMoneyInfo(self)->NoReturn:
         await self.basicDump(moneyDataFilePath, self.money)
 
-    async def dumpBannedInfo(self):
+    async def dumpBannedInfo(self)->NoReturn:
         await self.basicDump(bannedFilePath, self.bans, DumpIfNone=False)
 
-    async def dumpTimerInfo(self):
+    async def dumpTimerInfo(self)->NoReturn:
         if not self.time: 
             with open(timersPath, "r+", encoding="utf-8-sig") as f:
                 data = json.load(f)
@@ -727,13 +777,13 @@ class UserInfo:
                     json.dump(data, f)
         else: await self.basicDump(timersPath, self.time)
 
-    async def dumpItemInfo(self):
+    async def dumpItemInfo(self)->NoReturn:
         await self.basicDump(itemDataFilePath, self.items, DumpIfNone=False)
             
-    async def dumpPermInfo(self):
+    async def dumpPermInfo(self)->NoReturn:
         await self.basicDump(botModsFilePath, self.perms, DumpIfNone=False)
 
-    async def dumpPingResponseInfo(self):
+    async def dumpPingResponseInfo(self)->NoReturn:
         with open(pingResponseFilePath, "r+") as f:
             data = json.load(f)
             if data.get(self.userId):
@@ -744,7 +794,7 @@ class UserInfo:
                 clearFile(f)
                 json.dump(data, f)
             
-    async def dumpInfo(self, clFromRAMDict=False):
+    async def dumpInfo(self, clFromRAMDict: Optional[bool]=False)->NoReturn:
         await self.dumpLevelInfo()
         await self.dumpMoneyInfo()
         await self.dumpBannedInfo()
@@ -754,10 +804,10 @@ class UserInfo:
         await self.dumpPingResponseInfo()
         if clFromRAMDict: await self.clearFromRAMDict()
 
-    async def clearFromRAMDict(self):
+    async def clearFromRAMDict(self)->NoReturn:
         del RAMUserInfo[int(self.userId)]
 
-    async def reduceXP(self):
+    async def reduceXP(self)->NoReturn:
         if time.time() - self.lastTalked >= 1209600:
             if self.xp > 1:
                 self.xp -= random.randint(0, 1)
@@ -765,22 +815,22 @@ class UserInfo:
                 self.level -= 1
                 self.xp = (self.level * 1000) - 1
 
-    async def addMoney(self, amnt):
+    async def addMoney(self, amnt: int)->NoReturn:
         self.money += amnt
         
-    async def removeItem(self, iName=None, iId=None, item=None):
+    async def removeItem(self, iName: Optional[str]=None, iId: Optional[int]=None, item: Optional[dict]=None)->NoReturn:
         if not item: item = findItem(iName=iName, iId=iId)
         self.items[item["name"]] -= 1
         if not self.items[item["name"]]:
             del self.items[item["name"]]
 
     @classmethod
-    async def registerUser(cls, userId):
+    async def registerUser(cls, userId: Union[int, str])->NoReturn:
         userId = int(userId)
         if userId not in RAMUserInfo.keys():
             RAMUserInfo[userId] = cls(userId)
             
-def findItem(iName=None, iId=None):
+def findItem(iName: Optional[str]=None, iId: Optional[int]=None)->dict:
     with open(itemsFilePath, "r") as f:
         data = json.load(f)
         for item in data:
