@@ -275,7 +275,7 @@ async def categoryInfo(msg, content, cmd="categoryinfo"):
     embed.add_field(name="channels", value=len(cat.channels))
     embed.add_field(name="text channels", value=len(cat.text_channels))
     embed.add_field(name="voice channels", value=len(cat.voice_channels))
-    embed.add_field(name="created at", value=await formatDateTime(cat.created_at))
+    embed.add_field(name="created at", value=formatDateTime(cat.created_at))
     return await returnMsg(msg, embed=embed)
 
 @command
@@ -291,7 +291,7 @@ async def emoteInfo(msg, content, cmd="emoteinfo"):
     embed.set_thumbnail(url=emote.url)
     embed.add_field(name="Animated", value=emote.animated)
     embed.add_field(name="Added by", value=emote.user)
-    embed.add_field(name="created at", value=await formatDateTime(emote.created_at))
+    embed.add_field(name="created at", value=formatDateTime(emote.created_at))
     embed.add_field(name="id", value=emote.id)
     embed.add_field(name="Image", value=str(emote.url))
     embed.add_field(name="raw mention", value=f"\<:{emote.name}:707773683854213140>")
@@ -332,7 +332,7 @@ async def messageInfo(msg, content, cmd="messageinfo"):
     if msg.role_mentions:
         embed.add_field(name="role mentions", value=" ".join([x.mention for x in msg.role_mentions]))
     embed.add_field(name="pinned", value=msg.pinned)
-    embed.add_field(name="created at", value=await formatDateTime(msg.created_at))
+    embed.add_field(name="created at", value=formatDateTime(msg.created_at))
     embed.add_field(name="jump to link", value=msg.jump_url)
 
     return await returnMsg(msg, embed=embed)
@@ -364,7 +364,7 @@ async def serverInfo(msg, content, cmd="serverinfo"):
     embed.add_field(name="roles", value=len(roles))
     embed.add_field(name="members", value=msg.guild.member_count)
     embed.add_field(name="owner", value=msg.guild.owner.mention)
-    embed.add_field(name="creation time", value=await formatDateTime(creation))
+    embed.add_field(name="creation time", value=formatDateTime(creation))
     embed.add_field(name="age", value=t - creation)
     return await returnMsg(msg, embed=embed)
 
@@ -378,12 +378,12 @@ async def userInfo(msg, content, cmd="userinfo"):
     """
     user = (await getUserInContent(msg, content, cmd))
     embed = discord.Embed(title=user.name, color=user.color)
-    embed.add_field(name="Join date", value=await formatDateTime(user.joined_at))
+    embed.add_field(name="Join date", value=formatDateTime(user.joined_at))
     embed.add_field(name="nick name", value=user.nick)
     embed.add_field(name="color", value=f'RGB: {", ".join(tuple(str(x) for x in user.color.to_rgb()))}\nhex: {user.color}')
     embed.add_field(name="role count", value=len(user.roles))
     embed.add_field(name="avatar url", value=user.avatar_url)
-    embed.add_field(name="created at", value=await formatDateTime(user.created_at))
+    embed.add_field(name="created at", value=formatDateTime(user.created_at))
     embed.add_field(name="discriminator", value=user.discriminator)
     embed.add_field(name="id", value=user.id)
     embed.add_field(name="mention", value=user.mention)
@@ -411,7 +411,7 @@ async def roleInfo(msg, content, cmd="roleinfo"):
         embed.add_field(name="displayed seperately?", value=role.hoist)
         embed.add_field(name="hierarchical position", value=len(msg.guild.roles) - role.position)
         embed.add_field(name="members with role", value=len(role.members))
-        embed.add_field(name="Created at", value=await formatDateTime(role.created_at))
+        embed.add_field(name="Created at", value=formatDateTime(role.created_at))
         return await returnMsg(msg, embed=embed)
     except AttributeError:
         return await returnMsg(msg, "role not found")
@@ -604,7 +604,7 @@ async def channelInfo(msg, content, cmd="cc"):
         if ":" in str(diff).split(" ")[0]:
             daysTillLastPin = (50-pinCount) / (pinCount / (int(str(diff).split(" ")[0].split(":")[0]) / 24))
         else: daysTillLastPin = (50-pinCount) / (pinCount / int(str(diff).split(" ")[0]))
-    embed.add_field(name="Created at", value=await formatDateTime(created))
+    embed.add_field(name="Created at", value=formatDateTime(created))
     embed.add_field(name="Pins", value=pinCount)
     if pinCount != 0: embed.add_field(name="days till last pin", value=str(daysTillLastPin))
     embed.add_field(name="time since creation", value=diff)
