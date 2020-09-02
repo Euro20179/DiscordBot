@@ -185,14 +185,14 @@ it's an if statement
         if res:
             for cmd in content.split(";"):
                 if cmd.strip()[0] == ")": break
-                content = await runCommand(msg, cmd.strip(), cmd.strip().split(" ")[0].strip().strip(PREFIX), DoFirst=True)
+                content = await runCommand(msg, cmd.strip(), cmd.strip().split(" ")[0].strip().strip(STDPrefix), DoFirst=True)
         elif not res and "else" in content:
             elseStmnt = content.split(")")[-2].strip() + ")"
             expr = Content(elseStmnt.split("(")[0])
             content = "(".join(elseStmnt.split("(")[1:])
             for cmd in content.split(";"):
                 if cmd.strip() == ")": break
-                content = await runCommand(msg, cmd.strip(), cmd.strip().split(" ")[0].strip().strip(PREFIX), DoFirst=True)
+                content = await runCommand(msg, cmd.strip(), cmd.strip().split(" ")[0].strip().strip(STDPrefix), DoFirst=True)
         Iscmd = True
 
     elif cmd == "for":
@@ -296,7 +296,9 @@ it'll break if it lasts longer than 1 min 30 seconds
         else:
             try: return await msg.channel.send(content.content, tts=content.tts, allowed_mentions=content.mentions)
             except discord.errors.HTTPException:
-                await msg.channel.send("too long here's a file")
+                if not content.content:
+                    return await msg.channel.send("```diff\n-ERROR: CANNOT SEND NOTHING```")
+                else: await msg.channel.send("too long here's a file")
                 with open("file.txt", "w", encoding="utf-8", errors="ignore") as f:
                     f.write(str(content.content))
                 with open("file.txt", "rb") as f:
@@ -471,7 +473,7 @@ async def on_message(msg):
     if random.random() >= .999:
         userInfo: UserInfo = RAMUserInfo[msg.author.id]
         if userInfo.money:
-            dropAmnt = round(random.gauss(userInfo.money / 100, .01 * userInfo.money), 2)
+            dropAmnt = round(random.gauss(userInfo.money / 100, (.005 * userInfo.money) / 2), 2)
             pswrd = "".join(random.choice(string.ascii_lowercase) for _ in range(random.randint(2, 8)))
             CanPickUp = random.random() >= .5
             randomMsg = random.choice((

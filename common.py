@@ -24,7 +24,7 @@ from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont
 
 #TODO make each user an object with data relating to stuff like leveling and ping response, it will load in when they talk so it's not super slow at login time
 
-__version__ = "7.7.2"
+__version__ = "7.7.3"
 Stop = False
 
 playingHangman = {}
@@ -72,7 +72,7 @@ tracemalloc.start()
 
 class Depricated: pass
 class Unused: 
-    def __init__(self): pass
+    def __init__(self):...
     def __getitem__(self, other):...
 class User:...
 class Message:...
@@ -284,7 +284,7 @@ def userHasRole(msg: Message, *roles: str)->bool:
 def findMember(c: str, msg: Message)->Member:
     return discord.utils.find(lambda m: str(m.id) == c or str(m.display_name.split("#")[0].lower()) == c.lower() or m.name.lower() == c.lower(), msg.guild.members)
 
-def clearFile(f)->NoReturn:
+def clearFile(f)->None:
     f.seek(0)
     f.truncate()
 
@@ -648,7 +648,6 @@ class UserInfo:
         RAMUserInfo[self.userId] = self
         self.cmdsIn30Seconds = 0
         self.timeLastCmdUsed = 0
-
         #leveling data
         with open(levelingDataFilePath, "r", encoding="utf-8-sig") as j:
             levelingInfo = json.load(j).get(self.userId)
@@ -771,7 +770,6 @@ class UserInfo:
 
     async def dumpBannedInfo(self)->NoReturn:
         await self.basicDump(bannedFilePath, self.bans, DumpIfNone=False)
-
     async def dumpTimerInfo(self)->NoReturn:
         if not self.time: 
             with open(timersPath, "r+", encoding="utf-8-sig") as f:
@@ -812,7 +810,6 @@ class UserInfo:
 
     async def clearFromRAMDict(self)->NoReturn:
         del RAMUserInfo[int(self.userId)]
-
     async def reduceXP(self)->NoReturn:
         if time.time() - self.lastTalked >= 1209600:
             if self.xp > 1:
@@ -836,7 +833,7 @@ class UserInfo:
         if userId not in RAMUserInfo.keys():
             RAMUserInfo[userId] = cls(userId)
             
-def findItem(iName: Optional[str]=None, iId: Optional[int]=None)->dict:
+def findItem(iName: Optional[str]=None, iId: Optional[int]=None)->dict:  
     with open(itemsFilePath, "r") as f:
         data = json.load(f)
         for item in data:
