@@ -72,7 +72,7 @@ tracemalloc.start()
 
 class Depricated: pass
 class Unused: 
-    def __init__(self): pass
+    def __init__(self):...
     def __getitem__(self, other):...
 class User:...
 class Message:...
@@ -648,7 +648,6 @@ class UserInfo:
         RAMUserInfo[self.userId] = self
         self.cmdsIn30Seconds = 0
         self.timeLastCmdUsed = 0
-
         #leveling data
         with open(levelingDataFilePath, "r", encoding="utf-8-sig") as j:
             levelingInfo = json.load(j).get(self.userId)

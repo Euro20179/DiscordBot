@@ -390,6 +390,7 @@ async def imscared(msg, content, cmd="imscared"):
     """
     be terrified :)
     aliases:
+        SECRET:
         i'mscared
     """
     msgs = (
@@ -558,6 +559,7 @@ async def changenick(msg, content, cmd="changenick"):
     aliases:
         nick
         nickname
+        changenick
     added: 8/19/2020
     """
     content = Content(content)

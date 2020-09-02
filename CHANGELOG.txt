@@ -1,3 +1,9 @@
+7.7.3 (9/2/2020)
+
+CHANGES:
+*instead of sending an empty file, it says can't send nothing if there is nothing to send
+
+====================================================================
 7.7.2 (9/2/2020)
 
 ADDITIONS:

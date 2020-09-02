@@ -210,7 +210,7 @@ async def echo(msg, content, cmd="echo"):
                 color = int(param, 16) if param != "rand" else random.randint(0, 16777215)
             else: color = 0x000000
             embed = discord.Embed(title=str(c), color=discord.Color(color))
-            return await returnMsg(msg, None, embed=embed) if not c @ "--dm" else await returnMsg(msg, None, embed)
+            return await returnMsg(msg, None, embed=embed) if not c @ "--dm" else await msg.author.send(embed=embed)
         elif op == "-wait":
             try: await asyncio.sleep(float(param))
             except: return await returnMsg(msg, "-wait must be float")
@@ -221,8 +221,7 @@ async def echo(msg, content, cmd="echo"):
             formatOps = {k: v for k, v in map(lambda x: ("{" + x[0] + "}", x[1]), formatOps.items())}
     ops = {**defaultOps, **formatOps}
     c.formatMessage(msg, ops)
-    return await returnMsg(msg, str(c), tts=True if c @ "--tts" else False) if not c @ "--dm" else await returnMsg(msg, str(c), tts=True if c @ "--tts" else False)
-
+    return await returnMsg(msg, str(c), tts=c @ "--tts") if not c @ "--dm" else await msg.author.send(str(c), tts=c @ "--tts")
 @command
 async def embed(msg, content, cmd="embed"):
     """
@@ -264,7 +263,7 @@ async def embed(msg, content, cmd="embed"):
         for n, field in enumerate(split):
             name, value = field.split(",")
             value = Content(value, removeCmd=False)
-            Inline = True if not value @ "--ninline" else False
+            Inline = not (value @ "--ninline")
             embed.add_field(name=name, value=str(value), inline=Inline)
     return await returnMsg(msg, content=msgContent, embed=embed)
 
@@ -304,7 +303,7 @@ async def randomFace(msg, content, cmd="randomface"):
         rface
         randface
     """
-    BROWS = (">", "|") ;"AND"; EYES = (":", ";") ;"AND"; MOUTHS = (")", "(", "{", "}", "[", "]", "p", "P", "d", "l", "C", "c")
+    BROWS, EYES, MOUTHS = ((">", "|"), (":", ";"), (")", "(", "{", "}", "[", "]", "p", "P", "d", "l", "C", "c"))
     if random.random() >= .995:
         return await returnMsg(msg, "()-()\n ___")
     if random.random() >= .8:
