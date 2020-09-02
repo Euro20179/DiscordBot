@@ -2,6 +2,8 @@ from os import remove
 from customcmds import removeCustomCmd
 from common import *
 
+command.setCategory("FUN", "fun commands")
+
 @command
 async def luckynumber(msg, content, cmd="luckynumber"):
     """
@@ -591,3 +593,22 @@ async def getBaseballScore(msg, content, cmd="baseballscore"):
 
     return await returnMsg(msg, content=retContent, embed=embed)
 
+@command
+async def changenick(msg, content, cmd="changenick"):
+    """
+    changes the nick name of the bot
+    required params:
+        <name>: the name to change to
+    options:
+        --nret, makes it not say "did it work"
+    aliases:
+        nick
+        nickname
+        changenick
+    added: 8/19/2020
+    """
+    content = Content(content)
+    Ret = not (content @ "--nret")
+    member = await msg.guild.fetch_member(client.user.id)
+    await member.edit(nick=content.string)
+    if Ret: return await returnMsg(msg, "did it work?")

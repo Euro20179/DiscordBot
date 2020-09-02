@@ -20,6 +20,7 @@ async def flashEmote(msg, content, cmd="flashemote"):
         times: the amount of times to flash
     options:
         -t <seconds>: the amount of time between each edit
+    CATEGORY: FUN
     added: 7/16/2020
     """
     global Stop
@@ -56,6 +57,7 @@ async def spamCmd(msg, content, cmd="spam"):
     aliases:
         spam
         spamcmd
+    CATEGORY: FUN
     added: 11/6/2020
     """
     global Stop
@@ -89,6 +91,7 @@ async def response(msg, content, cmd="response"):
         <message>: the message to search for
     options:
         -lim <limit>: the limit of messages to search
+    CATEGORY: misc
     added: 5/20/2020
     """
     global Stop
@@ -285,6 +288,7 @@ async def deathbattle(msg, content, cmd="deathbatte"):
     aliases:
         db
         deathbattle
+    CATEGORY: games&money
     added: 6/11/2020
     """
     global Stop, playingDB
@@ -328,6 +332,7 @@ async def isCountingMessedUp(msg, content, cmd="isCountingMessedUp"):
     aliases:
         icmu
         iscountingmessedup
+    CATEGORY: info
     added: 7/24/2020
     """
     global Stop
@@ -356,6 +361,7 @@ async def stopCmd(msg, content, cmd="stop"):
     aliases:
         stop
         stopcmd
+    CATEGORY: misc
     """
     global Stop
     Stop = await stop(retstop=True)

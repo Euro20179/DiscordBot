@@ -1,5 +1,7 @@
 from common import *
 
+command.setCategory("images", "commands related to images mainly editing")
+
 @command
 async def rotateImg(msg, content, cmd="rotateImg"):
     """

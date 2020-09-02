@@ -1,5 +1,6 @@
 from common import *
 
+command.setCategory("mathy", "stuff like a calculator")
 
 @command
 async def weightedCoin(msg, content, cmd="weightedcoin"):

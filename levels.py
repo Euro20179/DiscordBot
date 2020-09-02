@@ -1,6 +1,8 @@
 from common import *
 from gamesandmoney import mostmoney
 
+command.setCategory("levels", "anything that has to do with leveling")
+
 @command
 async def level(msg, content, cmd="level"):
     """

@@ -1,5 +1,7 @@
 from common import *
 
+command.setCategory("staff", "commands only available to staff")
+
 @command
 async def ridInvites(msg, content, cmd="clearinvites"):
     """

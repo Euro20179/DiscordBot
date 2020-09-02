@@ -50,6 +50,7 @@ pingResponseFilePath = f'{DISEXT}/pingresponse.json'
 emoteUsageFilePath = f'{DISEXT}/emoteusage.json'
 prefixFilePath = f'{DISEXT}/prefixes.txt'
 queuePath = "./queue"
+cmdJsonFilePath = "./cmds.json"
 EUROID = 334538784043696130
 client = commands.Bot(command_prefix=STDPrefix, allowed_mentions=discord.AllowedMentions(everyone=False))
 CMDS = {}
@@ -171,7 +172,7 @@ async def reloadCMDSLIST(retCats: Optional[bool]=False)->dict:
     with open(customcmdsFilePath, "r") as cmdsJson:
         customCMDData = json.load(cmdsJson)
         CUSTOMCMDS = {cmd["name"]: cmd["desc"] for cmd in customCMDData}
-    with open("cmds.json", "r+") as f:
+    with open(cmdJsonFilePath, "r+") as f:
         data = json.load(f)
         CATS = [cat for cat in data.keys()]
         data["CUSTOM"]["cmds"] = customCMDData
@@ -542,16 +543,21 @@ class FileException(Exception):
     pass
 
 class command:
+    category: str = None
+    categoryDesc: str = None
     def __init__(self, func):
         self.func = func
         self.aliases = []
         self.secretAliases = []
         self.doc = func.__doc__
+        self.cat = command.category
         self._Help = False
         doc = func.__doc__
         name = func.__name__.lower()
         CMDS[name] = self
         aliasList = self.aliases
+        if "CATEGORY: " in doc:
+            self.cat = doc.split("CATEGORY: ")[1].split("\n")[0].strip().upper()
         if len(doc.split("aliases")) > 1:
             aliases = doc.split("aliases:")[1].split("\n")
             for alias in aliases:
@@ -560,6 +566,10 @@ class command:
                     if "added" in alias: 
                         self.date = alias.split("added")[1].strip().strip(":").strip()
                         break
+                    if "CATEGORY: " in alias:
+                        self.cat = alias.split("CATEGORY: ")[1].split("\n")[0].strip().upper()
+                        self.doc = self.doc.replace(f"CATEGORY: {self.cat}", "")
+                        break
                     if "SECRET" in alias:
                         aliasList = self.secretAliases
                         continue
@@ -567,6 +577,7 @@ class command:
                     if aliasList is self.secretAliases:
                         self.secretAliases.append(alias)
                     else: self.aliases.append(alias)
+        self.__addCmd()
 
     async def __call__(self, *args, **kwargs):
         return await self.func(*args, **kwargs)
@@ -633,6 +644,7 @@ class command:
             if added:
                 helpMsg += f"```added:{added}```"
                 self.added = added
+            helpMsg += f'```Category: {self.cat}```'
             self._Help = helpMsg
         else:
             helpMsgTemp = helpMsgTemp[1:]
@@ -641,6 +653,34 @@ class command:
     def help(self):
         if not self._Help: self.calcHelp()
         return self._Help
+
+    def __addCmd(self):
+        with open(cmdJsonFilePath, "r+") as f:
+            data = json.load(f)
+            data[self.cat]["cmds"].append(self.func.__name__.lower())
+            for alias in self.aliases:
+                if alias not in data[self.cat]["cmds"]:
+                    data[self.cat]["cmds"].append(alias)
+            clearFile(f)
+            json.dump(data, f)
+
+    @classmethod
+    def setCategory(cls, category: str, categoryDesc: str):
+        cls.category = category.upper()
+        cls.categoryDesc = categoryDesc
+        with open(cmdJsonFilePath, "r+") as f:
+            data = json.load(f)
+            if not data.get("KEY"):
+                data["KEY"] = {"desc": "FORMATS formats special phrases with something (WHITESPACE FORMATS) formats whitespaces\ndo [help formats and [help whitespaceformats", "cmds": []}
+                data["ANYMESSAGE"] = {"desc": "can be applied to any message", "cmds": ["[timeit", "[chkx", "[delete", "[rw", "[rwd", "[delin", "[dr"]}
+                data["MOSTCMDS"] = {"desc": "works for most if not all commands", "cmds": ["--delete", ">>>", "--cmddelete", "--help (DEPRICATED)", "<<<"]}
+                data["SYNTAX"] = {"desc": "acts like a programming language", "cmds": ["for", "if", "else", "wait", "*<cmd> (sep with ;;)", "calc", "eval", "result", "equation", "findans", "exec", "/{}", "cmd/{}"]}
+                data["CUSTOM"] = {"desc": "custom commands", "cmds": []}
+            data[cls.category] = {}
+            data[cls.category]["desc"] = cls.categoryDesc
+            data[cls.category]["cmds"] = []
+            clearFile(f)
+            json.dump(data, f)
 
 class UserInfo:
     def __init__(self, userId):
