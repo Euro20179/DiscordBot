@@ -1,5 +1,7 @@
 from common import *
 
+command.setCategory("info", "commands that give info")
+
 @command
 async def pokemon(msg, content, cmd="pokemon"):
     """
@@ -752,18 +754,18 @@ async def hlp(msg, content, cmd="help"):
     CATS = await reloadCMDSLIST(retCats=True)
     content = Content(content)
     if content @ "--raw":
-        with open("cmds.json", "rb") as f:
-            return await returnMsg(msg, file=discord.File(f, "cmds.json"))
+        with open(cmdJsonFilePath, "rb") as f:
+            return await returnMsg(msg, file=discord.File(f, cmdJsonFilePath))
     elif not content:
         embed = discord.Embed(title="Help", color=discord.Color(random.randint(0, 16777215)))
-        with open("cmds.json", "r") as j:
+        with open(cmdJsonFilePath, "r") as j:
             data = json.load(j)
             for cat, catI in data.items():
                 embed.add_field(name=cat, value=catI["desc"])
         return await returnMsg(msg, embed=embed)
     else:
         if content.string.upper().strip() in CATS and content.string.strip() != "custom":
-            with open("cmds.json", "r") as j:
+            with open(cmdJsonFilePath, "r") as j:
                 data = json.load(j)
                 for cat, catI in data.items():
                     if cat.lower().strip() == content.lower().strip():

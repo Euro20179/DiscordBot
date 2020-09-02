@@ -1,5 +1,6 @@
 from common import *
 
+command.setCategory("misc", "random commands idk")
 
 @command
 async def ping(msg, content, cmd="ping"):
@@ -547,26 +548,6 @@ async def sendBlank(msg, content, cmd="sendblank"):
     content = Content(content)
     amnt = int(content) if content else 5
     return await returnMsg(msg, "_" + ("\n" * amnt) + "_")
-
-@command
-async def changenick(msg, content, cmd="changenick"):
-    """
-    changes the nick name of the bot
-    required params:
-        <name>: the name to change to
-    options:
-        --nret, makes it not say "did it work"
-    aliases:
-        nick
-        nickname
-        changenick
-    added: 8/19/2020
-    """
-    content = Content(content)
-    Ret = not (content @ "--nret")
-    member = await msg.guild.fetch_member(client.user.id)
-    await member.edit(nick=content.string)
-    if Ret: return await returnMsg(msg, "did it work?")
 
 @command
 async def addPrefix(msg, content, cmd="addprefix"):

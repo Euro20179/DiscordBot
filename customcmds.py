@@ -1,5 +1,6 @@
 from common import *
 
+command.setCategory("customcmds", "cmds relating to custom cmds")
 
 @command
 async def addCustomCmd(msg, content, cmd="customcmd"):

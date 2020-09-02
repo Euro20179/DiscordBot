@@ -1,5 +1,6 @@
 from common import *
 
+command.setCategory("games&money", "games")
 
 @command
 async def guessingGame(msg, content, cmd="guessinggame"):
