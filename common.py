@@ -284,7 +284,7 @@ def userHasRole(msg: Message, *roles: str)->bool:
 def findMember(c: str, msg: Message)->Member:
     return discord.utils.find(lambda m: str(m.id) == c or str(m.display_name.split("#")[0].lower()) == c.lower() or m.name.lower() == c.lower(), msg.guild.members)
 
-def clearFile(f)->NoReturn:
+def clearFile(f)->None:
     f.seek(0)
     f.truncate()
 
@@ -770,7 +770,6 @@ class UserInfo:
 
     async def dumpBannedInfo(self)->NoReturn:
         await self.basicDump(bannedFilePath, self.bans, DumpIfNone=False)
-
     async def dumpTimerInfo(self)->NoReturn:
         if not self.time: 
             with open(timersPath, "r+", encoding="utf-8-sig") as f:
@@ -811,7 +810,6 @@ class UserInfo:
 
     async def clearFromRAMDict(self)->NoReturn:
         del RAMUserInfo[int(self.userId)]
-
     async def reduceXP(self)->NoReturn:
         if time.time() - self.lastTalked >= 1209600:
             if self.xp > 1:
@@ -835,7 +833,7 @@ class UserInfo:
         if userId not in RAMUserInfo.keys():
             RAMUserInfo[userId] = cls(userId)
             
-def findItem(iName: Optional[str]=None, iId: Optional[int]=None)->dict:
+def findItem(iName: Optional[str]=None, iId: Optional[int]=None)->dict:  
     with open(itemsFilePath, "r") as f:
         data = json.load(f)
         for item in data:

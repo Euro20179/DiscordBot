@@ -200,7 +200,6 @@ async def echo(msg, content, cmd="echo"):
     c = Content(content)
     defaultOps = {"{echo}": str(c).replace("{echo}", "")}
     formatOps = {}
-    allowedMentions = ("roles", "users")
     if not c @ "--nodel":
         try: await msg.delete()
         except: pass
@@ -480,7 +479,7 @@ async def reverse(msg, content, cmd="reverse"):
         esrever
         desrever
     """
-    return await returnMsg(msg, splitContent(content, f'{cmd} ')[1][::-1])
+    return await returnMsg(msg, cutCmd(content)[::-1])
 
 @command
 async def pigLatin(msg, content, cmd="piglatin"):
