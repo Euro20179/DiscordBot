@@ -296,7 +296,9 @@ it'll break if it lasts longer than 1 min 30 seconds
         else:
             try: return await msg.channel.send(content.content, tts=content.tts, allowed_mentions=content.mentions)
             except discord.errors.HTTPException:
-                await msg.channel.send("too long here's a file")
+                if not content.content:
+                    return await msg.channel.send("```diff\n-ERROR: CANNOT SEND NOTHING```")
+                else: await msg.channel.send("too long here's a file")
                 with open("file.txt", "w", encoding="utf-8", errors="ignore") as f:
                     f.write(str(content.content))
                 with open("file.txt", "rb") as f:
