@@ -37,7 +37,7 @@ async def level(msg, content, cmd="level"):
     embed.add_field(name="xp needed", value=required - xp)
     time, layer = await formatSeconds(((required - xp) / 57.5), layer="minutes")
     embed.add_field(name="approx time", value=f'{round(time, 5)} {layer}') #TODO format this
-    embed.add_field(name="level up mesage", value=str(Content(message, removeCmd=False).formatMessage(msg, kwargs={"{level}": level, "{xp}": xp}, removeCmd=False, ret=True)), inline=False)
+    embed.add_field(name="level up mesage", value=str(Content(message, removeCmd=False).formatMessage(msg, kwargs={"{level}": level + 1, "{xp}": xp}, removeCmd=False, ret=True)), inline=False)
     return await returnMsg(msg, embed=embed)
 
 @command
@@ -128,7 +128,7 @@ async def levelMessage(msg, content, cmd="lvlmsg"):
     userData = RAMUserInfo[msg.author.id]
     if changeTo.testOps("--see", "--get", "--s", "--g"):
         content = Content(userData.levelUpMessage, removeCmd=False)
-        content.formatMessage(msg, {"{level}": userData.level, "{xp}": userData.xp}, removeCmd=False)
+        content.formatMessage(msg, {"{level}": userData.level + 1, "{xp}": userData.xp}, removeCmd=False)
         return await returnMsg(msg, str(content))
     if changeTo.testOps("--dontsee"):
         return await returnMsg(msg, "uh, ok then")

@@ -19,7 +19,7 @@ import youtube_dl
 import functools
 from matplotlib import pyplot as plt
 from matplotlib import style as matstyle
-from typing import Iterable, List, Tuple, overload
+from typing import Iterable, List, Tuple, overload, Dict
 from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont, ImageChops
 
 #TODO make each user an object with data relating to stuff like leveling and ping response, it will load in when they talk so it's not super slow at login time
@@ -677,8 +677,9 @@ class UserInfo:
                 self.level +=1
                 self.xp //= 2
                 self.money += int(self.level * 2)
-                self.levelUpMessage.formatMessage(msg, {"{level}": self.level, "{xp}": self.xp}, removeCmd=False)
-                disp = str(self.levelUpMessage)
+                temp = Content(self.levelUpMessage, removeCmd=False)
+                temp.p(msg, {"{level}": self.level, "{xp}": self.xp}, removeCmd=False)
+                disp = str(temp)
                 if disp and disp.lower() not in ["none", "null"]:
                     await msg.channel.send(disp)
                 self.required = round((1000 * self.level) * 1.1)
