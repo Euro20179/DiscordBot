@@ -24,7 +24,7 @@ from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont
 
 #TODO make each user an object with data relating to stuff like leveling and ping response, it will load in when they talk so it's not super slow at login time
 
-__version__ = "7.7.1"
+__version__ = "7.7.2"
 Stop = False
 
 playingHangman = {}
@@ -232,7 +232,7 @@ async def formatSeconds(t: float, layer: Optional[str]="seconds", stopAt: Option
         t, layer = await formatSeconds(t, layer=cases[layer][0], stopAt=stopAt, rec=rec + 1)
     return t, layer
 
-async def formatDateTime(createdAt: datetime.datetime, customFormatString: Optional[str]=None)->str:
+def formatDateTime(createdAt: datetime.datetime, customFormatString: Optional[str]=None)->str:
     """
     %b = month name
     %d = day
@@ -438,6 +438,12 @@ class Content:
         self.string = self.string.replace("{authorn}", msg.author.name).replace("{author}", msg.author.mention)
         self.string = self.string.replace("{authorid}", str(msg.author.id))
         self.string = self.string.replace("{uptime}", str(time.time() - UPTIME))
+        if "{formattime " in self.string:
+            for formatTime in self.string.split("{formattime"):
+                if "}" not in formatTime: continue
+                ft = formatTime.split("}")[0].strip()
+                formatTime = formatDateTime(msg.created_at, customFormatString=ft)
+                self.string = self.string.replace("{formattime %s}" %ft, formatTime)
         if not isinstance(msg.channel, discord.DMChannel): 
             self.string = self.string.replace("{channeln}", msg.channel.name).replace("{channel}", msg.channel.mention).replace("{channelid}", str(msg.channel.id))
         if kwargs:
