@@ -2,6 +2,11 @@
 
 CHANGES:
 *instead of sending an empty file, it says can't send nothing if there is nothing to send
+*the equation for determining how much money you dropped has changed
+    gauss(mean: money / 100, stdev: money / 100) -> gauss(mean: money / 100, stdev: money / 200)
+
+FIXES:
+*small bug with if
 
 ====================================================================
 7.7.2 (9/2/2020)

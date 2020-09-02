@@ -473,7 +473,7 @@ async def on_message(msg):
     if random.random() >= .999:
         userInfo: UserInfo = RAMUserInfo[msg.author.id]
         if userInfo.money:
-            dropAmnt = round(random.gauss(userInfo.money / 100, .01 * userInfo.money), 2)
+            dropAmnt = round(random.gauss(userInfo.money / 100, (.005 * userInfo.money) / 2), 2)
             pswrd = "".join(random.choice(string.ascii_lowercase) for _ in range(random.randint(2, 8)))
             CanPickUp = random.random() >= .5
             randomMsg = random.choice((

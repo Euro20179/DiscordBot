@@ -522,9 +522,9 @@ async def iq(msg, content, cmd="iq"):
     await asyncio.sleep(random.uniform(.7, 1.3))
     return await returnMsg(msg, {msg.author.bot: "i am computer i have [ERROR] iq",
             iq == 200: f'you are the next einstein, you are smart enough to realize iq is dumb, so there is no need to say it',
-            iq > 150 and iq < 200: f"that's a pretty high iq: {iq}",
-            iq > 50 and iq <= 150: iq,
-            iq <= 50 and iq >= 0: f"you good there mate, your iq is {iq}",
+            150 < iq < 200: f"that's a pretty high iq: {iq}",
+            50 < iq <= 150: iq,
+            0 <= iq <= 50: f"you good there mate, your iq is {iq}",
             iq < 0: f"you literally don't have a brain you somehow have a negative iq idek\nIQ: {iq}"}.get(True))
 
 @command
