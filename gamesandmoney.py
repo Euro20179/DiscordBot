@@ -303,6 +303,9 @@ async def mostmoney(msg, content, cmd="mostmoney"):
 async def slotmachine(msg, content, cmd="slotmachine"):
     """
     gambling time
+    jackpot = 50-100
+    win = 0-10
+    lose = 0-(-20)
     aliases:
         slots
         slotmachine
@@ -312,7 +315,7 @@ async def slotmachine(msg, content, cmd="slotmachine"):
     added: 9/3/2020
     """
     userInfo: UserInfo = RAMUserInfo[msg.author.id]
-    spaces = ("7", "BAR", ":peach:", ":grapes:")
+    spaces = ("7", "BAR", ":peach:", ":grapes:", "<:sev:627342162647842826>")
     answer = tuple(random.choice(spaces) for _ in range(3))
     if len(set(answer)) == 1:
         amnt = random.randint(50, 100)
@@ -325,7 +328,7 @@ async def slotmachine(msg, content, cmd="slotmachine"):
         send = f'You got 2 of the same\nYOU WON {amnt}'
         color = 0x00ffff
     else:
-        amnt = random.randint(-5, 0)
+        amnt = random.randint(-20, 0)
         await userInfo.addMoney(amnt)
         send = f"better luck next time\nyou lost {amnt}"
         color = 0xff0000
