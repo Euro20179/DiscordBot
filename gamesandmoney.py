@@ -305,7 +305,7 @@ async def slotmachine(msg, content, cmd="slotmachine"):
     gambling time
     jackpot = 50-100
     win = 0-10
-    lose = 0-(-20)
+    lose = 0-(-15)
     aliases:
         slots
         slotmachine

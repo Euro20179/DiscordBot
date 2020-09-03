@@ -1,10 +1,10 @@
-7.7.7.1 (9/3/2020)
+7.7.7.1_B (9/3/2020)
 
 ADDITIONS:
 *added <:sev:627342162647842826> as a choice for gamble/slots
 
 CHANGES:
-*you now lose 0, 20 when you lose in gamble
+*you now lose 0, 15 when you lose in gamble
 
 ====================================================================
 7.7.7 (the ~~gambler~~ Troyella update) (9/3/2020)
