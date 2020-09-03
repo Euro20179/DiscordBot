@@ -1,0 +1,27 @@
+[
+    {
+        "id": 1,
+        "name": "7-7-7",
+        "desc": "catch a baseball game while the score is 7-7 in the 7th inning",
+        "onget": {
+            "message": "Achievement get: **7-7-7**:\ncatch a baseball game while the score is 7-7 in the 7th inning",
+            "money": 7
+        }
+    },
+    {
+        "id": 2,
+        "name": "level 100",
+        "desc": "reach level 100",
+        "onget":{
+            "message": "CG ON LEVEL 100"
+        }
+    },
+    {
+        "id": 3,
+        "name": "shhhhhh",
+        "desc": "use the secret cheat code",
+        "onget":{
+            "message": "YOU WIN"
+        }
+    }
+]

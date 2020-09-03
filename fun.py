@@ -563,7 +563,7 @@ async def getBaseballScore(msg, content, cmd="baseballscore"):
     span = soup.find_all("span", {"class": "rQMQod AWuZUe"})
     inning = span[0].text if span else "NONE"
     retContent = None
-    if inning != "NONE":
+    if inning != "NONE": #if the game is on
         teams = soup.find_all("div", {"class": "BNeawe s3v9rd AP7Wnd lRVwie"})[1:3]
         scores = soup.find_all("div", {"class": "BNeawe deIvCb AP7Wnd"})[1:3]
         t1 = (teams[0].text, int(scores[0].text))
@@ -578,8 +578,10 @@ async def getBaseballScore(msg, content, cmd="baseballscore"):
         embed = discord.Embed(title=f'{t1[0]} @ {t2[0]}', color=discord.Color.from_rgb(*color))
         embed.add_field(name="Inning", value=inning)
         embed.add_field(name="Score", value=f'{t1[1]} TO {t2[1]}')
+        if inning == 7 and int(t1[1]) == 7 and int(t2[1]) == 7:
+            await RAMUserInfo[msg.author.id].giveAchievement("7-7-7")
         retContent = "GO A'S" if AsWinning else None
-    else:
+    else: #if the game is over or hasnt' started
         try:
             time = soup.find_all("span", {"class": "r0bn4c rQMQod"})[0:2]
             time = f'{time[0].text}, {time[1].text}'
@@ -633,8 +635,27 @@ async def triangulate(msg, content, cmd="triangulate"):
     required params:
         <text>
     aliases:
-        triangle
+        triangulatetext
+        triangulatetxt
+        triangletext
+        triangletxt
         tritext
+        tritxt
+        SECRET:
+        triangulatetex
+        triangulatete
+        triangulatet
+        triangulate
+        triangulat
+        triangula
+        triangul
+        triangu
+        triang
+        trian
+        tria
+        tri
+        tr
+        t
     added: 9/3/2020
     """
     content = cutCmd(content)
@@ -645,3 +666,65 @@ async def triangulate(msg, content, cmd="triangulate"):
             send.append(add)
     send = send[::-1]
     return await returnMsg(msg, "\n".join(send))
+
+@command
+async def listachievements(msg, content, cmd="achievements"):
+    """
+    lists the achievements
+    options:
+        --raw: the file
+    aliases:
+        listachievements
+        listachmnts
+        lachmnts
+    added: 9/3/2020
+    """
+    content = Content(content)
+    if content @ "--raw":
+        with open(achievementsJson, "rb", encoding="utf-8-sig") as f:
+            return await returnMsg(msg, file=discord.File(f, "achievements.json"))
+    with open(achievementsJson, "r", encoding="utf-8-sig") as j:
+        data = json.load(j)
+        embed = discord.Embed(title="achievements")
+        for achievement in data:
+            embed.add_field(name=achievement["name"], value=f"description: {achievement['desc']}\nid: {achievement['id']}")
+        return await returnMsg(msg, embed=embed)
+
+@command
+async def achievements(msg, content, cmd="achievements"):
+    """
+    lists your achievements
+    optional params:
+        [user]: the user to get the achievements of
+    options:
+        --html: generates an html file
+    aliases:
+        achievements
+        myachievements
+        myachmnts
+        machmnts
+    """
+    content = Content(content).calcOps()
+    user = content.getUser(msg)
+    userInfo: UserInfo = RAMUserInfo[user.id]
+    if content @ "--html":
+        with open(f'{user.id}A.html', "w") as f:
+            f.write(f"""<html><head><meta charset="utf-8"><title>{user.name}</title>
+<style>
+    p:hover{{
+        background-color:#00ff0055;
+    }}
+</style>
+<body style="font-family:arial"><h1 style="color:green">Achievements</h1>""")
+            for achievement in userInfo.achievements:
+                ach = getAchievement(id_=achievement)
+                f.write(f"""<p>Name: {ach["name"]}<br />Description: {ach["desc"]}</p> <hr>""")
+        with open(f'{user.id}A.html', "rb") as f:
+            rv = await returnMsg(msg, file=discord.File(f, "achievements.html"))
+        os.remove(f'{user.id}A.html')
+        return rv
+    embed = discord.Embed(title="achievements")
+    for achievement in userInfo.achievements:
+        ach = getAchievement(id_=achievement)
+        embed.add_field(name=ach["name"], value=f'description: {ach["desc"]}')
+    return await returnMsg(msg, embed=embed)
