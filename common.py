@@ -22,9 +22,9 @@ from matplotlib import style as matstyle
 from typing import Any, Callable, Generator, Iterable, List, NoReturn, Optional, Tuple, overload, Dict, Union
 from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont, ImageChops
 
-#TODO make each user an object with data relating to stuff like leveling and ping response, it will load in when they talk so it's not super slow at login time
-
-__version__ = "7.7.5"
+#TODO userid: gets user id given a name
+#^ also channelid, emoteid, etc
+__version__ = "**7.7.7**"
 Stop = False
 
 playingHangman = {}

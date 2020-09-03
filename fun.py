@@ -621,3 +621,17 @@ async def changenick(msg, content, cmd="changenick"):
     member = await msg.guild.fetch_member(client.user.id)
     await member.edit(nick=content.string)
     if Ret: return await returnMsg(msg, "did it work?")
+
+"""
+TODO: triangluate
+:regional_indicator_d: :regional_indicator_e: :regional_indicator_s: :regional_indicator_p: :regional_indicator_a: :regional_indicator_c: :regional_indicator_i: :regional_indicator_t: :regional_indicator_o:
+:regional_indicator_d: :regional_indicator_e: :regional_indicator_s: :regional_indicator_p: :regional_indicator_a: :regional_indicator_c: :regional_indicator_i: :regional_indicator_t:
+:regional_indicator_d: :regional_indicator_e: :regional_indicator_s: :regional_indicator_p: :regional_indicator_a: :regional_indicator_c: :regional_indicator_i:
+:regional_indicator_d: :regional_indicator_e: :regional_indicator_s: :regional_indicator_p: :regional_indicator_a: :regional_indicator_c:
+:regional_indicator_d: :regional_indicator_e: :regional_indicator_s: :regional_indicator_p: :regional_indicator_a:
+:regional_indicator_d: :regional_indicator_e: :regional_indicator_s: :regional_indicator_p:
+:regional_indicator_d: :regional_indicator_e: :regional_indicator_s:
+:regional_indicator_d: :regional_indicator_e:
+:regional_indicator_d:
+does this
+"""
