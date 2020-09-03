@@ -1,4 +1,4 @@
-7.7.7.1_B (9/3/2020)
+7.7.7.1_C (9/3/2020)
 
 ADDITIONS:
 *added <:sev:627342162647842826> as a choice for gamble/slots

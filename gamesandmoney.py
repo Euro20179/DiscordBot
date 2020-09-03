@@ -328,7 +328,7 @@ async def slotmachine(msg, content, cmd="slotmachine"):
         send = f'You got 2 of the same\nYOU WON {amnt}'
         color = 0x00ffff
     else:
-        amnt = random.randint(-20, 0)
+        amnt = random.randint(-15, 0)
         await userInfo.addMoney(amnt)
         send = f"better luck next time\nyou lost {amnt}"
         color = 0xff0000
