@@ -1,5 +1,8 @@
 7.7.5 (9/3/2020)
 
+ADDITIONS:
+*-t to shrug, time between edits
+
 CHANGES:
 *timers now says the user's name instead of id
 

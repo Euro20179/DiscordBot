@@ -30,11 +30,20 @@ async def luckynumber(msg, content, cmd="luckynumber"):
 async def shrug(msg, content, cmd="shrug"):
     """
     shrugs
+    options:
+        -t <time>: the time between edits
+            defaults to .3
     added: 5/23/2020
     """
     msg = await msg.channel.send(content=r"¯\_(ツ)_/¯")
-    await asyncio.sleep(.3)
-    await msg.edit(content=r"¯\\-(ツ)-/¯") ;"THEN"; await asyncio.sleep(.3) ;"THEN"; await msg.edit(content=r"¯\_(ツ)_/¯")
+    content = Content(content)
+    sleepTime = .3
+    for op, param in content.opsWithParams():
+        if op == "-t":
+            sleepTime = float(param)
+    for state in ("¯\\\-(ツ)-/¯", "¯\_(ツ)_/¯"):
+        await asyncio.sleep(sleepTime)
+        await msg.edit(content=state) 
     return msg
 
 @command

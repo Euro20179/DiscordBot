@@ -148,6 +148,7 @@ async def imgInChat(msg: Message, limit: Optional[int]=20)->Union[str, Tuple[Uni
 
 async def getImg(msg: Message, user: Optional[User]=None, NotFromChat: Optional[bool]=False)\
 ->Union[Message, Tuple[Union[Attachment, str, str]]]:
+    att=filename=url = None
     if "https://" in msg.content:
         att = None
         filename = "UNKNOWN.png"
@@ -302,6 +303,9 @@ def removePrefix(string: str, prefix: str)->str:
     if not hasPrefix(string, prefix):
         return string
     return string[len(prefix):]
+
+def hasSuffix(string: str, suffix: str)->bool:
+    return hasPrefix(string[::-1], suffix[::-1]) if len(suffix) <= len(string) else False #reverses the string, and suffix so that way it can be tested as a prefix
 
 class Content:
     def __init__(self, string: str, removeCmd: bool = True):
@@ -580,6 +584,9 @@ class command:
         self.__addCmd()
 
     async def __call__(self, *args, **kwargs):
+        msg, content = args
+        cmd = kwargs.get("cmd")
+        print(f'{msg.author.name}: {cmd}({content})')
         return await self.func(*args, **kwargs)
 
     def calcHelp(self)->NoReturn:
@@ -763,7 +770,7 @@ class UserInfo:
             self.xp += random.randint(15, 100)
             self.lastTalked = time.time()
             if self.xp >= self.required:
-                self.level +=1
+                self.level += 1
                 self.xp //= 2
                 self.money += int(self.level * 2)
                 temp = Content(self.levelUpMessage, removeCmd=False)
