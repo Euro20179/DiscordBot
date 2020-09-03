@@ -298,3 +298,37 @@ async def mostmoney(msg, content, cmd="mostmoney"):
         for n, (_, amnt) in zip(new, data.items()):
             new[new.index(n)] += f"         % of total: {amnt / total * 100}```"
         return await returnMsg(msg, f'total money: {total}\n{sep.join(new)}')
+
+@command
+async def slotmachine(msg, content, cmd="slotmachine"):
+    """
+    gambling time
+    aliases:
+        slots
+        slotmachine
+        gamble
+        WIN
+        LOSE
+    added: 9/3/2020
+    """
+    userInfo: UserInfo = RAMUserInfo[msg.author.id]
+    spaces = ("7", "BAR", ":peach:", ":grapes:")
+    answer = tuple(random.choice(spaces) for _ in range(3))
+    if len(set(answer)) == 1:
+        amnt = random.randint(50, 100)
+        await userInfo.addMoney(amnt)
+        send = f"YOU WIN THE JACKPOT\nYOU WON {amnt}"
+        color = 0x00ff00
+    elif len(set(answer)) == 2:
+        amnt = random.randint(0, 10)
+        await userInfo.addMoney(amnt)
+        send = f'You got 2 of the same\nYOU WON {amnt}'
+        color = 0x00ffff
+    else:
+        amnt = random.randint(-5, 0)
+        await userInfo.addMoney(amnt)
+        send = f"better luck next time\nyou lost {amnt}"
+        color = 0xff0000
+    embed = discord.Embed(title=send, color=color)
+    embed.add_field(name="result", value=f'[{answer[0]} {answer[1]} {answer[2]}]')
+    return await returnMsg(msg, embed=embed)

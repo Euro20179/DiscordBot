@@ -159,7 +159,7 @@ async def runCommand(msg, content, cmd, Iscmd=False, DoFirst=False, WriteToFile=
     try: commandUsage[cmd] += 1
     except: commandUsage[cmd] = 1
 
-    if cmd.isupper() and (await hasPerms(str(msg.author.id), cmd) or msg.author.id == EUROID):
+    if cmd.isupper() and (await hasPerms(str(msg.author.id), cmd) or cmd in ("DISALLOW", "ALLOW", "RESETEMOJIUSAGE", "RESETCMDUSAGE")):
         return await runBotModCmd(msg, content, cmd)
         
     elif cmd == "if":
