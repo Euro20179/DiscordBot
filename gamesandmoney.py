@@ -7,6 +7,8 @@ async def guessingGame(msg, content, cmd="guessinggame"):
     """
     guess a random number for 1 to [high] (defaults to 100)
     and if you guess correctly within [lives] (5 by default) tries you win
+    money is calculated as so
+        floor(answer / startinglives)
     optional params:
         high [lives]: the highest number it could be
             lives: the amount of lives, (must specify high to specify lives)
@@ -27,20 +29,18 @@ async def guessingGame(msg, content, cmd="guessinggame"):
     await msg.channel.send("guess")
     while True:
         try: c = (await client.wait_for("message", check=lambda mssg: mssg.author == msg.author and (mssg.content.isnumeric() or mssg.content.lower() in ["stop", "giveup", "cancel"]), timeout=60.0)).content.lower()
-        except: return await msg.channel.send("waited too long")
+        except: return await returnMsg(msg, "waited too long")
         if c in ["stop", "giveup", "cancel"]:
-            return await msg.channel.send(embed=discord.Embed(title=f'{msg.author.display_name} YOU LOSE\nTHE ANSWER WAS {ans}', color=discord.Color.from_rgb(100, 0, 0)))
+            return await returnMsg(msg, embed=discord.Embed(title=f'{msg.author.display_name} YOU LOSE\nTHE ANSWER WAS {ans}', color=discord.Color.from_rgb(100, 0, 0)))
         LIVES -= 1
         if int(c) == ans:
             say = f"YOU WIN\nWITH {LIVES} LIVES LEFT" if not Bet else f'YOU WIN\nWITH {LIVES} LIVES LEFT\nYou earned {(int(ans) // STARTLIVES)}'
             if Bet: await RAMUserInfo[msg.author.id].addMoney(int(ans) // STARTLIVES)
-            rv = await msg.channel.send(embed=discord.Embed(title=say, color=discord.Color.from_rgb(0, 255, 0)))
-            return await embedToReadableDict(rv, rv.embeds[0])
+            return await returnMsg(msg, embed=discord.Embed(title=say, color=discord.Color.from_rgb(0, 255, 0)))
         elif LIVES <= 0:
             say = f"YOU LOSE\nTHE ANSWER WAS {ans}" if not Bet else f'YOU LOSE\nTHE ANSWER WAS {ans}\nYOU LOSE {(int(ans) // STARTLIVES)}'
             if Bet: await RAMUserInfo[msg.author.id].addMoney(-(int(ans) // STARTLIVES))
-            rv = await msg.channel.send(embed=discord.Embed(title=say, color=discord.Color.from_rgb(255, 0, 0)))
-            return await embedToReadableDict(rv, rv.embeds[0])
+            return await returnMsg(msg, embed=discord.Embed(title=say, color=discord.Color.from_rgb(255, 0, 0)))
         await msg.channel.send(f"{msg.author.mention} too high\nguess\nyou have {LIVES} lives left" if int(c) > ans else f"{msg.author.mention} too low\nguess\nyou have {LIVES} lives left")
 
 @command
@@ -315,7 +315,7 @@ async def slotmachine(msg, content, cmd="slotmachine"):
     added: 9/3/2020
     """
     userInfo: UserInfo = RAMUserInfo[msg.author.id]
-    spaces = ("7", "BAR", ":peach:", ":grapes:", "<:sev:627342162647842826>")
+    spaces = ("7", "BAR", ":peach:", ":grapes:", "<:sev:627342162647842826>", ":thumbsdown:")
     answer = tuple(random.choice(spaces) for _ in range(3))
     if len(set(answer)) == 1:
         amnt = random.randint(50, 100)

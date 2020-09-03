@@ -15,6 +15,7 @@ import statistics
 import re
 import sys
 import threading
+from requests.api import get
 import youtube_dl
 import functools
 from matplotlib import pyplot as plt
@@ -24,7 +25,7 @@ from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont
 
 #TODO userid: gets user id given a name
 #^ also channelid, emoteid, etc
-__version__ = "7.7.7.1_C"
+__version__ = "7.8"
 Stop = False
 
 playingHangman = {}
@@ -49,6 +50,8 @@ itemsFilePath = f'items.json'
 pingResponseFilePath = f'{DISEXT}/pingresponse.json'
 emoteUsageFilePath = f'{DISEXT}/emoteusage.json'
 prefixFilePath = f'{DISEXT}/prefixes.txt'
+achievementsFilePath = f'{DISEXT}/achievements.json'
+achievementsJson = f'./achievements.json'
 queuePath = "./queue"
 cmdJsonFilePath = "./cmds.json"
 EUROID = 334538784043696130
@@ -689,6 +692,20 @@ class command:
             clearFile(f)
             json.dump(data, f)
 
+def getAchievement(id_: int=None, name: str=None, desc: str=None):
+    with open(achievementsJson, "r", encoding="utf-8-sig") as f:
+        data = json.load(f)
+        for achievement in data:
+            if achievement["id"] == id_:
+                return achievement
+            elif achievement["name"] == name:
+                return achievement
+            elif achievement["desc"] == desc:
+                return achievement
+
+async def sayMessage(msg: discord.Message, content: str=None, embed: discord.Embed=None)->NoReturn:
+    await msg.channel.send(content, embed=embed)
+
 class UserInfo:
     def __init__(self, userId):
         self.userId = str(userId)
@@ -755,6 +772,29 @@ class UserInfo:
             perms = json.load(j).get(self.userId)
             self.perms = perms if perms else []
 
+        #achievements
+        with open(achievementsFilePath, "r", encoding="utf-8-sig") as j:
+            achievements = json.load(j).get(self.userId)
+            self.achievements = []
+            if achievements:
+                for achievement in achievements:
+                    self.achievements.append(getAchievement(id_=achievement["id"]))
+
+    async def giveAchievement(self, msg, achievement: Union[int, str, dict]):
+        """
+        if achievement is a dict, it will assume achievement
+        is valid and will not search for achievement
+        """
+        if isinstance(achievement, str):
+            achievement = getAchievement(name=achievement)
+        elif isinstance(achievement, int):
+            achievement = getAchievement(id_=achievement)
+        if achievement["id"] not in self.achievements:
+            self.achievements.append(achievement["id"])
+            await sayMessage(msg, content=achievement["onget"]["message"])
+            if achievement["onget"].get("money"):
+                await self.addmoney(achievement["onget"]["money"])
+
     async def usedCmd(self, msg: Message)->bool:
         if time.time() - self.timeLastCmdUsed <= 30 and msg.channel.id == GENERALCHANNEL:
             self.cmdsIn30Seconds += 1
@@ -771,6 +811,8 @@ class UserInfo:
             self.lastTalked = time.time()
             if self.xp >= self.required:
                 self.level += 1
+                if self.level == 100:
+                    self.giveAchievement(msg, 3)
                 self.xp //= 2
                 self.money += int(self.level * 2)
                 temp = Content(self.levelUpMessage, removeCmd=False)
@@ -815,8 +857,16 @@ class UserInfo:
     async def dumpMoneyInfo(self)->NoReturn:
         await self.basicDump(moneyDataFilePath, self.money)
 
+    async def dumpAchievementInfo(self)->NoReturn:
+        with open(achievementsFilePath, "r+", encoding="utf-8-sig") as j:
+            data = json.load(j)
+            data[self.userId] = self.achievements
+            clearFile(j)
+            json.dump(data, j)
+
     async def dumpBannedInfo(self)->NoReturn:
         await self.basicDump(bannedFilePath, self.bans, DumpIfNone=False)
+
     async def dumpTimerInfo(self)->NoReturn:
         if not self.time: 
             with open(timersPath, "r+", encoding="utf-8-sig") as f:
@@ -853,6 +903,7 @@ class UserInfo:
         await self.dumpItemInfo()
         await self.dumpPermInfo()
         await self.dumpPingResponseInfo()
+        await self.dumpAchievementInfo()
         if clFromRAMDict: await self.clearFromRAMDict()
 
     async def clearFromRAMDict(self)->NoReturn:

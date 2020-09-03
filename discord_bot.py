@@ -250,6 +250,7 @@ it'll break if it lasts longer than 1 min 30 seconds
             "upupdowndownleftrightleftrightba": lambda: returnMsg(msg, "what do you think this is some arcade machine with secret codes, lol")
         }
         if secretCmds.get(cmd):
+            await RAMUserInfo[msg.author.id].giveAchievement(msg, 3)
             content = await secretCmds[cmd]()
         elif cmd == "exec" and await hasPerms(msg.author.id, "exec"):
             try:

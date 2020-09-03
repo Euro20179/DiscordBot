@@ -1,3 +1,15 @@
+7.8 (9/3/2020)
+
+ADDITIONS:
+*tritext, makes text into a triangle thing
+*:thumbsdown: to gamble
+*framework for achievements
+*2 achievements have been added so far
+    *do listachmts for a list of them
+*machmnts: lists your achievements
+*lachmnts: lists all the achievements
+
+====================================================================
 7.7.7.1_C (9/3/2020)
 
 ADDITIONS:
