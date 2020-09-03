@@ -42,7 +42,7 @@ async def shrug(msg, content, cmd="shrug"):
         if op == "-t":
             sleepTime = float(param)
     for state in ("¯\\\-(ツ)-/¯", "¯\_(ツ)_/¯"):
-        await asyncio.sleep(sleepTime)
+        await asyncio.sleep(.3)
         await msg.edit(content=state) 
     return msg
 
