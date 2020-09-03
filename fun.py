@@ -622,16 +622,26 @@ async def changenick(msg, content, cmd="changenick"):
     await member.edit(nick=content.string)
     if Ret: return await returnMsg(msg, "did it work?")
 
-"""
-TODO: triangluate
-:regional_indicator_d: :regional_indicator_e: :regional_indicator_s: :regional_indicator_p: :regional_indicator_a: :regional_indicator_c: :regional_indicator_i: :regional_indicator_t: :regional_indicator_o:
-:regional_indicator_d: :regional_indicator_e: :regional_indicator_s: :regional_indicator_p: :regional_indicator_a: :regional_indicator_c: :regional_indicator_i: :regional_indicator_t:
-:regional_indicator_d: :regional_indicator_e: :regional_indicator_s: :regional_indicator_p: :regional_indicator_a: :regional_indicator_c: :regional_indicator_i:
-:regional_indicator_d: :regional_indicator_e: :regional_indicator_s: :regional_indicator_p: :regional_indicator_a: :regional_indicator_c:
-:regional_indicator_d: :regional_indicator_e: :regional_indicator_s: :regional_indicator_p: :regional_indicator_a:
-:regional_indicator_d: :regional_indicator_e: :regional_indicator_s: :regional_indicator_p:
-:regional_indicator_d: :regional_indicator_e: :regional_indicator_s:
-:regional_indicator_d: :regional_indicator_e:
-:regional_indicator_d:
-does this
-"""
+@command
+async def triangulate(msg, content, cmd="triangulate"):
+    """
+    makes text do this:
+    hello
+    hell
+    he
+    h
+    required params:
+        <text>
+    aliases:
+        triangle
+        tritext
+    added: 9/3/2020
+    """
+    content = cutCmd(content)
+    send = []
+    for i in range(len(content)):
+        add = content[::-1][:i + 1][::-1].strip()
+        if add not in send:
+            send.append(add)
+    send = send[::-1]
+    return await returnMsg(msg, "\n".join(send))

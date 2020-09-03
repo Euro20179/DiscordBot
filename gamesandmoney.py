@@ -315,7 +315,7 @@ async def slotmachine(msg, content, cmd="slotmachine"):
     added: 9/3/2020
     """
     userInfo: UserInfo = RAMUserInfo[msg.author.id]
-    spaces = ("7", "BAR", ":peach:", ":grapes:", "<:sev:627342162647842826>")
+    spaces = ("7", "BAR", ":peach:", ":grapes:", "<:sev:627342162647842826>", ":thumbsdown:")
     answer = tuple(random.choice(spaces) for _ in range(3))
     if len(set(answer)) == 1:
         amnt = random.randint(50, 100)
