@@ -274,6 +274,8 @@ async def resizeImg(msg, content, cmd="resizeimg"):
     att, filename, url = await getImg(msg)
     if "https://" in content:
         content = content.replace(url, '')
+    await saveImg(filename, url)
+    img = Image.open(filename)
     content = content.split(" ")
     width = content[0]
     height = content[1]
@@ -285,19 +287,14 @@ async def resizeImg(msg, content, cmd="resizeimg"):
             y1 = int(content[3])
             x2 = int(content[4])
             y2 = int(content[5])
+            img = img.resize((width, height), box=(x1, y1, x2, y2))
+        else: img = img.resize((width, height))
     except:
         return await returnMsg(msg, "must be int")
-    await saveImg(filename, url)
-    img = Image.open(filename)
-    try:
-        img = img.resize((width, height), box=(x1, y1, x2, y2))
-    except:
-        img = img.resize((width, height))
-    finally:
-        img.save(filename)
-        with open(filename, "rb") as i:
-            await msg.channel.send(file=discord.File(i, filename=filename))
-        os.remove(filename)
+    img.save(filename)
+    with open(filename, "rb") as i:
+        await msg.channel.send(file=discord.File(i, filename=filename))
+    os.remove(filename)
 
 @command
 async def enhanceImg(msg, content, cmd="enhanceimg"):
@@ -377,16 +374,13 @@ async def cropImg(msg, content, cmd="crop"):
     att, filename, url = await getImg(msg)
     if "https://" in content:
         content.replace(url, '')
+    await saveImg(filename, url)
+    img = Image.open(filename)
     for op, param in content.opsWithParams({"box": 4}):
         if op == "-box":
             x1, y1, x2, y2 = (int(x) for x in param)
-            break
-    else: amnt = int(content) if content else 20
-    await saveImg(filename, url)
-    img = Image.open(filename)
-    if "-box" in content.opOps:
-        img = img.crop(box=(x1, y1, x2, y2))
-    else: img = ImageOps.crop(img, border=amnt)
+            img = img.crop(box=(x1, y1, x2, y2)) #this is img.crop because it uses box
+    else: img = ImageOps.crop(img, border=int(content) if content else 20) #this is ImageOps.crop because it doesn't use a box
     img.save(filename)
     with open(filename, "rb") as i:
         await msg.channel.send(file=discord.File(i, filename=filename))
@@ -614,16 +608,13 @@ async def newImg(msg, content, cmd="newimg"):
             [a]: the alpha/transparency of the new img
     added: 7/5/2020
     """
-    content = content[len(cmd) + 2:].split(" ")
-    if "https://" in content:
-        content = content.replace(url, '')
+    content = cutCmd(content).strip().split(" ")
     try:
-        content[1]
         size = content[0:2]
     except: size = (500, 500)
     if len(content) > 2:
         color = content[2:]
-    else: color = [0, 0, 0]
+    else: color = (0, 0, 0)
     img = Image.new("RGBA" if len(color) == 4 else "RGB", tuple(int(x) for x in size), tuple(int(x) for x in color))
     img.save(f"{msg.author.id}.png")
     with open(f"{msg.author.id}.png", "rb") as i:

@@ -188,11 +188,7 @@ async def textInfo(msg, content, cmd="textinfo"):
     added: 7/7/2020
     """
     text = Content(content)
-    Re = False
     sep = " "
-    for op, param in text.opsWithParams():
-        if op in ("-re", "-regex"):
-            Re = True
     try:
         _, filename, url = await getImg(msg, NotFromChat=True)
         await saveImg(filename, url)
@@ -200,19 +196,20 @@ async def textInfo(msg, content, cmd="textinfo"):
             text = Content(f.read(), removeCmd=False)
     except:
         pass
-    if Re:
-        find = re.findall(str(param), str(text))
-        try: return await returnMsg(msg, sep.join(find))
-        except Exception as e:
-            print(e)
-            if type(e) is discord.errors.HTTPException:
-                if not find:
-                    return await returnMsg(msg, "did not find any match")
-                else:
-                    with open("match.txt", "w") as f:
-                        f.write(sep.join(find))
-                    with open("match.txt", "rb") as f:
-                        return await returnMsg(msg, "message too long", file=discord.File(f, "match.txt"))
+    for op, param in text.opsWithParams():
+        if op in ("-re", "-regex"):
+            find = re.findall(str(param), str(text))
+            try: return await returnMsg(msg, sep.join(find))
+            except Exception as e:
+                print(e)
+                if type(e) is discord.errors.HTTPException:
+                    if not find:
+                        return await returnMsg(msg, "did not find any match")
+                    else:
+                        with open("match.txt", "w") as f:
+                            f.write(sep.join(find))
+                        with open("match.txt", "rb") as f:
+                            return await returnMsg(msg, "message too long", file=discord.File(f, "match.txt"))
     RankWords = False if not text @ "--rankwords" else True
     text = str(text)
     words = {}
@@ -603,9 +600,9 @@ async def channelInfo(msg, content, cmd="cc"):
         if ":" in str(diff).split(" ")[0]:
             daysTillLastPin = (50-pinCount) / (pinCount / (int(str(diff).split(" ")[0].split(":")[0]) / 24))
         else: daysTillLastPin = (50-pinCount) / (pinCount / int(str(diff).split(" ")[0]))
+        embed.add_field(name="days till last pin", value=str(daysTillLastPin))
     embed.add_field(name="Created at", value=formatDateTime(created))
     embed.add_field(name="Pins", value=pinCount)
-    if pinCount != 0: embed.add_field(name="days till last pin", value=str(daysTillLastPin))
     embed.add_field(name="time since creation", value=diff)
     embed.add_field(name="id", value=channel.id)
     embed.add_field(name="position", value=channel.position + 1)
@@ -768,6 +765,7 @@ async def hlp(msg, content, cmd="help"):
                     if cat.lower().strip() == content.lower().strip():
                         embed = discord.Embed(title=catI["desc"], color=discord.Color(random.randint(0, 16777215)))
                         field = "```\n"
+                        n = 0
                         for n, cmd in enumerate(catI["cmds"]):
                             if n % 7 == 0 and n != 0: 
                                 field += f'{cmd}```'
@@ -777,6 +775,7 @@ async def hlp(msg, content, cmd="help"):
                                 field += f'{cmd}\n'
                         if n % 7 != 0:
                             embed.add_field(name=str(n), value=field + "```")
+                        return await returnMsg(msg, embed=embed)
 
         elif content.string.strip() == "custom":
             return await returnMsg(msg, "do [ccmdlist")
@@ -806,7 +805,6 @@ async def hlp(msg, content, cmd="help"):
             try: return await returnMsg(msg, CMDS[str(content)].help())               
             except KeyError as e:
                 return await returnMsg(msg, f'{content} does not exist {":face_with_monocle:"*10}')                 
-        return await returnMsg(msg, embed=embed)
 
 @command
 async def changes(msg, content, cmd="changes"):

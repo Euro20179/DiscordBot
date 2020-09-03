@@ -86,7 +86,7 @@ async def startRPS(msg, content, cmd="rps"):
     if resp2 in setTo.keys(): resp2 = setTo[resp2]
 
     if resp1 in opps.keys() and resp2 in opps.keys():
-        UserInfo.registerUser(user2.id)
+        await UserInfo.registerUser(user2.id)
         if opps[resp2] == resp1:
             if user2.mention != user1.mention:
                 await RAMUserInfo[user2.id].addMoney(random.randint(1, 5))
