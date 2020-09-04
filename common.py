@@ -778,7 +778,7 @@ class UserInfo:
             self.achievements = []
             if achievements:
                 for achievement in achievements:
-                    self.achievements.append(getAchievement(id_=achievement["id"]))
+                    self.achievements.append(getAchievement(id_=achievement))
 
     async def giveAchievement(self, msg, achievement: Union[int, str, dict]):
         """
