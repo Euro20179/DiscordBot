@@ -488,17 +488,14 @@ draw styles:
 @command
 async def permutation(msg, content, cmd="permutation"):
     """
-    gets the permutations of total, items
-    equation:
-        total! / (total - items)!
-    required params:
-        <total>
-        <items>
-    aliases:
-        permutations
-        permutation
-        permutate
-    added: 9/3/2020
+    CUSTOM:
+```gets the permutations of total, items``````equation:
+    total! / (total - items)!``````required params:
+    <total>
+    <items>``````aliases:
+    permutations
+    permutation
+    permutate``````added: 9/3/2020```
     """
     content = Content(content)
     total, items = content.split(" ", key=lambda x: int(x.strip()))
@@ -507,14 +504,14 @@ async def permutation(msg, content, cmd="permutation"):
 @command
 async def combination(msg, content, cmd="combination"):
     """
-    gets the combinations of total, items
-    equations:
-        total! / (total - items)! * items!
-    aliases:
-        combinations
-        combination
-        combinate
-    added: 9/3/2020
+    CUSTOM:
+```gets the combinations of total, items``````equations: 
+    total! / (total - items)! * items!``````required params:
+    <total>
+    <items>``````aliases:
+    combinations
+    combination
+    combinate``````added: 9/3/2020```
     """
     content = Content(content)
     total, items = content.split(" ", key=lambda x: int(x.strip()))
