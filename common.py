@@ -25,7 +25,7 @@ from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont
 
 #TODO userid: gets user id given a name
 #^ also channelid, emoteid, etc
-__version__ = "7.8"
+__version__ = "7.8.0.1_B"
 Stop = False
 
 playingHangman = {}
@@ -778,7 +778,10 @@ class UserInfo:
             self.achievements = []
             if achievements:
                 for achievement in achievements:
-                    self.achievements.append(getAchievement(id_=achievement))
+                    if isinstance(achievement, dict):
+                        self.achievements.append(getAchievement(id_=achievement["id"])["id"])
+                    else:
+                        self.achievements.append(achievement)
 
     async def giveAchievement(self, msg, achievement: Union[int, str, dict]):
         """
