@@ -796,7 +796,7 @@ class UserInfo:
             self.achievements.append(achievement["id"])
             await sayMessage(msg, content=achievement["onget"]["message"])
             if achievement["onget"].get("money"):
-                await self.addmoney(achievement["onget"]["money"])
+                await self.addMoney(achievement["onget"]["money"])
 
     async def usedCmd(self, msg: Message)->bool:
         if time.time() - self.timeLastCmdUsed <= 30 and msg.channel.id == GENERALCHANNEL:
@@ -940,4 +940,9 @@ def findItem(iName: Optional[str]=None, iId: Optional[int]=None)->dict:
         for item in data:
             if item["id"] == iId or item["name"] == iName:
                 return item
+
+def totalMoney(RAMUserInfo: Dict[int, UserInfo]):
+    total = sum(map(lambda user: user.money, RAMUserInfo.values()))
+    return total
+
 token = "NjQxNzk1NjU2Mzc3MTcyMDAw.XcNk8g.HEvnaXjuXFQhN1iilaaffbiPcoo"

@@ -8,6 +8,14 @@ ADDITIONS:
 *:thumbsup: as a symbol for gamble
 *permutations
 *combinations
+*-range [start], end instead of just -range end to graph
+*:toilet:, <:hashno:596148433572724749>, and <:troy:590386275748544523> to gamble choices
+*added achievemnt for getting <:sev:627342162647842826> <:sev:627342162647842826> <:sev:627342162647842826> in gamble
+
+CHANGES:
+*when you win 2 of the same value in gamble, instead of being a random number from 0-10
+    it's now a gauss function with a mean of 4 and stdev of 2
+*there is now a 1/16 chance when you lose that you earn 1 dollar
 
 ====================================================================
 7.8.0.1_C (9/3/2020)
