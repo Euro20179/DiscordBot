@@ -272,6 +272,10 @@ async def mostmoney(msg, content, cmd="mostmoney"):
         lbm
         lbmoney
         topm
+        top m
+        top --money
+        top --m
+        top --bal
     added: 8/19/2020
     """
     content = Content(content)
@@ -306,6 +310,7 @@ async def slotmachine(msg, content, cmd="slotmachine"):
     jackpot = 50-100
     win = 0-10
     lose = 0-(-15)
+    odds of jackpot 1/210
     aliases:
         slots
         slotmachine
@@ -315,7 +320,7 @@ async def slotmachine(msg, content, cmd="slotmachine"):
     added: 9/3/2020
     """
     userInfo: UserInfo = RAMUserInfo[msg.author.id]
-    spaces = ("7", "BAR", ":peach:", ":grapes:", "<:sev:627342162647842826>", ":thumbsdown:")
+    spaces = ("7", "BAR", ":peach:", ":grapes:", "<:sev:627342162647842826>", ":thumbsdown:", ":thumbsup:")
     answer = tuple(random.choice(spaces) for _ in range(3))
     if len(set(answer)) == 1:
         amnt = random.randint(50, 100)

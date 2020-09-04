@@ -1,8 +1,13 @@
-7.8.1 (9/3/2020)
+7.9 (9/3/2020)
 
 ADDITIONS:
 *getuserid
 *avatar now accepts more than 1 user
+*usermosaic as a non-custom command
+*[top --bal is now an alias to topm
+*:thumbsup: as a symbol for gamble
+*permutations
+*combinations
 
 ====================================================================
 7.8.0.1_C (9/3/2020)

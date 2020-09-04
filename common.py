@@ -25,7 +25,7 @@ from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont
 
 #TODO userid: gets user id given a name
 #^ also channelid, emoteid, etc
-__version__ = "7.8.0.1_C"
+__version__ = "7.9"
 Stop = False
 
 playingHangman = {}
