@@ -325,7 +325,7 @@ graphs a line``````required params:
 *<equation> (sep with |):
     ex: [graph x^2
     (to use bitwise xor do **)``````options:
--range <amnt : number>: basically how long the x axis is
+-range [start], <end>: basically how long the x axis is (add () around start, end to make it negative)
 -lstyle <style>: the style of the line
 -marker <marker>: what to mark each point with
 -color <color>: the color of the line
@@ -419,7 +419,8 @@ draw styles:
 #tableau-colorblind10```
 ```added: 8/21/2020```"""
     for content in content.split("|"):
-        r = 100
+        low = 0
+        high = 100
         style = "solid"
         marker=color=fillStyle=alpha=makerSize=None
         drawStyle = "default"
@@ -427,7 +428,15 @@ draw styles:
         Scatter = False #using points 
         RegScatter = content @ "--scatter" #using the equation
         for op, param in content.opsWithParams():
-            if op == "-range": r = int(param)
+            if op == "-range": 
+                param = param.split(",")
+                if len(param) > 1:
+                    low, high = param
+                    if "(" in low or "(" in high:
+                        if "(" in low: low = -int(low.strip(")").strip("("))
+                        if "(" in high: high = -(int(high.strip(")").strip("(")))
+                    low = int(low); high = int(high)
+                else: high = int(param[0])
             elif op == "-lstyle": style = param
             elif op == "-marker": marker = param
             elif op == "-color": color = param
@@ -458,8 +467,8 @@ draw styles:
             if not content.suitibleForEval():
                 return await returnMsg(msg, "nice try")
             equation = content.string.strip()    
-            y = [eval(equation.replace("x", str(i)).replace("**", "^").replace("^", "**")) for i in range(r)]
-            x = [i + 1 for i in range(len(y))]
+            y = [eval(equation.replace("x", str(i))) for i in range(low, high + 1)]
+            x = [i for i in range(low, high + 1)]
             try: 
                 if not RegScatter:
                     plt.plot(
@@ -484,3 +493,35 @@ draw styles:
     os.remove(f'{msg.author.id}.png')
     matstyle.use("default")
     return await m
+
+@command
+async def permutation(msg, content, cmd="permutation"):
+    """
+    CUSTOM:
+```gets the permutations of total, items``````equation:
+    total! / (total - items)!``````required params:
+    <total>
+    <items>``````aliases:
+    permutations
+    permutation
+    permutate``````added: 9/3/2020```
+    """
+    content = Content(content)
+    total, items = content.split(" ", key=lambda x: int(x.strip()))
+    return await returnMsg(msg, str(math.factorial(total) / math.factorial(total - items)))
+
+@command
+async def combination(msg, content, cmd="combination"):
+    """
+    CUSTOM:
+```gets the combinations of total, items``````equations: 
+    total! / (total - items)! * items!``````required params:
+    <total>
+    <items>``````aliases:
+    combinations
+    combination
+    combinate``````added: 9/3/2020```
+    """
+    content = Content(content)
+    total, items = content.split(" ", key=lambda x: int(x.strip()))
+    return await returnMsg(msg, str(math.factorial(total) / (math.factorial(total - items) * math.factorial(items))))

@@ -23,5 +23,14 @@
         "onget":{
             "message": "YOU WIN"
         }
+    },
+    {
+        "id": 777,
+        "name": "Ultimate Jackpot",
+        "desc": "win gamble with <:sev:627342162647842826> <:sev:627342162647842826> <:sev:627342162647842826>",
+        "onget": {
+            "message": "YOU WON THE ULTIMATE JACKPOT",
+            "money": 777
+        }
     }
 ]

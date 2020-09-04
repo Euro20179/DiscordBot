@@ -594,11 +594,17 @@ async def avatar(msg, content, cmd="avatar"):
     """
     gets the avatar of [user] (defaults to you)
     optional params:
-        [user]
+        *[user] (sep with |)
     aliases:
         avatarurl
         avatar_url
         avatar
+    added: 9/3/2020
     """
-    user = Content(content).getUser(msg)
-    return await returnMsg(msg, user.avatar_url)
+    content = Content(content)
+    sep = "\n"
+    for op, param in content.opsWithParams():
+        if op == "-sep":
+            sep = Content.whitespaceFormat(param)
+    users = tuple(str(Content(user.strip(), removeCmd=False).getUser(msg).avatar_url) for user in content.split("|"))
+    return await returnMsg(msg, sep.join(users))

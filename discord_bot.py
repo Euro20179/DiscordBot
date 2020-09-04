@@ -38,7 +38,7 @@ async def runBotModCmd(msg, content, cmd):
     if cmd == "ADDMONEY" and await hasPerms(str(msg.author.id), cmd):
         user = await getUserInContent(msg, content.split(", ")[0], cmd)
         amnt = content.split(", ")[1]
-        await RAMUserInfo[user.author.id].addMoney(float(amnt))
+        await RAMUserInfo[user.id].addMoney(float(amnt))
         return await msg.channel.send(f'{float(amnt)} removed from {user.name}')
 
     elif cmd == "RESETEMOJIUSAGE" and msg.author.id == EUROID:

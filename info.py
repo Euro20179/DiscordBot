@@ -1086,3 +1086,22 @@ async def define(msg, content, cmd="define"):
         return await returnMsg(msg, embed=embed)
     except:
         return await returnMsg(msg, f'ERROR: probably not found')
+
+@command
+async def getuserid(msg, content, cmd="getuserid"):
+    """
+    gets the user's id based on name
+    required params:
+        *<user> (sep with |)
+    aliases:
+        getuserid
+        userid
+    added: 9/3/2020
+    """
+    content = Content(content)
+    sep = "\n"
+    for op, param in content.opsWithParams():
+        if op == "-sep":
+            sep = Content.whitespaceFormat(param)
+    users = tuple(str(Content(user.strip(), removeCmd=False).getUser(msg).id) for user in content.split("|") if user)
+    return await returnMsg(msg, sep.join(users))

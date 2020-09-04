@@ -729,3 +729,22 @@ async def achievements(msg, content, cmd="achievements"):
         ach = getAchievement(id_=achievement)
         embed.add_field(name=ach["name"], value=f'description: {ach["desc"]}')
     return await returnMsg(msg, embed=embed)
+
+@command
+async def usermosaic(msg, content, cmd="usermosaic"):
+    """
+    generates an html file of all user profiles
+    aliases:
+        usermosaic
+        avatars
+    added: 7/23/2020
+    """
+    with open("mosaic.html", "w", encoding="utf-8") as f:
+        f.write(f"""<html><head><meta charset="utf-8"></head>
+<body>
+    {"".join(f'<img src={user.avatar_url} title="{user.name.replace("<", "&lt;").replace(">", "&gt;")}">' for user in msg.guild.members)}
+</body>""")
+    with open("mosaic.html", "rb") as f:
+        rv = await returnMsg(msg, file=discord.File(f, "mosaic.html"))
+    os.remove("mosaic.html")
+    return rv

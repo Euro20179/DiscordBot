@@ -61,7 +61,7 @@ async def leaderboard(msg, content, cmd="top"):
     added: "5/23/2020
     """
     content = Content(content)
-    if content.testOps("--money", "--m") or content.string.strip() == "m":
+    if content.testOps("--money", "--m", "--bal") or content.string.strip() == "m":
         return await mostmoney(msg, content, cmd="mostmoney")
     for user in RAMUserInfo.values():
         if type(user) is str: continue

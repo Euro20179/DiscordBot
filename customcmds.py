@@ -149,16 +149,16 @@ async def customCmdList(msg, content, cmd="customcmdlist"):
             write = ""
             with open(customcmdsFilePath, "r") as j:
                 data = json.load(j)
-                for cmmd in data:
-                    params = cmmd["params"]
-                    desc = cmmd["desc"]
-                    aliases = cmmd.get("aliases")
-                    date = cmmd.get("date")
-                    Locked = cmmd.get("Locked")
-                    addedBy = cmmd.get("addedby")
-                    editedBy = cmmd.get("editedby")
+                for ccmd in data:
+                    params = ccmd["params"]
+                    desc = ccmd["desc"]
+                    aliases = ccmd.get("aliases")
+                    date = ccmd.get("date")
+                    Locked = ccmd.get("Locked")
+                    addedBy = ccmd.get("addedby")
+                    editedBy = ccmd.get("editedby")
                     if aliases: aliases = ",\n".join(f'``{x}``' for x in aliases)
-                    write += f'Name {cmmd["name"]}\n\nParams: {params}\n\nDescription: {desc}\n\nAliases: {aliases}\n\nDate added: {date}\n\nLocked: {Locked}\n\nAdded by: {addedBy}\n\nEdited by: {editedBy}\n\n\n\n'
+                    write += f'Name {ccmd["name"]}\n\nParams: {params}\n\nDescription: {desc}\n\nAliases: {aliases}\n\nDate added: {date}\n\nLocked: {Locked}\n\nAdded by: {addedBy}\n\nEdited by: {editedBy}\n\n\n\n'
             with open("customcmdlist.txt", "w") as f:
                 f.write(write)
             with open("customcmdlist.txt", "rb") as f:
