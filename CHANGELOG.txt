@@ -1,4 +1,12 @@
-7.9 (9/3/2020)
+7.9.1 (9/4/2020)
+
+ADDITIONS:
+*bar in gamble makes you automatically lose
+*7 (not <:sev:627342162647842826>) makes you automatically win
+*if you get bar and 7 its a gauss mean 0, stdev 1
+
+====================================================================
+7.9 (9/4/2020)
 
 ADDITIONS:
 *getuserid

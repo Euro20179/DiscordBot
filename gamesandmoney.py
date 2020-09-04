@@ -306,19 +306,20 @@ async def mostmoney(msg, content, cmd="mostmoney"):
 @command
 async def slotmachine(msg, content, cmd="slotmachine"):
     """
-    gambling time
+    CUSTOM:
+```gambling time``````rules:
     jackpot = 50-100
-    win = 0-10
+    win = gauss, mean=4, stdev=2
+    bar + 7 = gauss, mean=0, stdev=1
+    7 = win + 1 * amnt of 7s
+    bar = lose - 1 * amnt of bars
     lose = 0-(-15)
-    odds of jackpot 1/210
-    aliases:
-        slots
-        slotmachine
-        gamble
-        WIN
-        LOSE
-    added: 9/3/2020
-    """
+    odds of jackpot 1/210``````aliases:
+    slots
+    slotmachine
+    gamble
+    WIN
+    LOSE``````added: 9/3/2020```"""
     userInfo: UserInfo = RAMUserInfo[msg.author.id]
     spaces = (
         "7", "BAR", ":peach:", 
@@ -328,14 +329,28 @@ async def slotmachine(msg, content, cmd="slotmachine"):
     answer = tuple(random.choice(spaces) for _ in range(3))
     if answer == ("<:sev:627342162647842826>", "<:sev:627342162647842826>", "<:sev:627342162647842826>"):
         await userInfo.giveAchievement(msg, 777)
-    if len(set(answer)) == 1:
+    Bar = "BAR" in answer
+    Seven = "7" in answer
+    if Bar and Seven:
+        amnt = round(random.gauss(0, 1))
+        send = f"you had bar and 7 you {'lose'*(amnt < 0)+'win'*(amnt >= 0)} {amnt}"
+        color = 0xbbbbbb
+    elif Bar:
+        amnt = random.randint(-15, 1) - (1 * (4 - len(set(answer))))
+        print(1 * (4 - len(set(answer))))
+        send = f"BAR:\nAUTO LOSS\nYou lose {amnt}"
+        color = 0xff0000
+    elif len(set(answer)) == 1:
         amnt = random.randint(50, 100)
-        await userInfo.addMoney(amnt)
         send = f"YOU WIN THE JACKPOT\nYOU WON {amnt}"
         color = 0x00ff00
+    elif Seven:
+        amnt = round(random.gauss(4, 2)) + (1 * (4 - len(set(answer))))
+        print(1 * (4 - len(set(answer))))
+        send = f"7:\nAUTO WIN\nYou win {amnt}"
+        color = 0x00ffff
     elif len(set(answer)) == 2:
         amnt = round(random.gauss(4, 2))
-        await userInfo.addMoney(amnt)
         if amnt < 0:
             send = f'You got 2 of the same\nHowever you were unlucky and lost money anyway'
         else:
@@ -343,9 +358,9 @@ async def slotmachine(msg, content, cmd="slotmachine"):
         color = 0x00ffff
     else:
         amnt = random.randint(-15, 1)
-        await userInfo.addMoney(amnt)
         send = f"better luck next time\nyou lost {amnt}"
         color = 0xff0000
-    embed = discord.Embed(title=send, color=color)
+    await userInfo.addMoney(amnt)
+    embed = discord.Embed(title=f'{msg.author.name}\n{send}', color=color)
     embed.add_field(name="result", value=f'[{answer[0]} {answer[1]} {answer[2]}]')
     return await returnMsg(msg, embed=embed)
