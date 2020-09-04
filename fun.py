@@ -725,6 +725,7 @@ async def achievements(msg, content, cmd="achievements"):
         return rv
     embed = discord.Embed(title="achievements")
     for achievement in userInfo.achievements:
+        if not achievement: continue
         ach = getAchievement(id_=achievement)
         embed.add_field(name=ach["name"], value=f'description: {ach["desc"]}')
     return await returnMsg(msg, embed=embed)
