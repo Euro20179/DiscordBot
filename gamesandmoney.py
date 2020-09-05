@@ -291,12 +291,13 @@ async def mostmoney(msg, content, cmd="mostmoney"):
         data = {uId: amnt for uId, amnt in sorted(data.items(), key=lambda x: x[1], reverse=True)}
         new = []
         USERS = {u.id: u.name for u in msg.guild.members}
-        total = totalMoney(RAMUserInfo)
+        total = 0
         for n, (uId, amnt) in enumerate(data.items()):
-            if n >= int(top): break
             try: 
-                USERS[int(uId)]
-                new.append(f'```{n + 1}: {USERS[int(uId)]}: {amnt}')
+                if n < int(top):
+                    USERS[int(uId)]
+                    new.append(f'```{n + 1}: {USERS[int(uId)]}: {amnt}')
+                total += amnt
             except KeyError: continue
         for n, (_, amnt) in zip(new, data.items()):
             new[new.index(n)] += f"         % of total: {amnt / total * 100}```"
