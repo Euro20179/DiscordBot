@@ -263,8 +263,9 @@ async def mostmoney(msg, content, cmd="mostmoney"):
     """
     a leaderboard of the people with the most money
     i finally gave in lol
+    optional params:
+        [top]: how many people to show
     options:
-        -top <top>: the amnt of people to show
         -sep <seperator>: what to seperate each person by
     aliases:
         tmoney
@@ -282,8 +283,9 @@ async def mostmoney(msg, content, cmd="mostmoney"):
     top = 5
     sep = ""
     for op, param in content.opsWithParams():
-        if op == "-top": top = param
-        elif op == "-sep": sep = Content.whitespaceFormat(param)
+        if op == "-sep": sep = Content.whitespaceFormat(param)
+    if content.string:
+        top = int(content)
     for u in RAMUserInfo.values():
         await u.dumpMoneyInfo()    
     with open(moneyDataFilePath, "r", encoding="utf-8-sig") as f:
