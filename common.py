@@ -18,6 +18,7 @@ import threading
 from requests.api import get
 import youtube_dl
 import functools
+import itertools
 from matplotlib import pyplot as plt
 from matplotlib import style as matstyle
 from typing import Any, Callable, Generator, Iterable, List, NoReturn, Optional, Tuple, overload, Dict, Union
@@ -25,7 +26,7 @@ from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont
 
 #TODO userid: gets user id given a name
 #^ also channelid, emoteid, etc
-__version__ = "7.9.1"
+__version__ = "7.9.2"
 Stop = False
 
 playingHangman = {}
