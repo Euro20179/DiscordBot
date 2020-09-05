@@ -24,11 +24,9 @@ async def weightedCoin(msg, content, cmd="weightedcoin"):
     if headsOdds > 1 or headsOdds < 0:
         return await returnMsg(msg, "odds must be less than 1 and greater than 0")
     if int(flips) > 1 and int(flips) < 10000000:
-        heads = 0
-        tails = 0
-        for _ in range(int(flips)):
-            if random.random() > .5: heads += 1
-            else: tails += 1
+        flips = tuple("tails" if random.random() > .5 else "heads" for _ in range(int(flips)))
+        heads = len(tuple(filter(lambda x: x == "tails", flips)))
+        tails = flips - heads
         embed = discord.Embed(title=f'Heads: {format(heads, ",d") if UseC else heads}\nTails: {format(tails, ",d") if UseC else tails}', color=0x00ff00)
     else:
         ans = "heads" if random.random() <= headsOdds else "tails"
@@ -79,11 +77,9 @@ async def coin(msg, content, cmd="coin"):
             await RAMUserInfo[msg.author.id].addMoney(add)
             title += f'\nYOU WON {add}' if res == bet else f'\nYOU LOSE {abs(add)}'
         elif int(bet) < 10000000:
-            heads = 0
-            tails = 0
-            for _ in range(int(bet)):
-                if random.random() > .5: heads += 1
-                else: tails += 1
+            flips = tuple("tails" if random.random() > .5 else "heads" for _ in range(int(bet)))
+            heads = len(tuple(filter(lambda x: x == "heads", flips)))
+            tails = flips - heads
             embed = discord.Embed(title=f'Heads: {format(heads, ",d") if UseC else heads}\nTails: {format(tails, ",d") if UseC else tails}', color=0x00aa00)
             return await returnMsg(msg, embed=embed)
     color = 0xff00ff if res == "heads" else 0x0000ff
