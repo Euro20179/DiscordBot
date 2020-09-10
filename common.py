@@ -19,6 +19,7 @@ from requests.api import get
 import youtube_dl
 import functools
 import itertools
+from menum import enum
 from matplotlib import pyplot as plt
 from matplotlib import style as matstyle
 from typing import Any, Callable, Generator, Iterable, List, NoReturn, Optional, Tuple, overload, Dict, Union
@@ -26,7 +27,7 @@ from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont
 
 #TODO userid: gets user id given a name
 #^ also channelid, emoteid, etc
-__version__ = "7.9.2.1"
+__version__ = "7.9.3"
 Stop = False
 
 playingHangman = {}
@@ -310,6 +311,10 @@ def removePrefix(string: str, prefix: str)->str:
 
 def hasSuffix(string: str, suffix: str)->bool:
     return hasPrefix(string[::-1], suffix[::-1]) if len(suffix) <= len(string) else False #reverses the string, and suffix so that way it can be tested as a prefix
+
+def suitibleForEval(string: str, perms: bool=False)->bool:
+    if perms: return True
+    return False if ({"help(", "quit()", "exit()", "os.", "token", "input(", "sys.", "__import__(os", "time.sleep", "socket.", "exec("} & set(string.split(" "))) else True
 
 class Content:
     def __init__(self, string: str, removeCmd: bool = True):
@@ -935,6 +940,13 @@ class UserInfo:
         if userId not in RAMUserInfo.keys():
             RAMUserInfo[userId] = cls(userId)
             
+class _Dict(dict):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+    def __getattribute__(self, name):
+        try: return self[name]
+        except: return None
+
 def findItem(iName: Optional[str]=None, iId: Optional[int]=None)->dict:  
     with open(itemsFilePath, "r") as f:
         data = json.load(f)
@@ -945,5 +957,7 @@ def findItem(iName: Optional[str]=None, iId: Optional[int]=None)->dict:
 def totalMoney(RAMUserInfo: Dict[int, UserInfo]):
     total = sum(map(lambda user: user.money, RAMUserInfo.values()))
     return total
+
+objects = _Dict()
 
 token = "NjQxNzk1NjU2Mzc3MTcyMDAw.XcNk8g.HEvnaXjuXFQhN1iilaaffbiPcoo"

@@ -93,19 +93,19 @@ async def editCmd(msg, content, cmd="edit"):
     content._whitespaceFormat()
     edits = content.split("|")
     editable = await msg.channel.send(edits[0])
-    tokens = {
-        "+": "add",
-        "-": False,
-        "*": "multiply",
-        "<": "insertBeggining",
-        "%": "replace",
-        "^": "insert",
-        ";": "newmessage"
-    }
+    tokens = enum(
+        add = "+",
+        min = "-",
+        mul = "*",
+        insertBeginning = "<",
+        replace = "%",
+        insert = "^",
+        newMsg = ";"
+    )
     while edits:
         edits.pop(0)
         if not edits: break
-        token = tokens.get(edits[0][0])
+        token = edits[0][0]
         ChangeT = "/-t" in edits[0]
         if ChangeT:
             tempSleepFor = sleepFor
@@ -113,13 +113,13 @@ async def editCmd(msg, content, cmd="edit"):
             sleepFor = float(t.split("/-t")[1].strip())
             edits[0] = edits[0].split("/-t")[0]
         await asyncio.sleep(sleepFor)
-        if token == None or token == "add": await editable.edit(content=editable.content + f'{sep}{edits[0]}')
-        elif token == "multiply": await editable.edit(content=editable.content*int(edits[0][1:]))
-        elif token == "replace":
+        if not tokens.getByValue(token) or token == tokens.add: await editable.edit(content=editable.content + f'{sep}{edits[0]}')
+        elif token == tokens.mul: await editable.edit(content=editable.content*int(edits[0][1:]))
+        elif token == tokens.replace:
             rep = edits[0].split("%")[1].split(">>")[0]
             repWith = edits[0].split(">>")[1]
             await editable.edit(content=editable.content.replace(rep if rep != "MSG" else editable.content, repWith))
-        elif token == "insert":
+        elif token == tokens.insert:
             pos = edits[0].split("^")[1]
             splitW = "<<" if "<<" in pos else "="
             pos = pos.split(splitW)[0]
@@ -129,9 +129,9 @@ async def editCmd(msg, content, cmd="edit"):
                 foo.insert(int(pos), repWith)
             else: foo[int(pos)] = repWith
             await editable.edit(content="".join(foo))
-        elif token == "insertBeggining" and edits[0][1] == "<":
+        elif token == tokens.insertBeginning and edits[0][1] == "<":
             await editable.edit(content=f'{edits[0][2:]}' + editable.content)
-        elif token == "newmessage":
+        elif token == tokens.newMsg:
             send = Content(edits[0].split(";")[1], removeCmd=False)
             if send @ "--d":
                 await editable.delete()

@@ -133,6 +133,7 @@ async def filterImg(msg, content, cmd="filterimg"):
                 "smooth_more": lambda: img.filter(ImageFilter.SMOOTH_MORE)
             }
     async with msg.channel.typing():
+        lastFilt = filt[0]
         while filt:
             currFilt = filt[0]
             if not currFilt:
