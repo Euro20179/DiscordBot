@@ -29,7 +29,6 @@ from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont
 #^ also channelid, emoteid, etc
 __version__ = "7.9.3"
 Stop = False
-
 playingHangman = {}
 playingDB = []
 

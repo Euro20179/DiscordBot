@@ -949,7 +949,7 @@ async def botMods(msg, content, cmd="botmods"):
     BOTMODS = reloadBOTMODS()
     content = Content(content)
     if content @ "--raw":
-        with open(botModsFilePath, "rb", encoding="utf-8-sig") as f:
+        with open(botModsFilePath, "rb") as f:
             return await returnMsg(msg, file=discord.File(f, "botmods.json"))
     with open(botModsFilePath, "r", encoding="utf-8-sig") as j:
         data = json.load(j)

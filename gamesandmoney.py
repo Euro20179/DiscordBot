@@ -183,7 +183,7 @@ async def mmoney(msg, content, cmd="mmoney"):
                 total += amnt
         return await returnMsg(msg, f'total money: {total}\n{user.name}\'s % of the total: {RAMUserInfo[user.id].money / total * 100}')
     if "--raw" in content:
-        with open(moneyDataFilePath, "rb", encoding="utf-8-sig") as f:
+        with open(moneyDataFilePath, "rb") as f:
             return await returnMsg(msg, file=discord.File(f, "money.json"))
     return await returnMsg(msg, f'{user.name} has €{RAMUserInfo[user.id].money}')
 
