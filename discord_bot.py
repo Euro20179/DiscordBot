@@ -8,8 +8,7 @@ from misc import *
 from gamesandmoney import *
 from staff import *
 from cmdsthatrequirestop import *
-
-from common import __version__
+from common import __version__, objects
 
 @client.event
 async def on_ready():
@@ -179,7 +178,7 @@ it's an if statement
                 """
             )
         if Content(content.split("(")[0].strip()).suitibleForEval():
-            res = await calc(msg, content.split("(")[0].strip(), cmd, ReturnRes=True)
+            res = await calc(msg, content.split("(")[0].strip(), cmd="calc", ReturnRes=True)
         else: return await returnMsg(msg, "nice try")
         content = "(".join(content.split("(")[1:])
         if res:
@@ -254,7 +253,7 @@ it'll break if it lasts longer than 1 min 30 seconds
             content = await secretCmds[cmd]()
         elif cmd == "exec" and await hasPerms(msg.author.id, "exec"):
             try:
-                exec(str(Content(content)), globals(), locals())
+                exec(str(Content(content)), globals(), objects)
                 content = await returnMsg(msg, "done")
             except Exception as e:
                 content = await returnMsg(msg, e)

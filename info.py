@@ -718,7 +718,6 @@ async def cmdUsage(msg, content, cmd="commandusage"):
             embed = discord.Embed(title=str(content))
             embed.add_field(name="times", value=commandUse)
             return await returnMsg(msg, embed=embed)
-            return await embedToReadableDict(msg, embed)
         else:
             data = {k: v for k, v in sorted(data.items(), key=lambda item: item[1], reverse=False if content.testOps("--least", "--ltg") else True)}
             send = "\n".join([f'{n + 1}: {c[0]}, {c[1]}' for n, c in enumerate(data.items()) if n < top])

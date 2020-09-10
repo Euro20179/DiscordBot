@@ -107,7 +107,6 @@ async def ytdl(msg, content, cmd="ytdl"):
         ytdl
     added: 7/7/2020
     """
-    global queue
     song = Content(content).string
     if song:
         await msg.channel.send("wait 4 years")
@@ -278,15 +277,6 @@ async def stopwatch(msg, content, cmd="stopwatch"):
         return await returnMsg(msg, embed=discord.Embed(title=str(round(t[0], 2)) + f' {t[1]}'))
 
 @command
-async def avatarCmd(msg, content, cmd="avatar"):
-    """
-    gets the avatar of you
-    optional params:
-        [user]: the user to get the avtar of
-    """
-    return await returnMsg(msg, (await getUserInContent(msg, content, cmd)).avatar_url)
-
-@command
 async def count(msg, content, cmd="count"):
     """
     counts in #counting, can be said in any channel
@@ -296,9 +286,11 @@ async def count(msg, content, cmd="count"):
     options:
         -e (-c <color>): makes it an embed
             -c <color>: specifies the color to use defaults to black
-        --(any combination of i, u, and b): i makes it *italisized*
+        --(any combination of i, u, h, and b): 
+            i makes it *italisized*
             b makes it **bold**
             u makes it __underlined__
+            h makes it ||hiden||
         --all: is the same as --iub
         --tts: makes it tts
         --ret: gives the number back and sends it in the 
@@ -321,6 +313,8 @@ async def count(msg, content, cmd="count"):
             fancy += "**"
         if "u" in op:
             fancy += "__"
+        if "h" in op:
+            fancy += "||"
     if content @ "--all":
         fancy += "***__"
     mssg = None
