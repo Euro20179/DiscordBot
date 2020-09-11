@@ -786,6 +786,7 @@ async def google(msg, content, cmd="google"):
     added: 9/10/2020
     """
     content = Content(content)
+    if " ip " in content: return await returnMsg("no")
     request = requests.get(f"https://www.google.com/search?q={content}").text
     soup = bs.BeautifulSoup(request, features="html.parser")
     results = soup.find_all("div", {"class": "ZINbbc xpd O9g5cc uUPGi"})
