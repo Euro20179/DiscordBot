@@ -341,17 +341,25 @@ async def unicodeChar(msg, content, cmd="unicodechar"):
         [amount]: the amount of characters to generate
     options:
         -sep <seperator> (WHITESPACEFORMATS): seperates each character by seperator
+        -bynum *<nums>: gets a unicode character by number
+    aliases:
+        ucodechar
+        unicodechar
     added: 11/9/19
     """
     content = Content(content)
+    sep = "\n"
+    send = []
     for op, param in content.opsWithParams():
         if op == "-sep":
             sep = Content.whitespaceFormat(param)
-            break
-    else: sep = "\n"
+        elif op == "-bynum":
+            for num in param.split(" "):
+                send.append(chr(int(num)))
     try: amount = int(content)
     except: amount = 1
-    return await returnMsg(msg, sep.join([chr(random.randint(0, 185000)) for _ in range(amount)]))
+    if "-bynum" not in content.opOps: send = [chr(random.randint(0, 185000)) for _ in range(amount)]
+    return await returnMsg(msg, sep.join(send))
 
 @command
 async def spacer(msg, content, cmd="spacer"):
@@ -681,7 +689,7 @@ async def listachievements(msg, content, cmd="achievements"):
     """
     content = Content(content)
     if content @ "--raw":
-        with open(achievementsJson, "rb", encoding="utf-8-sig") as f:
+        with open(achievementsJson, "rb") as f:
             return await returnMsg(msg, file=discord.File(f, "achievements.json"))
     with open(achievementsJson, "r", encoding="utf-8-sig") as j:
         data = json.load(j)

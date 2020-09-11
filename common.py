@@ -29,7 +29,6 @@ from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont
 #^ also channelid, emoteid, etc
 __version__ = "7.9.3"
 Stop = False
-
 playingHangman = {}
 playingDB = []
 
@@ -382,7 +381,7 @@ class Content:
         opsDict = {}
         currOp = None
         for word in l:
-            if not word: continue
+            if not word or len(word) == 1: continue
             if "-" == word[0] and word[1] != "-":
                 currOp = word
                 opsDict[currOp] = []

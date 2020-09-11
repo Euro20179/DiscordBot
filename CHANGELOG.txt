@@ -1,3 +1,16 @@
+7.9.4 (9/10/2020)
+
+ADDITIONS:
+*-bynum in ucodechar
+
+CHANGES:
+*top --html doesn't glow on hover
+
+FIXES:
+*top --raw, and a bunch of other --raw
+*a - sign should work better now
+
+====================================================================
 7.9.3 (9/10/2020)
 
 ADDITIONS:

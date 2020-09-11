@@ -67,7 +67,7 @@ async def leaderboard(msg, content, cmd="top"):
         if type(user) is str: continue
         await user.dumpLevelInfo()
     if content @ "--raw":
-        with open(levelingDataFilePath, "rb", encoding="utf-8-sig") as f:
+        with open(levelingDataFilePath, "rb") as f:
             return await returnMsg(msg, file=discord.File(f, levelingDataFilePath))
     top = 10
     if str(content):
@@ -92,7 +92,7 @@ async def leaderboard(msg, content, cmd="top"):
             return await returnMsg(msg, embed=embed)
         else:
             with open("top.html", "w") as html:
-                html.write("<html>\n<head>\n<meta charset='utf-8'><style>p:hover{background-color:#ddd;color:black}\np:active{font-size:2em;}\np {border-bottom: 1px dashed red; color:white;}</style></head><body style='font-family:arial;font-size:20px;background-color:#333'>")
+                html.write("<html>\n<head>\n<meta charset='utf-8'><style>p:active{font-size:2em;}\np {border-bottom: 1px dashed red; color:white;}</style></head><body style='font-family:arial;font-size:20px;background-color:#333'>")
                 for n, user in enumerate(users):
                     if user[0]:
                         time, layer = await formatSeconds(((user[3] - user[2]) / 57.5), layer="minutes")
