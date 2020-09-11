@@ -381,7 +381,7 @@ class Content:
         opsDict = {}
         currOp = None
         for word in l:
-            if not word: continue
+            if not word or len(word) == 1: continue
             if "-" == word[0] and word[1] != "-":
                 currOp = word
                 opsDict[currOp] = []

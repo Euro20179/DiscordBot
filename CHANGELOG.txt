@@ -8,6 +8,7 @@ CHANGES:
 
 FIXES:
 *top --raw, and a bunch of other --raw
+*a - sign should work better now
 
 ====================================================================
 7.9.3 (9/10/2020)
