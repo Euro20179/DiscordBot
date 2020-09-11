@@ -553,12 +553,6 @@ async def sports(msg, content, cmd="sports"):
     if they are not in a game, it will say when they next play
     required params:
         <team>
-    options:
-        --totalcolor: changes the way it calculates the color
-            by default it's more red if the away team is dominating
-            and more blue if the home team is dominating
-            this makes it so it's the sum of the score / the highest
-            scoring game in baseball
     aliases:
         baseball
         baseballscore
