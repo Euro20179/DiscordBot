@@ -1,4 +1,7 @@
 from os import remove
+from re import sub
+
+from requests import exceptions
 from customcmds import removeCustomCmd
 from common import *
 
@@ -764,3 +767,32 @@ async def usermosaic(msg, content, cmd="usermosaic"):
         rv = await returnMsg(msg, file=discord.File(f, "mosaic.html"))
     os.remove("mosaic.html")
     return rv
+
+@command
+async def google(msg, content, cmd="google"):
+    """
+    searches google
+    required params:
+        <search queary>
+    aliases:
+        g
+        google
+    added: 9/10/2020
+    """
+    content = Content(content)
+    request = requests.get(f"https://www.google.com/search?q={content}").text
+    soup = bs.BeautifulSoup(request, features="html.parser")
+    results = soup.find_all("div", {"class": "ZINbbc xpd O9g5cc uUPGi"})
+    embed = discord.Embed(title="Search Results", color=random.randint(0, 16777215))
+    for result in results:
+        if result.find("h2", {"class": "wITvVb"}): continue
+        try:
+            title = result.find_all("div", {"class": "BNeawe vvjwJb AP7Wnd"})[0].text
+            desc = result.find_all("div", {"class": "BNeawe s3v9rd AP7Wnd"})[0].text
+            href = result.find_all('a')[0].get("href")
+            href = "/url?q=".join("&sa=".join(str(href).split("&sa=")[:-1]).split("/url?q=")[1:])
+        except Exception as e:
+            print(e)
+            continue
+        embed.add_field(name=title, value=f'**{href}**\n{desc}')
+    return await returnMsg(msg, embed=embed)
