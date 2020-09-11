@@ -547,9 +547,9 @@ async def iq(msg, content, cmd="iq"):
             iq < 0: f"you literally don't have a brain you somehow have a negative iq idek\nIQ: {iq}"}.get(True))
 
 @command
-async def getBaseballScore(msg, content, cmd="baseballscore"):
+async def sports(msg, content, cmd="sports"):
     """
-    gets the current score for <team>'s game
+    gets the current score for <team>'s game (google should be able to figure out what sport you're talking)
     if they are not in a game, it will say when they next play
     required params:
         <team>
@@ -563,6 +563,20 @@ async def getBaseballScore(msg, content, cmd="baseballscore"):
         baseball
         baseballscore
         mlb
+        sports
+        nfl
+        genflscore
+        nflscore
+        nflgame
+        footballscore
+        football
+        AmErIcAnFoOtBaLl
+        nba
+        nbascore
+        nhlscore
+        nhl
+        mls
+        mlsscore
     """
     content = Content(content).calcOps()
     if not content: return await returnMsg(msg, "smh man what team")
@@ -584,7 +598,7 @@ async def getBaseballScore(msg, content, cmd="baseballscore"):
             else: AsWinning = As[1] > t2[1]
         color = (int(255 * (t1[1] / (t2[1] + t1[1]))), 0, int(255 * (t2[1] / (t2[1] + t1[1])))) if (t1[1] != 0 and t2[1] != 0) and not content @ "--totalcolor" else (int(255 * ((t1[1] + t2[1]) / 46)), 0, int(255 * (1 - ((t1[1] + t2[1]) / 46))))
         embed = discord.Embed(title=f'{t1[0]} @ {t2[0]}', color=discord.Color.from_rgb(*color))
-        embed.add_field(name="Inning", value=inning)
+        embed.add_field(name="Inning" if cmd in ("mlb", "baseball", "baseballscore") else "Time", value=inning)
         embed.add_field(name="Score", value=f'{t1[1]} TO {t2[1]}')
         if inning == 7 and int(t1[1]) == 7 and int(t2[1]) == 7:
             await RAMUserInfo[msg.author.id].giveAchievement("7-7-7")
@@ -610,61 +624,6 @@ async def getBaseballScore(msg, content, cmd="baseballscore"):
             embed.add_field(name=f"{t1[0]}'s score", value=str(t1[1]))
             embed.add_field(name=f"{t2[0]}'s score", value=str(t2[1]))
 
-    return await returnMsg(msg, content=retContent, embed=embed)
-
-@command
-async def getnflscore(msg, content, cmd="nfl"):
-    """
-    gets the score of an nfl game
-    required params:
-        <team>
-    aliases:
-        nfl
-        genflscore
-        nflscore
-        nflgame
-        footballscore
-        football
-        AmErIcAnFoOtBaLl
-    added: 9/10/2020
-    """
-    content = Content(content).calcOps()
-    if not content: return await returnMsg(msg, "smh man what team")
-    request = requests.get(f"https://www.google.com/search?q={content}+game")
-    soup = bs.BeautifulSoup(request.text, features="html.parser")
-    span = soup.find_all("span", {"class": "rQMQod AWuZUe"})
-    inning = span[0].text if span else "NONE"
-    retContent = None
-    if inning != "NONE": #if the game is on
-        teams = soup.find_all("div", {"class": "BNeawe s3v9rd AP7Wnd lRVwie"})[1:3]
-        scores = soup.find_all("div", {"class": "BNeawe deIvCb AP7Wnd"})[1:3]
-        t1 = (teams[0].text, int(scores[0].text))
-        t2 = (teams[1].text, int(scores[1].text))
-        color = (int(255 * (t1[1] / (t2[1] + t1[1]))), 0, int(255 * (t2[1] / (t2[1] + t1[1])))) if (t1[1] != 0 and t2[1] != 0) and not content @ "--totalcolor" else (int(255 * ((t1[1] + t2[1]) / 113)), 0, int(255 * (1 - ((t1[1] + t2[1]) / 113))))
-        embed = discord.Embed(title=f'{t1[0]} @ {t2[0]}', color=discord.Color.from_rgb(*color))
-        embed.add_field(name="Quarter", value=inning)
-        embed.add_field(name="Score", value=f'{t1[1]} TO {t2[1]}')
-    else: #if the game is over or hasnt' started
-        try:
-            time = soup.find_all("span", {"class": "r0bn4c rQMQod"})[0:2]
-            time = f'{time[0].text}, {time[1].text}'
-            teams = soup.find_all("div", {"class": "BNeawe s3v9rd AP7Wnd lRVwie"})[1:3]
-            t1 = teams[0].text
-            t2 = teams[1].text
-            if "yesterday" in time.lower():
-                raise Exception("Yesterday's game")
-            embed = discord.Embed(title=f'{t1} @ {t2} {time} (PACIFIC TIME)')
-        except:
-            winner = soup.find_all("span", {"class": "FCUp0c rQMQod"})[0]
-            loser = soup.find_all("div", {"class": "BNeawe s3v9rd AP7Wnd lRVwie"})[2]
-            scores = soup.find_all("div", {"class": "BNeawe deIvCb AP7Wnd"})[1:3]
-            t1 = (winner.text, int(scores[0].text))
-            t2 = (loser.text, int(scores[1].text))
-            color = (int(255 * (t1[1] / (t2[1] + t1[1]))), 0, int(255 * (t2[1] / (t2[1] + t1[1])))) if (t1[1] != 0 and t2[1] != 0) or not content @ "--totalcolor" else (int(255 * ((t1[1] + t2[1]) / 113)), 0, 0)
-            embed = discord.Embed(title=f'{t1[0]} WON against {t2[0]}', color=discord.Color.from_rgb(*color))
-            embed.add_field(name=f"{t1[0]}'s score", value=str(t1[1]))
-            embed.add_field(name=f"{t2[0]}'s score", value=str(t2[1]))
-            
     return await returnMsg(msg, content=retContent, embed=embed)
 
 @command

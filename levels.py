@@ -6,16 +6,17 @@ command.setCategory("levels", "anything that has to do with leveling")
 @command
 async def level(msg, content, cmd="level"):
     """
-    gets your level in the ranking system
-    optional params:
-        [user]: the user to get the level of
-    options:
-        --raw: gets the raw json file
-    aliases:
-        lvl
-        rank
-        level
-    added: 5/22/2020
+    CUSTOM:
+```gets your level in the ranking system``````some leveling info:
+    random amnt of xp from 15-100 every 1 minute
+    xp devided in half every time you level up
+    you get 2x your level in money added
+    requried xp is 1000 * level * 1.1``````optional params:
+    [user]: the user to get the level of``````options:
+    --raw: gets the raw json file``````aliases:
+    lvl
+    rank
+    level``````added: 5/22/2020```
     """
     content = Content(content)
     user = content.getUser(msg)

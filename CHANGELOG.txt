@@ -1,3 +1,12 @@
+7.9.6 (9/10/2020)
+
+ADDITIONS:
+*sports cmd, nothing is actually new lol, just makes it more generic
+
+CHANGES:
+*mlb, nfl are now the same command
+
+====================================================================
 7.9.5 (9/10/2020)
 
 ADDITIONS:
