@@ -27,7 +27,7 @@ from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont
 
 #TODO userid: gets user id given a name
 #^ also channelid, emoteid, etc
-__version__ = "7.10"
+__version__ = "7.10.1"
 Stop = False
 playingHangman = {}
 playingDB = []
@@ -328,7 +328,7 @@ class Content:
         calculates -- options without yielding
         """
         if not self.split(" ") or "--" not in self: return self
-        self.ops_ = tuple(word for word in self.string.split(" ")[::-1] if "--" in word and word.strip() != "--delete")
+        self.ops_ = tuple(word for word in self.string.split(" ")[::-1] if "--" == word.strip()[0:2] and word.strip() != "--delete")
         if rep:
             for word in self.ops_:
                 foo = self.string
@@ -688,7 +688,7 @@ class command:
             if not data.get("KEY"):
                 data["KEY"] = {"desc": "FORMATS formats special phrases with something (WHITESPACE FORMATS) formats whitespaces\ndo [help formats and [help whitespaceformats", "cmds": []}
                 data["ANYMESSAGE"] = {"desc": "can be applied to any message", "cmds": ["[timeit", "[chkx", "[delete", "[rw", "[rwd", "[delin", "[dr"]}
-                data["MOSTCMDS"] = {"desc": "works for most if not all commands", "cmds": ["--delete", ">>>", "--cmddelete", "--help (DEPRICATED)", "<<<"]}
+                data["MOSTCMDS"] = {"desc": "works for most if not all commands", "cmds": ["--delete", ">>>", "--cmddelete\ndeletes on the command instead of when you send", "--help (DEPRICATED)", "<<<", "cmd--[optional]\nreplaces cmd-- with -- (works like --cmddelete)"]}
                 data["SYNTAX"] = {"desc": "acts like a programming language", "cmds": ["for", "if", "else", "wait", "*<cmd> (sep with ;;)", "calc", "eval", "result", "equation", "findans", "exec", "/{}", "cmd/{}"]}
                 data["CUSTOM"] = {"desc": "custom commands", "cmds": []}
             data[cls.category] = {}

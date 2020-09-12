@@ -602,3 +602,22 @@ async def avatar(msg, content, cmd="avatar"):
             sep = Content.whitespaceFormat(param)
     users = tuple(str(Content(user.strip(), removeCmd=False).getUser(msg).avatar_url) for user in content.split("|"))
     return await returnMsg(msg, sep.join(users))
+
+@command
+async def alias(msg, content, cmd="alias"):
+    """
+    adds a temperary (until the bot restarts) alias to a command
+    aliases:
+        alias
+        tempalias
+    added: 9/11/2020
+    """
+    content = Content(content)
+    al, cmd = content.split(" ", key=lambda x: x.strip())
+    try:
+        CMDS[cmd].aliases.append(al)
+        CMDS[al] = CMDS[cmd]
+    except Exception as e:
+        print(e)
+        return await returnMsg(msg, "cmd not found")
+    return await returnMsg(msg, f'{al} -> {cmd}')
