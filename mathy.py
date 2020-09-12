@@ -306,7 +306,7 @@ async def calc(msg, content, cmd="calc", ReturnRes=False):
             return await returnMsg(msg, "2 + 2 = fish")
         try:
             rv = eval(str(content))
-            if not ReturnRes: return await returnMsg(msg, rv)
+            if not ReturnRes: return await returnMsg(msg, str(rv))
             else: return rv
         except Exception as e:
             print(e)
