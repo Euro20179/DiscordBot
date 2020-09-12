@@ -1,3 +1,10 @@
+7.10.1 (9/11/2020)
+
+ADDITIONS:
+*cmd--(option)
+*alias, creates a temperary alias to a comma
+
+====================================================================
 7.10 (9/10/2020)
 
 ADDITIONS:

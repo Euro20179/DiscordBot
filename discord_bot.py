@@ -150,6 +150,7 @@ async def runCommand(msg, content, cmd, Iscmd=False, DoFirst=False, WriteToFile=
             if mssg.embeds:
                 content = content.replace("/{" + cmd + "}", (await embedToReadableDict(msg, msg.embeds)).content)
             else: content = content.replace("/{" + cmd + "}", str(mssg.content))
+            content = content.replace("cmd--", "--")
         return await runCommand(msg, f'{content}', getCmd(content))
 
     if "cmd/{" in content:
@@ -275,6 +276,7 @@ it'll break if it lasts longer than 1 min 30 seconds
                     if mssg.embeds and "userinfo" not in cmd:
                         content = content.replace("{" + cmd + "}", (await embedToReadableDict(msg, msg.embeds)).content)
                     else: content = content.replace("{" + cmd + "}", str(mssg.content))
+                    content = content.replace("cmd--", "--")
                 content = await returnMsg(msg, content)
             except:
                 content = await returnMsg(msg, f"{cmd} is not a thing")
@@ -285,6 +287,8 @@ it'll break if it lasts longer than 1 min 30 seconds
         content = await returnMsg(msg, f'{cmd} {random.choice(("is not a thing", "does not exist"))}')
     
     if not DoFirst and content: 
+        if content.content:
+            content.content = content.content.replace("cmd--", "--")
         if WriteToFile:
             if content.embeds:
                 content.content = (await embedToReadableDict(msg, msg.embeds)).content
@@ -306,7 +310,9 @@ it'll break if it lasts longer than 1 min 30 seconds
                 os.remove("file.txt")
                 return await msg
 
-    else: return content
+    else: 
+        content.content = content.content.replace("cmd--", "--")
+        return content
 
 @client.event
 async def on_message(msg):
