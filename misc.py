@@ -619,5 +619,5 @@ async def alias(msg, content, cmd="alias"):
         CMDS[al] = CMDS[cmd]
     except Exception as e:
         print(e)
-        return await returnMsg(msg, "cmd not found")
+        return await returnMsg(msg, f"{cmd} not found")
     return await returnMsg(msg, f'{al} -> {cmd}')
