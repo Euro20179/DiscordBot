@@ -27,7 +27,7 @@ from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont
 
 #TODO userid: gets user id given a name
 #^ also channelid, emoteid, etc
-__version__ = "7.10.3"
+__version__ = "7.10.3.1"
 Stop = False
 playingHangman = {}
 playingDB = []
@@ -109,7 +109,7 @@ async def returnMsg(
         tts: Optional[bool]=False, 
         allowedmentions: Optional[discord.AllowedMentions]=None
     ):
-    msg.content = str(content)
+    msg.content = str(content) if content is not None else ""
     msg.embeds = embed if not embed else embed
     msg.tts = tts
     msg.attachments = file
