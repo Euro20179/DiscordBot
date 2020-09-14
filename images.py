@@ -236,15 +236,15 @@ async def colorize(msg, content, cmd="colorize"):
     whitePoint = 255
     midPoint = 127
     mid = None
-    for op, param in content.opsWithParams({"mid": 3}):
-        if "-mid" in content:
-            mid = tuple(int(x) for x in param)
-        if "-midpoint" in content:
-            midPoint = int(param[0])
-        if "-blackpoint" in content:
-            blackPoint = int(param[0])
-        if "-whitepoint" in content:
-            whitePoint = int(param[0])
+    for op, param in content.opsWithParams():
+        if op == '-mid':
+            mid = tuple(int(x) for x in param.split(" "))
+        if op == "-midpoint":
+            midPoint = int(param.split(" ")[0])
+        if op == "-blackpoint":
+            blackPoint = int(param.split(" ")[0])
+        if op == "-whitepoint":
+            whitePoint = int(param.split(" ")[0])
     content = content.split(" ", key=lambda x: int(x) if x else False)
     black = content[0:3]
     white = content[3:6]
@@ -609,10 +609,10 @@ async def newImg(msg, content, cmd="newimg"):
             [a]: the alpha/transparency of the new img
     added: 7/5/2020
     """
-    content = cutCmd(content).strip().split(" ")
-    try:
+    content = Content(content).split(" ")
+    if len(content) >= 2:
         size = content[0:2]
-    except: size = (500, 500)
+    else: size = (500, 500)
     if len(content) > 2:
         color = content[2:]
     else: color = (0, 0, 0)
@@ -943,8 +943,8 @@ async def imgText(msg, content, cmd="imgtext"):
             if op == "-txtwidth":
                 txtWidth = param
             if op == "-font":
-                font = f'{param[0].title()}.ttf'
-                fontSize = int(param[1])
+                font = f'{param.split(" ")[0].title()}.ttf'
+                fontSize = int(param.split(" ")[1])
                 font = ImageFont.truetype(f"/usr/share/fonts/truetype/msttcorefonts/{font}", fontSize, encoding="unic")
         imgWidth = img.width
         imgHeight = img.height
