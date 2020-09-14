@@ -366,3 +366,5 @@ async def stopCmd(msg, content, cmd="stop"):
     global Stop
     Stop = await stop(retstop=True)
     return await returnMsg(msg, "stopped")
+
+    

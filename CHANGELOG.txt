@@ -1,3 +1,18 @@
+7.10.3 (9/14/2020)
+
+FIXES:
+*recursion is annoying.
+
+====================================================================
+7.10.2 (9/12/2020)
+
+CHANGES:
+*wait now says "done" when done, do --nosend, to prevent that
+
+FIXES:
+*;; works better (i think)
+
+====================================================================
 7.10.1.2 (9/12/2020)
 
 FIXES:

@@ -27,7 +27,7 @@ from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont
 
 #TODO userid: gets user id given a name
 #^ also channelid, emoteid, etc
-__version__ = "7.10.1.2"
+__version__ = "7.10.3"
 Stop = False
 playingHangman = {}
 playingDB = []
@@ -109,7 +109,7 @@ async def returnMsg(
         tts: Optional[bool]=False, 
         allowedmentions: Optional[discord.AllowedMentions]=None
     ):
-    msg.content = content
+    msg.content = str(content)
     msg.embeds = embed if not embed else embed
     msg.tts = tts
     msg.attachments = file
@@ -317,6 +317,10 @@ def suitibleForEval(string: str, perms: bool=False)->bool:
 
 class Content:
     def __init__(self, string: str, removeCmd: bool = True):
+        for prefix in PREFIXES:
+            if hasPrefix(string, prefix):
+                break
+        else: removeCmd = False
         if removeCmd: self.cmd, self.string = cutCmd(string, returnCmd=True)
         else: self.string = string
         self._i = -1

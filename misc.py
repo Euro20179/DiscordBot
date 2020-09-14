@@ -425,7 +425,7 @@ async def typeFor(msg, content, cmd="type"):
         return await returnMsg(msg, "sorry thats too long")
     async with msg.channel.typing():
         await asyncio.sleep(timeToType)
-    return await returnMsg(msg, f'typed for {timeToType} seconds') if Send else msg
+    return await returnMsg(msg, f'typed for {timeToType} seconds') if Send else await returnMsg(msg, "$_--NOFILE")
 
 @command
 async def spamStop(msg, content, cmd="spamstop"):
@@ -471,11 +471,14 @@ async def wait(msg, content, cmd="wait"):
     idk waits? lol
     required params:
         <wait time>: the amount of time to wait
+    options:
+        --nosend: doesn't say done
     """
-    content = Content(content)
+    content = Content(content).calcOps()
     try: t = float(content)
     except: return await returnMsg("not a number")
     await asyncio.sleep(t)
+    return await returnMsg(msg, "done") if not content @ "--nosend" else await returnMsg(msg, "$_--NOFILE")
     
 @command
 async def quote(msg, content, cmd="quote"):
