@@ -146,7 +146,7 @@ async def runCommand(msg, content, cmd, Iscmd=False, DoFirst=False, WriteToFile=
             cmds = cmds[:-1]
             try: cmd = cmds[0]
             except IndexError: break
-            mssg = await runCommand(msg, f'{STDPrefix}{cmd.strip("_")}', cmd=cmd.split(" ")[0].strip().strip("_"), DoFirst=True)
+            mssg = await runCommand(msg, f'{STDPrefix}{cmd.strip("_")}', cmd=cutCmd(cmd, returnCmd=True)[0], DoFirst=True)
             if mssg.embeds:
                 content = content.replace("/{" + cmd + "}", (await embedToReadableDict(msg, msg.embeds)).content)
             else: content = content.replace("/{" + cmd + "}", str(mssg.content))
@@ -240,7 +240,7 @@ it'll break if it lasts longer than 1 min 30 seconds
     
     case = CMDS.get(cmd)
     if case and not Iscmd:
-        if Content(content) @ "--help":
+        if re.search(r'\s--help', content):
             content = await returnMsg(msg, case.help())
         else: content = await case(msg, content, cmd=cmd)
         Iscmd = True
@@ -263,6 +263,7 @@ it'll break if it lasts longer than 1 min 30 seconds
         else: 
             CUSTOMCMDS = await reloadCMDSLIST()
             try:
+                msg.content = content
                 content = str(Content(CUSTOMCMDS[cmd], removeCmd=False).formatMessage(msg, ret=True)).strip()
                 while True:
                     if len(content.split("{")) != len(content.split("}")):
@@ -298,17 +299,22 @@ it'll break if it lasts longer than 1 min 30 seconds
         elif content.attachments:
             return await msg.channel.send(file=content.attachments if content.attachments else None, tts=content.tts, allowed_mentions=content.mentions)
         else:
-            try: return await msg.channel.send(content.content, tts=content.tts, allowed_mentions=content.mentions)
-            except discord.errors.HTTPException:
+            try: 
+                if "$_--NOFILE" in content.content:
+                    raise Exception("NO FILE")
+                return await msg.channel.send(content.content, tts=content.tts, allowed_mentions=content.mentions)
+            except Exception as e:
                 if not content.content:
                     return await msg.channel.send("```diff\n-ERROR: CANNOT SEND NOTHING```")
-                else: await msg.channel.send("too long here's a file")
-                with open("file.txt", "w", encoding="utf-8", errors="ignore") as f:
-                    f.write(str(content.content))
-                with open("file.txt", "rb") as f:
-                    msg = msg.channel.send(file=discord.File(f, f'{cmd}.txt'))
-                os.remove("file.txt")
-                return await msg
+                elif "$_--NOFILE" not in content.content: 
+                    await msg.channel.send("too long here's a file")
+                    with open("file.txt", "w", encoding="utf-8", errors="ignore") as f:
+                        f.write(str(content.content))
+                    with open("file.txt", "rb") as f:
+                        msg = msg.channel.send(file=discord.File(f, f'{cmd}.txt'))
+                    os.remove("file.txt")
+                    return await msg
+                else: return content
 
     else: 
         content.content = content.content.replace("cmd--", "--")
