@@ -185,14 +185,14 @@ it's an if statement
         if res:
             for cmd in content.split(";"):
                 if cmd.strip()[0] == ")": break
-                content = await runCommand(msg, cmd.strip(), cmd.strip().split(" ")[0].strip().strip(STDPrefix), DoFirst=True)
+                content = await runCommand(msg, f'{STDPrefix}{cmd.strip()}', cmd.strip().split(" ")[0].strip().strip(STDPrefix), DoFirst=True)
         elif not res and "else" in content:
             elseStmnt = content.split(")")[-2].strip() + ")"
             expr = Content(elseStmnt.split("(")[0])
             content = "(".join(elseStmnt.split("(")[1:])
             for cmd in content.split(";"):
                 if cmd.strip() == ")": break
-                content = await runCommand(msg, cmd.strip(), cmd.strip().split(" ")[0].strip().strip(STDPrefix), DoFirst=True)
+                content = await runCommand(msg, f'{STDPrefix}{cmd.strip()}', cmd.strip().split(" ")[0].strip().strip(STDPrefix), DoFirst=True)
         Iscmd = True
 
     elif cmd == "for":
