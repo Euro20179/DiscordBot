@@ -3,6 +3,7 @@
 *.ini
 *.png
 *.jpg
+*.bc
 .env
 client.py
 __pycache__

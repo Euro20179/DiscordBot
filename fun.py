@@ -266,6 +266,7 @@ async def embed(msg, content, cmd="embed"):
             elif case("-content"):
                 msgContent = param
     title = content.split("|")[0]
+    title = str(Content(title, removeCmd=False).formatMessage(msg, {"{title}": title, "{color}": color, "{author}": author}, ret=True))
     content.formatMessage(msg, {"{title}": title, "{color}": color, "{author}": author})
     embed = discord.Embed(title=title, color=discord.Color(int(str(color), 16) if color != "rand" else random.randint(0, 16777215)) if color else discord.Color(0x000000))
     if image: embed.set_image(url=image)
