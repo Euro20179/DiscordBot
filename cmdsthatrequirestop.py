@@ -379,7 +379,8 @@ async def findmessages(msg, content, cmd="findmessages"):
     -re <search>: searches by regex
     -sep <seperator>
     -channel <channel to search> (make sure this option is given last if given)
-    -limit <limit>: the amount of messages to search through``````aliases:
+    -limit <limit>: the amount of messages to search through
+    --count: purly tells you the count instead of the messages themselves``````aliases:
     findmessages
     searchchat``````CATEGORY: misc``````added: 9/16/2020```
     """
@@ -391,6 +392,7 @@ async def findmessages(msg, content, cmd="findmessages"):
     limit = 5000
     Re = False
     search = None
+    Count = content @ "--count"
     results = []
     for op, param in content.opsWithParams():
         if op == "-re":
@@ -440,4 +442,6 @@ async def findmessages(msg, content, cmd="findmessages"):
                 c = message.content
                 if re.findall(search, c): 
                     results.append(f'\[**{message.author.name}** ({formatDateTime(message.created_at, "%d/%m/%Y AT %I:%M:%S")})]: {c}')
+        if Count:
+            return await returnMsg(msg, str(len(results)))
         return await returnMsg(msg, sep.join(results), allowedmentions=discord.AllowedMentions(users=False, roles=False, everyone=False))
