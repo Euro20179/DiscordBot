@@ -27,7 +27,7 @@ from PIL import Image, ImageFilter, ImageEnhance, ImageOps, ImageDraw, ImageFont
 
 #TODO userid: gets user id given a name
 #^ also channelid, emoteid, etc
-__version__ = "7.10.6"
+__version__ = "7.11"
 Stop = False
 playingHangman = {}
 playingDB = []
@@ -573,12 +573,15 @@ class command:
         CMDS[name] = self
         aliasList = self.aliases
         if "CATEGORY: " in doc:
-            self.cat = doc.split("CATEGORY: ")[1].split("\n")[0].strip().upper()
+            self.cat = doc.split("CATEGORY: ")[1].split("\n")[0].split("`")[0].strip().upper()
         if len(doc.split("aliases")) > 1:
             aliases = doc.split("aliases:")[1].split("\n")
             for alias in aliases:
                 if alias != " ": alias = alias.strip()
                 if alias:
+                    if "```" in alias:
+                        alias = alias.split("```")[0]
+                    if "``````" in alias: date = alias.split("```")[2]
                     if "added" in alias: 
                         self.date = alias.split("added")[1].strip().strip(":").strip()
                         break

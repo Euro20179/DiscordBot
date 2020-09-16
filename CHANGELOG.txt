@@ -1,3 +1,9 @@
+7.11 (9/16/2020)
+
+ADDITIONS:
+*searchchat, searches chat for messages with a search queary in it
+
+====================================================================
 7.10.6 (9/15/2020)
 
 ADDITIONS:
