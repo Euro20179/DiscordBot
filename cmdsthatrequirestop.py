@@ -367,4 +367,76 @@ async def stopCmd(msg, content, cmd="stop"):
     Stop = await stop(retstop=True)
     return await returnMsg(msg, "stopped")
 
-    
+@command
+async def findmessages(msg, content, cmd="findmessages"):
+    """
+    CUSTOM:
+```finds messages in chat with certain word/phrases in it or by regex (non regex searches whitespaceformat)``````operators:
+    +: searches for item 1 and item 2 instead of them together (if it's not a -re search)
+        ex: yes + no (searches if text has yes and no in it)
+        vs: yes no (searches if text has exactly yes no in it)``````required params:
+    <search>: what to search chat for``````options:
+    -re <search>: searches by regex
+    -sep <seperator>
+    -channel <channel to search> (make sure this option is given last if given)
+    -limit <limit>: the amount of messages to search through``````aliases:
+    findmessages
+    searchchat``````CATEGORY: misc``````added: 9/16/2020```
+    """
+    global Stop
+    content = Content(content)
+    if Stop: Stop = False
+    fetchFrom = msg.channel
+    sep = "\n\n"
+    limit = 5000
+    Re = False
+    search = None
+    results = []
+    for op, param in content.opsWithParams():
+        if op == "-re":
+            search = param
+            Re = True
+        elif op == "-sep":
+            sep = Content.whitespaceFormat(param)
+        elif op == "-limit":
+            limit = param
+            if limit.isnumeric():
+                limit = int(limit)
+            else: limit = None
+        elif op == "-channel":
+            fetchFrom = msg.channel_mentions[-1]
+    if content.string.strip():
+        search = str(content)
+        search = Content.whitespaceFormat(search.strip())
+    if "+" in search and not Re:
+        quearies = tuple(map(lambda q: Content.whitespaceFormat(q), search.split("+")))
+        async for message in fetchFrom.history(limit=limit):
+            if Stop:
+                Stop = False
+                return await returnMsg(msg, await stop("stopped"))
+            c = message.content
+            IsMatch = True
+            for queary in quearies:
+                if queary in c:
+                    continue
+                IsMatch = False
+                break
+            if IsMatch: 
+                results.append(f'\[**{message.author.name}** ({formatDateTime(message.created_at, "%d/%m/%Y AT %I:%M:%S")})]: {c}')
+    elif not Re:
+        async for message in fetchFrom.history(limit=limit):
+            if Stop:
+                Stop = False
+                return await returnMsg(msg, await stop("stopped"))
+            c = message.content
+            if search in c: 
+                results.append(f'\[**{message.author.name}** ({formatDateTime(message.created_at, "%d/%m/%Y AT %I:%M:%S")})]: {c}')
+    elif Re:
+        async for message in fetchFrom.history(limit=limit):
+            if Stop:
+                Stop = False
+                return await returnMsg(msg, await stop("stopped"))
+            c = message.content
+            if re.findall(search, c): 
+                results.append(f'\[**{message.author.name}** ({formatDateTime(message.created_at, "%d/%m/%Y AT %I:%M:%S")})]: {c}')
+    return await returnMsg(msg, sep.join(results), allowedmentions=discord.AllowedMentions(users=False, roles=False, everyone=False))
