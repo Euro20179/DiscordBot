@@ -443,8 +443,8 @@ async def pingResponse(msg, content, cmd="pingresponse"):
     when someone pings you (except bots) it will say this message
     required params:    
         <message>: the message to say
-        OR
-        -WHEN <offline/online/idle/dnd/all>: this controls when it triggers
+    optional params:
+        -when <offline/online/idle/dnd/all>: this controls when it triggers
             by default it's when you're offline
             you can change it with this
             do any combination of them
@@ -453,16 +453,13 @@ async def pingResponse(msg, content, cmd="pingresponse"):
     response = Content(content)
     if isBot(msg, client): return
     userInfo: UserInfo = RAMUserInfo[msg.author.id]
-    if "-WHEN" in response:
-        when = response.split("-WHEN ")[1]
-        when = when.split(" ")
-        userInfo.pingResponseWhen = when
-    elif response.lower() == "none":
+    for op, param in response.opsWithParams():
+        if op.lower() == "-when":
+            userInfo.pingResponseWhen = param
+    if response.lower() == "none":
         userInfo.pingRespone = ""
     else:
         userInfo.pingResponse = str(response)
-    if "-WHEN" in response:
-        return await returnMsg(msg, f'response will happen when you are {" ".join(userInfo.pingResponseWhen)}')
     return await returnMsg(msg, f"changed to:\n{response}")
 
 @command
