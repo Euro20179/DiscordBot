@@ -909,7 +909,7 @@ class UserInfo:
                     data[self.userId] = {"response": self.pingResponse, "when": self.pingResponseWhen}
                 clearFile(f)
                 json.dump(data, f)
-            
+
     async def dumpInfo(self, clFromRAMDict: Optional[bool]=False)->NoReturn:
         await self.dumpLevelInfo()
         await self.dumpMoneyInfo()
