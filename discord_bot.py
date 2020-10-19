@@ -263,7 +263,7 @@ it'll break if it lasts longer than 1 min 30 seconds
             CUSTOMCMDS = await reloadCMDSLIST()
             try:
                 msg.content = content
-                content = str(Content(CUSTOMCMDS[cmd], removeCmd=False).formatMessage(msg, ret=True)).strip()
+                content = str(Content(CUSTOMCMDS[cmd], removeCmd=False).formatMessage(msg, ret=True, kwargs={"{username}": Content(content).getUser(msg).display_name, "{userping}": Content(content).getUser(msg).mention})).strip()
                 while True:
                     if len(content.split("{")) != len(content.split("}")):
                         return await msg.channel.send("syntax error missing { or }")
